@@ -1,0 +1,402 @@
+# labels.yaml — single source of truth for every manuscript figure and
+# equation reference.  Consumed by `scripts/inject_manuscript_variables.py`,
+# which substitutes tokens of the form
+#
+#   [[FIG:label]]    →  Markdown image directive with caption + path
+#   [[FIGREF:label]] →  inline cross-reference ("Fig. X")
+#   [[EQ:label]]     →  display-math equation with auto-numbering
+#   [[EQREF:label]]  →  inline cross-reference ("Eq. (X)")
+#
+# Figure paths are project-relative; the injector rewrites them to the
+# manuscript-relative form (`../output/...`) at render time.
+#
+# Numbering: figures and equations are auto-numbered in the order they
+# appear here.  Manual `number:` overrides are honoured if set.
+
+figures:
+  ising_mi_curve:
+    path: output/figures/ising_mi_curve.png
+    caption: |
+      Closed-form vs empirical mutual information of the K=2 Ising joint
+      at $\lambda \in [0, 6]$. The closed-form curve $I(\lambda)
+      = \log 2 - H_b(\sigma(\lambda))$ overlays the empirical total
+      correlation of the entangled posterior; agreement is to $10^{-6}$
+      across 121 grid points (`output/data/parameter_sweep.csv`).
+    short: "Closed-form vs empirical Ising MI"
+    sections: ["§5.1", "§13"]
+    source: scripts/generate_figures.py::figure_ising_mi_curve
+
+  free_energy_curve:
+    path: output/figures/free_energy_curve.png
+    caption: |
+      Free-energy curve $F[q_\lambda]$ for the symmetric K=2 Ising toy
+      across utility surplus $\Delta_{\mathrm{util}} \in \{0, 0.5, 1, 2\}$.
+      The U-shape collapses to a monotone-decreasing curve when
+      $\Delta_{\mathrm{util}} = 0$ (Ising-like degeneracy of §5).
+    short: "K=2 Ising free-energy curve"
+    sections: ["§5.1", "Appendix B", "§13"]
+    source: scripts/generate_figures.py::figure_free_energy_curve
+
+  coupling_tax_quadratic:
+    path: output/figures/coupling_tax_quadratic.png
+    caption: |
+      Heterogeneous K=2 coupling tax (blue dots) overlaid with the
+      fitted $O(\lambda^2)$ envelope (dashed) on $\lambda \in [0, 1.5]$.
+      The envelope's curvature constant $C$ is computed from the
+      small-$\lambda$ slope and printed in the figure legend; the
+      same envelope captures the actual tax across the full sweep —
+      i.e. the heterogeneous coupling-tax bound in numerical action.
+    short: "O(λ²) coupling-tax envelope"
+    sections: ["§8", "§13"]
+    source: scripts/generate_figures.py::figure_coupling_tax_quadratic
+
+  phase_diagram:
+    path: output/figures/phase_diagram.png
+    caption: |
+      Coupling phase diagram on $\lambda \in [0, 4]$, with the three
+      phases of §9 (disordered / mixed / frozen) shaded as fill-bands at
+      illustrative critical thresholds $(\lambda_c^{(1)},
+      \lambda_c^{(2)}) = (0.5, 2.5)$.
+    short: "1-D phase diagram"
+    sections: ["§9", "§13"]
+    source: scripts/generate_figures.py::figure_phase_diagram
+
+  optimal_lambda:
+    path: output/figures/optimal_lambda.png
+    caption: |
+      Closed-form optimal coupling
+      $\lambda^\star(\Delta_{\mathrm{util}}) = 2 \,
+      \operatorname{arctanh}(\Delta_{\mathrm{util}} / \Delta_{\max})$
+      across $\Delta_{\mathrm{util}} / \Delta_{\max} \in [-0.95, 0.95]$.
+      Vanishes at $\Delta_{\mathrm{util}} = 0$, saturates at $\pm \infty$
+      as $\Delta_{\mathrm{util}} \to \pm \Delta_{\max}$.
+    short: "Optimal λ*(Δ)"
+    sections: ["§5.1", "§10", "§13"]
+    source: scripts/generate_figures.py::figure_optimal_lambda
+
+  schmidt_rank:
+    path: output/figures/schmidt_rank.png
+    caption: |
+      Schmidt rank of the K=2 Ising joint posterior as $\lambda$ varies
+      on $[0, 4]$. The integer rank jumps from $1$ (mean-field manifold)
+      to $2$ instantly when any coupling is on — leaving the mean-field
+      submanifold ($r=1$) for $r=2$.
+    short: "Schmidt rank vs λ"
+    sections: ["§7.1", "§13"]
+    source: scripts/generate_figures.py::figure_schmidt_rank_vs_lambda
+
+  phase_landscape:
+    path: output/figures/phase_landscape.png
+    caption: |
+      Free-energy phase landscape: $F(\lambda, \mathrm{utility})$ on
+      $[0,4] \times [0,2]$.  The U-shaped low-utility band (cf. §9)
+      gives way to monotone-decreasing curves at high utility, and the
+      locus of $\lambda^\star$ is the colour minimum at each utility.
+    short: "F(λ, utility) phase landscape"
+    sections: ["§9", "§13"]
+    source: scripts/generate_figures.py::figure_phase_landscape
+
+  schmidt_entropy_surface:
+    path: output/figures/schmidt_entropy_surface.png
+    caption: |
+      Entanglement entropy $S_E(\lambda, \mathrm{utility})$ heatmap on
+      $[0,4] \times [0,2]$. The $S_E = 0$ band at $\lambda = 0$ marks
+      the mean-field submanifold; $S_E$ grows with $\lambda$ then
+      saturates as the joint approaches an archetypal mode.
+    short: "Schmidt entropy heatmap"
+    sections: ["§7", "§13"]
+    source: scripts/generate_figures.py::figure_schmidt_entropy_surface
+
+  joint_heatmap_lambda2:
+    path: output/figures/joint_heatmap_lambda2.png
+    caption: |
+      K=2 Ising joint posterior at $\lambda = 2$ rendered as a heatmap
+      with side-bar marginals and the m-projection residual $q -
+      \prod_k q^k$ in the upper-right inset. The non-zero residual is
+      the visual signature of departure from the mean-field manifold.
+    short: "K=2 joint heatmap with marginals"
+    sections: ["§5.1", "§13"]
+    source: scripts/generate_figures.py::figure_joint_heatmap_with_marginals
+
+  archetype_dendrogram:
+    path: output/figures/archetype_dendrogram.png
+    caption: |
+      Schmidt archetypes for the K=2 Ising joint at $\lambda = 3$. Left
+      panel: archetype weights $\{s_\alpha\}$ in descending order. Right
+      panel: pairwise overlap matrix
+      $|\langle u_i, u_j\rangle| \cdot |\langle v_i, v_j\rangle|$
+      — diagonal-dominant by construction (orthonormal SVD basis).
+    short: "Schmidt archetype dendrogram"
+    sections: ["§7.2", "§13"]
+    source: scripts/generate_figures.py::figure_archetype_dendrogram
+
+  tensor_train_rank_surface:
+    path: output/figures/tensor_train_rank_surface.png
+    caption: |
+      Tensor-train bond-rank profile $(r_1, \ldots, r_{K-1})$ for the
+      symmetric Ising K-stream coupling at $\lambda = 2$ across
+      $K \in \{2, 3, 4, 5\}$. Bond dimensions saturate at $r_j \le 2$
+      — consistent with the sparsity--rank tradeoff for low-rank couplings.
+    short: "Tensor-train rank surface"
+    sections: ["§7.3", "§13"]
+    source: scripts/generate_figures.py::figure_tensor_train_ranks
+
+  log_weight_flow:
+    path: output/figures/log_weight_flow.png
+    caption: |
+      e-geodesic visualisation: unnormalised log-weight $\log
+      \mathcal{E}_\lambda(\pi) - \gamma \lambda K_c(\pi)$ for every
+      policy $\pi \in \{0,1\}^2$ across $\lambda \in [0, 3]$ for the
+      symmetric Ising coupling with $K_c \neq 0$. Each line is exactly
+      affine in $\lambda$ — the numerical signature of an e-geodesic family.
+    short: "Log-weight e-geodesic flow"
+    sections: ["§6", "§13"]
+    source: scripts/generate_figures.py::figure_log_weight_flow
+
+  coupling_graph:
+    path: output/figures/coupling_graph.png
+    caption: |
+      Coupling-potential graph for the symmetric K=4 Ising ensemble.
+      Each node is one stream; edge weights are the average $|J|$ across
+      slot pairs. Symmetric coupling produces an evenly-weighted clique;
+      CEREBRUM-style case-grammar couplings would manifest as
+      edge-weight asymmetry.
+    short: "Coupling-potential graph"
+    sections: ["§11.12 (CEREBRUM)", "§13"]
+    source: scripts/generate_figures.py::figure_coupling_graph
+
+  pymdp_total_correlation_curve:
+    path: output/figures/pymdp_total_correlation_curve.png
+    caption: |
+      pymdp-grounded total correlation $I(q_\lambda)$ as a function of
+      coupling $\lambda$ for the K=2 Ising ensemble, observations
+      $(0, 0)$. Smooth monotone increase from the mean-field baseline
+      $0$ toward saturation at $\log 2 \approx 0.693$ — the empirical
+      witness of Prop 6.3 inside a grounded POMDP.
+    short: "pymdp total correlation curve"
+    sections: ["§11.1", "§13"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+
+  pymdp_joint_lambda_0:
+    path: output/figures/pymdp_joint_lambda_0.00.png
+    caption: |
+      Coupled joint policy posterior at $\lambda = 0$ (pure mean-field).
+      Marginals (top / right bars) match the per-stream pymdp
+      posteriors; the m-projection residual (top-right inset) is
+      identically zero.
+    short: "pymdp joint at λ=0"
+    sections: ["§13"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+
+  pymdp_joint_lambda_2:
+    path: output/figures/pymdp_joint_lambda_2.00.png
+    caption: |
+      Coupled joint at $\lambda = 2$. Off-diagonal mass redistributes
+      onto aligned $(0,0) / (1,1)$ corners; m-projection residual is
+      non-zero, confirming Schmidt rank $r = 2 > 1$.
+    short: "pymdp joint at λ=2"
+    sections: ["§13"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+
+  pymdp_joint_lambda_4:
+    path: output/figures/pymdp_joint_lambda_4.00.png
+    caption: |
+      Coupled joint at $\lambda = 4$ (frozen regime). Aligned corners
+      dominate; the residual is large; the system has essentially
+      collapsed onto a single archetypal mode.
+    short: "pymdp joint at λ=4"
+    sections: ["§13"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+
+  pymdp_coupled_rollout:
+    path: output/figures/pymdp_coupled_rollout.png
+    caption: |
+      Deterministic 10-step coupled rollout under $\lambda = 2$,
+      seed $= 0$. Per-stream marginals $q_t^k$ (left two heatmaps)
+      interleave with the coupled total correlation $I(q_t)$ (right).
+      Reproducibility is asserted by
+      `tests/test_simulation_pymdp.py::test_simulate_coupled_rollout_deterministic_under_fixed_seed`.
+    short: "pymdp coupled rollout"
+    sections: ["§11.1", "§13"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_rollout
+
+  kl_geodesic_simplex:
+    path: output/figures/kl_geodesic_simplex.png
+    caption: |
+      The K=2 Ising joint posterior traced in a 2-D summary plane
+      spanned by aligned-corner mass $q(0,0)+q(1,1)$ (horizontal) and
+      off-diagonal disparity $|\Delta_{\rm row}|+|\Delta_{\rm col}|$
+      (vertical) as $\lambda \in [0, 4]$.  The trace departs the
+      mean-field anchor (red star) at $\lambda = 0$ and bends toward
+      an archetypal corner — a visual e-geodesic in the simplex
+      coordinates used here.
+    short: "KL geodesic in the 2-D summary plane"
+    sections: ["§6", "§13"]
+    source: scripts/generate_figures.py::figure_kl_geodesic_in_simplex
+
+  lambda_star_locus:
+    path: output/figures/lambda_star_locus.png
+    caption: |
+      Optimal coupling $\lambda^\star$ across $(\mathrm{utility},
+      \gamma)$ for the K=2 Ising toy.  $\lambda^\star$ grows
+      sigmoidally in utility surplus and is amplified by larger EFE
+      precision $\gamma$, locating the *comparative-statics* surface
+      of §10.
+    short: "λ⋆(utility, γ) locus"
+    sections: ["§10", "§13"]
+    source: scripts/generate_figures.py::figure_lambda_star_locus
+
+sections:
+  # Top-level body sections (number is purely the registry-assigned text;
+  # `parent` is omitted for top-levels).  The renderer substitutes
+  # `[[SECREF:label]]` with the literal §<number> string and
+  # `[[SEC:label]]` with `§<number> <title>` for use in heading lines.
+  motivation:           {number: "1",  title: "Motivation and Position",                    file: "01_motivation_and_position.md"}
+  setup:                {number: "2",  title: "Setup, Notation, and Standing Assumptions", file: "02_setup_and_assumptions.md"}
+  setup.pomdp:          {number: "2.1", title: "Single-stream POMDP active inference", parent: setup}
+  setup.multistream:    {number: "2.2", title: "The multi-stream extension",            parent: setup}
+  setup.mf_baseline:    {number: "2.3", title: "The mean-field baseline",               parent: setup}
+  notation:             {number: "2a", title: "Notation Glossary",                          file: "02a_notation_glossary.md"}
+  lambda_deformation:   {number: "3",  title: "The λ-Deformation",                         file: "03_lambda_deformation.md"}
+  lambda_deformation.coupling_potentials:    {number: "3.1", title: "Coupling potentials",          parent: lambda_deformation}
+  lambda_deformation.entangled_posterior:    {number: "3.2", title: "λ-entangled policy posterior", parent: lambda_deformation}
+  lambda_deformation.precision:              {number: "3.3", title: "λ as precision",                parent: lambda_deformation}
+  lambda_deformation.examples:               {number: "3.4", title: "What J and K_c look like",      parent: lambda_deformation}
+  decomposition:        {number: "4",  title: "Entanglement Decomposition Theorem",        file: "04_entanglement_decomposition.md"}
+  decomposition.statement: {number: "4.1", title: "Statement",                                  parent: decomposition}
+  decomposition.proof:     {number: "4.2", title: "Proof sketch",                               parent: decomposition}
+  decomposition.reading:   {number: "4.3", title: "What the decomposition says",                parent: decomposition}
+  decomposition.optimal:   {number: "4.4", title: "Optimal coupling: existence of λ*",          parent: decomposition}
+  examples:             {number: "5",  title: "Examples and Worked Cases",                 file: "05_examples_and_worked_cases.md"}
+  examples.bernoulli:        {number: "5.1", title: "K=2 Bernoulli toy: full closed form", parent: examples}
+  examples.motor_attention:  {number: "5.2", title: "Motor + attention with realistic EFE", parent: examples}
+  examples.multitimescale:   {number: "5.3", title: "Multi-timescale coupling",            parent: examples}
+  geometry:             {number: "6",  title: "Information Geometry of the Entanglement Manifold", file: "06_information_geometry.md"}
+  geometry.dual_coords:      {number: "6.1", title: "Dual coordinates and the mean-field submanifold", parent: geometry}
+  geometry.e_geodesic:       {number: "6.2", title: "The λ-family is an e-geodesic",                  parent: geometry}
+  geometry.alpha_proj:       {number: "6.3", title: "Connection to α-projections",                    parent: geometry}
+  geometry.escort:           {number: "6.4", title: "Connection to escort distributions",             parent: geometry}
+  spectral:             {number: "7",  title: "Spectral and Tensor-Network Structure",     file: "07_spectral_and_tensor_network.md"}
+  spectral.bipartite:        {number: "7.1", title: "Bipartite Schmidt decomposition",               parent: spectral}
+  spectral.archetypes:       {number: "7.2", title: "Leading singular vectors as archetypes",        parent: spectral}
+  spectral.multistream_tt:   {number: "7.3", title: "Multi-stream tensor decomposition",             parent: spectral}
+  spectral.births:           {number: "7.4", title: "Birth and death of archetypes",                 parent: spectral}
+  heterogeneous:        {number: "8",  title: "Coupled Updates and Heterogeneous Inference", file: "08_heterogeneous_inference.md"}
+  heterogeneous.three_level: {number: "8.1", title: "Three-level update hierarchy",                  parent: heterogeneous}
+  heterogeneous.coupled:     {number: "8.2", title: "Coupled marginal updates",                       parent: heterogeneous}
+  heterogeneous.bound:       {number: "8.3", title: "VFE-only suboptimality bound",                   parent: heterogeneous}
+  heterogeneous.precision:   {number: "8.4", title: "Updating λ: precision learning on coupling",     parent: heterogeneous}
+  heterogeneous.habit:       {number: "8.5", title: "Habit accumulation and revertibility",           parent: heterogeneous}
+  phase:                {number: "9",  title: "Phase Structure and Symmetry Breaking",     file: "09_phase_structure.md"}
+  phase.diagram:             {number: "9.1", title: "Phase diagram",                                  parent: phase}
+  phase.order:               {number: "9.2", title: "Order parameters",                                parent: phase}
+  phase.predictions:         {number: "9.3", title: "Predictions and clinical phenomena",              parent: phase}
+  comparative:          {number: "10", title: "Comparative Statics",                       file: "10_comparative_statics.md"}
+  comparative.payoff:        {number: "10.1", title: "The pay-off structure",                          parent: comparative}
+  comparative.two_param:     {number: "10.2", title: "Two-parameter generalisation",                   parent: comparative}
+  comparative.sensitivity:   {number: "10.3", title: "Sensitivity to potential structure",             parent: comparative}
+  connections:          {number: "11", title: "Connections to Existing Frameworks",        file: "11_connections_to_existing_frameworks.md"}
+  connections.pymdp:         {number: "11.1",  title: "Mean-field active inference (pymdp)",           parent: connections}
+  connections.hierarchical:  {number: "11.2",  title: "Hierarchical / Deep AIF",                        parent: connections}
+  connections.sophisticated: {number: "11.3",  title: "Sophisticated inference",                        parent: connections}
+  connections.btai:          {number: "11.4",  title: "Branching-time AIF",                             parent: connections}
+  connections.kl_control:    {number: "11.5",  title: "KL / path-integral control",                     parent: connections}
+  connections.options:       {number: "11.6",  title: "Options framework / hierarchical RL",            parent: connections}
+  connections.poe_moe:       {number: "11.7",  title: "Product / Mixture of Experts",                   parent: connections}
+  connections.copula:        {number: "11.8",  title: "Copula variational inference",                   parent: connections}
+  connections.multiagent:    {number: "11.9",  title: "Interactive / multi-agent inference",            parent: connections}
+  connections.rg:            {number: "11.10", title: "Renormalization-group AIF",                       parent: connections}
+  connections.markov:        {number: "11.11", title: "Markov blankets and Bayesian mechanics",          parent: connections}
+  connections.cerebrum:      {number: "11.12", title: "CEREBRUM and case grammar",                       parent: connections}
+  lean_plan:            {number: "12", title: "Lean Formalization Plan",                   file: "12_lean_formalization_plan.md"}
+  empirical:            {number: "13", title: "Empirical / Simulation Suite",              file: "13_empirical_simulation_suite.md"}
+  open_questions:       {number: "14", title: "Open Theoretical Questions",                file: "14_open_theoretical_questions.md"}
+  companion_paper:      {number: "15", title: "Companion Paper Outline",                   file: "15_companion_paper_outline.md"}
+  discussion:           {number: "16", title: "Discussion and Worldview",                  file: "16_discussion_worldview.md"}
+  closing:              {number: "17", title: "Closing Remarks",                            file: "17_closing_remarks.md"}
+  bibliography:         {number: "99", title: "Bibliography",                               file: "99_bibliography.md"}
+  app.proof_decomp:     {number: "A",  title: "Full proof of Theorem 4.1",                 file: "S01_proof_of_decomposition_theorem.md"}
+  app.convexity:        {number: "B",  title: "Convexity of F[q_λ]",                       file: "S02_convexity_of_free_energy.md"}
+  app.bernoulli:        {number: "C",  title: "K=2 Bernoulli derivation",                  file: "S03_bernoulli_complete_derivation.md"}
+  app.tt_inference:     {number: "D",  title: "Tensor-train inference algorithm",          file: "S04_tensor_train_inference_algorithm.md"}
+  app.lean_skeleton:    {number: "E",  title: "Lean code skeleton",                         file: "S05_lean_code_skeleton.md"}
+
+theorems:
+  # Each theorem has a `kind`, a `number`, an optional `name`, the
+  # section in which it is stated, an optional Lean companion
+  # (`lean_module` + `lean_name`), and a Mathlib-readiness `status`
+  # (one of: proved, boundary, sorry, sketch, deferred).
+  # The `[[LEAN:label]]` token embeds the actual Lean source extracted
+  # from `lean/ActinfPolicyEntanglement/<lean_module>.lean`.
+  thm_4_1:    {kind: "Theorem",     number: "4.1",  name: "Entanglement Decomposition",       section: decomposition.statement, lean_module: Decomposition,  lean_name: entanglement_decomposition,                       status: boundary}
+  cor_4_2:    {kind: "Corollary",   number: "4.2",  name: "Coupling-pays-for-itself",          section: decomposition.reading,   lean_module: Decomposition,  lean_name: couplingVerdict,                                  status: sketch}
+  cor_4_3:    {kind: "Corollary",   number: "4.3",  name: "Mean-field at λ = 0",                section: decomposition.reading,   lean_module: Decomposition,  lean_name: decomposition_at_zero,                            status: boundary}
+  cor_4_4:    {kind: "Corollary",   number: "4.4",  name: "Strict gain when q is non-mean-field", section: decomposition.reading, lean_module: Decomposition,  lean_name: strict_gain_iff_nonMeanField,                     status: boundary}
+  thm_4_2:    {kind: "Theorem",     number: "4.5",  name: "Existence of optimal coupling",     section: decomposition.optimal,   lean_module: ~,              lean_name: ~,                                                status: deferred}
+  thm_4_3:    {kind: "Theorem",     number: "4.6",  name: "Convexity of F in λ",                section: decomposition.optimal,   lean_module: ~,              lean_name: ~,                                                status: deferred}
+  prop_6_1:   {kind: "Proposition", number: "6.1",  name: "MF submanifold is e-flat",          section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mfSubmanifold_eFlat,                              status: sketch}
+  prop_6_2:   {kind: "Proposition", number: "6.2",  name: "m-projection / marginalisation",    section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mProjection_minimises_kl,                         status: proved}
+  prop_6_3:   {kind: "Proposition", number: "6.3",  name: "Total correlation as Bregman divergence", section: geometry.dual_coords, lean_module: FreeEnergy,  lean_name: totalCorrelation_eq_kl_to_mprojection,            status: proved}
+  thm_6_4:    {kind: "Theorem",     number: "6.4",  name: "λ-family is an e-geodesic",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: entangledFamily_eGeodesic,                        status: forwarder}
+  prop_6_5:   {kind: "Proposition", number: "6.5",  name: "Pythagorean decomposition",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: dualFlat_pythagorean_sketch,                      status: sketch}
+  prop_7_1:   {kind: "Proposition", number: "7.1",  name: "Schmidt rank 1 ⇔ mean-field",      section: spectral.bipartite,      lean_module: Spectral,       lean_name: "Bipartite.schmidtRank_one_iff_meanField",        status: boundary}
+  prop_7_2:   {kind: "Proposition", number: "7.2",  name: "Schmidt rank upper-semicontinuous in λ", section: spectral.bipartite, lean_module: Spectral,       lean_name: "Bipartite.schmidtRank_upperSemicontinuous_sketch", status: sketch}
+  thm_7_3:    {kind: "Theorem",     number: "7.3",  name: "Sparsity-rank tradeoff",            section: spectral.multistream_tt, lean_module: Spectral,       lean_name: sparsityRank_tradeoff,                            status: sketch}
+  thm_8_1:    {kind: "Theorem",     number: "8.1",  name: "Heterogeneous coupling tax",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_quadratic_bound,                      status: boundary}
+  cor_8_2:    {kind: "Corollary",   number: "8.2",  name: "Reflexive-stream tolerance",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_small_lambda_tolerance,               status: boundary}
+  prop_10_1:  {kind: "Proposition", number: "10.1", name: "Local concavity of F at λ=0",       section: comparative.sensitivity, lean_module: ~,              lean_name: ~,                                                status: deferred}
+  thm_11_1:   {kind: "Theorem",     number: "11.1", name: "Hierarchical AIF as λ→∞ limit",     section: connections.hierarchical, lean_module: ~,             lean_name: ~,                                                status: deferred}
+  prop_11_2:  {kind: "Proposition", number: "11.2", name: "Sophisticated inference embedding", section: connections.sophisticated, lean_module: ~,            lean_name: ~,                                                status: deferred}
+  prop_11_3:  {kind: "Proposition", number: "11.3", name: "Markov-blanket separation as 1 − I/H", section: connections.markov,   lean_module: ~,              lean_name: ~,                                                status: deferred}
+
+equations:
+  tc_decomp:
+    latex: |
+      F[q] = \sum_k F[q^k]
+            + \gamma \, \lambda \, \mathbb{E}_q[K_c]
+            + \lambda \, \mathbb{E}_q[J] - \log Z_E(\lambda)
+            - I(q)
+    name: "Entanglement decomposition"
+    sections: ["§4"]
+
+  ising_mi_closed_form:
+    latex: |
+      I(\lambda) = \log 2 - H_b(\sigma(\lambda)),
+      \quad \sigma(\lambda) = \frac{1}{1 + e^{-\lambda}}
+    name: "Closed-form K=2 Ising mutual information"
+    sections: ["§5.1", "Appendix C"]
+
+  optimal_lambda:
+    latex: |
+      \lambda^\star(\Delta_{\mathrm{util}})
+        = 2 \, \operatorname{arctanh}\!\left(\frac{\Delta_{\mathrm{util}}}{\Delta_{\max}}\right)
+    name: "Optimal coupling under utility surplus"
+    sections: ["§5.1", "§10"]
+
+  pythagorean:
+    latex: |
+      D_{\mathrm{KL}}(q \,\|\, q_0^*)
+        = I(q) + D_{\mathrm{KL}}(\hat m(q) \,\|\, q_0^*)
+    name: "Pythagorean decomposition"
+    sections: ["§6"]
+
+  e_geodesic:
+    latex: |
+      \log q_\lambda(\pi) + \log Z(\lambda)
+        = \sum_k \log E_k(\pi^k) - \gamma \sum_k G_k(\pi^k)
+          + \lambda \, (J(\pi) - \gamma K_c(\pi))
+    name: "e-geodesic affineness in λ"
+    sections: ["§6", "§13"]
+
+  coupling_tax_bound:
+    latex: |
+      D_{\mathrm{KL}}(q^k_*\,\|\,q^k_\circ)
+        \;\leq\; C \cdot \lambda^2 \, \|\Phi\|_\infty^2 + O(\lambda^3)
+    name: "O(λ²) coupling tax"
+    sections: ["§8"]
+
+  total_correlation:
+    latex: |
+      I(q) = \sum_k H(q^k) - H(q) = D_{\mathrm{KL}}(q \,\| \, \prod_k q^k)
+    name: "Total correlation"
+    sections: ["§4", "§6"]

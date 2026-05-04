@@ -1,0 +1,29 @@
+# Disposable / regenerable artefacts (the entire output/ tree).
+output/
+
+# Python build / test caches.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Lake build artefacts.
+lean/.lake/
+lean/build/
+*.olean
+*.ilean
+*.ir
+*.c
+
+# Editor / OS junk.
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# uv lockfile is project-level, kept; rule out workspace-local copies.
+uv.lock

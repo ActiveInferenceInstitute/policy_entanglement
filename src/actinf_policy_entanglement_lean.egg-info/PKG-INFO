@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: actinf_policy_entanglement_lean
+Version: 0.2.0
+Summary: Tunable mean-field deformation framework for multi-stream policy ensembles in active inference (Lean 4 + Python companion + pymdp POMDP harness).
+Author-email: Daniel Ari Friedman <daniel@activeinference.institute>
+Requires-Python: >=3.10
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Provides-Extra: sim
+Requires-Dist: inferactively-pymdp==1.0.1; extra == "sim"
+Provides-Extra: viz
+Requires-Dist: seaborn>=0.13.0; extra == "viz"
+Requires-Dist: networkx>=3.2; extra == "viz"
+Requires-Dist: plotly>=5.20; extra == "viz"
+Provides-Extra: lint
+Requires-Dist: ruff>=0.6.0; extra == "lint"
+Requires-Dist: mypy>=1.10; extra == "lint"

@@ -1,0 +1,46 @@
+# Manuscript configuration for the Policy Entanglement in Active Inference
+# project. Consumed by `infrastructure/core/config_loader.py` and the
+# pipeline rendering / publication tooling.
+
+paper:
+  title: "Policy Entanglement in Active Inference"
+  subtitle: "A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles, with Information-Geometric, Spectral, and Lean-Formalization Treatments"
+  version: "0.1"
+  date: ""
+
+authors:
+  - name: "Daniel Ari Friedman"
+    orcid: "0000-0001-6232-9096"
+    email: "daniel@activeinference.institute"
+    affiliation: "Active Inference Institute"
+    corresponding: true
+
+publication:
+  doi: ""
+  journal: ""
+  year: "2026"
+
+keywords:
+  - "active inference"
+  - "free energy principle"
+  - "policy inference"
+  - "mean-field"
+  - "total correlation"
+  - "information geometry"
+  - "Schmidt rank"
+  - "tensor networks"
+  - "sophisticated inference"
+  - "Lean theorem proving"
+  - "formal verification"
+
+metadata:
+  license: "CC-BY-4.0"
+  language: "en"
+
+llm:
+  reviews:
+    enabled: false
+    types: []
+  translations:
+    enabled: false
+    languages: []

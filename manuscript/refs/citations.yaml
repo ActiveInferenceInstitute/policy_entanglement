@@ -1,0 +1,378 @@
+# citations.yaml — single source of truth for every citation key.
+#
+# Body sections cite work via `[@citekey]` (Pandoc-style); the injector
+# rewrites these to author-year form for the rendered Markdown and
+# auto-generates the bibliography section from the same data.
+#
+# Keys follow the convention `lastname-yyyy` (lowercased).  When two
+# entries collide, append `-a`, `-b`, …  (e.g. `friston-2024-a`).
+#
+# Schema per entry:
+#   authors:    str      — comma-joined author list
+#   year:       int      — publication year
+#   title:      str
+#   venue:      str      — journal / conference / book
+#   volume:     str      — optional
+#   pages:      str      — optional
+#   doi:        str      — optional
+#   url:        str      — optional
+#   note:       str      — optional editorial note (renders as italics)
+#   topic:      str      — bibliography category (used for grouping)
+
+amari-2016:
+  authors: "Amari, S."
+  year: 2016
+  title: "Information Geometry and Its Applications"
+  venue: "Springer"
+  topic: information_geometry
+
+amari-nagaoka-2000:
+  authors: "Amari, S., Nagaoka, H."
+  year: 2000
+  title: "Methods of Information Geometry"
+  venue: "American Mathematical Society"
+  topic: information_geometry
+
+adams-2013:
+  authors: "Adams, R. A., Stephan, K. E., Brown, H. R., Frith, C. D., Friston, K. J."
+  year: 2013
+  title: "The computational anatomy of psychosis"
+  venue: "Frontiers in Psychiatry"
+  volume: "4"
+  pages: "47"
+  topic: comp_psychiatry
+
+bradbury-2018:
+  authors: "Bradbury, J., Frostig, R., Hawkins, P., Johnson, M. J., Leary, C., Maclaurin, D., Necula, G., Paszke, A., VanderPlas, J., Wanderman-Milne, S., Zhang, Q."
+  year: 2018
+  title: "JAX: composable transformations of Python+NumPy programs"
+  venue: "http://github.com/google/jax"
+  note: "JAX backend underlies pymdp 1.0.1 and the simulation harness."
+  topic: software
+
+champion-2022:
+  authors: "Champion, T., Grześ, M., Bowman, H."
+  year: 2022
+  title: "Multi-Modal and Multi-Factor Branching Time Active Inference"
+  venue: "arXiv:2206.12503"
+  topic: branching_time
+
+dacosta-2020:
+  authors: "Da Costa, L., Parr, T., Sajid, N., Veselic, S., Neacsu, V., Friston, K."
+  year: 2020
+  title: "Active inference on discrete state-spaces"
+  venue: "Journal of Mathematical Psychology"
+  volume: "99"
+  pages: "102447"
+  topic: active_inference
+
+demoura-ullrich-2021:
+  authors: "de Moura, L., Ullrich, S."
+  year: 2021
+  title: "The Lean 4 theorem prover and programming language"
+  venue: "CADE-28"
+  pages: "625–635"
+  topic: formalisation
+
+doll-2015:
+  authors: "Doll, B. B., Duncan, K. D., Simon, D. A., Shohamy, D., Daw, N. D."
+  year: 2015
+  title: "Model-based choices involve prospective neural activity"
+  venue: "Nature Neuroscience"
+  volume: "18"
+  pages: "767–772"
+  topic: hierarchical_rl
+
+eisert-2010:
+  authors: "Eisert, J., Cramer, M., Plenio, M. B."
+  year: 2010
+  title: "Area laws for the entanglement entropy"
+  venue: "Reviews of Modern Physics"
+  volume: "82"
+  pages: "277–306"
+  topic: tensor_networks
+
+friston-2010:
+  authors: "Friston, K."
+  year: 2010
+  title: "The free-energy principle: a unified brain theory?"
+  venue: "Nature Reviews Neuroscience"
+  volume: "11"
+  pages: "127–138"
+  topic: active_inference
+
+friston-2014:
+  authors: "Friston, K., Schwartenbeck, P., FitzGerald, T., Moutoussis, M., Behrens, T., Dolan, R."
+  year: 2014
+  title: "The anatomy of choice: dopamine and decision-making"
+  venue: "Philosophical Transactions of the Royal Society B"
+  volume: "369"
+  topic: active_inference
+
+friston-2017:
+  authors: "Friston, K., FitzGerald, T., Rigoli, F., Schwartenbeck, P., Pezzulo, G."
+  year: 2017
+  title: "Active inference: a process theory"
+  venue: "Neural Computation"
+  volume: "29"
+  pages: "1–49"
+  topic: active_inference
+
+friston-2019:
+  authors: "Friston, K."
+  year: 2019
+  title: "A free energy principle for a particular physics"
+  venue: "arXiv:1906.10184"
+  topic: active_inference
+
+friston-2021:
+  authors: "Friston, K., Da Costa, L., Hafner, D., Hesp, C., Parr, T."
+  year: 2021
+  title: "Sophisticated Inference"
+  venue: "Neural Computation"
+  volume: "33"
+  pages: "713–763"
+  topic: active_inference
+
+friston-2024:
+  authors: "Friston, K., Heins, C., Verbelen, T., Da Costa, L., Salvatori, T., Markovic, D., et al."
+  year: 2024
+  title: "From pixels to planning: scale-free active inference"
+  venue: "Frontiers in Network Physiology"
+  topic: active_inference
+
+glasser-2019:
+  authors: "Glasser, I., Sweke, R., Pancotti, N., Eisert, J., Cirac, J. I."
+  year: 2019
+  title: "Expressive power of tensor-network factorizations of probabilistic models"
+  venue: "NeurIPS 2019"
+  pages: "1498–1510"
+  topic: tensor_networks
+
+han-2016:
+  authors: "Han, S., Liao, X., Dunson, D. B., Carin, L."
+  year: 2016
+  title: "Variational Gaussian Copula Inference"
+  venue: "AISTATS 2016"
+  pages: "829–838"
+  topic: variational_copula
+
+han-2018:
+  authors: "Han, Z.-Y., Wang, J., Fan, H., Wang, L., Zhang, P."
+  year: 2018
+  title: "Unsupervised Generative Modeling Using Matrix Product States"
+  venue: "Physical Review X"
+  volume: "8"
+  pages: "031012"
+  topic: tensor_networks
+
+harris-2020:
+  authors: "Harris, C. R., et al."
+  year: 2020
+  title: "Array programming with NumPy"
+  venue: "Nature"
+  volume: "585"
+  pages: "357–362"
+  topic: software
+
+heins-2022:
+  authors: "Heins, C., Millidge, B., Demekas, D., Klein, B., Friston, K., Couzin, I., Tschantz, A."
+  year: 2022
+  title: "pymdp: A Python library for active inference"
+  venue: "Journal of Open Source Software"
+  volume: "7(73)"
+  pages: "4098"
+  url: "https://github.com/infer-actively/pymdp"
+  note: "v1.0.1 JAX-based release is the simulation backend used in §13 and src/simulation/."
+  topic: active_inference
+
+hinton-2002:
+  authors: "Hinton, G."
+  year: 2002
+  title: "Training products of experts by minimizing contrastive divergence"
+  venue: "Neural Computation"
+  volume: "14"
+  pages: "1771–1800"
+  topic: variational_copula
+
+hoffman-blei-2015:
+  authors: "Hoffman, M. D., Blei, D. M."
+  year: 2015
+  title: "Structured stochastic variational inference"
+  venue: "AISTATS 2015"
+  pages: "361–369"
+  topic: variational_copula
+
+hunter-2007:
+  authors: "Hunter, J. D."
+  year: 2007
+  title: "Matplotlib: A 2D graphics environment"
+  venue: "Computing in Science & Engineering"
+  volume: "9(3)"
+  pages: "90–95"
+  topic: software
+
+kappen-2005:
+  authors: "Kappen, H."
+  year: 2005
+  title: "Path integrals and symmetry breaking for optimal control theory"
+  venue: "Journal of Statistical Mechanics"
+  pages: "P11011"
+  topic: kl_control
+
+maisto-2023:
+  authors: "Maisto, D., Friston, K., Pezzulo, G."
+  year: 2023
+  title: "Interactive inference: a multi-agent model of cooperative joint actions"
+  venue: "arXiv:2210.13113"
+  topic: multi_agent
+
+mathlib-2020:
+  authors: "The Mathlib Community"
+  year: 2020
+  title: "The Lean Mathematical Library"
+  venue: "CPP 2020"
+  pages: "367–381"
+  topic: formalisation
+
+naudts-2011:
+  authors: "Naudts, J."
+  year: 2011
+  title: "Generalised Thermostatistics"
+  venue: "Springer"
+  topic: information_geometry
+
+nielsen-2020:
+  authors: "Nielsen, F."
+  year: 2020
+  title: "An elementary introduction to information geometry"
+  venue: "Entropy"
+  volume: "22"
+  pages: "1100"
+  topic: information_geometry
+
+pezzulo-2018:
+  authors: "Pezzulo, G., Rigoli, F., Friston, K. J."
+  year: 2018
+  title: "Hierarchical Active Inference: A Theory of Motivated Control"
+  venue: "Trends in Cognitive Sciences"
+  volume: "22"
+  pages: "294–309"
+  topic: active_inference
+
+schwartenbeck-2015:
+  authors: "Schwartenbeck, P., FitzGerald, T. H. B., Mathys, C., Dolan, R., Friston, K."
+  year: 2015
+  title: "The dopaminergic midbrain encodes the expected certainty about desired outcomes"
+  venue: "Cerebral Cortex"
+  volume: "25"
+  pages: "3434–3445"
+  topic: active_inference
+
+schwartenbeck-friston-2016:
+  authors: "Schwartenbeck, P., Friston, K."
+  year: 2016
+  title: "Computational phenotyping in psychiatry: a worked example"
+  venue: "eNeuro"
+  volume: "3(4)"
+  topic: comp_psychiatry
+
+smith-2022:
+  authors: "Smith, R., Friston, K. J., Whyte, C. J."
+  year: 2022
+  title: "A step-by-step tutorial on active inference and its application to empirical data"
+  venue: "Journal of Mathematical Psychology"
+  volume: "107"
+  pages: "102632"
+  topic: active_inference
+
+sutton-1999:
+  authors: "Sutton, R., Precup, D., Singh, S."
+  year: 1999
+  title: "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning"
+  venue: "Artificial Intelligence"
+  volume: "112"
+  pages: "181–211"
+  topic: hierarchical_rl
+
+theodorou-todorov-2012:
+  authors: "Theodorou, E., Todorov, E."
+  year: 2012
+  title: "Relative entropy and free energy dualities"
+  venue: "IEEE CDC 2012"
+  pages: "1382–1389"
+  topic: kl_control
+
+tononi-2008:
+  authors: "Tononi, G."
+  year: 2008
+  title: "Consciousness as integrated information: a provisional manifesto"
+  venue: "The Biological Bulletin"
+  volume: "215"
+  pages: "216–242"
+  topic: consciousness
+
+tran-2015:
+  authors: "Tran, D., Blei, D. M., Airoldi, E. M."
+  year: 2015
+  title: "Copula variational inference"
+  venue: "NeurIPS 2015"
+  pages: "3564–3572"
+  topic: variational_copula
+
+vandelaar-devries-2017:
+  authors: "van de Laar, T., de Vries, B."
+  year: 2017
+  title: "A Factor Graph Description of Deep Temporal Active Inference"
+  venue: "Frontiers in Computational Neuroscience"
+  volume: "11"
+  pages: "88"
+  topic: active_inference
+
+verstraete-2008:
+  authors: "Verstraete, F., Cirac, J. I., Murg, V."
+  year: 2008
+  title: "Matrix product states, projected entangled pair states, and variational renormalization group methods"
+  venue: "Advances in Physics"
+  volume: "57"
+  pages: "143–224"
+  topic: tensor_networks
+
+virtanen-2020:
+  authors: "Virtanen, P., et al."
+  year: 2020
+  title: "SciPy 1.0: fundamental algorithms for scientific computing in Python"
+  venue: "Nature Methods"
+  volume: "17"
+  pages: "261–272"
+  topic: software
+
+# Topic ordering used by the bibliography auto-renderer.  Topics not
+# listed here fall through to the bottom in alphabetical order.
+topic_order:
+  - active_inference
+  - branching_time
+  - information_geometry
+  - variational_copula
+  - tensor_networks
+  - kl_control
+  - hierarchical_rl
+  - comp_psychiatry
+  - consciousness
+  - multi_agent
+  - formalisation
+  - software
+
+topic_titles:
+  active_inference: "Active inference and the free-energy principle"
+  branching_time: "Branching-time and structured AIF"
+  information_geometry: "Information geometry"
+  variational_copula: "Variational and copula inference"
+  tensor_networks: "Tensor networks and quantum-inspired ML"
+  kl_control: "KL / path-integral control duality"
+  hierarchical_rl: "Hierarchical RL / options"
+  comp_psychiatry: "Computational psychiatry"
+  consciousness: "Integrated information / consciousness"
+  multi_agent: "Multi-agent / interactive inference"
+  formalisation: "Lean / formalisation"
+  software: "Software dependencies (companion code)"

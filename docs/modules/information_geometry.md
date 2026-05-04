@@ -1,0 +1,115 @@
+# Information geometry of the entanglement manifold
+
+How the framework lives on a *dually-flat statistical manifold* in the
+sense of Amari [2000, 2016].  Manuscript section:
+[`../manuscript/06_information_geometry.md`](../../manuscript/06_information_geometry.md).
+
+## Setup
+
+* Let $\mathcal{M}$ be the manifold of all (strictly positive) joint
+  distributions on the finite policy space $\Pi$.
+* Let $\mathcal{M}_{\mathrm{MF}} \subset \mathcal{M}$ be the
+  *mean-field submanifold* — joints that factorise as
+  $q(\pi) = \prod_k q^k(\pi^k)$.
+* Two dual coordinate systems: **e-coordinates**
+  ($\theta = \log q$) and **m-coordinates**
+  ($\eta = \mathbb{E}_q[\cdot]$).
+
+## Five structural facts
+
+### 1. Mean-field submanifold is e-flat (Prop 6.1)
+
+The set of MF distributions is closed under exponential mixtures: log
+of a convex combination of MF distributions, plus a normalising
+constant, is again MF.
+
+* Lean: `mfSubmanifold_eFlat` (sketch).
+* Python: implicit (predicate `is_mean_field`).
+
+### 2. m-projection minimises KL (Prop 6.2)
+
+For any joint `q`, the closest mean-field is the product of its
+marginals:
+
+$$
+\prod_{k=1}^{K} q^k \;=\; \arg\min_{p \in \mathcal{M}_{\mathrm{MF}}}\, D_{\mathrm{KL}}(q \,\|\, p).
+$$
+
+* Lean: `mProjection_minimises_kl` (boundary; Mathlib supplies
+  `kl_div_nonneg` + log-product expansion).
+* Python: `m_projection_minimises_kl(q, candidate_marginals)` — tested
+  against random Dirichlet samples.
+
+### 3. Total correlation = KL to m-projection (Prop 6.3)
+
+$$
+I(q) \;=\; D_{\mathrm{KL}}\!\left(q \,\big\|\, \prod_{k=1}^{K} q^k\right).
+$$
+
+This re-expresses total correlation as the KL distance from `q` to
+its m-projection — a *non-negativity* witness for `I(q)`.
+
+* Lean: `totalCorrelation_eq_kl_to_mprojection` (boundary).
+* Python: `total_correlation_via_kl(q)` — tested to match
+  `total_correlation(q)` to floating tolerance.
+
+### 4. {q_λ} is an exponential geodesic (Theorem 6.4)
+
+The family of λ-entangled posteriors traces an *e-geodesic* through
+the manifold: log-probabilities are affine in λ for each fixed π
+(up to the normaliser):
+
+$$
+\log q_\lambda(\pi) \;=\; a(\pi) + b(\pi)\cdot\lambda - \log Z(\lambda),
+$$
+
+with $a(\pi) = \log E(\pi)$ and $b(\pi) = J(\pi) - \gamma\,K_c(\pi)$.
+
+* Lean: `entangledFamily_eGeodesic` (proved structurally from
+  `entangledPosterior_logWeight_affine_in_lambda`).
+* Python: `is_e_geodesic(J, K_c, γ, π_index, lams)` — tested at every
+  vertex of the K=2 Ising joint.
+
+### 5. Pythagorean theorem (Prop 6.5)
+
+For any joint `q` and any mean-field reference `q_0`:
+
+$$
+D_{\mathrm{KL}}(q \,\|\, q_0) \;=\; I(q) \;+\; D_{\mathrm{KL}}\!\left(\prod_k q^k \,\big\|\, q_0\right).
+$$
+
+The "departure from MF" splits cleanly into a *non-MF* component
+(`I(q)`, residual entanglement) and an *MF-to-MF* component (KL
+between marginal products).
+
+* Lean: `dualFlat_pythagorean_sketch` (statement only).
+* Python: `pythagorean_residual(q, mf_reference)` — tested to be
+  ≈ 0 for random Dirichlet joints.
+
+## Revertibility
+
+Any joint can be *reverted* to its mean-field representation by
+m-projection.  This is the central philosophical commitment of the
+framework: coupling is never structural, always parametric.
+
+* Lean: `revertibility q := ⟨q.marginals, rfl⟩` — constructively
+  delivered.
+* Python: `revertibility(q)` returns `m_projection(q)`.
+
+## Why this matters
+
+The dual-flat picture is the *right* place to think about the
+mean-field deformation.  In particular:
+
+* The λ-deformation is a **straight line in e-coordinates**, so we
+  inherit clean convexity / convergence guarantees.
+* The Pythagorean identity decomposes the deviation cleanly into
+  meaningful pieces (TC and MF-to-MF KL).
+* m-projection gives a unique, differentiable retraction to the MF
+  submanifold — important for ablation / safety arguments.
+
+## Where to look
+
+* Lean: [`Geometry.lean`](../../lean/ActinfPolicyEntanglement/Geometry.lean).
+* Python: [`geometry.py`](../../src/lean/geometry.py).
+* Tests: [`test_geometry.py`](../../tests/test_geometry.py).

@@ -1,0 +1,136 @@
+# Active Inference Policy Entanglement project
+# Two-track project: Lean 4 boundary fragment under lean/ and a Python
+# numeric companion under src/ / tests/ / scripts/ that implements the
+# manuscript's mathematics with NumPy/SciPy plus a pymdp 1.0.1 POMDP
+# simulation harness for the coupled-policy ensembles.
+#
+# Environment is managed by `uv`.  Common workflows:
+#   uv sync                              # core + dev + viz groups
+#   uv sync --group sim                  # adds pymdp 1.0.1
+#   uv sync --group sim --group viz      # everything
+#   uv run pytest tests/                 # ≥90% coverage on src/
+#   uv run python scripts/run_all.py     # full reproducibility chain
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "actinf_policy_entanglement_lean"
+version = "0.2.0"
+description = "Tunable mean-field deformation framework for multi-stream policy ensembles in active inference (Lean 4 + Python companion + pymdp POMDP harness)."
+authors = [
+    {name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"},
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+    "pyyaml>=6.0",  # used by src/manuscript/registry.py
+]
+
+[project.optional-dependencies]
+# Kept for `pip install -e .[dev]` consumers; mirrors the dev group.
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+# pymdp 1.0.1 brings the JAX / chex / equinox stack used by
+# src/pomdp_simulation.py to simulate the analytical setting end-to-end.
+sim = [
+    "inferactively-pymdp==1.0.1",
+]
+
+# Visualization extras (heatmaps, dendrograms, network diagrams).
+viz = [
+    "seaborn>=0.13.0",
+    "networkx>=3.2",
+    "plotly>=5.20",
+]
+
+# Static-analysis tooling pinned to versions matching the parent template.
+lint = [
+    "ruff>=0.6.0",
+    "mypy>=1.10",
+]
+
+# uv-native dependency groups (PEP 735 style; consumed by `uv sync --group`).
+[dependency-groups]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+sim = [
+    "inferactively-pymdp==1.0.1",
+]
+viz = [
+    "seaborn>=0.13.0",
+    "networkx>=3.2",
+    "plotly>=5.20",
+]
+lint = [
+    "ruff>=0.6.0",
+    "mypy>=1.10",
+]
+
+[tool.uv]
+default-groups = ["dev", "viz"]
+
+[tool.pytest.ini_options]
+# Each subpackage is added to pythonpath so bare-module imports
+# (`from joint_dist import ...`) keep working alongside the new
+# subpackage-qualified imports (`from simulation.specs import ...`).
+pythonpath = [
+    "src",
+    "src/lean",
+    "src/simulation",
+    "src/visualizations",
+    "src/manuscript",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "requires_pymdp: tests that require the pymdp 1.0.1 sim group",
+    "slow: longer-running integration tests",
+]
+filterwarnings = [
+    # pymdp 1.0.1 + Equinox emit a benign UserWarning on Agent construction.
+    "ignore:A JAX array is being set as static.*:UserWarning",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["tests/*", "*/__init__.py", "*/AGENTS.md"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    # pymdp is an optional dep; the import-guarded branch is covered by
+    # the dedicated test under tests/test_pomdp_simulation.py when sim
+    # is installed and gracefully skipped otherwise.
+    "if not _HAS_PYMDP",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true   # pymdp / seaborn / plotly are optional
