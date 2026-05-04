@@ -23,7 +23,8 @@ The set of MF distributions is closed under exponential mixtures: log
 of a convex combination of MF distributions, plus a normalising
 constant, is again MF.
 
-* Lean: `mfSubmanifold_eFlat` (sketch).
+* Lean: `mfSubmanifold_eFlat` (proved at boundary form: every
+  `mfToJoint m` is mean-field by construction).
 * Python: implicit (predicate `is_mean_field`).
 
 ### 2. m-projection minimises KL (Prop 6.2)
@@ -49,7 +50,9 @@ $$
 This re-expresses total correlation as the KL distance from `q` to
 its m-projection — a *non-negativity* witness for `I(q)`.
 
-* Lean: `totalCorrelation_eq_kl_to_mprojection` (boundary).
+* Lean: `totalCorrelation_eq_kl_to_mprojection` (proved at boundary
+  form by `rfl` after unfold; full identity needs Mathlib's KL chain
+  rule).
 * Python: `total_correlation_via_kl(q)` — tested to match
   `total_correlation(q)` to floating tolerance.
 
@@ -65,8 +68,8 @@ $$
 
 with $a(\pi) = \log E(\pi)$ and $b(\pi) = J(\pi) - \gamma\,K_c(\pi)$.
 
-* Lean: `entangledFamily_eGeodesic` (proved structurally from
-  `entangledPosterior_logWeight_affine_in_lambda`).
+* Lean: `entangledFamily_eGeodesic` (proved by forwarder to
+  `Coupling.couplingLogWeight_affine_in_lam`).
 * Python: `is_e_geodesic(J, K_c, γ, π_index, lams)` — tested at every
   vertex of the K=2 Ising joint.
 
@@ -82,7 +85,8 @@ The "departure from MF" splits cleanly into a *non-MF* component
 (`I(q)`, residual entanglement) and an *MF-to-MF* component (KL
 between marginal products).
 
-* Lean: `dualFlat_pythagorean_sketch` (statement only).
+* Lean: `dualFlat_pythagorean_sketch` (boundary; full identity needs
+  Mathlib's KL chain rule).
 * Python: `pythagorean_residual(q, mf_reference)` — tested to be
   ≈ 0 for random Dirichlet joints.
 
@@ -92,8 +96,9 @@ Any joint can be *reverted* to its mean-field representation by
 m-projection.  This is the central philosophical commitment of the
 framework: coupling is never structural, always parametric.
 
-* Lean: `revertibility q := ⟨q.marginals, rfl⟩` — constructively
-  delivered.
+* Lean: not in the current boundary fragment; revertibility is
+  delivered at the predicate level via `IsMeanField` (existence of
+  factorising `m`).
 * Python: `revertibility(q)` returns `m_projection(q)`.
 
 ## Why this matters

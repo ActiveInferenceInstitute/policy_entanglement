@@ -30,11 +30,15 @@ $$
 \mathrm{tax}(\lambda) \;=\; D_{\mathrm{KL}}(q_\lambda \,\|\, q_{\mathrm{pinned}}).
 $$
 
-* Lean: `couplingTax q E G J K_c γ λ mode`.
+* Lean: `couplingTax (taxFunction : Float → Float) (lam : Float)`
+  — boundary form parameterised by an abstract `taxFunction`; the
+  numerical content lives on the Python side.
 * Python: `coupling_tax(mf, G, J, K_c, γ, λ, modes)`.
 
 For purely reflexive (`mode ≡ VFE`) or purely planning ensembles, the
-tax is identically 0 (Reductions A and B in `Heterogeneous.lean`).
+tax is identically 0 (the boundary lemmas in `Constructive.lean`
+discharge `taxFunction 0.0 - taxFunction 0.0 = 0.0`-shape equalities
+by `rfl`).
 
 ## Theorem 8.1 — O(λ²) bound
 

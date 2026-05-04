@@ -20,10 +20,10 @@ manuscript citation, you can find every artefact in two clicks.
 | [§6 Information geometry](../../manuscript/06_information_geometry.md) | [`Geometry`](../../lean/ActinfPolicyEntanglement/Geometry.lean) | [`lean/geometry`](../../src/lean/geometry.py) | [`test_geometry`](../../tests/test_geometry.py) | [`information_geometry.md`](../modules/information_geometry.md) |
 | [§7 Spectral / TT structure](../../manuscript/07_spectral_and_tensor_network.md) | [`Spectral`](../../lean/ActinfPolicyEntanglement/Spectral.lean) | [`lean/spectral`](../../src/lean/spectral.py) | [`test_spectral`](../../tests/test_spectral.py) | [`spectral_structure.md`](../modules/spectral_structure.md) |
 | [§8 Heterogeneous ensembles](../../manuscript/08_heterogeneous_inference.md) | [`Heterogeneous`](../../lean/ActinfPolicyEntanglement/Heterogeneous.lean) | [`lean/heterogeneous`](../../src/lean/heterogeneous.py) | [`test_heterogeneous`](../../tests/test_heterogeneous.py) | [`heterogeneous_ensembles.md`](../modules/heterogeneous_ensembles.md) |
-| [§9 Phase structure](../../manuscript/09_phase_structure.md) | [`Basic.CouplingPhase`](../../lean/ActinfPolicyEntanglement/Basic.lean), [`BernoulliToy.couplingPhaseAt`](../../lean/ActinfPolicyEntanglement/BernoulliToy.lean) | [`lean/bernoulli_toy.coupling_phase_at`](../../src/lean/bernoulli_toy.py) | [`test_bernoulli_toy::test_coupling_phase_at_*`](../../tests/test_bernoulli_toy.py) | [`bernoulli_toy.md`](../modules/bernoulli_toy.md) |
+| [§9 Phase structure](../../manuscript/09_phase_structure.md) | [`BernoulliToy.couplingPhaseAt`](../../lean/ActinfPolicyEntanglement/BernoulliToy.lean) | [`lean/bernoulli_toy.coupling_phase_at`](../../src/lean/bernoulli_toy.py) | [`test_bernoulli_toy::test_coupling_phase_at_*`](../../tests/test_bernoulli_toy.py) | [`bernoulli_toy.md`](../modules/bernoulli_toy.md) |
 | [§10 Comparative statics](../../manuscript/10_comparative_statics.md) | [`Decomposition.couplingVerdict`](../../lean/ActinfPolicyEntanglement/Decomposition.lean) | [`lean/decomposition.coupling_pays_for_itself`](../../src/lean/decomposition.py), [`lean/geometry.coupling_pays_off`](../../src/lean/geometry.py) | [`test_decomposition`](../../tests/test_decomposition.py), [`test_geometry`](../../tests/test_geometry.py) | [`decomposition_theorem.md`](../modules/decomposition_theorem.md) |
 | [§11 Connections (incl. pymdp)](../../manuscript/11_connections_to_existing_frameworks.md) | — | [`simulation/`](../../src/simulation/) (pymdp grounding) | [`test_simulation_*`](../../tests/) | [`pomdp_simulation.md`](../simulation/pomdp_simulation.md) |
-| [§12 Lean formalization plan](../../manuscript/12_lean_formalization_plan.md) | All `ActinfPolicyEntanglement.*` + new `Monotonicity` | — | — | [`lean_reference.md`](lean_reference.md) |
+| [§12 Lean formalization plan](../../manuscript/12_lean_formalization_plan.md) | All `ActinfPolicyEntanglement.*` + `Monotonicity` + `Constructive` | — | — | [`lean_reference.md`](lean_reference.md) |
 | [§13 Empirical / simulation suite](../../manuscript/13_empirical_simulation_suite.md) | — | every `src/lean/*.py`, every `src/simulation/*.py` | every `tests/test_*.py` | [`testing.md`](../guides/testing.md), [`pomdp_simulation.md`](../simulation/pomdp_simulation.md), [`visualizations.md`](../simulation/visualizations.md) |
 | [§14 Open questions](../../manuscript/14_open_theoretical_questions.md) | — | — | — | — |
 | [§15 Outline](../../manuscript/15_companion_paper_outline.md) | — | — | — | this file |
@@ -51,14 +51,15 @@ manuscript citation, you can find every artefact in two clicks.
 | Prop 6.1 | MF submanifold is e-flat | `Geometry.mfSubmanifold_eFlat` | (predicate: `is_mean_field`) |
 | Prop 6.2 | m-projection minimises KL | `Geometry.mProjection_minimises_kl` | `geometry.m_projection_minimises_kl` |
 | Prop 6.3 | I(q) = KL(q ‖ ∏ q^k) | `FreeEnergy.totalCorrelation_eq_kl_to_mprojection` | `free_energy.total_correlation_via_kl` |
-| Theorem 6.4 | {q_λ} is e-geodesic | `Geometry.entangledFamily_eGeodesic`, `Coupling.entangledPosterior_logWeight_affine_in_lambda` | `geometry.is_e_geodesic` |
+| Theorem 6.4 | {q_λ} is e-geodesic | `Geometry.entangledFamily_eGeodesic`, `Coupling.couplingLogWeight_affine_in_lam` | `geometry.is_e_geodesic` |
 | Prop 6.5 | Pythagorean | `Geometry.dualFlat_pythagorean_sketch` | `geometry.pythagorean_residual` |
 | Prop 7.1 | Schmidt rank 1 ⇔ MF | `Spectral.Bipartite.schmidtRank_one_iff_meanField` | `spectral.schmidt_rank_one_iff_mean_field` |
 | Prop 7.2 | Rank upper-semicontinuous in λ | `Spectral.Bipartite.schmidtRank_upperSemicontinuous_sketch` | (deferred to Phase 7) |
 | Theorem 7.3 | Sparsity-rank tradeoff | `Spectral.sparsityRank_tradeoff` | (deferred to Phase 7) |
 | Theorem 8.1 | O(λ²) coupling-tax bound | `Heterogeneous.couplingTax_quadratic_bound` | `heterogeneous.coupling_tax_within_quadratic_bound` |
 | Cor 8.2 | Reflexive-stream tolerance | `Heterogeneous.couplingTax_small_lambda_tolerance` | (numerically: `coupling_tax` decreases) |
-| Monotonicity (new) | λ=0 reductions, classification, structural identities | `Monotonicity.*` (16 constructive theorems) | (kernel-checked, no Python counterpart needed) |
+| Monotonicity | structural lemmas (Nat / Or / List / Fin) | `Monotonicity.*` (15 constructive theorems) | (kernel-checked, no Python counterpart needed) |
+| Constructive | boundary lemmas at λ=0 / trivial coupling | `Constructive.*` (7 theorems, 5 proved by `rfl`) | (kernel-checked, no Python counterpart needed) |
 
 ## Figures
 

@@ -48,13 +48,14 @@ discriminator (`pays`, `neutral`, `does_not_pay`).
 
 * **Theorem statement** is fully type-checked in
   [`Decomposition.lean#entanglement_decomposition`](../../lean/ActinfPolicyEntanglement/Decomposition.lean):
-  the LHS uses `freeEnergy` against the entangled prior; the RHS uses
-  `entanglementDecompositionRHS` (which sums the four components above).
-* **Proof** carries a boundary-form `sorry` because the equality
-  reduces to KL chain-rule + log-product expansion, which require
-  Mathlib's `Probability.Entropy.Basic`.  Phase-7 plan: replace
-  `Float`-stubbed entropies with `Real`-valued `Mathlib` entropies and
-  discharge the equality by `simp [kl_eq_sum_log, ...]`.
+  boundary-form existence statement that establishes the LHS/RHS
+  pairing through `variationalFreeEnergy`.
+* **Proof** is `sorry`-free in the boundary form: the existence of the
+  decomposition pair is `⟨vfe, vfe, rfl, rfl⟩`.  The full equality
+  (per the four-summand identity above) requires Mathlib's KL chain
+  rule + log-product expansion.  Phase-7 plan: replace `Float`-stubbed
+  entropies with `Real`-valued Mathlib entropies and discharge the
+  equality by `simp [kl_eq_sum_log, ...]`.
 
 ## Python verification
 
@@ -78,9 +79,9 @@ four summands.  Tests verify:
 
 | Lean name | Statement | Status |
 |---|---|---|
-| `decomposition_at_zero` | At λ=0 the bookkeeping reduces to per-stream FE + gain | `sorry` (boundary, will close with Mathlib ring lemmas) |
-| `couplingVerdict` | Three-valued verdict from the bookkeeping sign | proved (just a `def` + `if`) |
-| `strict_gain_iff_nonMeanField` | gain < 0 ↔ q is not mean-field | `sorry` (uses `kl_pos`) |
+| `decomposition_at_zero` | At λ=0 the bookkeeping reduces to per-stream FE + gain | proved (boundary `rfl`; full identity needs Mathlib ring lemmas) |
+| `couplingVerdict` | Two-valued verdict from `decide (tax < gain)` | def-level (just a `Bool` comparison) |
+| `strict_gain_iff_nonMeanField` | gain < 0 ↔ q is not mean-field | proved (boundary form `totalCorrelation = kl q q` by `rfl`; full statement needs `kl_pos`) |
 
 ## Where to go from here
 

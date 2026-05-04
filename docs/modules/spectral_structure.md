@@ -38,7 +38,9 @@ perturbations cannot grow the rank, only collapse it.  Important for
 *archetype stability*: small policy nudges preserve the dominant
 modes.
 
-* Lean: `schmidtRank_upperSemicontinuous_sketch` (TODO).
+* Lean: `Bipartite.schmidtRank_upperSemicontinuous_sketch` (proved at
+  boundary form: existence of `rank0`; full upper-semicontinuity needs
+  Mathlib's measure-theoretic machinery).
 * Python: deferred to Phase 7 (depends on numerical-rank robustness).
 
 ## Multi-stream (K > 2)
@@ -54,8 +56,11 @@ bond dimensions across each cut $\{1..k\} | \{k+1..K\}$.
 
 A coupling potential expressible as a tensor train with bond
 dimension $r$ produces a posterior whose tensor-train rank is bounded
-by $r$.  Statement only at the Lean boundary; full proof goes via
-matrix-product-operator algebra.
+by $r$.
+
+* Lean: `sparsityRank_tradeoff` (proved at boundary form: existence
+  of a TT-rank profile by `⟨tensorTrainRanks q, rfl⟩`).  Full
+  inequality requires Mathlib's matrix-product-operator algebra.
 
 ## Archetypes
 

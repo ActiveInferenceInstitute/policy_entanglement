@@ -9,11 +9,12 @@ lake clean           # purge build artefacts
 lake env pwsh        # interactive Lean session with the package on the path
 ```
 
-Expected output: `Build completed successfully (15 jobs).` plus
-exactly **10 boundary-form `sorry` warnings** — intentional placeholders
+Expected output: `Build completed successfully (16 jobs).` plus
+**14 boundary-form `sorry` warnings** — intentional placeholders
 documented in [`../reference/lean_reference.md`](../reference/lean_reference.md).
-The new constructive `Monotonicity.lean` module adds 16 zero-`sorry`
-structural lemmas alongside the boundary stubs.
+The constructive sub-fragments `Monotonicity.lean` and
+`Constructive.lean` carry only `Float`-arithmetic boundary
+placeholders alongside otherwise-clean structural proofs.
 
 ### Toolchain
 
@@ -56,7 +57,7 @@ uv run pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=90
 ```
 
 Expected output: `340 passed`, ≥ 90 % coverage on `src/`
-(**96.08 %** today across the four subpackages
+(**97.51 %** today across the four subpackages
 `lean/`, `simulation/`, `visualizations/`, `manuscript/`).
 
 ### Running scripts
@@ -65,7 +66,7 @@ Expected output: `340 passed`, ≥ 90 % coverage on `src/`
 uv run python scripts/generate_figures.py            # 21 PNG figures → output/figures/
 uv run python scripts/simulate_pymdp.py              # pymdp harness  → output/figures/, output/simulations/
 uv run python scripts/manuscript_variables.py        # JSON facts     → output/data/
-uv run python scripts/inject_manuscript_variables.py # rendered MDs   → output/manuscript_rendered/
+uv run python scripts/inject_manuscript_variables.py # rendered MDs   → output/manuscript/
 uv run python scripts/validate_outputs.py            # PNG / JSON gate
 uv run python scripts/validate_manuscript.py         # token / link / variable gate
 uv run python scripts/run_all.py                     # full chain in one shot

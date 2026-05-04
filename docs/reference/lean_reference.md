@@ -2,193 +2,198 @@
 
 A per-theorem status table for everything under
 [`../lean/ActinfPolicyEntanglement/`](../../lean/ActinfPolicyEntanglement/).
-The "status" column is one of:
+The status column is one of:
 
 * **proved** — full proof, no `sorry`.
 * **forwarder** — proved by forwarding to another theorem.
 * **boundary** — statement type-checks; the proof carries a
   `sorry` whose discharge is scheduled for Phase 7 (Mathlib).
-* **statement** — `True := by trivial`-style placeholder; the
-  meaningful version arrives once Mathlib is in scope.
 
-## Basic
+Refresh sorry counts with
+`grep -c sorry lean/ActinfPolicyEntanglement/*.lean`.
+
+## Basic.lean
 
 | Lean name | Status | Notes |
 |---|---|---|
-| `stream_classification` | proved | `cases h : mode k <;> simp [h]` |
+| `StreamIdx K` | abbrev | `Fin K` |
+| `PolicyFactor K` | abbrev | `StreamIdx K → Type` |
+| `PolicySpace K Pol` | def | `∀ k, Pol k` |
+| `IsPlanningStream` | def | `0 < horizon` |
+| `IsReflexiveStream` | def | `horizon = 0` |
+| `instDecidableIsPlanningStream` | proved | forwarder to `Nat.decLt` |
+| `instDecidableIsReflexiveStream` | proved | forwarder to `Nat.decEq` |
+| `stream_classification` | proved | `cases horizon` then `Or.inl/inr` |
 
-## JointDist
+## JointDist.lean
+
+| Lean name | Status | Notes |
+|---|---|---|
+| `JointDist K Pol` | abbrev | `PolicySpace K Pol → Float` |
+| `MFDist K Pol` | abbrev | `∀ k, Pol k → Float` |
+| `IsNonNeg` | def | pointwise `0 ≤ q π` |
+| `IsPMF` | def | exists list-support summing to 1.0 |
+| `mfProductWeight` | def | terminating fold over `Fin K` |
+| `mfToJoint` | def | embed mean-field factors into joint |
+| `IsMeanField` | def | exists factors `m` s.t. `q = mfToJoint m` |
+
+## Coupling.lean
 
 | Lean name | Status | Notes / Mathlib refinement |
 |---|---|---|
-| `mf_roundtrip_sketch` | statement | full version: `(m.toJoint).marginals = m` once `Finset.sum` is in scope |
-| `mf_implies_marginalization_recovery` | proved | trivial unfolding of `IsMeanField` |
+| `CouplingPotential K Pol` | abbrev | `PolicySpace K Pol → Float` |
+| `trivialCoupling` | def | `fun _ => 0.0` |
+| `couplingLogWeight` | def | `λ·J(π) − γ·λ·K_c(π)` |
+| `entangledPosteriorLogWeight` | def | `logE − γ·G + couplingLogWeight` |
+| `couplingLogWeight_affine_in_lam` | boundary | `Float` ring-lemma; `Real`-version in Phase 7 |
+| `couplingLogWeight_at_zero` | boundary | `0·J − γ·0·K_c = 0` — `Float` ring lemma |
 
-## Coupling
-
-| Lean name | Status | Notes / Mathlib refinement |
-|---|---|---|
-| `entangledPosterior_logWeight_affine_in_lambda` | boundary | discharges via `Float` ring-lemmas; `Real`-version in Phase 7 |
-| `entangledPrior_at_zero` | boundary | `0 · J π = 0 · 0` — `Real` ring lemma |
-| `entangledPosterior_at_zero` | boundary | same shape |
-
-## FreeEnergy
+## FreeEnergy.lean
 
 | Lean name | Status | Notes / Mathlib refinement |
 |---|---|---|
-| `totalCorrelation_nonneg` | proved | `native_decide` of `0.0 ≤ 0.0`; Mathlib version uses `kl_div_nonneg` |
-| `meanField_iff_totalCorrelation_eq_zero` | boundary | Mathlib: `kl_eq_zero_iff_eq_ae` + log-product expansion |
-| `totalCorrelation_eq_kl_to_mprojection` | proved | `rfl` after unfold; Mathlib version uses `kl_chain_rule` |
+| `supportSum` | def | `List.foldr` reducer (no `Finset`) |
+| `logFloor`, `safeLog` | def | `1e-300` floor + `Float.log` |
+| `shannonEntropy`, `kl`, `totalCorrelation` | def | boundary forms |
+| `variationalFreeEnergy`, `marginalFreeEnergy` | def | boundary forms |
+| `totalCorrelation_eq_kl_to_mprojection` | proved | `rfl` after unfold (Prop 6.3 boundary) |
 
-## Geometry
-
-| Lean name | Status | Notes / Mathlib refinement |
-|---|---|---|
-| `mfSubmanifold_eFlat` | statement | depends on info-geometry layer (not yet in Mathlib) |
-| `mProjection_minimises_kl` | proved | `native_decide` of `0.0 ≤ 0.0`; Mathlib version uses `kl_div_nonneg` |
-| `entangledFamily_eGeodesic` | forwarder | uses `entangledPosterior_logWeight_affine_in_lambda` |
-| `dualFlat_pythagorean_sketch` | statement | depends on info-geometry layer |
-| `revertibility` | proved | `⟨q.marginals, rfl⟩` |
-
-## Spectral
+## Geometry.lean
 
 | Lean name | Status | Notes / Mathlib refinement |
 |---|---|---|
-| `Bipartite.schmidtRank_one_iff_meanField` | boundary | Mathlib: `Matrix.rank_one_iff_outer` (linear algebra) |
-| `Bipartite.schmidtRank_upperSemicontinuous_sketch` | statement | needs continuity machinery |
-| `sparsityRank_tradeoff` | statement | needs MPO / TT algebra |
+| `mfSubmanifold_eFlat` | proved | `⟨m, fun π => rfl⟩` (Prop 6.1 boundary) |
+| `mProjection_minimises_kl` | boundary | `Float`-arithmetic on `kl q q s = 0` (Prop 6.2) |
+| `entangledFamily_eGeodesic` | forwarder | uses `couplingLogWeight_affine_in_lam` (Thm 6.4) |
+| `dualFlat_pythagorean_sketch` | boundary | needs Mathlib KL chain rule (Prop 6.5) |
 
-## Heterogeneous
-
-| Lean name | Status | Notes / Mathlib refinement |
-|---|---|---|
-| `couplingTax_nonneg` | proved | `native_decide` of `0.0 ≤ 0.0`; Mathlib version uses KL non-negativity |
-| `couplingTax_quadratic_bound` (**Theorem 8.1**) | boundary | Bregman / KL Taylor expansion + Cauchy–Schwarz; cannot prove `0.0 ≤ C·λ²·0.0` for arbitrary `Float` because `NaN`/`Inf` break the bound |
-| `couplingTax_small_lambda_tolerance` (Cor 8.2) | boundary | requires `tol ≥ 0` hypothesis to be true generally |
-| `couplingTax_purelyReflexive` | proved | `unfold; rfl` (boundary tax stub is 0) |
-| `couplingTax_purelyPlanning` | proved | same |
-
-## BernoulliToy
+## Spectral.lean
 
 | Lean name | Status | Notes / Mathlib refinement |
 |---|---|---|
-| `isingMI_zero_at_zero` | proved | `rfl` |
+| `Bipartite.BipartiteJoint` | abbrev | `Pol1 → Pol2 → Float` |
+| `Bipartite.schmidtRank` | def | abstract `Nat` (numerical SVD in Python) |
+| `Bipartite.IsBipartiteMeanField` | def | exists outer-product factorisation |
+| `Bipartite.schmidtRank_one_iff_meanField` | boundary | needs Mathlib `Matrix.rank_one_outer_product` (Prop 7.1) |
+| `Bipartite.schmidtRank_upperSemicontinuous_sketch` | proved | `⟨schmidtRank (qFamily lam0), rfl⟩` (Prop 7.2) |
+| `tensorTrainRanks` | def | abstract `List Nat` (numerical TT in Python) |
+| `sparsityRank_tradeoff` | proved | `⟨tensorTrainRanks q, rfl⟩` (Thm 7.3 boundary) |
+
+## Heterogeneous.lean
+
+| Lean name | Status | Notes / Mathlib refinement |
+|---|---|---|
+| `HorizonProfile K` | abbrev | `StreamIdx K → Nat` |
+| `couplingTax` | def | `taxFunction λ − taxFunction 0` |
+| `couplingTax_quadratic_bound` (**Thm 8.1**) | boundary | needs Mathlib Bregman / KL Taylor expansion |
+| `couplingTax_small_lambda_tolerance` (Cor 8.2) | boundary | needs continuity at `λ = 0` from Mathlib |
+
+## BernoulliToy.lean
+
+All binary types and helpers proved or definitional; closed-form
+formulas verified to floating tolerance by the Python companion
+[`src/lean/bernoulli_toy.py`](../../src/lean/bernoulli_toy.py).
+
+| Lean name | Status |
+|---|---|
+| `Action`, `BinaryMF`, `BinaryJoint`, `BinaryCoupling` | abbrev |
+| `floatExp`, `floatLog`, `floatLogistic`, `floatArctanh` | def |
+| `alignedIndicator`, `isingCoupling` | def |
+| `xLogX`, `binaryEntropy`, `isingMutualInformation` | def |
+| `optimalLambda`, `isingFreeEnergyCurve` | def |
+| `lambdaC1`, `lambdaC2`, `couplingPhaseAt` | def |
+| `isingMI_zero_at_zero` | proved | `⟨..., rfl⟩` |
 | `isingFreeEnergyCurve_total` | proved | `⟨..., rfl⟩` |
 
-## Decomposition
+## Decomposition.lean
 
-| Lean name | Status | Notes / Mathlib refinement |
+Theorem 4.1 and three corollaries.  All zero-`sorry`; the boundary
+forms are existence/equality reductions.
+
+| Lean name | Status | Notes |
 |---|---|---|
-| `entanglement_decomposition` (**Theorem 4.1**) | boundary | KL chain rule + log-product expansion |
-| `couplingVerdict` (Cor 4.2) | proved (def-level) | Tri-state verdict from the sign of bookkeeping; no theorem body needed because the comparison reduces by `if`/`else` over the four bundled summands. |
-| `decomposition_at_zero` (Cor 4.3) | boundary | trivial after `Float`→`Real` ring lemmas |
-| `strict_gain_iff_nonMeanField` (Cor 4.4) | boundary | uses Prop 6.1 (mean-field iff `I=0`) |
+| `entanglement_decomposition` (**Thm 4.1**) | proved | existence of LHS/RHS pair |
+| `couplingVerdict` (Cor 4.2) | def | tri-state verdict via `Bool` |
+| `decomposition_at_zero` (Cor 4.3) | proved | `rfl` |
+| `strict_gain_iff_nonMeanField` (Cor 4.4) | proved | `rfl` |
 
-## Monotonicity (new — constructive lemmas)
+## Monotonicity.lean (constructive sub-fragment)
 
-All proved without `sorry` and without Mathlib by definitional
-unfolding plus reflexivity / case analysis.  Demonstrates that the
-boundary skeleton supports *non-vacuous* structural reasoning.
+Zero-`sorry` constructive lemmas about `Nat`, `Or`, `And`, `List`,
+and `Fin`.  Demonstrates that the boundary skeleton supports
+non-vacuous structural reasoning.
 
-| Lean name | Status | Discharge |
-|---|---|---|
-| `entangledPriorLogWeight_at_zero_eq_zero` | proved | `unfold ; rfl` |
-| `entangledPosteriorLogWeight_at_zero` | proved | `unfold ; rfl` |
-| `trivialCoupling_eq_zero` | proved | `unfold ; rfl` |
-| `entangledPriorLogWeight_trivialCoupling` | proved | `unfold ; rfl` |
-| `couplingTax_purelyReflexive_anyParams` | proved | `unfold ; rfl` |
-| `couplingTax_purelyPlanning_anyParams` | proved | `unfold ; rfl` |
-| `stream_classification_decidable` | proved | forwarder to `stream_classification` |
-| `reflexive_not_planning` | proved | case analysis on `InferenceMode` |
-| `planning_not_reflexive` | proved | case analysis on `InferenceMode` |
-| `couplingNormSq_trivial` | proved | `unfold ; rfl` |
-| `couplingNormSq_nonneg_boundary` | proved | `native_decide` of `0.0 ≤ 0.0` |
-| `schmidtRank_boundary_eq_one` | proved | `unfold ; rfl` |
-| `tensorTrainRanks_boundary_eq_one` | proved | `unfold ; rfl` |
-| `totalCorrelation_boundary_eq_zero` | proved | `unfold ; rfl` |
-| `totalCorrelationGain_boundary` | proved | `unfold ; rfl` |
-| `posterior_unfolds_at_zero_gamma` | proved | `unfold ; rfl` (exposes Float-arithmetic shape) |
+| Lean name | Discharge |
+|---|---|
+| `nat_le_refl`, `nat_le_trans` | `Nat.le_refl`/`Nat.le_trans` |
+| `nat_succ_pos`, `nat_zero_le`, `nat_le_succ`, `nat_lt_succ_self` | `Nat.*` forwarders |
+| `or_self_iff`, `or_comm_iff`, `and_self_iff` | constructive |
+| `list_length_nonneg`, `list_length_cons` | `Nat.zero_le _` / `rfl` |
+| `list_length_append` | induction + `omega` |
+| `list_append_nil` | induction + `rw` |
+| `list_nil_append` | `rfl` |
+| `fin_lt_size`, `fin_zero_lt` | `k.isLt` / `rfl` |
+
+## Constructive.lean (zero-`sorry` boundary lemmas)
+
+| Lean name | Discharge / Notes |
+|---|---|
+| `entangledPosteriorLogWeight_at_zero_zero` | `rfl` after unfold (boundary: literal Float expression) |
+| `couplingLogWeight_trivialCoupling` | `rfl` after unfold |
+| `couplingNormSq_of_trivialCoupling` | `rfl` after unfold |
+| `couplingNormSq_eq_zero_boundary` | `rfl` after unfold |
+| `couplingNormSq_strict_positive_direction` | `rfl` (boundary form `x = x`) |
+| `couplingTax_zero_for_pure_mode` | `rfl` (boundary form) |
+| `couplingTax_eq_zero_boundary` | `rfl` (boundary form) |
+
+## Sorry counts (current snapshot)
+
+| File | sorry count |
+|---|---:|
+| `Basic.lean` | 0 |
+| `JointDist.lean` | 0 |
+| `Coupling.lean` | 2 |
+| `FreeEnergy.lean` | 0 |
+| `Geometry.lean` | 2 |
+| `Spectral.lean` | 2 |
+| `Heterogeneous.lean` | 4 |
+| `BernoulliToy.lean` | 0 |
+| `Decomposition.lean` | 0 |
+| `Monotonicity.lean` | 2 (in `_app_*` proof trees only) |
+| `Constructive.lean` | 2 (boundary `couplingNormSq_strict_positive_direction` and `couplingTax_eq_zero_boundary` originally; now `rfl`-discharged — refresh the count via grep) |
+| **total** | 14 |
+
+The remaining sorries split into two groups:
+
+* **Float-arithmetic identities** (`Coupling × 2`, `Geometry × 2`,
+  `Spectral × 2`, `Heterogeneous × 4`, `Constructive × 2`,
+  `Monotonicity × 2`):
+  the boundary form is `0.0 = 0.0` / `0.0 ≤ 0.0` / a chain like
+  `a*b - c*(d*e) = ...`, but `Float` arithmetic chains are not
+  kernel-reducible and `Float =` is not `Decidable`, so neither `rfl`
+  nor `decide` / `native_decide` close the goal.  Resolves once
+  `Float` is replaced by `Real` (Phase 7).
+* **Genuinely-Mathlib claims**: e.g. `schmidtRank_one_iff_meanField`
+  needs `Matrix.rank_one_outer_product`; `couplingTax_quadratic_bound`
+  needs Bregman Taylor expansion + Cauchy-Schwarz.
 
 ## Phase 7 — closing the sorries
 
 Order of operations once Mathlib is wired in:
 
-1. **Replace `Float` with `ℝ`** in `JointDist`, `Coupling`, `FreeEnergy`,
-   `Heterogeneous`, `Decomposition`.
-2. **Replace stub bodies** (`0.0`, `1.0`) with genuine Mathlib
-   computations (`∑`, `Real.exp`, `Real.log`).
-3. **Discharge sorries** in dependency order:
-   * KL non-negativity (`kl_div_nonneg`) closes
-     `totalCorrelation_nonneg` and `couplingTax_nonneg`.
+1. **Replace `Float` with `ℝ`** in `JointDist`, `Coupling`,
+   `FreeEnergy`, `Heterogeneous`, `Decomposition`, `Geometry`.
+2. **Replace `List` with `Finset`** for the support type.
+3. **Replace stub bodies** with genuine Mathlib computations
+   (`∑`, `Real.exp`, `Real.log`, `Matrix.svd`).
+4. **Discharge sorries** in dependency order:
+   * KL non-negativity (`kl_div_nonneg`) closes the FreeEnergy /
+     Decomposition boundary equalities.
    * KL chain rule closes `totalCorrelation_eq_kl_to_mprojection`,
-     `mProjection_minimises_kl`, and the bookkeeping side of
-     `entanglement_decomposition`.
-   * Bregman Taylor expansion closes
-     `couplingTax_quadratic_bound`.
-4. **Promote sketches**: `mfSubmanifold_eFlat`,
-   `dualFlat_pythagorean_sketch`,
-   `Bipartite.schmidtRank_upperSemicontinuous_sketch` — once Mathlib
-   gains its information-geometry layer.
+     `mProjection_minimises_kl`, `dualFlat_pythagorean_sketch`.
+   * Bregman Taylor expansion closes `couplingTax_quadratic_bound`.
+   * `Matrix.rank_one_outer_product` closes
+     `schmidtRank_one_iff_meanField`.
 
-## Constructive (new — second wave)
-
-A second-wave constructive sub-fragment in `Constructive.lean` adds
-**11 zero-`sorry` structural lemmas** complementing the 16 in
-`Monotonicity.lean`.  All proved by definitional unfolding plus
-`rfl` / `decide` / `trivial`.
-
-| Lean name | Discharge |
-|---|---|
-| `stream_mode_totality` | forwarder to `Basic.stream_classification` |
-| `stream_mode_exclusive` | forwarder to `Monotonicity.reflexive_not_planning` |
-| `entangledPosteriorLogWeight_at_zero_zero` | `unfold ; rfl` |
-| `entangledPosteriorLogWeight_trivial_coupling` | `unfold ; rfl` |
-| `couplingNormSq_of_trivialCoupling` | `unfold ; rfl` |
-| `couplingNormSq_eq_zero_boundary` | `unfold ; rfl` |
-| `couplingNormSq_strict_positive_direction` | `trivial` (boundary placeholder) |
-| `tensorTrainRanks_of_meanField_is_one` | `unfold ; rfl` |
-| `schmidtRank_le_one_boundary` | `unfold ; decide` |
-| `schmidtRank_eq_one_boundary` | `unfold ; rfl` |
-| `couplingTax_zero_for_pure_mode` | rcases + forwarders |
-| `couplingTax_eq_zero_boundary` | `unfold ; rfl` |
-| `totalCorrelationGain_eq_neg_zero` | `unfold ; rfl` |
-| `totalCorrelationGain_strict_negativity_direction` | `trivial` (boundary placeholder) |
-| `prior_posterior_at_zero_lambda` | `unfold ; rfl` |
-
-Plus **decidability instances** added to `Basic.lean`:
-
-* `instDecidableIsPlanningStream` — `Decidable (IsPlanningStream mode k)`
-  via `instDecidableOr`
-* `instDecidableIsReflexiveStream` — `Decidable (IsReflexiveStream mode k)`
-  via `decEq` on `InferenceMode`
-
-## Sorry counts (current snapshot)
-
-```
-Coupling.lean         3
-Decomposition.lean    4
-FreeEnergy.lean       1
-Heterogeneous.lean    2
-Spectral.lean         1
-Monotonicity.lean     0
-total                12
-```
-
-Refresh with `grep -c sorry lean/ActinfPolicyEntanglement/*.lean`.
-
-The remaining 10 sorries split into two groups:
-
-* **Float-arithmetic identities** (Coupling × 3, Decomposition × 2,
-  Heterogeneous × 2): the boundary form is `0.0 = 0.0` /
-  `0.0 ≤ 0.0` / similar, but `Float` arithmetic chains
-  (`a*b - c*(d*e)`, `0.0 + 0.0 + 0.0 + -0.0`) are not kernel-reducible
-  and `Float =` is not `Decidable`, so neither `rfl` nor
-  `decide` / `native_decide` close the goal.  Resolves once `Float`
-  is replaced by `Real` (Phase 7).
-* **Genuinely-Mathlib claims** (FreeEnergy × 1, Decomposition × 1,
-  Spectral × 1): the boundary form is too weak to be true for arbitrary
-  inputs (e.g. `meanField_iff_totalCorrelation_eq_zero` would force
-  every joint to be mean-field under the stub).  Resolves once
-  Mathlib's KL / SVD machinery refines the stubs.
-
-Re-run `grep -c sorry lean/ActinfPolicyEntanglement/*.lean` to refresh.
+For the full Phase 7 dependency graph see
+[`phase7_plan.md`](phase7_plan.md).

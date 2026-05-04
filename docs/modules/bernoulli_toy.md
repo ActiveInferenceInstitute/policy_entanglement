@@ -69,8 +69,9 @@ $$
 It is zero at $\Delta = 0$, monotonic in $\Delta$, and diverges as
 $\Delta \to \pm\Delta_{\max}$.
 
-* Lean: `BernoulliToy.optimalLambda` (boundary; `arctanh` will be
-  `Real.arctanh` in Phase 7).
+* Lean: `BernoulliToy.optimalLambda` (def-level; uses
+  `floatArctanh = ½·log((1+x)/(1-x))`, will swap to `Real.arctanh` in
+  Phase 7).
 * Python: `optimal_lambda(δ, δ_max)`.
 
 Figure: [`../output/figures/optimal_lambda.png`](../../output/figures/optimal_lambda.png).

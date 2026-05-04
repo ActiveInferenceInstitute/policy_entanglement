@@ -21,9 +21,9 @@ The reasons:
 
 | Floor | Current | Test count |
 |---|---|---|
-| 90 % (CI gate) | **96.08 %** | **340** |
+| 90 % (CI gate) | **97.51 %** | **340** |
 
-The 1357 statements across the four `src/` subpackages
+The 1653 statements across the four `src/` subpackages
 (`lean/`, `simulation/`, `visualizations/`, `manuscript/`) are
 exercised by the test suite; refresh with:
 
