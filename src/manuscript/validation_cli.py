@@ -39,43 +39,11 @@ from manuscript.validation import (
     validate_rendered_token_leaks,
     variable_provenance_summary,
 )
-from simulation import hyperparameters as H  # noqa: N812 — H = hyperparameters (manuscript convention).
+from manuscript.variable_ranges import ANALYTICAL_VARIABLE_RANGES
+from simulation import hyperparameters as H  # noqa: N812 — manuscript convention
 
 # Numeric-range expectations for `output/data/manuscript_variables.json`.
-EXPECTED_RANGES: dict[str, tuple[float, float]] = {
-    "ising_mi_at_lam_05": (0.0, 0.05),
-    "ising_mi_at_lam_1": (0.05, 0.20),
-    "ising_mi_at_lam_2": (0.20, 0.45),
-    "ising_mi_saturation": (0.69, 0.70),
-    "lambda_star_delta_05": (1.0, 1.2),
-    "lambda_star_delta_09": (2.8, 3.1),
-    "ising_S_E_at_lam_0": (-1e-9, 1e-9),
-    "ising_S_E_at_lam_1": (0.0, 0.5),
-    "ising_S_E_at_lam_3": (0.0, 0.7),
-    "ising_schmidt_rank_at_lam_0": (1.0, 1.0),
-    "ising_schmidt_rank_at_lam_1": (2.0, 2.0),
-    # Alignment + phase thresholds (added in v0.2.1)
-    "ising_alignment_at_lam_05": (0.0, 0.30),
-    "ising_alignment_at_lam_1": (0.40, 0.55),
-    "ising_alignment_at_lam_2": (0.70, 0.80),
-    "ising_alignment_at_lam_3": (0.85, 0.95),
-    "phase_lambda_c1": (0.5, 0.5),
-    "phase_lambda_c2": (2.5, 2.5),
-    # Motor + attention worked numerics
-    "motor_attention_aligned_prob_lam_0": (0.0, 1.0),
-    "motor_attention_aligned_prob_lam_1": (0.0, 1.0),
-    "motor_attention_aligned_prob_lam_2": (0.0, 1.0),
-    # Coupling-tax curvature C estimate
-    "coupling_tax_curvature_C": (0.0, 1.0),
-    # GNN fifth-track round-trip (sourced from the gnn round-trip sidecar).
-    "gnn_roundtrip_max_residual": (0.0, float(H.BERNOULLI_VERIFICATION_TOLERANCE)),
-    "gnn_negative_control_max_residual": (0.1, 0.7),
-    "gnn_round_trip_lambda_points": (
-        float(H.PARAMETER_SWEEP_LAMBDAS.num),
-        float(H.PARAMETER_SWEEP_LAMBDAS.num),
-    ),
-    "gnn_num_streams": (2.0, 2.0),
-}
+EXPECTED_RANGES: dict[str, tuple[float, float]] = ANALYTICAL_VARIABLE_RANGES
 
 
 def build_parser(*, project_root: Path) -> argparse.ArgumentParser:

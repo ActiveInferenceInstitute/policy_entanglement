@@ -3,7 +3,7 @@
   "round": "round-6-thermo-nuclear",
   "created": "2026-05-23",
   "description": "Regression baseline after thermo-nuclear refactor: release gates live in src/manuscript/output_gates/ and registry_facts.py (counted in src/ coverage). Refreshed by `uv run python scripts/regression_gate.py --update-baseline` on green runs.",
-  "test_count_min": 1417,
+  "test_count_min": 1419,
   "test_failed_max": 0,
   "coverage_percent_min": 95.22,
   "invariant_count_min": 47,

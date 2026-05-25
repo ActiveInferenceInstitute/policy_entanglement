@@ -1,33 +1,44 @@
-"""Final coverage push for refactored library modules (95% gate)."""
+"""Domain-scoped coverage meta-tests: orchestration, gates, readiness, cross-refs."""
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
+import stat
 import subprocess
 from pathlib import Path
 
 import pytest
 import yaml
 
-from dashboard_types import dashboard as dash_mod
 from gates import regression_gate as rg
 from lean import mathlib_proofs_gate as mpg
+from lean.build_gate import main as build_gate_main
 from manuscript import readiness as readiness_mod
 from manuscript import theorem_map as tm
 from manuscript.registry import load_registry
-from manuscript.validation_cli import _report_rendered_leaks, _report_status
+from manuscript.validation import ManuscriptValidationReport
+from manuscript.validation_cli import _report_issues, _report_rendered_leaks, _report_status
 from manuscript.validation_cli import main as validation_cli_main
 from orchestration import build_pdf as bp
 from orchestration import run_all as ra
+from orchestration.build_pdf import (
+    _as_mapping,
+    _as_sequence,
+    _extract_latex_preamble,
+    _load_config,
+    _metadata_args,
+    _write_preamble_tex,
+    regenerate_injected_manuscript,
+)
 from orchestration.build_pdf import main as build_pdf_main
+from orchestration.run_all import StageResult, _run_parallel_batch, _run_serial, _spawn
 from orchestration.run_all import main as run_all_main
-from reporting import _interactive_dashboard_local as idash
 
 PROJECT = Path(__file__).resolve().parent.parent.parent
 
 KEYSTONE_BODY = "\n".join(f"theorem {name} : True := trivial" for name in mpg.KEYSTONE_THEOREMS)
-
 
 def _write_fake_lake_script(bin_dir: Path, *, build_rc: int = 0, build_out: str = "OK\n") -> None:
     bin_dir.mkdir(parents=True, exist_ok=True)
@@ -62,6 +73,29 @@ exit 1
     )
     script.chmod(0o755)
 
+PROJECT = Path(__file__).resolve().parent.parent.parent
+
+def _seed_labels_yaml(project_root: Path) -> None:
+    refs = project_root / "manuscript" / "refs"
+    refs.mkdir(parents=True, exist_ok=True)
+    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+
+def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    lake = bindir / "lake"
+    lake.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    lake.chmod(lake.stat().st_mode | stat.S_IXUSR)
+    monkeypatch.setenv("PATH", f"{bindir}{os.pathsep}{os.environ.get('PATH', '')}")
+
+def _seed_boundary_lean(tmp_path: Path, *, body: str) -> None:
+    lean = tmp_path / "lean"
+    pkg = lean / "ActinfPolicyEntanglement"
+    pkg.mkdir(parents=True)
+    (pkg / "Demo.lean").write_text(body, encoding="utf-8")
+    (lean / "ActinfPolicyEntanglement.lean").write_text("import ActinfPolicyEntanglement.Demo\n", encoding="utf-8")
+
+PROJECT = Path(__file__).resolve().parent.parent.parent
 
 def test_regression_gate_write_fresh_test_results_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     cov_path = tmp_path / "output" / "reports" / "coverage.json"
@@ -90,7 +124,6 @@ def test_regression_gate_write_fresh_test_results_stub(tmp_path: Path, monkeypat
     assert test_path.exists()
     assert log_path.exists()
 
-
 def test_regression_gate_write_fresh_test_results_pytest_fail(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     cov_path = tmp_path / "output" / "reports" / "coverage.json"
     test_path = tmp_path / "output" / "reports" / "test_results.json"
@@ -111,7 +144,6 @@ def test_regression_gate_write_fresh_test_results_pytest_fail(tmp_path: Path, mo
     )
     assert report is not None
     assert report["pytest_returncode"] == 1
-
 
 def test_regression_gate_critical_coverage_and_invariants(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert rg._critical_module_coverage_issues(tmp_path / "missing.json") == [
@@ -166,7 +198,6 @@ def test_regression_gate_critical_coverage_and_invariants(tmp_path: Path, monkey
     )
     assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 1
 
-
 def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     reports = tmp_path / "output" / "reports"
@@ -211,7 +242,6 @@ def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pyte
     monkeypatch.setattr(rg, "_lean_budget_snapshot", _bad_jobs)
     assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 1
 
-
 def test_theorem_map_helpers_and_write() -> None:
     refs = PROJECT / "manuscript" / "refs"
     registry = load_registry(refs)
@@ -230,7 +260,6 @@ def test_theorem_map_helpers_and_write() -> None:
     assert "Per-theorem four-track" in md
     out = tm.write(PROJECT)
     assert out.exists()
-
 
 def test_build_pdf_mirror_run_and_main_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     bp._mirror_render_auxiliary_files(source_manuscript=tmp_path / "nope", injected_manuscript=tmp_path / "also_nope")
@@ -269,7 +298,6 @@ def test_build_pdf_mirror_run_and_main_paths(tmp_path: Path, monkeypatch: pytest
     monkeypatch.setattr(bp, "render_combined_pdf", _boom)
     assert build_pdf_main(project_root=tmp_path) == 1
 
-
 def test_run_all_manifest_large_file_and_parallel_stderr(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -292,7 +320,6 @@ def test_run_all_manifest_large_file_and_parallel_stderr(tmp_path: Path, monkeyp
     code = run_all_main(["--no-manifest"], project_root=tmp_path, scripts_dir=scripts)
     assert code == 0
 
-
 def test_run_all_validator_break(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -303,12 +330,10 @@ def test_run_all_validator_break(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
         run_all_main(["--only", "validate_outputs", "--no-manifest"], project_root=tmp_path, scripts_dir=scripts) == 1
     )
 
-
 def test_run_all_build_parser_pdf_mathlib_flags() -> None:
     args = ra.build_parser().parse_args(["--with-pdf", "--with-mathlib", "--only", "build_lean"])
     assert args.with_pdf is True
     assert args.with_mathlib is True
-
 
 def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     counts = readiness_mod._status_counts([" R file", "?? x"])
@@ -351,7 +376,6 @@ def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.Mo
     monkeypatch.setattr(readiness_mod.subprocess, "run", _bad_git)
     assert readiness_mod._git_status_lines(tmp_path) == ["(git status failed: no repo)"]
 
-
 def test_validation_cli_rendered_leaks_and_status(tmp_path: Path) -> None:
     rendered = tmp_path / "output" / "manuscript"
     rendered.mkdir(parents=True)
@@ -363,10 +387,8 @@ def test_validation_cli_rendered_leaks_and_status(tmp_path: Path) -> None:
 
     assert _report_status(PROJECT) >= 0
 
-
 def test_validation_cli_main_on_live_manuscript() -> None:
     assert validation_cli_main([], project_root=PROJECT) in (0, 1)
-
 
 def test_pymdp_pipeline_main_stubbed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     import visualizations.pymdp_figures as pf
@@ -394,7 +416,6 @@ def test_pymdp_pipeline_main_stubbed(monkeypatch: pytest.MonkeyPatch, tmp_path: 
     monkeypatch.setattr(pf, "figure_pymdp_free_energies", lambda: (_path("f1.png"), _path("f2.png")))
     pp.main([])
 
-
 def test_mathlib_proofs_gate_branches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     mathlib_dir = tmp_path / "lean" / "MathlibProofs"
     mathlib_dir.mkdir(parents=True)
@@ -416,7 +437,6 @@ def test_mathlib_proofs_gate_branches(tmp_path: Path, monkeypatch: pytest.Monkey
     src.write_text("theorem streamMarginal_productDist : True := trivial\n", encoding="utf-8")
     assert any("expected keystone" in issue for issue in mpg.axiom_audit(mathlib_dir, src))
 
-
 def test_axiom_audit_subprocess_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     mathlib_dir = tmp_path / "lean" / "MathlibProofs"
     mathlib_dir.mkdir(parents=True)
@@ -428,133 +448,6 @@ def test_axiom_audit_subprocess_failure(tmp_path: Path, monkeypatch: pytest.Monk
 
     monkeypatch.setattr(mpg.subprocess, "run", _bad_lean)
     assert any("failed to run" in issue for issue in mpg.axiom_audit(mathlib_dir, src))
-
-
-def test_interactive_dashboard_local_json_helpers(tmp_path: Path) -> None:
-    assert idash._git_rev(tmp_path / "not_a_git_repo") == "unknown"
-    assert idash._git_dirty(tmp_path / "not_a_git_repo") is False
-
-    class _NumpyLike:
-        __module__ = "numpy.ndarray"
-
-        def tolist(self) -> list[int]:
-            return [1, 2]
-
-    assert idash._to_jsonable(_NumpyLike()) == [1, 2]
-
-    class _Scalar:
-        __module__ = "numpy.float64"
-
-        def item(self) -> float:
-            return 3.5
-
-    assert idash._to_jsonable(_Scalar()) == pytest.approx(3.5)
-    assert idash._to_jsonable(float("inf")) is None
-    assert idash._to_jsonable({Path("/a"): 1}) == {"/a": 1}
-
-
-def test_interactive_dashboard_local_full_render_bundle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(idash, "_git_rev", lambda repo_root=None: "abc123")
-    monkeypatch.setattr(idash, "_git_dirty", lambda repo_root=None: True)
-
-    dash = idash.InteractiveDashboard(
-        title="Local dashboard",
-        subtitle="fallback renderer",
-        project_name="actinf",
-        repo_root=tmp_path,
-    )
-    dash.set_payload({"path": tmp_path / "source", "nan": float("nan"), "items": {2, 1}})
-    dash.set_hyperparameters({"long": list(range(8)), "short": [1, 2]})
-    dash.set_meta(answer=Path("meta.json"), value=float("-inf"))
-    dash.add_dropdown(
-        "choice",
-        "Choice",
-        options=[1, "two"],
-        default="two",
-        option_labels=["one", "two"],
-        description="select one",
-    )
-    dash.add_toggle("flag", "Flag", default=True, description="binary switch")
-    dash.add_panel(
-        idash.Panel(
-            panel_id="p",
-            title="Panel",
-            description="Panel description",
-            traces=[{"x": [1, 2], "y": [3, 4], "type": "scatter"}],
-            layout={"title": "Plot"},
-            driven_by=["choice"],
-            update_fn="return Plotly.relayout(panelId, {title: String(controls.choice)});",
-            preview_rows=3,
-        )
-    )
-    dash.add_invariant(idash.Invariant("ok", actual=1.0, expected=1.0, description="passes"))
-    dash.add_invariant(idash.Invariant("bad", actual=2.0, expected=1.0, description="fails"))
-    dash.add_table("rows", [{"path": tmp_path / "row", "value": float("nan")}])
-    dash.add_note("rendered locally")
-
-    invariant_text = dash.render_invariants_text()
-    assert "git status:   dirty" in invariant_text
-    assert "PASS] ok" in invariant_text
-    assert "FAIL] bad" in invariant_text
-
-    summary = dash.render_summary_text()
-    assert "[0 ... 7] (len=8)" in summary
-    assert "rendered locally" in summary
-
-    bundle = dash.to_json()
-    assert bundle["git_dirty"] is True
-    assert bundle["panels"][0]["preview_rows"] == 3
-    assert bundle["invariants"][1]["passed"] is False
-
-    paths = dash.write(
-        html_path=tmp_path / "dashboard.html",
-        json_path=tmp_path / "dashboard.json",
-        txt_path=tmp_path / "summary.txt",
-        invariants_path=tmp_path / "invariants.txt",
-    )
-    assert set(paths) == {"html", "json", "summary", "invariants"}
-    html = paths["html"].read_text(encoding="utf-8")
-    assert "cdn.plot.ly" in html
-    assert 'data-tab="raw"' in html
-    assert "CONTROL_VALUES" in html
-
-    written = json.loads(paths["json"].read_text(encoding="utf-8"))
-    assert written["payload"]["nan"] is None
-    assert written["tables"]["rows"][0]["value"] is None
-
-
-def test_dashboard_types_main_success_and_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    html = tmp_path / "d.html"
-    js = tmp_path / "d.json"
-    inv = tmp_path / "inv.txt"
-    summary = tmp_path / "sum.txt"
-    argv = [
-        "--num",
-        "11",
-        "--html-out",
-        str(html),
-        "--json-out",
-        str(js),
-        "--invariants-out",
-        str(inv),
-        "--summary-out",
-        str(summary),
-    ]
-    dash_mod.main(argv)
-
-    class _Dash:
-        def write(self, **kwargs: object) -> dict[str, Path]:
-            return {"html": html, "json": js, "invariants": inv, "summary": summary}
-
-        def evaluate_invariants(self) -> list[dict[str, object]]:
-            return [{"name": "bad", "passed": False}]
-
-    monkeypatch.setattr(dash_mod, "build_dashboard_payload", lambda args: {})
-    monkeypatch.setattr(dash_mod, "build_dashboard", lambda args, payload: _Dash())
-    with pytest.raises(SystemExit) as exc:
-        dash_mod.main(argv)
-    assert exc.value.code == 1
-
 
 def test_theorem_map_no_lean_companion_branch() -> None:
     class _Thm:
@@ -570,7 +463,6 @@ def test_theorem_map_no_lean_companion_branch() -> None:
     assert tm._theorem_token(_Thm()) == "`[[THMREF:demo]]`"
     assert tm._lean_link(_Thm()) == "—"
 
-
 def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
     src_ms = tmp_path / "manuscript"
     inj_ms = tmp_path / "output" / "manuscript"
@@ -583,14 +475,12 @@ def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
     assert (inj_ms / "config.yaml").exists()
     assert (inj_ms / "refs.bib").exists()
 
-
 def test_metrics_half_saturation_branches() -> None:
     from simulation.metrics import half_saturation_interpolated
 
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.5, 0.6, 0.6]) == pytest.approx((0.0, 0.5))
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.0, 0.5, 0.5]) == pytest.approx((0.5, 0.25))
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.0, 0.4, 0.8]) == pytest.approx((1.0, 0.4))
-
 
 def test_trajectory_plot_rejects_empty_total_correlations(tmp_path: Path) -> None:
     import numpy as np
@@ -604,7 +494,6 @@ def test_trajectory_plot_rejects_empty_total_correlations(tmp_path: Path) -> Non
             total_correlations=np.array([]),
             out_path=tmp_path / "out.png",
         )
-
 
 def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
     import shutil
@@ -622,6 +511,340 @@ def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
     facts = registry_structural_facts(tmp_path)
     assert facts["theorem_registry_count"] >= 1
 
-
 def test_regression_gate_coverage_fail_under_reads_pyproject() -> None:
     assert rg._coverage_fail_under(PROJECT) == pytest.approx(95.0)
+
+def test_build_gate_main_detects_disallowed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _install_fake_lake(tmp_path, monkeypatch)
+    _seed_boundary_lean(tmp_path, body="unsafe def bad : Nat := 0\n")
+    assert build_gate_main(project_root=tmp_path) == 1
+
+def test_build_gate_main_detects_sorry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _install_fake_lake(tmp_path, monkeypatch)
+    _seed_boundary_lean(tmp_path, body="theorem t : True := by sorry\n")
+    assert build_gate_main(project_root=tmp_path) == 1
+
+def test_build_gate_main_detects_axiom(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _install_fake_lake(tmp_path, monkeypatch)
+    _seed_boundary_lean(tmp_path, body="axiom cheat : True\n")
+    assert build_gate_main(project_root=tmp_path) == 1
+
+def test_build_gate_main_detects_mathlib_import(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _install_fake_lake(tmp_path, monkeypatch)
+    _seed_boundary_lean(tmp_path, body="import Mathlib.Data.Nat.Basic\n")
+    assert build_gate_main(project_root=tmp_path) == 1
+
+def test_build_gate_main_success_summary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _install_fake_lake(tmp_path, monkeypatch)
+    _seed_boundary_lean(tmp_path, body="theorem t : True := trivial\n")
+    assert build_gate_main(project_root=tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "OK  lake build succeeded" in out
+
+def test_regression_gate_lean_budget_snapshot_parses_script(tmp_path: Path) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "build_lean.py").write_text(
+        "#!/usr/bin/env python3\nprint('OK  lake build succeeded · 21 lake jobs · 0 sorries · 0 axioms · 0 unsafe')\n",
+        encoding="utf-8",
+    )
+    snap = rg._lean_budget_snapshot(project_root=tmp_path, scripts_dir=scripts)
+    assert snap == {"lake_jobs": 21, "sorries": 0, "axioms": 0, "unsafe": 0}
+
+def test_regression_gate_lean_budget_snapshot_returns_none_on_failure(tmp_path: Path) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "build_lean.py").write_text("import sys\nsys.exit(1)\n", encoding="utf-8")
+    assert rg._lean_budget_snapshot(project_root=tmp_path, scripts_dir=scripts) is None
+
+def test_regression_gate_gate_with_lean_snapshot(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    reports = tmp_path / "output" / "reports"
+    reports.mkdir(parents=True)
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    baseline = scripts / "regression_baseline.json"
+    baseline.write_text(
+        json.dumps(
+            {
+                "test_count_min": 1,
+                "test_failed_max": 0,
+                "coverage_percent_min": 80.0,
+                "invariant_count_min": 1,
+                "lean_lake_jobs_min": 10,
+                "lean_sorry_max": 0,
+                "lean_axiom_max": 0,
+                "lean_unsafe_max": 0,
+                "tolerance": {"test_count_drop_max": 0, "coverage_drop_pct_max": 1.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (scripts / "build_lean.py").write_text(
+        "print('OK  lake build succeeded · 15 lake jobs · 0 sorries · 0 axioms · 0 unsafe')\n",
+        encoding="utf-8",
+    )
+    (reports / "test_results.json").write_text(
+        json.dumps(
+            {
+                "pytest_returncode": 0,
+                "summary": {"total_tests": 10, "total_failed": 0, "project_coverage": 95.0},
+                "project": {"total": 10, "failed": 0, "coverage_percent": 95.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (reports / "dashboard_invariants.txt").write_text("summary:      2/2 passed, 0 failed\n", encoding="utf-8")
+    (reports / "coverage.json").write_text(
+        json.dumps(
+            {
+                "totals": {"percent_covered": 95.0},
+                "files": {
+                    f"src/manuscript/{name}.py": {"summary": {"percent_covered": 96.0}}
+                    for name in ("status", "pdf_validation")
+                }
+                | {"src/visualizations/metadata.py": {"summary": {"percent_covered": 96.0}}}
+                | {"src/simulation/parameter_sweep.py": {"summary": {"percent_covered": 96.0}}}
+                | {"src/visualizations/btai_plots.py": {"summary": {"percent_covered": 96.0}}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("REGRESSION_GATE_USE_EXISTING_TEST_REPORT", "1")
+    assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 0
+
+def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    class _Status:
+        tests_total = 10
+        tests_passed = 10
+        tests_skipped = 0
+        tests_failed = 0
+        test_summary = "10 collected; 10 passed + 0 skipped"
+        coverage_percent = 95.0
+        pdf_pages = 8
+        pdf_size_bytes = 1000
+        pdf_size_mb = 0.001
+        pdf_summary = "8 pages, 0.00 MB"
+
+    monkeypatch.setattr("manuscript.readiness.load_project_status", lambda _root: _Status())
+    (tmp_path / "output" / "reports").mkdir(parents=True)
+    (tmp_path / "manuscript").mkdir(parents=True)
+    (tmp_path / "output" / "reports" / "test_results.json").write_text(
+        json.dumps(
+            {
+                "project": {
+                    "total": 10,
+                    "passed": 10,
+                    "skipped": 0,
+                    "failed": 0,
+                    "coverage_percent": 95.0,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "manuscript" / "config.yaml").write_text("paper:\n  title: t\n", encoding="utf-8")
+    _seed_labels_yaml(tmp_path)
+    path = readiness_mod.write_release_readiness(tmp_path)
+    assert path.exists()
+    assert "Release Readiness Report" in path.read_text(encoding="utf-8")
+
+def test_build_pdf_main_success_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    for name in ("manuscript_variables.py", "inject_manuscript_variables.py"):
+        (scripts / name).write_text("print('ok')\n", encoding="utf-8")
+
+    ms = tmp_path / "manuscript"
+    injected = tmp_path / "output" / "manuscript"
+    for d in (ms, injected):
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "preamble.md").write_text("```latex\n\\usepackage{x}\n```\n", encoding="utf-8")
+        (d / "config.yaml").write_text("paper:\n  title: T\n", encoding="utf-8")
+    (injected / "01_intro.md").write_text("# Intro\n", encoding="utf-8")
+
+    def _fake_render(**kwargs: object) -> Path:
+        root = kwargs["project_root"]
+        assert isinstance(root, Path)
+        pdf = root / "output" / "pdf" / "actinf_policy_entanglement_lean_combined.pdf"
+        pdf.parent.mkdir(parents=True, exist_ok=True)
+        pdf.write_bytes(b"%PDF")
+        return pdf
+
+    monkeypatch.setattr(bp, "regenerate_injected_manuscript", lambda **_: 0)
+    monkeypatch.setattr(bp, "render_combined_pdf", _fake_render)
+    assert bp.main(project_root=tmp_path) == 0
+
+def test_run_all_inserts_pdf_and_mathlib_stages(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "build_lean.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    (scripts / "build_mathlib_proofs.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    (scripts / "build_pdf.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    (scripts / "validate_pdf.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    (scripts / "readiness_report.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    (scripts / "regression_gate.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "orchestration.run_all.SCRIPTS",
+        [
+            ("build_lean.py", "lean"),
+            ("regression_gate.py", "gate"),
+        ],
+    )
+    code = run_all_main(
+        ["--with-pdf", "--with-mathlib", "--no-manifest"],
+        project_root=tmp_path,
+        scripts_dir=scripts,
+    )
+    assert code == 0
+
+def test_run_all_validator_failure_stops_early(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "validate_manuscript.py").write_text("import sys\nsys.exit(3)\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "orchestration.run_all.SCRIPTS",
+        [("validate_manuscript.py", "validate")],
+    )
+    code = run_all_main(["--no-manifest"], project_root=tmp_path, scripts_dir=scripts)
+    assert code == 1
+
+def test_validation_cli_report_issues_prints_every_branch(capsys) -> None:
+    report = ManuscriptValidationReport(
+        section_files=["01_a.md"],
+        missing_headings=["02_b.md"],
+        empty_captions=["fig:empty"],
+        undefined_tokens={"01_a.md": [("FIG", "missing")]},
+        broken_links={"01_a.md": ["../nope.md"]},
+        missing_figure_files={"01_a.md": ["../figures/x.png"]},
+        out_of_range_variables={"k": "too high"},
+        bad_section_refs={"01_a.md": ["§99"]},
+        hardcoded_refs={"01_a.md": ["§5"]},
+        hardcoded_numeric_literals={"01_a.md": ["42"]},
+        hardcoded_rendered_source_fields={"01_a.md": ["labels.yaml"]},
+        tokens_in_code_fences={"01_a.md": ["[[FIG:x]]"]},
+        broken_lean_wiring={"thm_x": "missing lean decl"},
+    )
+    count = _report_issues(report)
+    assert count == 12
+    captured = capsys.readouterr().out
+    assert "missing leading heading" in captured
+    assert "four-track wiring" in captured
+
+def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys) -> None:
+    rendered = tmp_path / "output" / "manuscript"
+    rendered.mkdir(parents=True)
+    (rendered / "01_a.md").write_text("clean prose\n", encoding="utf-8")
+    assert _report_rendered_leaks(rendered, project_root=tmp_path) == 0
+
+    missing = tmp_path / "nope" / "manuscript"
+    assert _report_rendered_leaks(missing, project_root=tmp_path) == 0
+    assert "skipped" in capsys.readouterr().out
+
+    assert _report_status(PROJECT) >= 0
+
+def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
+    ms = tmp_path / "manuscript"
+    ms.mkdir()
+    (ms / "config.yaml").write_text(
+        "paper:\n  title: Title\n  subtitle: Sub\n  date: 2026-01-01\nauthors:\n  - name: Author\n",
+        encoding="utf-8",
+    )
+    (ms / "preamble.md").write_text("% custom\n\\usepackage{x}\n", encoding="utf-8")
+    assert _as_mapping({"a": 1})["a"] == 1
+    assert _as_mapping("x") == {}
+    assert list(_as_sequence([1, 2])) == [1, 2]
+    assert _as_sequence("bad") == ()
+    cfg = _load_config(ms)
+    assert cfg["paper"]["title"] == "Title"
+    args = _metadata_args(source_manuscript=ms, project_root=tmp_path)
+    assert any("Title" in a for a in args)
+    tex = _extract_latex_preamble("% line\n\\foo\n")
+    assert "\\foo" in tex
+    pre = tmp_path / "preamble.tex"
+    _write_preamble_tex(source_manuscript=ms, preamble_tex=pre)
+    assert "custom" in pre.read_text(encoding="utf-8")
+
+def test_build_pdf_main_missing_manuscript(tmp_path: Path) -> None:
+    assert build_pdf_main(project_root=tmp_path) != 0
+
+def test_regenerate_injected_manuscript_fails_on_bad_script(tmp_path: Path) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "manuscript_variables.py").write_text("raise SystemExit(3)\n", encoding="utf-8")
+    code = regenerate_injected_manuscript(project_root=tmp_path)
+    assert code == 3
+
+def test_build_gate_main_missing_lean_dir(tmp_path: Path) -> None:
+    assert build_gate_main(project_root=tmp_path) == 2
+
+def test_run_all_spawn_serial_and_parallel(tmp_path: Path) -> None:
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    ok = scripts / "ok.py"
+    ok.write_text("print('ok')\n", encoding="utf-8")
+    res = _spawn("ok.py", capture=True, scripts_dir=scripts, project_root=tmp_path)
+    assert isinstance(res, StageResult)
+    assert res.returncode == 0
+    assert "ok" in res.stdout
+    assert _run_serial("ok.py", scripts_dir=scripts, project_root=tmp_path) == 0
+    batch = _run_parallel_batch(["ok.py"], max_workers=1, scripts_dir=scripts, project_root=tmp_path)
+    assert batch[0].returncode == 0
+
+def test_regression_gate_parse_pytest_counts_errors_alias() -> None:
+    counts = rg._parse_pytest_counts("==== 1 passed, 2 error in 0.1s ====")
+    assert counts["errors"] == 2
+
+def test_regression_gate_update_baseline_on_pass(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    reports = tmp_path / "output" / "reports"
+    reports.mkdir(parents=True)
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(
+        json.dumps(
+            {
+                "test_count_min": 5,
+                "test_failed_max": 0,
+                "coverage_percent_min": 85.0,
+                "invariant_count_min": 2,
+                "lean_lake_jobs_min": 0,
+                "lean_sorry_max": 0,
+                "lean_axiom_max": 0,
+                "lean_unsafe_max": 0,
+                "tolerance": {"test_count_drop_max": 0, "coverage_drop_pct_max": 2.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (reports / "test_results.json").write_text(
+        json.dumps(
+            {
+                "pytest_returncode": 0,
+                "summary": {"total_tests": 10, "total_failed": 0, "project_coverage": 92.0},
+                "project": {"total": 10, "failed": 0, "coverage_percent": 92.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (reports / "dashboard_invariants.txt").write_text("summary:      3/3 passed, 0 failed\n", encoding="utf-8")
+    (reports / "coverage.json").write_text(
+        json.dumps(
+            {
+                "totals": {"percent_covered": 92.0},
+                "files": {
+                    "src/manuscript/status.py": {"summary": {"percent_covered": 96.0}},
+                    "src/manuscript/pdf_validation.py": {"summary": {"percent_covered": 96.0}},
+                    "src/visualizations/metadata.py": {"summary": {"percent_covered": 96.0}},
+                    "src/simulation/parameter_sweep.py": {"summary": {"percent_covered": 96.0}},
+                    "src/visualizations/btai_plots.py": {"summary": {"percent_covered": 96.0}},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("REGRESSION_GATE_USE_EXISTING_TEST_REPORT", "1")
+    monkeypatch.setattr(rg, "_lean_budget_snapshot", lambda **_: None)
+    assert rg.gate(project_root=tmp_path, scripts_dir=tmp_path, baseline_path=baseline_path, update_baseline=True) == 0
+    refreshed = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert refreshed["test_count_min"] >= 10
+    assert refreshed["coverage_percent_min"] >= 85.0

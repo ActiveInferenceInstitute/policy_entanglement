@@ -16,7 +16,12 @@ Companion to the analytical mirrors in `src/lean/`.
 | `sweep.py` | `LambdaSweepResult`, `lambda_sweep`, `total_correlation_curve`, `marginal_trajectory` |
 | `statistics.py` | Reduce a list of `FreeEnergyBundle` records to a flat `BundleSummary` and a `QuantileEnvelope` over multi-seed sweeps; emit `[[VAR:...]]`-ready scalars via `summary_to_var_dict`. |
 | `logging_utils.py` | Append-only JSONL `RunLogger` for structured pymdp run records; the **only** module in this subpackage that touches disk.  Disabled with `PYMDP_RUN_LOG_DISABLED=1`. |
-| `hyperparameters.py` | **Single source of truth** for every grid size, seed, sentinel-λ, rollout horizon, and observation used by the figure / sweep / variable scripts.  Mirror is auto-injected into `output/data/manuscript_variables.json` via `figure_hyperparameter_summary()`. |
+| `hyperparameters.py` | **Facade** — import hyperparameters from here only. Re-exports domain modules below and hosts `grid_count()` / `figure_hyperparameter_summary()`. |
+| `hyperparameters_grids.py` | `FigureGrid`, analytical figure λ/utility grids, `FIGURE_GLOBAL_SEED`. |
+| `hyperparameters_pymdp.py` | pymdp sweep/rollout/ensemble knobs, `MULTI_K_*`, `LONG_HORIZON_*`. |
+| `hyperparameters_robustness.py` | `ROBUSTNESS_*`, `COUPLING_ABLATION_*`. |
+| `hyperparameters_experiments.py` | Revertibility grids, pymdp Agent knobs, BTAI, adversarial harness. |
+| `hyperparameters_sentinels.py` | Sentinel λ tuples, Monte Carlo witness, pymdp tolerances. |
 | `long_horizon.py` | $T = 100$ coupled-rollout harness with habit-accumulation diagnostics and tail-window KL convergence checks. |
 | `multi_k_experiments.py` | $K \in \{3, 4, 5\}$ ensemble sweeps for the multi-stream Ising case (the K > 2 generalization). |
 | `revertibility.py` | $m$-projection revertibility witness: two independent code paths on $D_{\mathrm{KL}}(q\,\|\,\hat m(q)) = I(q)$. |

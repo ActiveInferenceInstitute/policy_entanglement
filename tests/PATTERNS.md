@@ -23,7 +23,7 @@ Use real `numpy` arrays, `tmp_path` files, and subprocess CLI calls.
   that must not re-run the full suite
 
 Examples: [`test_mathlib_proofs_gate_unit.py`](test_mathlib_proofs_gate_unit.py),
-[`coverage/test_coverage_95_final.py`](coverage/test_coverage_95_final.py),
+[`coverage/test_orchestration_coverage.py`](coverage/test_orchestration_coverage.py),
 [`test_regression_gate.py`](test_regression_gate.py).
 
 ## Mathlib / Lean Serialization
@@ -54,7 +54,7 @@ Prefer `np.random.default_rng(seed=…)` over legacy `random.seed`.
 
 | File | Role |
 | --- | --- |
-| `coverage/test_coverage_95_final.py` | Refactored library branches (gates, orchestration, readiness) |
+| `coverage/test_orchestration_coverage.py` | Orchestration, gates, readiness, regression branches |
 | `coverage/test_coverage_library_gaps.py` | Cross-cutting error paths |
 | `test_branch_coverage_push.py` | Conditional branches in lean/simulation gates |
 

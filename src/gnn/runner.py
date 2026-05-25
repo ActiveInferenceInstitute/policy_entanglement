@@ -29,8 +29,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from gnn.bridge import reconstruct_mi_curve
-from gnn.parser import parse_gnn_file
 from gnn.lean_emit import emit_lean_structure
+from gnn.parser import parse_gnn_file
 from lean.bernoulli_toy import ising_mutual_information  # INDEPENDENT comparison oracle (closed form)
 from simulation.hyperparameters import (
     BERNOULLI_VERIFICATION_TOLERANCE,

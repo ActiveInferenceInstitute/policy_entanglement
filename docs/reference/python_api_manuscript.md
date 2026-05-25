@@ -446,6 +446,16 @@ def registry_structural_facts(project_root: Path) -> dict[str, int]
 def registry_structural_count_gates(project_root: Path) -> dict[str, tuple[float, float]]
 ```
 
+### `variable_ranges.py`
+
+Closed-form manuscript variable range SSOT shared by
+``validation_cli.EXPECTED_RANGES`` and ``output_gates.constants``.
+
+```python
+ANALYTICAL_VARIABLE_RANGES: dict[str, tuple[float, float]]
+def merge_required_variables(*extensions: dict[str, tuple[float, float]]) -> dict[str, tuple[float, float]]
+```
+
 ### `output_gates/` package
 
 Release validators for ``output/`` artifacts (figures, CSV sidecars,

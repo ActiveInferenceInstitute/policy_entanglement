@@ -20,6 +20,7 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | `validation_scan.py` | Section discovery, hardcoded-ref scans, rendered-token leak checks. |
 | `validation_checks.py` | Per-check validators (tokens, figures, Lean wiring, hyperlinks). |
 | `validation_cli.py` | Library implementation of [`scripts/validate_manuscript.py`](../../scripts/validate_manuscript.py) (tree validation + rendered-token leaks + status gates). |
+| `variable_ranges.py` | SSOT for closed-form `ANALYTICAL_VARIABLE_RANGES` shared by `validation_cli.EXPECTED_RANGES` and output gates. |
 | `status.py` / `status_patterns.py` | Live project-status loading and stale-pattern detectors for docs and gates. |
 | `pdf_validation.py` | PDF / TeX / log validation helpers consumed by [`scripts/validate_pdf.py`](../../scripts/validate_pdf.py). |
 | `readiness.py` | Release-readiness orchestration; emitters in `readiness_emit.py`. |

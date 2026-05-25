@@ -14,7 +14,7 @@ import pytest
 
 from gnn.lean_emit import _bool_arg, _lean_float, emit_lean_structure
 from gnn.parser import parse_gnn_file
-from gnn.runner import FIGURE_NAME, LEAN_NAME, SIDECAR_NAME, run
+from gnn.runner import FIGURE_NAME, SIDECAR_NAME, run
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 GNN_DIR = PROJECT_ROOT / "gnn"

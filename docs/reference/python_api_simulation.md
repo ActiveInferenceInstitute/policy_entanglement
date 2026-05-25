@@ -111,7 +111,11 @@ records `free_energy_against_entangled_prior` versus
 per-stream `G` vectors in the analytical call because pymdp has
 already absorbed EFE into the policy posterior.
 
-### `hyperparameters.py` (single source of truth)
+### `hyperparameters.py` (facade — import from here only)
+
+Domain constants live in ``hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py``;
+this module re-exports the full public surface and hosts
+``grid_count`` / ``figure_hyperparameter_summary``.
 
 ```python
 @dataclass(frozen=True)

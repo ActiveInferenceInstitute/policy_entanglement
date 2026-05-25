@@ -1,7 +1,9 @@
 # AGENTS.md — `src/dashboard_types/`
 
 Shared dashboard datatypes and the actinf dashboard builder consumed by
-[`reporting.interactive_dashboard`](../reporting/_interactive_dashboard_local.py)
+[`reporting.interactive_dashboard`](../reporting/interactive_dashboard.py)
+(facade → template `infrastructure.reporting` when available, else
+[`_interactive_dashboard_local.py`](../reporting/_interactive_dashboard_local.py))
 and [`scripts/build_dashboard.py`](../../scripts/build_dashboard.py).
 
 ## Modules
@@ -26,5 +28,4 @@ and [`scripts/build_dashboard.py`](../../scripts/build_dashboard.py).
 ## Tests
 
 [`tests/test_dashboard_types.py`](../../tests/test_dashboard_types.py),
-[`tests/coverage/test_coverage_95_final.py`](../../tests/coverage/test_coverage_95_final.py)
-(`test_dashboard_types_main_success_and_failure`).
+[`tests/coverage/test_dashboard_coverage.py`](../../tests/coverage/test_dashboard_coverage.py).

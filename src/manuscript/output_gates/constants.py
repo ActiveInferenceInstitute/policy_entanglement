@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from manuscript.registry_facts import registry_structural_count_gates
+from manuscript.variable_ranges import ANALYTICAL_VARIABLE_RANGES, merge_required_variables
 from simulation import hyperparameters as H  # noqa: N812
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -78,21 +79,7 @@ OPTIONAL_FIGURES = [
     "gnn_bernoulli_roundtrip.png",
 ]
 
-REQUIRED_VARIABLES = {
-    # Bernoulli / Ising closed-form
-    "ising_mi_at_lam_05": (0.0, 0.05),
-    "ising_mi_at_lam_1": (0.05, 0.20),
-    "ising_mi_at_lam_2": (0.20, 0.45),
-    "ising_mi_saturation": (0.69, 0.70),
-    "lambda_star_delta_05": (1.0, 1.2),
-    "lambda_star_delta_09": (2.8, 3.1),
-    # Spectral facts (added in v0.2)
-    "ising_S_E_at_lam_0": (-1e-9, 1e-9),
-    "ising_S_E_at_lam_1": (0.0, 0.5),
-    "ising_S_E_at_lam_3": (0.0, 0.7),
-    "ising_schmidt_rank_at_lam_0": (1.0, 1.0),
-    "ising_schmidt_rank_at_lam_1": (2.0, 2.0),
-    # pymdp decomposition witness residual across the full configured sweep
+GATE_SPECIFIC_RANGES: dict[str, tuple[float, float]] = {
     "pymdp_decomposition_residual_max": (0.0, float(H.PYMDP_DECOMPOSITION_RESIDUAL_TOLERANCE)),
     # Robustness / ablation / replicate sidecars
     "robustness_scenario_count": (
@@ -204,11 +191,6 @@ REQUIRED_VARIABLES = {
     ),
     "pymdp_ensemble_K": (float(H.PYMDP_ENSEMBLE_K), float(H.PYMDP_ENSEMBLE_K)),
     "revertibility_num_lambdas": (float(len(H.REVERTIBILITY_LAMBDAS)), float(len(H.REVERTIBILITY_LAMBDAS))),
-    # phase_lambda_c1/c2 are HYPERPARAMETER CONSTANTS (H.PHASE_LAMBDA_C*),
-    # NOT detected model outputs — the generator reads them straight from
-    # H. Pinned to the constant with a float-repr tolerance band.
-    "phase_lambda_c1": (float(H.PHASE_LAMBDA_C1) - 1e-9, float(H.PHASE_LAMBDA_C1) + 1e-9),
-    "phase_lambda_c2": (float(H.PHASE_LAMBDA_C2) - 1e-9, float(H.PHASE_LAMBDA_C2) + 1e-9),
     # Seeds are fixed reproducibility constants — pin exact to H.
     "figure_global_seed": (float(H.FIGURE_GLOBAL_SEED), float(H.FIGURE_GLOBAL_SEED)),
     "long_horizon_seed": (float(H.LONG_HORIZON_SEED), float(H.LONG_HORIZON_SEED)),
@@ -259,25 +241,9 @@ REQUIRED_VARIABLES = {
     # Total correlation on two binary streams is necessarily in
     # [0, 2 ln 2] ≈ [0, 1.386] (sum of two binary marginal entropies).
     "btai_total_correlation_at_max_budget": (0.0, 1.4),
-    # GNN fifth-track round-trip (sourced from output/data/gnn_bernoulli_roundtrip.json
-    # by simulate_gnn -> manuscript_variables._gnn_facts). gnn_roundtrip_max_residual is
-    # the truth-binding gate: it must be below the Bernoulli verification tolerance, and
-    # it catches a round-trip that silently broke (the gentlest gap perturbation already
-    # exceeds 1e-9). The zero-coupling negative control (which ALWAYS zeros J regardless
-    # of the file) must land >= 0.1 nats: that lower bound specifically rejects a
-    # coupling-IGNORING / hard-coded bridge (which would give ~0), proving the bridge
-    # responds to the declared coupling. It does NOT pin the literal matrix or catch a
-    # wrong-but-gap-equivalent file — those are caught by gnn_roundtrip_max_residual and
-    # the to_pymdp_config / concordance tests. The lambda-point count is a structural-
-    # source pin to the hyperparameter grid. NCs in tests/test_gnn_validation.py.
-    "gnn_roundtrip_max_residual": (0.0, float(H.BERNOULLI_VERIFICATION_TOLERANCE)),
-    "gnn_negative_control_max_residual": (0.1, 0.7),
-    "gnn_round_trip_lambda_points": (
-        float(H.PARAMETER_SWEEP_LAMBDAS.num),
-        float(H.PARAMETER_SWEEP_LAMBDAS.num),
-    ),
-    "gnn_num_streams": (2.0, 2.0),
 }
+
+REQUIRED_VARIABLES = merge_required_variables(ANALYTICAL_VARIABLE_RANGES, GATE_SPECIFIC_RANGES)
 
 # Pass-13 R1 — splice in the registry-derived structural-source pins
 # (theorem_registry_count / theorem_status_*_count / theorem_proved_*_count).

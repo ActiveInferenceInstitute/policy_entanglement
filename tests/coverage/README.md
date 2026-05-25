@@ -9,12 +9,9 @@ uv run pytest tests/ --cov=src --cov-report=term-missing -q
 
 | File | Domain |
 | --- | --- |
-| `test_coverage_gaps_pure.py` | Pure Python branches (manuscript, lean mirrors, gates) |
-| `test_coverage_push_95.py` | Orchestration and reporting entrypoints |
-| `test_coverage_95_final.py` | Residual module surfaces |
-| `test_coverage_extras.py` | CLI scripts and edge orchestrators |
-| `test_coverage_library_gaps.py` | Library modules below floor after main suites |
-| `test_coverage_final_push.py` | Last-mile branches before release |
+| `test_manuscript_coverage.py` | Manuscript validation, bibliography, figures, output gates |
+| `test_orchestration_coverage.py` | Orchestration, regression gate, readiness, cross-refs, CLI scripts |
+| `test_dashboard_coverage.py` | `dashboard_types` and `_interactive_dashboard_local` |
 
 New gap tests belong here (or a domain sibling under `tests/manuscript/`, etc.)
 rather than at the `tests/` root.

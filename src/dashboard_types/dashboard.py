@@ -9,7 +9,6 @@ from typing import Any, cast
 
 from dashboard_types import panels as _panels
 from dashboard_types.cli import parse_dashboard_args
-from dashboard_types.payload import build_dashboard_payload as _build_dashboard_payload
 from dashboard_types.paths import (
     DASHBOARD_PROJECT_ROOT,
     DATA_DIR,
@@ -17,6 +16,7 @@ from dashboard_types.paths import (
     REP_DIR,
     WEB_DIR,
 )
+from dashboard_types.payload import build_dashboard_payload as _build_dashboard_payload
 from dashboard_types.types import Control, Invariant, Panel
 
 

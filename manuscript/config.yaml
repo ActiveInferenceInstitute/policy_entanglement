@@ -4,7 +4,7 @@
 
 paper:
   title: "Policy Entanglement in Active Inference"
-  subtitle: "A Coupling-Parameter Deformation of Multi-Stream Policy Posteriors, Machine-Checked over the Reals with a Typed Float Boundary"
+  subtitle: "A Coupling-Parameter Deformation Framework for Multi-Stream Policy Posterior Distributions, Machine-Checked and Simulated with a Typed Float Boundary"
   version: "0.3"
   date: ""
 

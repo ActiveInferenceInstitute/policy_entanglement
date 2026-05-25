@@ -185,3 +185,23 @@ def test_summary_matches_manuscript_variables_json_when_present() -> None:
 def test_grid_count_helper_returns_int() -> None:
     assert H.grid_count(H.PARAMETER_SWEEP_LAMBDAS) == 121
     assert H.grid_count(H.PYMDP_SWEEP_LAMBDAS) == 21
+
+
+@pytest.mark.parametrize(
+    ("name", "submodule"),
+    [
+        ("PARAMETER_SWEEP_LAMBDAS", "simulation.hyperparameters_grids"),
+        # ``pymdp_pipeline.apply_overrides`` rebuilds sweep grids on the facade only;
+        # pick a constant that stays identical to the pymdp submodule after CLI runs.
+        ("LONG_HORIZON_SEED", "simulation.hyperparameters_pymdp"),
+        ("ROBUSTNESS_SWEEP_LAMBDAS", "simulation.hyperparameters_robustness"),
+        ("REVERTIBILITY_LAMBDAS", "simulation.hyperparameters_experiments"),
+        ("BERNOULLI_VERIFICATION_TOLERANCE", "simulation.hyperparameters_sentinels"),
+    ],
+)
+def test_facade_reexports_match_submodules(name: str, submodule: str) -> None:
+    """Facade attributes must mirror their domain submodule source."""
+    import importlib
+
+    mod = importlib.import_module(submodule)
+    assert getattr(H, name) is getattr(mod, name)

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from manuscript.output_gates import artifact_validators, csv_helpers, png_validation, pymdp_validators
+from manuscript.output_gates import csv_helpers, png_validation, pymdp_validators
 from manuscript.output_gates.constants import (
     MIN_FIGURE_HEIGHT,
     MIN_FIGURE_WIDTH,

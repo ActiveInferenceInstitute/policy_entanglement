@@ -12,9 +12,9 @@ import pytest
 
 from manuscript import output_gates
 from manuscript.output_gates import artifact_validators, csv_helpers, png_validation, pymdp_validators
-from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 from manuscript.output_gates.constants import REQUIRED_VARIABLES
 from simulation import hyperparameters as H
+from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 
 PROJECT = Path(__file__).resolve().parent.parent
 FIG_DIR = PROJECT / "output" / "figures"
@@ -58,6 +58,19 @@ def _minimal_variables_payload() -> dict[str, object]:
 def test_output_gate_constants_exposed() -> None:
     assert output_gates.PNG_HEADER == b"\x89PNG\r\n\x1a\n"
     assert output_gates.MIN_TICK_FONT_SIZE >= 12.0
+
+
+def test_analytical_variable_ranges_match_required_variables() -> None:
+    """Shared keys in ANALYTICAL_VARIABLE_RANGES must match REQUIRED_VARIABLES."""
+    from manuscript.validation_cli import EXPECTED_RANGES
+    from manuscript.variable_ranges import ANALYTICAL_VARIABLE_RANGES
+
+    assert EXPECTED_RANGES is ANALYTICAL_VARIABLE_RANGES
+    for key, expected in ANALYTICAL_VARIABLE_RANGES.items():
+        assert key in REQUIRED_VARIABLES, f"missing gate range for analytical key: {key}"
+        assert REQUIRED_VARIABLES[key] == expected, (
+            f"drift on {key}: gate={REQUIRED_VARIABLES[key]!r} analytical={expected!r}"
+        )
     assert "ising_mi_curve.png" in output_gates.REQUIRED_FIGURES
 
 

@@ -28,7 +28,7 @@ No other structural regressions identified.
 | J4 | MEDIUM | Six `test_coverage_*.py` at repo `tests/` root (~2.2k LOC meta-tests) | Move to `tests/coverage/`; `tests/coverage/README.md`; shared `output_gates_helpers.py` | **Applied** |
 | J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (partial — `hyperparameters.py` still deferred) |
 | J8 | HIGH | `validate_free_energy_bundle` duplicated TC/decomposition loops | `validate_tc_decomposition_group` with `check_lhs_rhs` + `finite_columns` | **Applied** |
-| J6 | MEDIUM | `reporting/_interactive_dashboard_local.py` (646) duplicates template infra | Prefer `infrastructure.reporting` when on PYTHONPATH | **Deferred** |
+| J6 | MEDIUM | `reporting/_interactive_dashboard_local.py` (646) duplicates template infra | Prefer `infrastructure.reporting` when on PYTHONPATH | **Applied** (round-8) |
 | J7 | LOW | `simulation/robustness*.py` four-module cluster | Consolidate orchestration vs stats after robustness ISA | **Deferred** |
 
 ### 3. Spaghetti / branching growth
@@ -81,10 +81,28 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 
 ## Remaining debt (round-8+ candidates)
 
-1. `hyperparameters.py` (588 lines, high fan-in) — needs dedicated ISA before split  
-2. `dashboard.py` / `readiness.py` / `variables.py` manuscript cluster  
-3. Merge six coverage modules into two domain files (optional; folder move done)  
-4. `_interactive_dashboard_local.py` trim vs template `infrastructure.reporting`
+1. ~~`hyperparameters.py` (588 lines, high fan-in)~~ — **Applied** round-8 (facade + five domain modules)
+2. ~~Merge six coverage modules into domain files~~ — **Applied** round-8 (three domain files under `tests/coverage/`)
+3. ~~`_interactive_dashboard_local.py` trim vs template `infrastructure.reporting`~~ — **Applied** round-8 (`_interactive_dashboard_compat` + fallback)
+4. `simulation/robustness*.py` four-module cluster — consolidate orchestration vs stats after robustness ISA
+
+## Round-8 additions (2026-05-25)
+
+| Item | Change |
+|------|--------|
+| `hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py` | Domain split; `hyperparameters.py` facade unchanged import surface |
+| `manuscript/variable_ranges.py` | SSOT for `ANALYTICAL_VARIABLE_RANGES`; gates + CLI share ranges |
+| `tests/coverage/test_{manuscript,orchestration,dashboard}_coverage.py` | Six meta-test modules merged into three |
+| `reporting/_interactive_dashboard_{compat,fallback}.py` | Infra-first HTML; local module ~340 LOC |
+
+## Verification (round-8)
+
+| Gate | Result |
+|------|--------|
+| `pytest tests/ --cov=src --cov-fail-under=95` | **1419 passed**, 1 skipped; **95.34%** |
+| `scripts/regression_gate.py --update-baseline` | green — 47/47 invariants, baseline refreshed |
+| `ruff check src/ tests/` | clean |
+| `mypy` (round-8 touched modules) | clean |
 
 ## Related
 

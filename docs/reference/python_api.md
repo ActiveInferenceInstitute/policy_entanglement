@@ -26,7 +26,9 @@ page is self-contained and easy to grep:
   `geometry.py`, `spectral.py`, `bernoulli_toy.py`, `heterogeneous.py`,
   `decomposition.py`, `invariants.py`.
 * **`simulation/`** — `specs.py`, `builders.py`, `agents.py`,
-  `inference.py`, `hyperparameters.py`, `statistics.py`,
+  `inference.py`, `hyperparameters.py` (facade; domain splits
+  `hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py`),
+  `statistics.py`,
   `logging_utils.py`, `rollout.py`, `sweep.py`, `long_horizon.py`,
   `multi_k_experiments.py`, `revertibility.py`, `robustness.py`,
   `btai_baseline.py`, `adversarial.py`, `cross_references.py`.
@@ -37,7 +39,7 @@ page is self-contained and easy to grep:
   `robustness_plots.py`, `annotations.py`, `analytical_figures.py`.
 * **`manuscript/`** — `registry.py`, `tokens.py`, `renderer.py`,
   `bibliography.py`, `lean_extract.py`, `equation_numbering.py`,
-  `validation.py`, `status.py`, `pdf_validation.py`, `variables.py`,
+  `validation.py`, `variable_ranges.py`, `status.py`, `pdf_validation.py`, `variables.py`,
   `output_gates/`.
 * **`gnn/`** — `parser.py`, `model.py`, `bridge.py`, `runner.py`,
   `lean_emit.py`.
@@ -47,7 +49,8 @@ page is self-contained and easy to grep:
   `scripts/run_all.py`).
 * **`gates/`** — `regression_gate.py` (library regression gate for
   `scripts/regression_gate.py`).
-* **`reporting/`** — `interactive_dashboard.py`.
+* **`reporting/`** — `interactive_dashboard.py`,
+  `_interactive_dashboard_compat.py`, `_interactive_dashboard_fallback.py`.
 
 ## Subpackage `lean/`
 
@@ -102,6 +105,11 @@ such as equality, ordering, finite/nonnegative values, monotonicity, and
 array closeness. `InteractiveDashboard` writes the dashboard HTML, panel
 JSON, invariant text report, and summary JSON consumed by the release
 pipeline. `PLOTLY_CDN` pins the Plotly CDN URL embedded in the HTML.
+
+When the parent template is on ``PYTHONPATH``, HTML assembly delegates to
+``infrastructure.reporting._interactive_html.render_interactive_dashboard_html``;
+otherwise ``_interactive_dashboard_fallback.render_interactive_dashboard_html``
+supplies the same contract.
 
 ### `dashboard_types/dashboard.py`
 

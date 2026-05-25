@@ -11,6 +11,30 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-25 (round-8 thermo-nuclear — hyperparameters split + range SSOT)
+
+**Hyperparameters domain split.** `simulation/hyperparameters.py` (588 lines)
+split into `hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py`
+with a backward-compatible facade preserving all import paths and
+`figure_hyperparameter_summary()`.
+
+**Variable range SSOT.** New `manuscript/variable_ranges.py` owns
+`ANALYTICAL_VARIABLE_RANGES`; `validation_cli.EXPECTED_RANGES` and
+`output_gates.constants.REQUIRED_VARIABLES` merge from the shared dict.
+Binding test in `tests/test_output_gates.py` prevents drift.
+
+**Coverage meta-tests.** Six modules under `tests/coverage/` merged into
+three domain files (`test_manuscript_coverage.py`,
+`test_orchestration_coverage.py`, `test_dashboard_coverage.py`).
+
+**Dashboard trim.** `_interactive_dashboard_compat.py` delegates HTML to
+`infrastructure.reporting._interactive_html` when the template is on
+`PYTHONPATH`; `_interactive_dashboard_fallback.py` supplies standalone
+`render_interactive_dashboard_html`. Local dashboard module reduced from
+646 to ~340 lines.
+
+---
+
 ## Maintenance — 2026-05-25 (round-7 thermo-nuclear — validator decomposition + revertibility pipeline)
 
 **Manuscript / output-gate split.** `manuscript/validation.py` (795 lines)
