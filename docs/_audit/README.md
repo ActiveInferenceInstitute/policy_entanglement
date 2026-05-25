@@ -12,3 +12,4 @@ reports under `output/reports/`.
 | Snapshot | Role |
 | --- | --- |
 | [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md) | Round-7 code-quality audit + applied fixes |
+| [`ISA_20260525_robustness_cluster.md`](ISA_20260525_robustness_cluster.md) | Round-9 robustness cluster module boundaries |

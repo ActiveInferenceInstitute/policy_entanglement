@@ -11,6 +11,17 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-25 (round-9 thermo-nuclear — robustness cluster split)
+
+**Robustness domain split.** `simulation/robustness.py` (~678 lines) decomposed
+into `robustness_{core,one_axis,interaction,controls,replicates,scenarios,stats,emit}.py`
+with a backward-compatible facade preserving all 33 public symbols.
+`interaction_robustness_scenarios()` moved next to `robustness_scenarios()`.
+`robustness_runner.py` trimmed to pipeline glue; CSV/JSON writers live in
+`robustness_emit.py`. Closes thermo-nuclear finding J7.
+
+---
+
 ## Maintenance — 2026-05-25 (round-8 thermo-nuclear — hyperparameters split + range SSOT)
 
 **Hyperparameters domain split.** `simulation/hyperparameters.py` (588 lines)

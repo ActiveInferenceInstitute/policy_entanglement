@@ -8,11 +8,11 @@ import pytest
 from simulation import hyperparameters as H
 from simulation.agents import pymdp_available
 from simulation.long_horizon import LongHorizonResult
+from simulation.metrics import half_saturation_lambda as _half_saturation
 from simulation.robustness import (
     InteractionRobustnessScenario,
     MarginalNullControlRow,
     RobustnessScenario,
-    _half_saturation,
     coupling_ablation_spec,
     interaction_robustness_scenarios,
     long_horizon_seed_diagnostics,
@@ -279,3 +279,35 @@ def test_long_horizon_replicate_summaries_reject_empty_input() -> None:
         long_horizon_threshold_sensitivity([])
     with pytest.raises(ValueError, match="non-empty"):
         long_horizon_threshold_sensitivity_summary([])
+
+
+@pytest.mark.parametrize(
+    ("name", "submodule"),
+    [
+        ("run_robustness_suite", "simulation.robustness_one_axis"),
+        ("run_interaction_robustness_suite", "simulation.robustness_interaction"),
+        ("run_coupling_ablation", "simulation.robustness_controls"),
+        ("run_long_horizon_replicates", "simulation.robustness_replicates"),
+        ("wilson_score_interval", "simulation.robustness_stats"),
+        ("robustness_scenarios", "simulation.robustness_scenarios"),
+        ("interaction_robustness_scenarios", "simulation.robustness_scenarios"),
+        ("coupling_ablation_spec", "simulation.robustness_scenarios"),
+    ],
+)
+def test_facade_reexports_match_submodules(name: str, submodule: str) -> None:
+    """Facade attributes must mirror their domain submodule source."""
+    import importlib
+
+    from simulation import robustness as facade
+
+    mod = importlib.import_module(submodule)
+    assert getattr(facade, name) is getattr(mod, name)
+
+
+def test_facade_all_names_resolve() -> None:
+    """Every ``__all__`` entry on the robustness facade must be importable."""
+    from simulation import robustness as facade
+
+    for name in facade.__all__:
+        assert hasattr(facade, name), name
+        assert getattr(facade, name) is not None or name.endswith("_interval")

@@ -414,7 +414,23 @@ Hyperparameters consumed: `LONG_HORIZON_STEPS`, `LONG_HORIZON_LAMBDA`,
 `LONG_HORIZON_STEADY_STATE_TOL`. CSV sidecar:
 ``output/simulations/pymdp_long_horizon.csv``.
 
-### `robustness.py` (stress tests, ablations, and replicate sidecars)
+### `robustness.py` (facade — stress tests, ablations, and replicate sidecars)
+
+Import from ``simulation.robustness`` only. Domain modules (package-internal):
+
+| Module | Role |
+|--------|------|
+| `robustness_scenarios.py` | Dataclasses + scenario builders |
+| `robustness_core.py` | Shared λ-loop |
+| `robustness_one_axis.py` | One-axis suite |
+| `robustness_interaction.py` | Two-axis interaction suite |
+| `robustness_controls.py` | Ablation + marginal-null control |
+| `robustness_replicates.py` | Long-horizon replicate sidecars |
+| `robustness_stats.py` | Wilson intervals |
+| `robustness_emit.py` | CSV/JSON + figure metadata |
+| `robustness_runner.py` | Pipeline glue |
+
+Boundary contract: [`docs/_audit/ISA_20260525_robustness_cluster.md`](../_audit/ISA_20260525_robustness_cluster.md).
 
 ```python
 @dataclass(frozen=True)
@@ -543,8 +559,8 @@ untouched.
 
 ### `robustness_runner.py`
 
-Orchestration entry point for robustness CSV/JSON/PNG sidecars.
-Consumed by ``scripts/simulate_robustness.py``.
+Pipeline orchestration for robustness CSV/JSON/PNG sidecars (compute →
+``robustness_emit`` → plots). Consumed by ``scripts/simulate_robustness.py``.
 
 ```python
 def run_robustness_pipeline(
@@ -554,6 +570,30 @@ def run_robustness_pipeline(
     data_dir: Path,
     project_root: Path | None = None,
 ) -> list[Path]
+```
+
+### `robustness_core.py` (package-internal λ-loop)
+
+```python
+def rows_for_spec(
+    spec: CoupledEnsembleSpec,
+    observations: Sequence[int],
+    lams: Sequence[float],
+) -> list[tuple[float, ArrayF, float, float, float, float, float, float, float]]
+```
+
+### `robustness_emit.py` (CSV writers and figure metadata)
+
+```python
+def snapshot() -> dict[str, Any]
+def figure_metadata_dict(source_function: str, *, statistics=None, project_root=None) -> dict[str, str]
+def write_robustness_csv(rows, sim_dir: Path) -> Path
+def write_ablation_csv(rows, sim_dir: Path) -> Path
+def write_interaction_csv(rows, sim_dir: Path) -> Path
+def write_long_horizon_replicate_csv(results, records, sim_dir: Path) -> Path
+def write_long_horizon_seed_diagnostics_csv(diagnostics, sim_dir: Path) -> Path
+def write_long_horizon_threshold_sensitivity_csv(diagnostics, sim_dir: Path) -> Path
+def write_marginal_null_control_csv(rows, sim_dir: Path) -> Path
 ```
 
 ### `revertibility_pipeline.py`

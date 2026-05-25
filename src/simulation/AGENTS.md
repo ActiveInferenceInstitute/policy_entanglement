@@ -25,7 +25,16 @@ Companion to the analytical mirrors in `src/lean/`.
 | `long_horizon.py` | $T = 100$ coupled-rollout harness with habit-accumulation diagnostics and tail-window KL convergence checks. |
 | `multi_k_experiments.py` | $K \in \{3, 4, 5\}$ ensemble sweeps for the multi-stream Ising case (the K > 2 generalization). |
 | `revertibility.py` | $m$-projection revertibility witness: two independent code paths on $D_{\mathrm{KL}}(q\,\|\,\hat m(q)) = I(q)$. |
-| `robustness.py` | One-axis, two-axis, coupling-ablation, marginal-null-control, and replicate-seed robustness sidecars. |
+| `robustness.py` | **Facade** — import robustness helpers from here only. Re-exports compute, scenario dataclasses, and Wilson stats. |
+| `robustness_scenarios.py` | Scenario dataclasses, `robustness_scenarios()`, `interaction_robustness_scenarios()`, `coupling_ablation_spec()`. |
+| `robustness_core.py` | Shared λ-loop (`rows_for_spec`) for one-axis, interaction, and ablation sweeps. |
+| `robustness_one_axis.py` | `run_robustness_suite`, `summarize_robustness_rows`. |
+| `robustness_interaction.py` | Two-axis interaction suite run/summarize. |
+| `robustness_controls.py` | Coupling ablation + fixed-marginal null control. |
+| `robustness_replicates.py` | Long-horizon replicate sidecars, diagnostics, Wilson pass-rate summaries. |
+| `robustness_stats.py` | Wilson score intervals (single-purpose). |
+| `robustness_emit.py` | CSV writers and figure metadata for the robustness pipeline. |
+| `robustness_runner.py` | `run_robustness_pipeline` glue (compute → emit → plots). |
 | `btai_baseline.py` | Branching-Time AIF MCTS-based comparison baseline (shipped §13 empirical harness). |
 | `adversarial.py` | Bounded-norm adversarial-perturbation harness with analytical Lipschitz bound (§20 Q11). |
 | `cross_references.py` | Prose ↔ equation ↔ Lean cross-reference registry; every public numerical witness mapped to its theorem / equation / section / Lean / Mathlib / dashboard-invariant target. Integrity gated by `tests/test_cross_references.py`. |

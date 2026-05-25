@@ -29,7 +29,7 @@ No other structural regressions identified.
 | J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (partial — `hyperparameters.py` still deferred) |
 | J8 | HIGH | `validate_free_energy_bundle` duplicated TC/decomposition loops | `validate_tc_decomposition_group` with `check_lhs_rhs` + `finite_columns` | **Applied** |
 | J6 | MEDIUM | `reporting/_interactive_dashboard_local.py` (646) duplicates template infra | Prefer `infrastructure.reporting` when on PYTHONPATH | **Applied** (round-8) |
-| J7 | LOW | `simulation/robustness*.py` four-module cluster | Consolidate orchestration vs stats after robustness ISA | **Deferred** |
+| J7 | LOW | `simulation/robustness*.py` four-module cluster | Consolidate orchestration vs stats after robustness ISA | **Applied** (round-9) |
 
 ### 3. Spaghetti / branching growth
 
@@ -84,7 +84,24 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 1. ~~`hyperparameters.py` (588 lines, high fan-in)~~ — **Applied** round-8 (facade + five domain modules)
 2. ~~Merge six coverage modules into domain files~~ — **Applied** round-8 (three domain files under `tests/coverage/`)
 3. ~~`_interactive_dashboard_local.py` trim vs template `infrastructure.reporting`~~ — **Applied** round-8 (`_interactive_dashboard_compat` + fallback)
-4. `simulation/robustness*.py` four-module cluster — consolidate orchestration vs stats after robustness ISA
+4. ~~`simulation/robustness*.py` four-module cluster~~ — **Applied** round-9 (facade + eight domain modules; see [`ISA_20260525_robustness_cluster.md`](ISA_20260525_robustness_cluster.md))
+
+## Round-9 additions (2026-05-25)
+
+| Item | Change |
+|------|--------|
+| `robustness_{core,one_axis,interaction,controls,replicates,scenarios,stats,emit}.py` | Domain split; `robustness.py` facade unchanged import surface |
+| `robustness_runner.py` | Pipeline glue only (~220 LOC) |
+| `tests/test_robustness.py` | Facade binding tests for submodule parity |
+
+## Verification (round-9)
+
+| Gate | Result |
+|------|--------|
+| `pytest tests/ --cov=src --cov-fail-under=95` | **1428 passed**, 1 skipped; **95.36%** |
+| `scripts/regression_gate.py --update-baseline` | green — 47/47 invariants, 22 Lean jobs, baseline refreshed |
+| `ruff check src/ tests/ scripts/` | clean |
+| `mypy src/ scripts/` | clean (160 files) |
 
 ## Round-8 additions (2026-05-25)
 

@@ -9,21 +9,21 @@ import pytest
 
 from simulation.agents import pymdp_available
 from simulation.robustness import run_robustness_suite
-from simulation.robustness_runner import (
-    _md,
-    _snapshot,
-    _write_ablation_csv,
-    _write_marginal_null_control_csv,
-    _write_robustness_csv,
-    run_robustness_pipeline,
+from simulation.robustness_emit import (
+    figure_metadata_dict,
+    snapshot,
+    write_ablation_csv,
+    write_marginal_null_control_csv,
+    write_robustness_csv,
 )
+from simulation.robustness_runner import run_robustness_pipeline
 
 
 def test_snapshot_and_metadata_helpers() -> None:
-    snap = _snapshot()
+    snap = snapshot()
     assert "K" in snap
     assert "robustness_interaction_families" in snap
-    meta = _md("plot_robustness_tc_envelopes", statistics={"rows": 1})
+    meta = figure_metadata_dict("plot_robustness_tc_envelopes", statistics={"rows": 1})
     assert meta["project.source_function"] == "plot_robustness_tc_envelopes"
     assert "project.hyperparameters" in meta
 
@@ -31,7 +31,7 @@ def test_snapshot_and_metadata_helpers() -> None:
 @pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
 def test_write_robustness_csv_round_trip(tmp_path: Path) -> None:
     rows = run_robustness_suite([0.0, 1.0])
-    path = _write_robustness_csv(rows, tmp_path)
+    path = write_robustness_csv(rows, tmp_path)
     assert path.exists()
     with path.open(newline="", encoding="utf-8") as fh:
         got = list(csv.DictReader(fh))
@@ -45,8 +45,8 @@ def test_write_ablation_and_null_control_csv(tmp_path: Path) -> None:
 
     ablation_rows = run_coupling_ablation([0.0, 1.0])
     null_rows = run_marginal_null_control([0.0, 1.0])
-    ablation_path = _write_ablation_csv(ablation_rows, tmp_path)
-    null_path = _write_marginal_null_control_csv(null_rows, tmp_path)
+    ablation_path = write_ablation_csv(ablation_rows, tmp_path)
+    null_path = write_marginal_null_control_csv(null_rows, tmp_path)
     assert ablation_path.exists() and null_path.exists()
     with ablation_path.open(newline="", encoding="utf-8") as fh:
         assert len(list(csv.DictReader(fh))) == len(ablation_rows)

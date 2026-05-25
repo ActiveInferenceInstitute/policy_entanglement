@@ -278,6 +278,61 @@ def robustness_scenarios() -> tuple[RobustnessScenario, ...]:
     return tuple(out)
 
 
+def interaction_robustness_scenarios() -> tuple[InteractionRobustnessScenario, ...]:
+    """Configured targeted two-axis robustness scenarios."""
+
+    baseline_obs = tuple(int(x) for x in H.PYMDP_SWEEP_OBSERVATIONS)
+    baseline_gamma = float(H.PYMDP_ENSEMBLE_GAMMA)
+    baseline_pref = 1.0
+    baseline_scale = float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA)
+    out: list[InteractionRobustnessScenario] = []
+    for obs in H.ROBUSTNESS_OBSERVATION_CONTEXTS:
+        obs_tuple = tuple(int(x) for x in obs)
+        for scale in H.ROBUSTNESS_COUPLING_SCALES:
+            out.append(
+                InteractionRobustnessScenario(
+                    scenario_id=f"obs_{''.join(str(x) for x in obs_tuple)}_x_coupling_{_fmt_float(scale)}",
+                    family="observation_x_coupling_scale",
+                    level_a=f"obs=({obs_tuple[0]},{obs_tuple[1]})",
+                    level_b=f"scale={float(scale):g}",
+                    observations=obs_tuple,
+                    gamma=baseline_gamma,
+                    preference_strength=baseline_pref,
+                    coupling_scale=float(scale),
+                )
+            )
+    for gamma in H.ROBUSTNESS_GAMMAS:
+        for pref in H.ROBUSTNESS_PREFERENCE_STRENGTHS:
+            out.append(
+                InteractionRobustnessScenario(
+                    scenario_id=f"gamma_{_fmt_float(gamma)}_x_pref_{_fmt_float(pref)}",
+                    family="gamma_x_preference_strength",
+                    level_a=f"γ={float(gamma):g}",
+                    level_b=f"pref={float(pref):g}",
+                    observations=baseline_obs,
+                    gamma=float(gamma),
+                    preference_strength=float(pref),
+                    coupling_scale=baseline_scale,
+                )
+            )
+    for variant in H.COUPLING_ABLATION_VARIANTS:
+        for scale in H.ROBUSTNESS_COUPLING_SCALES:
+            out.append(
+                InteractionRobustnessScenario(
+                    scenario_id=f"{variant}_x_coupling_{_fmt_float(scale)}",
+                    family="coupling_variant_x_coupling_scale",
+                    level_a=str(variant).replace("_", " "),
+                    level_b=f"scale={float(scale):g}",
+                    observations=baseline_obs,
+                    gamma=baseline_gamma,
+                    preference_strength=baseline_pref,
+                    coupling_scale=float(scale),
+                    variant=str(variant),
+                )
+            )
+    return tuple(out)
+
+
 def _spec_for_scenario(scenario: RobustnessScenario) -> CoupledEnsembleSpec:
     """Build the K=2 Ising ensemble for a robustness scenario."""
 
