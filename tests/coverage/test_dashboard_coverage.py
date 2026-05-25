@@ -8,45 +8,10 @@ from pathlib import Path
 import pytest
 
 from dashboard_types import dashboard as dash_mod
-from lean import mathlib_proofs_gate as mpg
 from reporting import _interactive_dashboard_local as idash
 
 PROJECT = Path(__file__).resolve().parent.parent.parent
 
-KEYSTONE_BODY = "\n".join(f"theorem {name} : True := trivial" for name in mpg.KEYSTONE_THEOREMS)
-
-def _write_fake_lake_script(bin_dir: Path, *, build_rc: int = 0, build_out: str = "OK\n") -> None:
-    bin_dir.mkdir(parents=True, exist_ok=True)
-    script = bin_dir / "lake"
-    escaped_out = build_out.replace("'", "'\"'\"'")
-    script.write_text(
-        """#!/bin/sh
-if [ "$1" = "build" ]; then
-  printf '%s' '"""
-        + escaped_out
-        + """'
-  exit """
-        + str(build_rc)
-        + """
-fi
-if [ "$1" = "env" ] && [ "$2" = "lean" ]; then
-  printf '%s\\n' \\
-    "'MathlibProofs.streamMarginal_productDist' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.logDiv_prod_separates' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.klReal_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.klReal_split_via_intermediate' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.klReal_minimises_generalK' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.entanglement_decomposition_generalK' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.free_energy_decomposition_full' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.streamMarginal_pos' depends on axioms: [propext, Classical.choice, Quot.sound]" \\
-    "'MathlibProofs.multiInformation_nonneg_at_joint' depends on axioms: [propext, Classical.choice, Quot.sound]"
-  exit 0
-fi
-exit 1
-""",
-        encoding="utf-8",
-    )
-    script.chmod(0o755)
 
 def test_interactive_dashboard_local_json_helpers(tmp_path: Path) -> None:
     assert idash._git_rev(tmp_path / "not_a_git_repo") == "unknown"
@@ -69,6 +34,7 @@ def test_interactive_dashboard_local_json_helpers(tmp_path: Path) -> None:
     assert idash._to_jsonable(_Scalar()) == pytest.approx(3.5)
     assert idash._to_jsonable(float("inf")) is None
     assert idash._to_jsonable({Path("/a"): 1}) == {"/a": 1}
+
 
 def test_interactive_dashboard_local_full_render_bundle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(idash, "_git_rev", lambda repo_root=None: "abc123")

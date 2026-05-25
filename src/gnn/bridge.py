@@ -30,6 +30,7 @@ the concordance parity test).
 from __future__ import annotations
 
 import re
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -105,10 +106,10 @@ def build_joint_coupling(model: GnnModel) -> ArrayF:
         idx[b] = slice(None)
         # Construct an array that varies only along axes a and b.
         full = np.zeros(shape, dtype=np.float64)
-        it = np.nditer(full, flags=["multi_index"], op_flags=[["writeonly"]])
+        it = np.nditer(full, flags=["multi_index"], op_flags=[["writeonly"]])  # type: ignore[list-item]
         for x in it:
             mi = it.multi_index
-            x[...] = pair[mi[a], mi[b]]
+            cast(Any, x)[...] = pair[mi[a], mi[b]]
         joint += full
         found = True
     if not found:

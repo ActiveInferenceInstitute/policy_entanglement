@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import csv
+from functools import partial
 
 from manuscript.output_gates._reporting import fail as report_fail
 from manuscript.output_gates._reporting import ok as report_ok
 from manuscript.output_gates.constants import OUTPUT_DIR
 from manuscript.output_gates.csv_helpers import (
     parameter_sweep_required_columns,
-    rows_match_grid,
 )
 from manuscript.output_gates.sweep_validation import (
     finite,
@@ -17,6 +17,34 @@ from manuscript.output_gates.sweep_validation import (
     validate_tc_decomposition_group,
 )
 from simulation import hyperparameters as H  # noqa: N812
+
+
+def _multi_k_sweep_row_extras(group: list[dict[str, str]], *, k: int) -> int:
+    """Validate aligned_mass and tt_ranks columns for one multi-K sweep group."""
+    fail = 0
+    for r in group:
+        aligned = finite(r["aligned_mass"])
+        if not (0.0 <= aligned <= 1.0 + 1e-9):
+            report_fail(f"K={k}: λ={r['lambda']} aligned_mass {aligned} outside [0, 1]")
+            fail += 1
+        tts = r["tt_ranks"].split("|") if r["tt_ranks"] else []
+        if len(tts) != k - 1:
+            report_fail(f"K={k}: λ={r['lambda']} tt_ranks length {len(tts)} != K-1 = {k - 1}")
+            fail += 1
+            continue
+        for x in tts:
+            try:
+                if int(x) < 1:
+                    report_fail(f"K={k}: λ={r['lambda']} tt_ranks entry < 1: {x}")
+                    fail += 1
+            except ValueError:
+                report_fail(f"K={k}: λ={r['lambda']} tt_ranks not integer: {x}")
+                fail += 1
+    return fail
+
+
+def _multi_k_after(group: list[dict[str, str]], _tcs: list[float], *, k: int) -> int:
+    return _multi_k_sweep_row_extras(group, k=k)
 
 
 def validate_sweep() -> int:
@@ -146,48 +174,28 @@ def validate_multi_k_sweep() -> int:
             report_fail(f"K={K}: fewer than 2 rows in {path}")
             fail += 1
             continue
-        fail += rows_match_grid(rows, H.MULTI_K_SWEEP_LAMBDAS, label=f"K={K} multi-K sweep")
-        # TC must be non-negative everywhere and finite.
-        prev_tc = -float("inf")
-        for r in rows:
-            tc = finite(r["total_correlation"])
-            h_gap = finite(r["marginal_entropy_sum"]) - finite(r["joint_entropy"])
-            if tc < -float(H.PYMDP_COUPLING_ZERO_TOLERANCE):
-                report_fail(f"K={K}: λ={r['lambda']} TC = {tc} < 0")
-                fail += 1
-            if abs(h_gap - tc) > float(H.PYMDP_ENTROPY_ADD_TOLERANCE):
-                report_fail(f"K={K}: λ={r['lambda']} H-gap {h_gap} != TC {tc}")
-                fail += 1
-            if tc + 1e-9 < prev_tc:
-                report_fail(f"K={K}: λ={r['lambda']} TC non-monotone ({tc} < {prev_tc})")
-                fail += 1
-            prev_tc = tc
-            aligned = finite(r["aligned_mass"])
-            if not (0.0 <= aligned <= 1.0 + 1e-9):
-                report_fail(f"K={K}: λ={r['lambda']} aligned_mass {aligned} outside [0, 1]")
-                fail += 1
-            # tt_ranks: `|`-separated positive integers, length K-1.
-            tts = r["tt_ranks"].split("|") if r["tt_ranks"] else []
-            if len(tts) != K - 1:
-                report_fail(f"K={K}: λ={r['lambda']} tt_ranks length {len(tts)} != K-1 = {K - 1}")
-                fail += 1
-                continue
-            for x in tts:
-                try:
-                    if int(x) < 1:
-                        report_fail(f"K={K}: λ={r['lambda']} tt_ranks entry < 1: {x}")
-                        fail += 1
-                except ValueError:
-                    report_fail(f"K={K}: λ={r['lambda']} tt_ranks not integer: {x}")
-                    fail += 1
         zero_tol = float(H.PYMDP_COUPLING_ZERO_TOLERANCE)
         tc_zero_tol = float(H.PYMDP_TC_ZERO_TOLERANCE)
         entropy_tol = float(H.PYMDP_ENTROPY_ADD_TOLERANCE)
+        decomp_tol = float(H.PYMDP_DECOMPOSITION_RESIDUAL_TOLERANCE)
+        label = f"K={K} multi-K sweep"
+        fail += validate_tc_decomposition_group(
+            rows,
+            label=label,
+            grid=H.MULTI_K_SWEEP_LAMBDAS,
+            tol=decomp_tol,
+            entropy_tol=entropy_tol,
+            zero_tol=zero_tol,
+            monotonic_tc=True,
+            check_decomposition=False,
+            finite_columns=("coupling_term", "aligned_mass"),
+            after_group=partial(_multi_k_after, k=K),
+        )
         r0 = next((r for r in rows if abs(float(r["lambda"])) < zero_tol), None)
         if r0 is not None:
             fail += validate_lambda_zero_mean_field_row(
                 r0,
-                label=f"K={K} multi-K sweep",
+                label=label,
                 zero_tol=zero_tol,
                 tc_zero_tol=tc_zero_tol,
                 entropy_tol=entropy_tol,

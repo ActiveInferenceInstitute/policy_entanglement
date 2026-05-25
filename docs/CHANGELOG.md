@@ -33,6 +33,13 @@ three domain files (`test_manuscript_coverage.py`,
 `render_interactive_dashboard_html`. Local dashboard module reduced from
 646 to ~340 lines.
 
+**Round-8 follow-up (same day).** Multi-K sweep gates now route TC /
+entropy checks through `validate_tc_decomposition_group` with
+`check_decomposition=False` and an `after_group` hook for `aligned_mass` /
+`tt_ranks`. Added `check_decomposition` flag to the shared helper. Fixed
+`gnn/bridge.py` mypy on the `nditer` broadcast path. Full `mypy src/
+scripts/` clean again.
+
 ---
 
 ## Maintenance — 2026-05-25 (round-7 thermo-nuclear — validator decomposition + revertibility pipeline)

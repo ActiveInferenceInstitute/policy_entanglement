@@ -103,6 +103,16 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 | `scripts/regression_gate.py --update-baseline` | green — 47/47 invariants, baseline refreshed |
 | `ruff check src/ tests/` | clean |
 | `mypy` (round-8 touched modules) | clean |
+| `mypy src/ scripts/` (round-8 follow-up) | **clean** (154 files) |
+
+## Round-8 follow-up (2026-05-25)
+
+| Item | Change |
+|------|--------|
+| `validate_tc_decomposition_group` | `check_decomposition=False` for sweeps without residual columns |
+| `pymdp_sweep_validators.validate_multi_k_sweep` | Uses shared TC helper + `_multi_k_sweep_row_extras` hook |
+| `gnn/bridge.py` | mypy-clean `nditer` broadcast via `cast(Any, …)` |
+| `tests/coverage/test_dashboard_coverage.py` | Removed spurious cross-domain imports |
 
 ## Related
 

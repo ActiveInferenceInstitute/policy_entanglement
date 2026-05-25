@@ -574,15 +574,23 @@ def validate_lambda_zero_mean_field_row(
     zero_tol: float,
 ) -> None
 def validate_tc_decomposition_group(
-    rows: Sequence[Mapping[str, object]],
+    group: list[dict[str, str]],
     *,
     label: str,
+    grid,
     tol: float,
-    zero_tol: float,
     entropy_tol: float,
-    monotonic_tc: bool = True,
-) -> None
+    zero_tol: float,
+    monotonic_tc: bool = False,
+    check_lhs_rhs: bool = False,
+    check_decomposition: bool = True,
+    finite_columns: tuple[str, ...] = (),
+    after_group: Callable[[list[dict[str, str]], list[float]], int] | None = None,
+) -> int
 ```
+
+Optional ``check_decomposition=False`` skips lhs/rhs/residual checks (multi-K sweeps).
+Optional ``after_group`` hook validates domain-specific columns after the shared TC pass.
 
 #### `output_gates/artifact_validators.py` + ``__init__.py``
 

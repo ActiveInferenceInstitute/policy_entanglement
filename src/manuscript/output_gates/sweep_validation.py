@@ -50,10 +50,11 @@ def validate_tc_decomposition_group(
     zero_tol: float,
     monotonic_tc: bool = False,
     check_lhs_rhs: bool = False,
+    check_decomposition: bool = True,
     finite_columns: tuple[str, ...] = (),
     after_group: Callable[[list[dict[str, str]], list[float]], int] | None = None,
 ) -> int:
-    """Validate one λ-sweep group for TC, entropy gap, and decomposition residual."""
+    """Validate one λ-sweep group for TC, entropy gap, and optional decomposition residual."""
     fail = rows_match_grid(group, grid, label=label)
     tcs = [finite(r["total_correlation"]) for r in group]
     if abs(tcs[0]) > zero_tol:
@@ -70,16 +71,17 @@ def validate_tc_decomposition_group(
         if abs(gap - tc) > entropy_tol:
             report_fail(f"{label}: λ={r['lambda']} H-gap {gap} != TC {tc}")
             fail += 1
-        if check_lhs_rhs:
-            lhs = finite(r["decomposition_lhs"])
-            rhs = finite(r["decomposition_rhs"])
-            if abs(lhs - rhs) > tol:
-                report_fail(f"{label}: λ={r['lambda']}: decomposition lhs/rhs gap {abs(lhs - rhs)}")
+        if check_decomposition:
+            if check_lhs_rhs:
+                lhs = finite(r["decomposition_lhs"])
+                rhs = finite(r["decomposition_rhs"])
+                if abs(lhs - rhs) > tol:
+                    report_fail(f"{label}: λ={r['lambda']}: decomposition lhs/rhs gap {abs(lhs - rhs)}")
+                    fail += 1
+            residual = finite(r["decomposition_residual"])
+            if residual > tol:
+                report_fail(f"{label}: λ={r['lambda']} residual {residual} > {tol}")
                 fail += 1
-        residual = finite(r["decomposition_residual"])
-        if residual > tol:
-            report_fail(f"{label}: λ={r['lambda']} residual {residual} > {tol}")
-            fail += 1
         for col in finite_columns:
             try:
                 finite(r[col])
