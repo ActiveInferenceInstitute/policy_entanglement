@@ -17,6 +17,7 @@ htmlcov/
 
 # Lake build artefacts.
 lean/.lake/
+**/.lake/
 lean/build/
 *.olean
 *.ilean
