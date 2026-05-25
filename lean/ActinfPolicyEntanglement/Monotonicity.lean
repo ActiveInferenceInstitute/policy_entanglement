@@ -51,7 +51,7 @@ theorem list_length_append {α : Type} (l₁ l₂ : List α) :
   induction l₁ with
   | nil => simp [Nat.zero_add]
   | cons _ xs ih =>
-      simp [List.cons_append, list_length_cons, ih]
+      simp [List.cons_append, ih]
       omega
 
 /-- Right-identity of append. -/

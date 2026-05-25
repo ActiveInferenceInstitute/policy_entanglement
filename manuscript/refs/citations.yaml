@@ -19,18 +19,42 @@
 #   note:       str      — optional editorial note (renders as italics)
 #   topic:      str      — bibliography category (used for grouping)
 
+amari-1985:
+  authors: "Amari, S."
+  year: 1985
+  title: "Differential-Geometrical Methods in Statistics"
+  venue: "Lecture Notes in Statistics, Vol. 28 (Springer)"
+  doi: "10.1007/978-1-4612-5056-2"
+  url: "https://link.springer.com/book/10.1007/978-1-4612-5056-2"
+  note: "Founding monograph of information geometry; introduced the dually-flat alpha-connection family and the e- / m-geodesic structure used in the framework-connections section."
+  topic: information_geometry
+
 amari-2016:
   authors: "Amari, S."
   year: 2016
   title: "Information Geometry and Its Applications"
-  venue: "Springer"
+  venue: "Springer, Applied Mathematical Sciences, Vol. 194"
+  doi: "10.1007/978-4-431-55978-8"
+  url: "https://link.springer.com/book/10.1007/978-4-431-55978-8"
   topic: information_geometry
 
 amari-nagaoka-2000:
   authors: "Amari, S., Nagaoka, H."
   year: 2000
   title: "Methods of Information Geometry"
-  venue: "American Mathematical Society"
+  venue: "AMS Translations of Mathematical Monographs, Vol. 191 (American Mathematical Society / Oxford University Press)"
+  note: "Translated by Daishi Harada from the 1993 Japanese original. ISBN 978-0-8218-4302-4."
+  url: "https://bookstore.ams.org/mmono-191/"
+  topic: information_geometry
+
+ay-jost-le-schwachhofer-2017:
+  authors: "Ay, N., Jost, J., Lê, H. V., Schwachhöfer, L."
+  year: 2017
+  title: "Information Geometry"
+  venue: "Ergebnisse der Mathematik und ihrer Grenzgebiete (3. Folge), Vol. 64 (Springer)"
+  doi: "10.1007/978-3-319-56478-4"
+  url: "https://link.springer.com/book/10.1007/978-3-319-56478-4"
+  note: "ISBN 978-3-319-56477-7. Comprehensive monograph treatment covering the parametric and non-parametric geometric foundations used in the information-geometric formalism."
   topic: information_geometry
 
 adams-2013:
@@ -40,89 +64,384 @@ adams-2013:
   venue: "Frontiers in Psychiatry"
   volume: "4"
   pages: "47"
+  doi: "10.3389/fpsyt.2013.00047"
+  url: "https://www.frontiersin.org/articles/10.3389/fpsyt.2013.00047"
   topic: comp_psychiatry
+
+haarsma-2021:
+  authors: "Haarsma, J., Fletcher, P. C., Griffin, J. D., et al."
+  year: 2021
+  title: "Precision weighting of cortical unsigned prediction error signals benefits learning, is mediated by dopamine, and is impaired in psychosis"
+  venue: "Molecular Psychiatry"
+  volume: "26"
+  pages: "5320-5333"
+  doi: "10.1038/s41380-020-0803-8"
+  url: "https://www.nature.com/articles/s41380-020-0803-8"
+  note: "Empirical precision-weighting study used to support cautious dopamine / psychosis discussion without identifying lambda with a neural precision variable."
+  topic: comp_psychiatry
+
+bagaev-2023:
+  authors: "Bagaev, D., Podusenko, A., de Vries, B."
+  year: 2023
+  title: "RxInfer: A Julia package for reactive real-time Bayesian inference"
+  venue: "Journal of Open Source Software"
+  volume: "8(84)"
+  pages: "5161"
+  doi: "10.21105/joss.05161"
+  url: "https://joss.theoj.org/papers/10.21105/joss.05161"
+  note: "Primary software citation for RxInfer.jl; cited for the reactive message-passing lineage that complements pymdp-style discrete POMDP active inference."
+  topic: software
+
+bacon-harb-precup-2017:
+  authors: "Bacon, P.-L., Harb, J., Precup, D."
+  year: 2017
+  title: "The Option-Critic Architecture"
+  venue: "Proceedings of the AAAI Conference on Artificial Intelligence"
+  volume: "31(1)"
+  doi: "10.1609/aaai.v31i1.10916"
+  url: "https://ojs.aaai.org/index.php/AAAI/article/view/10916"
+  note: "Modern options reference used to scope the manuscript's option-like embedding as a parametric policy-matching construction, not a proof that the lambda deformation subsumes all option-learning algorithms."
+  topic: hierarchical_rl
+
+barto-mahadevan-2003:
+  authors: "Barto, A. G., Mahadevan, S."
+  year: 2003
+  title: "Recent Advances in Hierarchical Reinforcement Learning"
+  venue: "Discrete Event Dynamic Systems"
+  volume: "13"
+  pages: "341-379"
+  doi: "10.1023/A:1025696116075"
+  url: "https://link.springer.com/article/10.1023/A:1025696116075"
+  note: "Review reference for hierarchical RL and temporal abstraction; cited alongside options to keep the control/RL comparison anchored in the RL literature."
+  topic: hierarchical_rl
+
+blei-kucukelbir-mcauliffe-2017:
+  authors: "Blei, D. M., Kucukelbir, A., McAuliffe, J. D."
+  year: 2017
+  title: "Variational Inference: A Review for Statisticians"
+  venue: "Journal of the American Statistical Association"
+  volume: "112(518)"
+  pages: "859-877"
+  doi: "10.1080/01621459.2017.1285773"
+  url: "https://doi.org/10.1080/01621459.2017.1285773"
+  note: "Modern scholarly review citation for mean-field and structured variational inference."
+  topic: variational_copula
+
+nelsen-2006:
+  authors: "Nelsen, R. B."
+  year: 2006
+  title: "An Introduction to Copulas"
+  venue: "Springer Series in Statistics, 2nd ed."
+  doi: "10.1007/0-387-28678-0"
+  url: "https://link.springer.com/book/10.1007/0-387-28678-0"
+  note: "Foundational monograph for copula definitions and dependence modeling; cited to distinguish true copula densities from informal dependence-factor analogies."
+  topic: variational_copula
 
 bradbury-2018:
   authors: "Bradbury, J., Frostig, R., Hawkins, P., Johnson, M. J., Leary, C., Maclaurin, D., Necula, G., Paszke, A., VanderPlas, J., Wanderman-Milne, S., Zhang, Q."
   year: 2018
   title: "JAX: composable transformations of Python+NumPy programs"
-  venue: "http://github.com/google/jax"
-  note: "JAX backend underlies pymdp 1.0.1 and the simulation harness."
+  venue: "Open-source software"
+  url: "http://github.com/jax-ml/jax"
+  note: "Canonical citation per the JAX CITATION.bib file. No replacement journal/paper has emerged as of 2026-05. JAX backend underlies pymdp 1.0.1 and the simulation harness."
   topic: software
+
+buckley-2017:
+  authors: "Buckley, C. L., Kim, C. S., McGregor, S., Seth, A. K."
+  year: 2017
+  title: "The free energy principle for action and perception: A mathematical review"
+  venue: "Journal of Mathematical Psychology"
+  volume: "81"
+  pages: "55–79"
+  doi: "10.1016/j.jmp.2017.09.004"
+  url: "https://www.sciencedirect.com/science/article/pii/S0022249617300962"
+  note: "Accessible mathematical review of the free-energy principle used to ground the introductory VFE claim without relying only on process-theory exposition."
+  topic: active_inference
+
+friston-2006:
+  authors: "Friston, K., Kilner, J., Harrison, L."
+  year: 2006
+  title: "A free energy principle for the brain"
+  venue: "Journal of Physiology-Paris"
+  volume: "100(1–3)"
+  pages: "70–87"
+  doi: "10.1016/j.jphysparis.2006.10.001"
+  url: "https://www.sciencedirect.com/science/article/pii/S092842570600060X"
+  note: "Early statement of variational free energy as a unifying principle for perception, action, and learning."
+  topic: active_inference
 
 champion-2022:
   authors: "Champion, T., Grześ, M., Bowman, H."
   year: 2022
-  title: "Multi-Modal and Multi-Factor Branching Time Active Inference"
-  venue: "arXiv:2206.12503"
+  title: "Branching Time Active Inference with Bayesian Filtering"
+  venue: "Neural Computation"
+  volume: "34(10)"
+  pages: "2132–2144"
+  doi: "10.1162/neco_a_01529"
+  url: "https://direct.mit.edu/neco/article-abstract/34/10/2132"
+  note: "Uses Bayesian filtering on the expanded policy tree rather than vanilla MCTS rollouts; in the wider BTAI lineage (Fountas et al. 2020 DAI / MCTS for active inference)."
+  topic: branching_time
+
+fountas-2020:
+  authors: "Fountas, Z., Sajid, N., Mediano, P. A. M., Friston, K."
+  year: 2020
+  title: "Deep active inference agents using Monte-Carlo methods"
+  venue: "Advances in Neural Information Processing Systems 33 (NeurIPS 2020)"
+  doi: "10.48550/arXiv.2006.04176"
+  url: "https://proceedings.neurips.cc/paper/2020/hash/865dfbde8a344b44095495f3591f7407-Abstract.html"
+  note: "arXiv:2006.04176. Canonical reference for deep / MCTS-style branching-time active inference (DAI)."
   topic: branching_time
 
 dacosta-2020:
   authors: "Da Costa, L., Parr, T., Sajid, N., Veselic, S., Neacsu, V., Friston, K."
   year: 2020
-  title: "Active inference on discrete state-spaces"
+  title: "Active inference on discrete state-spaces: A synthesis"
   venue: "Journal of Mathematical Psychology"
   volume: "99"
   pages: "102447"
+  doi: "10.1016/j.jmp.2020.102447"
+  url: "https://www.sciencedirect.com/science/article/pii/S0022249620300857"
+  note: "arXiv:2001.07203."
   topic: active_inference
+
+dacosta-2024-agency:
+  authors: "Da Costa, L., Tenka, S., Zhao, D., Sajid, N."
+  year: 2024
+  title: "Active Inference as a Model of Agency"
+  venue: "arXiv"
+  doi: "10.48550/arXiv.2401.12917"
+  url: "https://arxiv.org/abs/2401.12917"
+  note: "Accepted at the RLDM 2022 workshop 'RL as a model of agency'; cited for the active-inference-as-agency unification framing, not as evidence for policy entanglement itself."
+  topic: active_inference
+
+dacosta-friston-heins-pavliotis-2021:
+  authors: "Da Costa, L., Friston, K., Heins, C., Pavliotis, G. A."
+  year: 2021
+  title: "Bayesian mechanics for stationary processes"
+  venue: "Proceedings of the Royal Society A"
+  volume: "477(2256)"
+  pages: "20210518"
+  doi: "10.1098/rspa.2021.0518"
+  url: "https://royalsocietypublishing.org/doi/10.1098/rspa.2021.0518"
+  note: "Bayesian-mechanics reference for Markov blankets in stationary processes; cited to keep the manuscript's policy-space blanket language explicitly analogical."
+  topic: markov_blanket
 
 demoura-ullrich-2021:
   authors: "de Moura, L., Ullrich, S."
   year: 2021
-  title: "The Lean 4 theorem prover and programming language"
-  venue: "CADE-28"
+  title: "The Lean 4 Theorem Prover and Programming Language"
+  venue: "Automated Deduction – CADE 28, LNCS vol. 12699 (Springer, Cham)"
   pages: "625–635"
-  topic: formalisation
+  doi: "10.1007/978-3-030-79876-5_37"
+  url: "https://link.springer.com/chapter/10.1007/978-3-030-79876-5_37"
+  topic: formalization
+
+lean-fro-2026:
+  authors: "Lean FRO"
+  year: 2026
+  title: "Lean Programming Language"
+  venue: "Official Lean website"
+  url: "https://lean-lang.org/"
+  note: "Official Lean source for the minimal trusted-kernel and verification-platform claims; scholarly citation remains de Moura and Ullrich 2021."
+  topic: formalization
+
+devries-friston-2017-factor-graph:
+  authors: "de Vries, B., Friston, K. J."
+  year: 2017
+  title: "A Factor Graph Description of Deep Temporal Active Inference"
+  venue: "Frontiers in Computational Neuroscience"
+  volume: "11"
+  pages: "95"
+  doi: "10.3389/fncom.2017.00095"
+  url: "https://www.frontiersin.org/articles/10.3389/fncom.2017.00095/full"
+  note: "Primary factor-graph / Forney-style graph source for deep temporal active inference; cited only for message-passing implementability, not as a theorem-equivalence claim for policy entanglement."
+  topic: active_inference
+
+friston-parr-devries-2017-graphical-brain:
+  authors: "Friston, K. J., Parr, T., de Vries, B."
+  year: 2017
+  title: "The graphical brain: Belief propagation and active inference"
+  venue: "Network Neuroscience"
+  volume: "1(4)"
+  pages: "381–414"
+  doi: "10.1162/NETN_a_00018"
+  url: "https://doi.org/10.1162/NETN_a_00018"
+  note: "Graphical-brain source for belief propagation, Forney-style graphical modeling, and active-inference message-passing context; not evidence that lambda-coupled policy posteriors are standard in AIF."
+  topic: active_inference
+
+parr-markovic-kiebel-friston-2019-message-passing:
+  authors: "Parr, T., Marković, D., Kiebel, S. J., Friston, K. J."
+  year: 2019
+  title: "Neuronal message passing using Mean-field, Bethe and Marginal approximations"
+  venue: "Scientific Reports"
+  volume: "9"
+  pages: "1889"
+  doi: "10.1038/s41598-018-38246-3"
+  url: "https://www.nature.com/articles/s41598-018-38246-3"
+  note: "Primary source distinguishing mean-field, Bethe, and marginal message-passing approximations; cited for approximation-family context, not as a direct proof of policy-coupling neural implementation."
+  topic: active_inference
+
+yedidia-2005:
+  authors: "Yedidia, J. S., Freeman, W. T., Weiss, Y."
+  year: 2005
+  title: "Constructing Free-Energy Approximations and Generalized Belief Propagation Algorithms"
+  venue: "IEEE Transactions on Information Theory"
+  volume: "51(7)"
+  pages: "2282–2312"
+  doi: "10.1109/TIT.2005.850085"
+  url: "https://doi.org/10.1109/TIT.2005.850085"
+  note: "Canonical Bethe / Kikuchi free-energy and generalized-belief-propagation source; cited for graphical-variational approximation structure, not for active-inference policy semantics."
+  topic: active_inference
 
 doll-2015:
   authors: "Doll, B. B., Duncan, K. D., Simon, D. A., Shohamy, D., Daw, N. D."
   year: 2015
   title: "Model-based choices involve prospective neural activity"
   venue: "Nature Neuroscience"
-  volume: "18"
+  volume: "18(5)"
   pages: "767–772"
+  doi: "10.1038/nn.3981"
+  url: "https://www.nature.com/articles/nn.3981"
   topic: hierarchical_rl
 
 eisert-2010:
   authors: "Eisert, J., Cramer, M., Plenio, M. B."
   year: 2010
-  title: "Area laws for the entanglement entropy"
+  title: "Colloquium: Area laws for the entanglement entropy"
   venue: "Reviews of Modern Physics"
-  volume: "82"
+  volume: "82(1)"
   pages: "277–306"
+  doi: "10.1103/RevModPhys.82.277"
+  url: "https://link.aps.org/doi/10.1103/RevModPhys.82.277"
   topic: tensor_networks
+
+biamonte-2017:
+  authors: "Biamonte, J., Bergholm, V."
+  year: 2017
+  title: "Tensor Networks in a Nutshell"
+  venue: "arXiv"
+  doi: "10.48550/arXiv.1708.00006"
+  url: "https://arxiv.org/abs/1708.00006"
+  note: "Tutorial tensor-network reference used to scope Schmidt-rank / tensor-train language as probability-tensor linear algebra, not a quantum-physical claim."
+  topic: tensor_networks
+
+cichocki-2016:
+  authors: "Cichocki, A., Lee, N., Oseledets, I. V., Phan, A.-H., Zhao, Q., Mandic, D. P."
+  year: 2016
+  title: "Tensor Networks for Dimensionality Reduction and Large-scale Optimization: Part 1 Low-Rank Tensor Decompositions"
+  venue: "Foundations and Trends in Machine Learning"
+  volume: "9(4–5)"
+  pages: "249–429"
+  doi: "10.1561/2200000059"
+  url: "https://doi.org/10.1561/2200000059"
+  note: "Machine-learning tensor-network survey; cited for low-rank tensor formats and optimization context, not as an active-inference result."
+  topic: tensor_networks
+
+friedman-2026-fep-lean:
+  authors: "Friedman, D. A."
+  year: 2026
+  title: "Towards Lean 4 Formalization of the Free Energy Principle: AI-Driven Theorem Sketching and Verification for Active Inference and Bayesian Mechanics"
+  venue: "Active Inference Journal. Zenodo"
+  doi: "10.5281/zenodo.19699234"
+  url: "https://github.com/ActiveInferenceInstitute/fep_lean"
+  topic: formalization
+
+friedman-2026-actinf-policy-entanglement:
+  authors: "Friedman, D. A."
+  year: 2026
+  title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
+  venue: "Active Inference Institute"
+  note: "Working four-track research artifact (prose, equations, Python/pymdp, Lean 4); public Zenodo DOI and public source archive pending."
+  topic: software
+
+friedman-2025-cerebrum:
+  authors: "Friedman, D. A."
+  year: 2025
+  title: "CEREBRUM: Case-Enabled Reasoning Engine with Bayesian Representations for Unified Modeling"
+  venue: "Zenodo (Active Inference Journal)"
+  volume: "v1.4"
+  doi: "10.5281/zenodo.15231156"
+  url: "https://zenodo.org/records/15231156"
+  note: "Case-grammar architecture for unified Bayesian cognitive modeling; supports the manuscript's multi-agent / case-grammar connection."
+  topic: multi_agent
+
+friedman-2026-compositional-case:
+  authors: "Friedman, D. A."
+  year: 2026
+  title: "Compositional Approaches to Linguistic Case for Cognitive Modeling"
+  venue: "Active Inference Journal. Zenodo"
+  volume: "v1"
+  doi: "10.5281/zenodo.19695260"
+  url: "https://doi.org/10.5281/zenodo.19695260"
+  note: "Category-theoretic treatment of linguistic case systems: case roles as objects, alignment patterns as functors, sentence and discourse circuits as morphisms in a compact-closed category, hom-objects enriched over [0,1] as magnitudes, and topos-theoretic Morita equivalence between alignment frames. Supplies the compositional substrate under which the case-graded J asymmetry of the CEREBRUM connections section is licensed; companion architecture to friedman-2025-cerebrum."
+  topic: multi_agent
 
 friston-2010:
   authors: "Friston, K."
   year: 2010
   title: "The free-energy principle: a unified brain theory?"
   venue: "Nature Reviews Neuroscience"
-  volume: "11"
+  volume: "11(2)"
   pages: "127–138"
+  doi: "10.1038/nrn2787"
+  url: "https://www.nature.com/articles/nrn2787"
+  topic: active_inference
+
+friston-trujillo-daunizeau-2008:
+  authors: "Friston, K. J., Trujillo-Barreto, N., Daunizeau, J."
+  year: 2008
+  title: "DEM: A variational treatment of dynamic systems"
+  venue: "NeuroImage"
+  volume: "41(3)"
+  pages: "849–885"
+  doi: "10.1016/j.neuroimage.2008.02.054"
+  url: "https://www.sciencedirect.com/science/article/pii/S1053811908001894"
+  note: "Primary dynamic expectation maximization reference behind the SPM-DEM lineage discussed in the introduction."
   topic: active_inference
 
 friston-2014:
-  authors: "Friston, K., Schwartenbeck, P., FitzGerald, T., Moutoussis, M., Behrens, T., Dolan, R."
+  authors: "Friston, K., Schwartenbeck, P., FitzGerald, T., Moutoussis, M., Behrens, T., Dolan, R. J."
   year: 2014
   title: "The anatomy of choice: dopamine and decision-making"
   venue: "Philosophical Transactions of the Royal Society B"
-  volume: "369"
+  volume: "369(1655)"
+  pages: "20130481"
+  doi: "10.1098/rstb.2013.0481"
+  url: "https://royalsocietypublishing.org/doi/10.1098/rstb.2013.0481"
   topic: active_inference
 
 friston-2017:
   authors: "Friston, K., FitzGerald, T., Rigoli, F., Schwartenbeck, P., Pezzulo, G."
   year: 2017
-  title: "Active inference: a process theory"
+  title: "Active Inference: A Process Theory"
   venue: "Neural Computation"
-  volume: "29"
+  volume: "29(1)"
   pages: "1–49"
+  doi: "10.1162/NECO_a_00912"
+  url: "https://direct.mit.edu/neco/article/29/1/1"
+  topic: active_inference
+
+friston-2017-deep-temporal:
+  authors: "Friston, K. J., Rosch, R., Parr, T., Price, C., Bowman, H."
+  year: 2017
+  title: "Deep temporal models and active inference"
+  venue: "Neuroscience & Biobehavioral Reviews"
+  volume: "77"
+  pages: "388–402"
+  doi: "10.1016/j.neubiorev.2017.04.009"
+  url: "https://doi.org/10.1016/j.neubiorev.2017.04.009"
+  note: "Primary deep-temporal active-inference source; cited for hierarchical temporal-model and long-horizon framing, not as evidence that the present finite-policy model is a full process theory."
   topic: active_inference
 
 friston-2019:
   authors: "Friston, K."
   year: 2019
   title: "A free energy principle for a particular physics"
-  venue: "arXiv:1906.10184"
+  venue: "arXiv preprint"
+  pages: "arXiv:1906.10184"
+  doi: "10.48550/arXiv.1906.10184"
+  url: "https://arxiv.org/abs/1906.10184"
+  note: "Preprint only as of 2026-05; never received a journal publication."
   topic: active_inference
 
 friston-2021:
@@ -130,31 +449,169 @@ friston-2021:
   year: 2021
   title: "Sophisticated Inference"
   venue: "Neural Computation"
-  volume: "33"
+  volume: "33(3)"
   pages: "713–763"
+  doi: "10.1162/neco_a_01351"
+  url: "https://direct.mit.edu/neco/article/33/3/713"
+  note: "arXiv:2006.04120. Introduces recursive expected free energy for deep counterfactual policy tree search."
+  topic: active_inference
+
+pezzulo-2024-sentient:
+  authors: "Pezzulo, G., Parr, T., Friston, K. J."
+  year: 2024
+  title: "Active inference as a theory of sentient behavior"
+  venue: "Biological Psychology"
+  volume: "186"
+  pages: "108741"
+  doi: "10.1016/j.biopsycho.2023.108741"
+  url: "https://www.sciencedirect.com/science/article/pii/S0301051123002612"
+  note: "Recent synthesis used to distinguish active inference as process theory from the broader free-energy-principle framing."
+  topic: active_inference
+
+kaplan-friston-2018:
+  authors: "Kaplan, R., Friston, K. J."
+  year: 2018
+  title: "Planning and navigation as active inference"
+  venue: "Biological Cybernetics"
+  volume: "112"
+  pages: "323-343"
+  doi: "10.1007/s00422-018-0753-2"
+  url: "https://link.springer.com/article/10.1007/s00422-018-0753-2"
+  note: "Navigation and planning example for EFE-based policy selection, risk / ambiguity terms, and epistemic exploration under active inference."
+  topic: active_inference
+
+parr-friston-2017-uncertainty:
+  authors: "Parr, T., Friston, K. J."
+  year: 2017
+  title: "Uncertainty, epistemics and active inference"
+  venue: "Journal of The Royal Society Interface"
+  volume: "14(136)"
+  pages: "20170376"
+  doi: "10.1098/rsif.2017.0376"
+  url: "https://royalsocietypublishing.org/doi/10.1098/rsif.2017.0376"
+  note: "Primary source for epistemic value and uncertainty reduction in active-inference policy selection."
+  topic: active_inference
+
+friston-2018-cognitive-consistency:
+  authors: "Friston, K. J."
+  year: 2018
+  title: "Active Inference and Cognitive Consistency"
+  venue: "Psychological Inquiry"
+  volume: "29(2)"
+  pages: "67–73"
+  doi: "10.1080/1047840X.2018.1480693"
+  url: "https://www.tandfonline.com/doi/full/10.1080/1047840X.2018.1480693"
+  note: "Commentary linking expected-free-energy epistemic/pragmatic terms to cognitive-consistency constructs; cited as interpretive context, not as a reduction of social-psychological theory to active inference."
+  topic: active_inference
+
+millidge-2021:
+  authors: "Millidge, B., Tschantz, A., Buckley, C. L."
+  year: 2021
+  title: "Whence the Expected Free Energy?"
+  venue: "Neural Computation"
+  volume: "33(2)"
+  pages: "447-482"
+  doi: "10.1162/neco_a_01354"
+  url: "https://direct.mit.edu/neco/article/33/2/447/95645/Whence-the-Expected-Free-Energy"
+  note: "Critical analysis of EFE derivations and alternatives; cited to keep expected-free-energy unification claims bounded."
+  topic: active_inference
+
+parr-friston-2017-working-memory:
+  authors: "Parr, T., Friston, K. J."
+  year: 2017
+  title: "Working memory, attention, and salience in active inference"
+  venue: "Scientific Reports"
+  volume: "7"
+  pages: "14678"
+  doi: "10.1038/s41598-017-15249-0"
+  url: "https://www.nature.com/articles/s41598-017-15249-0"
+  note: "Process-theory account linking working memory, attention, salience, precision, and policy evaluation under active inference."
+  topic: active_inference
+
+limanowski-2024:
+  authors: "Limanowski, J., Adams, R. A., Kilner, J., Parr, T."
+  year: 2024
+  title: "The Many Roles of Precision in Action"
+  venue: "Entropy"
+  volume: "26(9)"
+  pages: "790"
+  doi: "10.3390/e26090790"
+  url: "https://www.mdpi.com/1099-4300/26/9/790"
+  note: "Review of precision roles in action, attention, habit, and self-other distinction; cited to keep lambda-as-coupling-precision language distinct from neural precision claims."
   topic: active_inference
 
 friston-2024:
-  authors: "Friston, K., Heins, C., Verbelen, T., Da Costa, L., Salvatori, T., Markovic, D., et al."
-  year: 2024
+  authors: "Friston, K. J., Heins, C., Verbelen, T., Da Costa, L., Salvatori, T., Marković, D., Tschantz, A., Koudahl, M., Buckley, C., Parr, T."
+  year: 2025
   title: "From pixels to planning: scale-free active inference"
   venue: "Frontiers in Network Physiology"
+  volume: "5"
+  pages: "1521963"
+  doi: "10.3389/fnetp.2025.1521963"
+  url: "https://www.frontiersin.org/journals/network-physiology/articles/10.3389/fnetp.2025.1521963/full"
+  note: "First circulated as a 2024 preprint (arXiv:2407.20292); final venue Frontiers in Network Physiology, June 2025. The published Frontiers form is the canonical citation; the `friston-rgm-2025` alias is intentionally NOT registered to avoid duplication — cite as `[@friston-2024]`. Slug retained as `friston-2024` for back-compatibility."
   topic: active_inference
 
+friston-2024-federated:
+  authors: "Friston, K. J., Da Costa, L., Heins, C., Klein, B., Salvatori, T., Buckley, C. L., Tschantz, A., Parr, T."
+  year: 2024
+  title: "Federated inference and belief sharing"
+  venue: "Neuroscience & Biobehavioral Reviews 156, 105500"
+  doi: "10.1016/j.neubiorev.2023.105500"
+  topic: multi_agent
+  note: "Belief broadcasting across agents under shared generative models; canonical federated-inference reference in AIF."
+
+kirchhoff-2018:
+  authors: "Kirchhoff, M. D., Parr, T., Palacios, E., Friston, K., Kiverstein, J."
+  year: 2018
+  title: "The Markov blankets of life: autonomy, active inference and the free energy principle"
+  venue: "Journal of The Royal Society Interface"
+  volume: "15(138)"
+  pages: "20170792"
+  doi: "10.1098/rsif.2017.0792"
+  url: "https://royalsocietypublishing.org/doi/10.1098/rsif.2017.0792"
+  note: "Markov-blanket account of autonomy used here to keep system-boundary language separate from the manuscript's intra-agent policy-coupling claim."
+  topic: markov_blanket
+
 glasser-2019:
-  authors: "Glasser, I., Sweke, R., Pancotti, N., Eisert, J., Cirac, J. I."
-  year: 2019
-  title: "Expressive power of tensor-network factorizations of probabilistic models"
-  venue: "NeurIPS 2019"
-  pages: "1498–1510"
+  authors: "Glasser, I., Pancotti, N., Cirac, J. I."
+  year: 2020
+  title: "From Probabilistic Graphical Models to Generalized Tensor Networks for Supervised Learning"
+  venue: "IEEE Access"
+  volume: "8"
+  pages: "68169–68182"
+  doi: "10.1109/ACCESS.2020.2986279"
+  url: "https://ieeexplore.ieee.org/document/9058650/"
+  note: "arXiv:1806.05964 (2018 preprint); IEEE Access publication 2020."
   topic: tensor_networks
 
 han-2016:
   authors: "Han, S., Liao, X., Dunson, D. B., Carin, L."
   year: 2016
   title: "Variational Gaussian Copula Inference"
-  venue: "AISTATS 2016"
+  venue: "AISTATS 2016, PMLR 51"
   pages: "829–838"
+  url: "https://proceedings.mlr.press/v51/han16.html"
+  topic: variational_copula
+
+li-turner-2016:
+  authors: "Li, Y., Turner, R. E."
+  year: 2016
+  title: "Rényi Divergence Variational Inference"
+  venue: "Advances in Neural Information Processing Systems 29 (NeurIPS 2016)"
+  doi: "10.48550/arXiv.1602.02311"
+  url: "https://proceedings.neurips.cc/paper/2016/hash/7750ca3559e5b8e1f44210283368fc16-Abstract.html"
+  note: "arXiv:1602.02311. Generalizes ELBO-style variational inference to the Renyi alpha-divergence family; cited for structured-VI / alpha-divergence comparisons with the active-inference free-energy functional."
+  topic: variational_copula
+
+fu-smith-panagiotelis-2025:
+  authors: "Fu, Y., Smith, M. S., Panagiotelis, A."
+  year: 2025
+  title: "Vector Copula Variational Inference and Dependent Block Posterior Approximations"
+  venue: "arXiv preprint"
+  pages: "arXiv:2503.01072"
+  doi: "10.48550/arXiv.2503.01072"
+  url: "https://arxiv.org/abs/2503.01072"
   topic: variational_copula
 
 han-2018:
@@ -162,45 +619,93 @@ han-2018:
   year: 2018
   title: "Unsupervised Generative Modeling Using Matrix Product States"
   venue: "Physical Review X"
-  volume: "8"
+  volume: "8(3)"
   pages: "031012"
+  doi: "10.1103/PhysRevX.8.031012"
+  url: "https://journals.aps.org/prx/abstract/10.1103/PhysRevX.8.031012"
   topic: tensor_networks
 
 harris-2020:
-  authors: "Harris, C. R., et al."
+  authors: "Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., et al."
   year: 2020
   title: "Array programming with NumPy"
   venue: "Nature"
   volume: "585"
   pages: "357–362"
+  doi: "10.1038/s41586-020-2649-2"
+  url: "https://www.nature.com/articles/s41586-020-2649-2"
   topic: software
 
 heins-2022:
-  authors: "Heins, C., Millidge, B., Demekas, D., Klein, B., Friston, K., Couzin, I., Tschantz, A."
+  authors: "Heins, C., Millidge, B., Demekas, D., Klein, B., Friston, K., Couzin, I. D., Tschantz, A."
   year: 2022
-  title: "pymdp: A Python library for active inference"
+  title: "pymdp: A Python library for active inference in discrete state spaces"
   venue: "Journal of Open Source Software"
   volume: "7(73)"
   pages: "4098"
-  url: "https://github.com/infer-actively/pymdp"
-  note: "v1.0.1 JAX-based release is the simulation backend used in §13 and src/simulation/."
+  doi: "10.21105/joss.04098"
+  url: "https://joss.theoj.org/papers/10.21105/joss.04098"
+  note: "v1.0.1 JAX-based release is the simulation backend used by the empirical suite and src/simulation/; arXiv:2201.03904."
   topic: active_inference
 
+pymdp-developers-2026:
+  authors: "The pymdp developers"
+  year: 2026
+  title: "infer-actively/pymdp: A Python implementation of active inference for Markov Decision Processes"
+  venue: "GitHub repository"
+  url: "https://github.com/infer-actively/pymdp"
+  note: "Official source repository consulted for package identity, install/source provenance, and release context; the scholarly software citation remains Heins et al. 2022."
+  topic: software
+
+pymdp-docs-2026:
+  authors: "The pymdp developers"
+  year: 2026
+  title: "pymdp documentation"
+  venue: "Read the Docs"
+  url: "https://pymdp-rtd.readthedocs.io/en/latest/"
+  note: "Official documentation consulted for the JAX-backend and Agent/API provenance used by the reproducibility checklist."
+  topic: software
+
 hinton-2002:
-  authors: "Hinton, G."
+  authors: "Hinton, G. E."
   year: 2002
   title: "Training products of experts by minimizing contrastive divergence"
   venue: "Neural Computation"
-  volume: "14"
+  volume: "14(8)"
   pages: "1771–1800"
+  doi: "10.1162/089976602760128018"
+  url: "https://direct.mit.edu/neco/article-abstract/14/8/1771/"
   topic: variational_copula
+
+johansson-2001:
+  authors: "Johansson, R. S., Westling, G., Bäckström, A., Flanagan, J. R."
+  year: 2001
+  title: "Eye-hand coordination in object manipulation"
+  venue: "Journal of Neuroscience"
+  volume: "21(17)"
+  pages: "6917–6932"
+  doi: "10.1523/JNEUROSCI.21-17-06917.2001"
+  url: "https://www.jneurosci.org/content/21/17/6917"
+  note: "Primary empirical eye-hand coordination source used to ground the reach/saccade example in the motivation."
+  topic: active_inference
 
 hoffman-blei-2015:
   authors: "Hoffman, M. D., Blei, D. M."
   year: 2015
-  title: "Structured stochastic variational inference"
-  venue: "AISTATS 2015"
+  title: "Structured Stochastic Variational Inference"
+  venue: "AISTATS 2015, PMLR 38"
   pages: "361–369"
+  url: "http://proceedings.mlr.press/v38/hoffman15.html"
+  note: "arXiv:1404.4114."
+  topic: variational_copula
+
+saul-jordan-1995:
+  authors: "Saul, L. K., Jordan, M. I."
+  year: 1995
+  title: "Exploiting Tractable Substructures in Intractable Networks"
+  venue: "Advances in Neural Information Processing Systems 8 (NIPS 1995)"
+  url: "https://papers.nips.cc/paper/1155-exploiting-tractable-substructures-in-intractable-networks"
+  note: "Canonical structured mean-field source: exact inference is retained inside tractable substructures while only the remaining interactions are approximated."
   topic: variational_copula
 
 hunter-2007:
@@ -210,54 +715,370 @@ hunter-2007:
   venue: "Computing in Science & Engineering"
   volume: "9(3)"
   pages: "90–95"
+  doi: "10.1109/MCSE.2007.55"
+  url: "https://ieeexplore.ieee.org/document/4160265"
   topic: software
 
 kappen-2005:
-  authors: "Kappen, H."
+  authors: "Kappen, H. J."
   year: 2005
   title: "Path integrals and symmetry breaking for optimal control theory"
-  venue: "Journal of Statistical Mechanics"
+  venue: "Journal of Statistical Mechanics: Theory and Experiment"
+  volume: "2005"
   pages: "P11011"
+  doi: "10.1088/1742-5468/2005/11/P11011"
+  url: "https://iopscience.iop.org/article/10.1088/1742-5468/2005/11/P11011"
   topic: kl_control
 
-maisto-2023:
-  authors: "Maisto, D., Friston, K., Pezzulo, G."
-  year: 2023
-  title: "Interactive inference: a multi-agent model of cooperative joint actions"
-  venue: "arXiv:2210.13113"
+rawlik-toussaint-vijayakumar-2013:
+  authors: "Rawlik, K., Toussaint, M., Vijayakumar, S."
+  year: 2013
+  title: "On Stochastic Optimal Control and Reinforcement Learning by Approximate Inference (Extended Abstract)"
+  venue: "Proceedings of the Twenty-Third International Joint Conference on Artificial Intelligence (IJCAI 2013)"
+  pages: "3052-3056"
+  url: "https://www.ijcai.org/Proceedings/13/Papers/455.pdf"
+  note: "Extended abstract of the approximate-inference control formulation; cited for the KL/control-as-inference lineage rather than as an active-inference result."
+  topic: kl_control
+
+land-hayhoe-2001:
+  authors: "Land, M. F., Hayhoe, M."
+  year: 2001
+  title: "In what ways do eye movements contribute to everyday activities?"
+  venue: "Vision Research"
+  volume: "41(25–26)"
+  pages: "3559–3565"
+  doi: "10.1016/S0042-6989(01)00102-X"
+  url: "https://doi.org/10.1016/S0042-6989(01)00102-X"
+  note: "Natural-task eye-movement review showing that gaze commonly arrives at task-relevant objects before manipulation, grounding the cross-stream reach/saccade example."
+  topic: active_inference
+
+maisto-2024:
+  authors: "Maisto, D., Donnarumma, F., Pezzulo, G."
+  year: 2024
+  title: "Interactive Inference: A Multi-Agent Model of Cooperative Joint Actions"
+  venue: "IEEE Transactions on Systems, Man, and Cybernetics: Systems"
+  volume: "54(2)"
+  pages: "704–715"
+  doi: "10.1109/TSMC.2023.3312585"
+  url: "https://ieeexplore.ieee.org/document/10288543"
+  note: "Earlier circulating attribution listing Friston as a co-author was incorrect — arXiv:2210.13113 lists authors as Maisto, Donnarumma, Pezzulo. Final venue: IEEE TSMC: Systems Volume 54, Issue 2, February 2024; DOI minted in 2023."
+  topic: multi_agent
+
+heins-2024-collective:
+  authors: "Heins, C., Millidge, B., Da Costa, L., Mann, R. P., Friston, K. J., Couzin, I. D."
+  year: 2024
+  title: "Collective behavior from surprise minimization"
+  venue: "Proceedings of the National Academy of Sciences"
+  volume: "121(17)"
+  pages: "e2320239121"
+  doi: "10.1073/pnas.2320239121"
+  url: "https://www.pnas.org/doi/10.1073/pnas.2320239121"
+  note: "Primary collective-active-inference model; cited for group-scale surprise minimization and emergent coordination rather than for finite-policy theorem claims."
+  topic: multi_agent
+
+albarracin-2024:
+  authors: "Albarracin, M., Pitliya, R. J., St. Clere Smithe, T., Friedman, D. A., Friston, K., Ramstead, M. J. D."
+  year: 2024
+  title: "Shared Protentions in Multi-Agent Active Inference"
+  venue: "Entropy"
+  volume: "26(4)"
+  pages: "303"
+  doi: "10.3390/e26040303"
+  url: "https://www.mdpi.com/1099-4300/26/4/303"
+  topic: multi_agent
+
+waade-2025:
+  authors: "Waade, P. T., Olesen, C. L., Laursen, J. E., Nehrer, S. W., Heins, C., Friston, K., Mathys, C."
+  year: 2025
+  title: "As One and Many: Relating Individual and Emergent Group-Level Generative Models in Active Inference"
+  venue: "Entropy"
+  volume: "27(2)"
+  pages: "143"
+  doi: "10.3390/e27020143"
+  url: "https://www.mdpi.com/1099-4300/27/2/143"
+  topic: multi_agent
+
+ruiz-serra-2025:
+  authors: "Ruiz-Serra, J., Sweeney, S., Harré, M."
+  year: 2025
+  title: "Factorised Active Inference for Strategic Multi-Agent Interactions"
+  venue: "Proc. 24th International Conference on Autonomous Agents and Multiagent Systems (AAMAS 2025)"
+  doi: "10.48550/arXiv.2411.07362"
+  url: "https://arxiv.org/abs/2411.07362"
+  note: "arXiv:2411.07362. AAMAS 2025 proceedings version."
   topic: multi_agent
 
 mathlib-2020:
   authors: "The Mathlib Community"
   year: 2020
   title: "The Lean Mathematical Library"
-  venue: "CPP 2020"
+  venue: "Proc. 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)"
   pages: "367–381"
-  topic: formalisation
+  doi: "10.1145/3372885.3373824"
+  url: "https://dl.acm.org/doi/10.1145/3372885.3373824"
+  note: "arXiv preprint: 1910.09336."
+  topic: formalization
+
+lean-fro-mathlib-2026:
+  authors: "Lean FRO"
+  year: 2026
+  title: "Mathlib: A Foundation for Formal Mathematics Research and Verification"
+  venue: "Official Lean use-case page"
+  url: "https://lean-lang.org/use-cases/mathlib/"
+  note: "Official current-facing source for Mathlib's role, coverage, and quality-assurance framing; scholarly citation remains The Mathlib Community 2020."
+  topic: formalization
+
+boldo-melquiond-2011:
+  authors: "Boldo, S., Melquiond, G."
+  year: 2011
+  title: "Flocq: A Unified Library for Proving Floating-Point Algorithms in Coq"
+  venue: "2011 IEEE 20th Symposium on Computer Arithmetic"
+  pages: "243–252"
+  doi: "10.1109/ARITH.2011.40"
+  url: "https://doi.org/10.1109/ARITH.2011.40"
+  note: "Primary Flocq reference; cited as the model for what a verified Float-to-real bridge would require."
+  topic: formalization
+
+ieee-754-2019:
+  authors: "IEEE"
+  year: 2019
+  title: "IEEE Standard for Floating-Point Arithmetic"
+  venue: "IEEE Std 754-2019"
+  doi: "10.1109/IEEESTD.2019.8766229"
+  url: "https://ieeexplore.ieee.org/document/8766229"
+  note: "Primary IEEE 754 standard reference; cited for the floating-point semantics a verified Float-to-real bridge would need to model."
+  topic: formalization
+
+higham-2002:
+  authors: "Higham, N. J."
+  year: 2002
+  title: "Accuracy and Stability of Numerical Algorithms"
+  venue: "SIAM"
+  volume: "Second edition"
+  doi: "10.1137/1.9780898718027"
+  url: "https://doi.org/10.1137/1.9780898718027"
+  note: "Standard numerical-analysis reference for round-off, conditioning, and stability; cited to scope Float-vs-real residuals."
+  topic: formalization
+
+mcgill-1954:
+  authors: "McGill, W. J."
+  year: 1954
+  title: "Multivariate Information Transmission"
+  venue: "Psychometrika"
+  volume: "19(2)"
+  pages: "97–116"
+  doi: "10.1007/BF02289159"
+  url: "https://link.springer.com/article/10.1007/BF02289159"
+  note: "Original definition of total correlation / multi-information, the correlation surcharge in the entanglement-decomposition identity."
+  topic: information_theory
+
+watanabe-1960:
+  authors: "Watanabe, S."
+  year: 1960
+  title: "Information theoretical analysis of multivariate correlation"
+  venue: "IBM Journal of Research and Development"
+  volume: "4(1)"
+  pages: "66–82"
+  doi: "10.1147/rd.41.0066"
+  url: "https://ieeexplore.ieee.org/document/5392532"
+  note: "Independent rediscovery of McGill's total-correlation construction, under the alternative name multivariate correlation; widely cited as the second canonical reference for the total-correlation quantity."
+  topic: information_theory
+
+degenne-2025:
+  authors: "Degenne, R."
+  year: 2025
+  title: "Markov kernels in Mathlib's probability library"
+  venue: "arXiv preprint"
+  pages: "arXiv:2510.04070"
+  doi: "10.48550/arXiv.2510.04070"
+  url: "https://arxiv.org/abs/2510.04070"
+  note: "Foundational reference for the Markov-kernel layer in Mathlib's `MeasureTheory.Probability.Kernel.*` namespace; cited for the Lean formalization path."
+  topic: formalization
 
 naudts-2011:
   authors: "Naudts, J."
   year: 2011
   title: "Generalised Thermostatistics"
-  venue: "Springer"
+  venue: "Springer London"
+  doi: "10.1007/978-0-85729-355-8"
+  note: "ISBN 978-0-85729-354-1 (print). Covers escort distributions, q-deformed exponential families."
+  url: "https://link.springer.com/book/10.1007/978-0-85729-355-8"
   topic: information_geometry
 
 nielsen-2020:
   authors: "Nielsen, F."
   year: 2020
-  title: "An elementary introduction to information geometry"
+  title: "An Elementary Introduction to Information Geometry"
   venue: "Entropy"
-  volume: "22"
+  volume: "22(10)"
   pages: "1100"
+  doi: "10.3390/e22101100"
+  url: "https://www.mdpi.com/1099-4300/22/10/1100"
   topic: information_geometry
+
+nehrer-2025:
+  authors: "Nehrer, S. W., Laursen, J. E., Heins, C., Friston, K., Mathys, C., Waade, P. T."
+  year: 2025
+  title: "Introducing ActiveInference.jl: A Julia Library for Simulation and Parameter Estimation with Active Inference Models"
+  venue: "Entropy"
+  volume: "27(1)"
+  pages: "62"
+  doi: "10.3390/e27010062"
+  url: "https://www.mdpi.com/1099-4300/27/1/62"
+  note: "Primary ActiveInference.jl software paper; cited for Julia POMDP active-inference simulation and model-fitting context."
+  topic: software
 
 pezzulo-2018:
   authors: "Pezzulo, G., Rigoli, F., Friston, K. J."
   year: 2018
   title: "Hierarchical Active Inference: A Theory of Motivated Control"
   venue: "Trends in Cognitive Sciences"
-  volume: "22"
-  pages: "294–309"
+  volume: "22(4)"
+  pages: "294–306"
+  doi: "10.1016/j.tics.2018.01.009"
+  url: "https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(18)30022-6"
+  topic: active_inference
+
+parr-friston-2019:
+  authors: "Parr, T., Friston, K. J."
+  year: 2019
+  title: "Generalised free energy and active inference"
+  venue: "Biological Cybernetics"
+  volume: "113(5–6)"
+  pages: "495–513"
+  doi: "10.1007/s00422-019-00805-w"
+  url: "https://link.springer.com/article/10.1007/s00422-019-00805-w"
+  note: "Clarifies generalized free energy and self-evidencing language used in the discussion without treating the present finite-policy model as a complete biological process theory."
+  topic: active_inference
+
+parr-2022:
+  authors: "Parr, T., Pezzulo, G., Friston, K. J."
+  year: 2022
+  title: "Active Inference: The Free Energy Principle in Mind, Brain, and Behavior"
+  venue: "MIT Press"
+  doi: "10.7551/mitpress/12441.001.0001"
+  url: "https://direct.mit.edu/books/oa-monograph/5299/Active-InferenceThe-Free-Energy-Principle-in-Mind"
+  note: "Book-length synthesis of FEP, expected free energy, active inference process theory, and applications."
+  topic: active_inference
+
+ramstead-2018:
+  authors: "Ramstead, M. J. D., Badcock, P. B., Friston, K. J."
+  year: 2018
+  title: "Answering Schrödinger's question: A free-energy formulation"
+  venue: "Physics of Life Reviews"
+  volume: "24"
+  pages: "1–16"
+  doi: "10.1016/j.plrev.2017.09.001"
+  url: "https://www.sciencedirect.com/science/article/pii/S1571064517301409"
+  note: "Theoretical-biology framing of FEP and self-organization; cited only for context, not as evidence for the manuscript's finite-policy results."
+  topic: markov_blanket
+
+raja-2021:
+  authors: "Raja, V., Valluri, D., Baggs, E., Chemero, A., Anderson, M. L."
+  year: 2021
+  title: "The Markov blanket trick: On the scope of the free energy principle and active inference"
+  venue: "Physics of Life Reviews"
+  doi: "10.1016/j.plrev.2021.09.001"
+  url: "https://www.sciencedirect.com/science/article/pii/S1571064521000634"
+  note: "Critical scope analysis of broad FEP / active-inference claims; cited here to keep Markov-blanket and biological interpretations explicitly bounded."
+  topic: markov_blanket
+
+menary-gillett-2022:
+  authors: "Menary, R., Gillett, A. J."
+  year: 2022
+  title: "Markov blankets do not demarcate the boundaries of the mind"
+  venue: "Behavioral and Brain Sciences"
+  volume: "45"
+  pages: "e201"
+  doi: "10.1017/S0140525X22000371"
+  url: "https://pubmed.ncbi.nlm.nih.gov/36172779/"
+  note: "Critical extended-mind commentary; cited to prevent Markov-blanket language from being treated as an automatic cognitive-boundary criterion."
+  topic: markov_blanket
+
+sajid-2021:
+  authors: "Sajid, N., Ball, P. J., Parr, T., Friston, K. J."
+  year: 2021
+  title: "Active Inference: Demystified and Compared"
+  venue: "Neural Computation"
+  volume: "33(3)"
+  pages: "674–712"
+  doi: "10.1162/neco_a_01357"
+  url: "https://direct.mit.edu/neco/article/33/3/674"
+  topic: active_inference
+
+tschantz-2020:
+  authors: "Tschantz, A., Seth, A. K., Buckley, C. L."
+  year: 2020
+  title: "Learning action-oriented models through active inference"
+  venue: "PLOS Computational Biology"
+  volume: "16(4)"
+  pages: "e1007805"
+  doi: "10.1371/journal.pcbi.1007805"
+  url: "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007805"
+  note: "Active-inference account of parsimonious action-oriented model learning; useful contrast for this manuscript's structured policy-coupling family."
+  topic: active_inference
+
+hodson-2024:
+  authors: "Hodson, R., Mehta, M., Smith, R."
+  year: 2024
+  title: "The empirical status of predictive coding and active inference"
+  venue: "Neuroscience & Biobehavioral Reviews"
+  volume: "157"
+  pages: "105473"
+  doi: "10.1016/j.neubiorev.2023.105473"
+  url: "https://pubmed.ncbi.nlm.nih.gov/38030100/"
+  note: "Empirical-status review used to calibrate FEP / active-inference claims as normative and computational unless a specific comparative empirical test is supplied."
+  topic: active_inference
+
+hafner-2023:
+  authors: "Hafner, D., Pasukonis, J., Ba, J., Lillicrap, T."
+  year: 2023
+  title: "Mastering Diverse Domains through World Models"
+  venue: "arXiv preprint"
+  pages: "arXiv:2301.04104"
+  doi: "10.48550/arXiv.2301.04104"
+  url: "https://arxiv.org/abs/2301.04104"
+  note: "DreamerV3 — world-model RL agent that achieves cross-domain mastery with a single hyperparameter setting; widely cited as the canonical contemporary world-model architecture against which active-inference agents are benchmarked."
+  topic: active_inference
+
+lanillos-2021:
+  authors: "Lanillos, P., Meo, C., Pezzato, C., Meera, A. A., Baioumy, M., Ohata, W., Tschantz, A., Millidge, B., Wisse, M., Buckley, C. L., Tani, J."
+  year: 2021
+  title: "Active inference in robotics and artificial agents: Survey and challenges"
+  venue: "arXiv preprint"
+  pages: "arXiv:2112.01871"
+  doi: "10.48550/arXiv.2112.01871"
+  url: "https://arxiv.org/abs/2112.01871"
+  topic: active_inference
+
+champion-2024-reframing:
+  authors: "Champion, T., Bowman, H., Marković, D., Grześ, M."
+  year: 2024
+  title: "Reframing the Expected Free Energy: Four Formulations and a Unification"
+  venue: "arXiv preprint"
+  pages: "arXiv:2402.14460"
+  doi: "10.48550/arXiv.2402.14460"
+  url: "https://arxiv.org/abs/2402.14460"
+  topic: active_inference
+
+devries-2025:
+  authors: "de Vries, B., Nuijten, T., van de Laar, T., Kouw, W., Adamiat, A., Nisslbeck, A., Lukashchuk, V., et al."
+  year: 2025
+  title: "Expected Free Energy-based Planning as Variational Inference"
+  venue: "arXiv preprint"
+  pages: "arXiv:2504.14898"
+  doi: "10.48550/arXiv.2504.14898"
+  url: "https://arxiv.org/abs/2504.14898"
+  topic: active_inference
+
+nuijten-lukashchuk-2025:
+  authors: "Nuijten, T., Lukashchuk, V."
+  year: 2025
+  title: "Active Inference is a Subtype of Variational Inference"
+  venue: "arXiv preprint"
+  pages: "arXiv:2511.18955"
+  doi: "10.48550/arXiv.2511.18955"
+  url: "https://arxiv.org/abs/2511.18955"
   topic: active_inference
 
 schwartenbeck-2015:
@@ -265,16 +1086,21 @@ schwartenbeck-2015:
   year: 2015
   title: "The dopaminergic midbrain encodes the expected certainty about desired outcomes"
   venue: "Cerebral Cortex"
-  volume: "25"
+  volume: "25(10)"
   pages: "3434–3445"
+  doi: "10.1093/cercor/bhu159"
+  url: "https://academic.oup.com/cercor/article/25/10/3434/385607"
   topic: active_inference
 
 schwartenbeck-friston-2016:
   authors: "Schwartenbeck, P., Friston, K."
   year: 2016
-  title: "Computational phenotyping in psychiatry: a worked example"
+  title: "Computational Phenotyping in Psychiatry: A Worked Example"
   venue: "eNeuro"
   volume: "3(4)"
+  pages: "ENEURO.0049-16.2016"
+  doi: "10.1523/ENEURO.0049-16.2016"
+  url: "https://www.eneuro.org/content/3/4/ENEURO.0049-16.2016"
   topic: comp_psychiatry
 
 smith-2022:
@@ -284,23 +1110,39 @@ smith-2022:
   venue: "Journal of Mathematical Psychology"
   volume: "107"
   pages: "102632"
+  doi: "10.1016/j.jmp.2021.102632"
+  url: "https://www.sciencedirect.com/science/article/pii/S0022249621000973"
   topic: active_inference
 
 sutton-1999:
-  authors: "Sutton, R., Precup, D., Singh, S."
+  authors: "Sutton, R. S., Precup, D., Singh, S."
   year: 1999
   title: "Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning"
   venue: "Artificial Intelligence"
-  volume: "112"
+  volume: "112(1–2)"
   pages: "181–211"
+  doi: "10.1016/S0004-3702(99)00052-1"
+  url: "https://www.sciencedirect.com/science/article/pii/S0004370299000521"
   topic: hierarchical_rl
 
 theodorou-todorov-2012:
-  authors: "Theodorou, E., Todorov, E."
+  authors: "Theodorou, E. A., Todorov, E."
   year: 2012
-  title: "Relative entropy and free energy dualities"
-  venue: "IEEE CDC 2012"
-  pages: "1382–1389"
+  title: "Relative entropy and free energy dualities: Connections to path integral and KL control"
+  venue: "Proc. 2012 IEEE 51st Conference on Decision and Control (CDC)"
+  pages: "1466–1473"
+  doi: "10.1109/CDC.2012.6426381"
+  url: "https://ieeexplore.ieee.org/document/6426381/"
+  topic: kl_control
+
+todorov-2006:
+  authors: "Todorov, E."
+  year: 2006
+  title: "Linearly-solvable Markov decision problems"
+  venue: "Advances in Neural Information Processing Systems 19 (NIPS 2006)"
+  pages: "1369-1376"
+  url: "https://papers.nips.cc/paper/3002-linearly-solvable-markov-decision-problems"
+  note: "Primary linearly-solvable MDP reference for KL-control structure and log-partition value transformations."
   topic: kl_control
 
 tononi-2008:
@@ -308,43 +1150,231 @@ tononi-2008:
   year: 2008
   title: "Consciousness as integrated information: a provisional manifesto"
   venue: "The Biological Bulletin"
-  volume: "215"
+  volume: "215(3)"
   pages: "216–242"
+  doi: "10.2307/25470707"
+  url: "https://www.journals.uchicago.edu/doi/10.2307/25470707"
   topic: consciousness
 
 tran-2015:
   authors: "Tran, D., Blei, D. M., Airoldi, E. M."
   year: 2015
   title: "Copula variational inference"
-  venue: "NeurIPS 2015"
+  venue: "Advances in Neural Information Processing Systems 28 (NeurIPS 2015)"
   pages: "3564–3572"
+  url: "https://proceedings.neurips.cc/paper/2015/hash/e4dd5528f7596dcdf871aa55cfccc53c-Abstract.html"
+  note: "arXiv:1506.03159."
   topic: variational_copula
 
 vandelaar-devries-2017:
-  authors: "van de Laar, T., de Vries, B."
-  year: 2017
-  title: "A Factor Graph Description of Deep Temporal Active Inference"
-  venue: "Frontiers in Computational Neuroscience"
-  volume: "11"
-  pages: "88"
+  authors: "van de Laar, T. W., de Vries, B."
+  year: 2019
+  title: "Simulating Active Inference Processes by Message Passing"
+  venue: "Frontiers in Robotics and AI"
+  volume: "6"
+  pages: "20"
+  doi: "10.3389/frobt.2019.00020"
+  url: "https://www.frontiersin.org/articles/10.3389/frobt.2019.00020"
+  note: "Factor-graph forward-backward implementation of deep temporal active inference (slug retained for backwards compatibility — primary reference is the 2019 *Frontiers in Robotics and AI* paper)."
   topic: active_inference
 
-verstraete-2008:
-  authors: "Verstraete, F., Cirac, J. I., Murg, V."
+brascamp-lieb-1976:
+  authors: "Brascamp, H. J., Lieb, E. H."
+  year: 1976
+  title: "On extensions of the Brunn–Minkowski and Prékopa–Leindler theorems, including inequalities for log concave functions, and with an application to the diffusion equation"
+  journal: "Journal of Functional Analysis"
+  volume: "22"
+  pages: "366-389"
+  doi: "10.1016/0022-1236(76)90001-5"
+  url: "https://doi.org/10.1016/0022-1236(76)90001-5"
+  note: "Variance Brascamp–Lieb inequality for log-concave measures; cited in Q1 dispersion-comparison conjecture."
+  topic: information_geometry
+
+bakry-emery-1985:
+  authors: "Bakry, D., Émery, M."
+  year: 1985
+  title: "Diffusions hypercontractives"
+  booktitle: "Séminaire de Probabilités XIX 1983/84"
+  pages: "177-206"
+  publisher: "Springer"
+  doi: "10.1007/BFb0075144"
+  url: "https://doi.org/10.1007/BFb0075144"
+  note: "Bakry–Émery curvature criterion for log-Sobolev / variance bounds on exponential families."
+  topic: information_geometry
+
+barrett-etal-2022-lipschitz-vae:
+  authors: "Barrett, T. D., Camuto, A., Williamson, C. R., Roberts, S. J."
+  year: 2022
+  title: "Certifiably Robust Variational Autoencoders through Lipschitz Constraints"
+  venue: "Proceedings of the 25th International Conference on Artificial Intelligence and Statistics (AISTATS)"
+  pages: "1-9"
+  url: "https://proceedings.mlr.press/v151/barrett22a.html"
+  note: "Actionable KL-drift bounds under encoder/decoder Lipschitz constraints; cited for adversarial VI robustness context in Q11."
+  topic: variational_robustness
+
+wainwright-jordan-2008:
+  authors: "Wainwright, M. J., Jordan, M. I."
   year: 2008
-  title: "Matrix product states, projected entangled pair states, and variational renormalization group methods"
+  title: "Graphical Models, Exponential Families, and Variational Inference"
+  venue: "Foundations and Trends in Machine Learning"
+  volume: "1(1-2)"
+  pages: "1-305"
+  doi: "10.1561/2200000001"
+  url: "https://www.nowpublishers.com/article/Details/MAL-001"
+  note: "Canonical graphical-model variational-inference reference used to anchor the mean-field / structured-approximation comparison."
+  topic: variational_copula
+
+verstraete-2008:
+  authors: "Verstraete, F., Murg, V., Cirac, J. I."
+  year: 2008
+  title: "Matrix product states, projected entangled pair states, and variational renormalization group methods for quantum spin systems"
   venue: "Advances in Physics"
-  volume: "57"
+  volume: "57(2)"
   pages: "143–224"
+  doi: "10.1080/14789940801912366"
+  url: "https://www.tandfonline.com/doi/abs/10.1080/14789940801912366"
+  topic: tensor_networks
+
+oseledets-2011:
+  authors: "Oseledets, I. V."
+  year: 2011
+  title: "Tensor-Train Decomposition"
+  venue: "SIAM Journal on Scientific Computing"
+  volume: "33(5)"
+  pages: "2295–2317"
+  doi: "10.1137/090752286"
+  url: "https://epubs.siam.org/doi/10.1137/090752286"
+  note: "Foundational paper introducing the TT-format; underlies the linear-in-N policy-tensor compression used in the tensor-network analysis."
+  topic: tensor_networks
+
+orus-2014:
+  authors: "Orus, R."
+  year: 2014
+  title: "A practical introduction to tensor networks: Matrix product states and projected entangled pair states"
+  venue: "Annals of Physics"
+  volume: "349"
+  pages: "117-158"
+  doi: "10.1016/j.aop.2014.06.013"
+  url: "https://www.sciencedirect.com/science/article/pii/S0003491614001596"
+  note: "Tutorial tensor-network reference used to scope matrix-product-state and tensor-train language as linear algebra on probability tensors."
+  topic: tensor_networks
+
+schollwock-2011:
+  authors: "Schollwöck, U."
+  year: 2011
+  title: "The density-matrix renormalization group in the age of matrix product states"
+  venue: "Annals of Physics"
+  volume: "326(1)"
+  pages: "96–192"
+  doi: "10.1016/j.aop.2010.09.012"
+  url: "https://www.sciencedirect.com/science/article/pii/S0003491610001752"
+  note: "arXiv:1008.3477. Canonical MPS/DMRG review; cited for the algorithmic backbone behind policy-tensor compression and entanglement-entropy bookkeeping."
   topic: tensor_networks
 
 virtanen-2020:
-  authors: "Virtanen, P., et al."
+  authors: "Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., et al."
   year: 2020
   title: "SciPy 1.0: fundamental algorithms for scientific computing in Python"
   venue: "Nature Methods"
   volume: "17"
   pages: "261–272"
+  doi: "10.1038/s41592-019-0686-2"
+  url: "https://www.nature.com/articles/s41592-019-0686-2"
+  topic: software
+
+levine-2018:
+  authors: "Levine, S."
+  year: 2018
+  title: "Reinforcement Learning and Control as Probabilistic Inference: Tutorial and Review"
+  venue: "arXiv preprint"
+  pages: "arXiv:1805.00909"
+  doi: "10.48550/arXiv.1805.00909"
+  url: "https://arxiv.org/abs/1805.00909"
+  note: "Canonical tutorial on the control-as-inference / maximum-entropy RL viewpoint cited in the comparison with active inference."
+  topic: control_rl
+
+toussaint-2009:
+  authors: "Toussaint, M."
+  year: 2009
+  title: "Robot trajectory optimization using approximate inference"
+  venue: "Proc. 26th Annual International Conference on Machine Learning (ICML 2009)"
+  pages: "1049–1056"
+  doi: "10.1145/1553374.1553508"
+  url: "https://dl.acm.org/doi/10.1145/1553374.1553508"
+  topic: control_rl
+
+botvinick-toussaint-2012:
+  authors: "Botvinick, M., Toussaint, M."
+  year: 2012
+  title: "Planning as inference"
+  venue: "Trends in Cognitive Sciences"
+  volume: "16(10)"
+  pages: "485–488"
+  doi: "10.1016/j.tics.2012.08.006"
+  url: "https://www.cell.com/trends/cognitive-sciences/fulltext/S1364-6613(12)00184-3"
+  topic: control_rl
+
+smithe-2024-structured:
+  authors: "Smithe, T. S. C."
+  year: 2024
+  title: "Structured Active Inference"
+  venue: "arXiv preprint, arXiv:2406.07577"
+  doi: "10.48550/arXiv.2406.07577"
+  url: "https://arxiv.org/abs/2406.07577"
+  topic: active_inference
+  note: "Categorical-systems-theory formulation of AIF with structured policies amenable to formal verification."
+
+brownian-lean-2025:
+  authors: "Degenne, R., Ledvinka, D., Marion, E., Pfaffelhuber, P."
+  year: 2025
+  title: "Formalization of Brownian motion in Lean"
+  venue: "arXiv preprint, arXiv:2511.20118"
+  doi: "10.48550/arXiv.2511.20118"
+  url: "https://arxiv.org/abs/2511.20118"
+  topic: formalization
+  note: "Stochastic-process formalization in Mathlib's MeasureTheory.Probability.Kernel layer."
+
+aguilera-2021:
+  authors: "Aguilera, M., Millidge, B., Tschantz, A., Buckley, C. L."
+  year: 2022
+  title: "How particular is the physics of the free energy principle?"
+  venue: "Physics of Life Reviews"
+  volume: "40"
+  pages: "24–50"
+  doi: "10.1016/j.plrev.2021.11.001"
+  url: "https://www.sciencedirect.com/science/article/pii/S1571064521000749"
+  note: "Critical-review treatment of Markov-blanket / particular-physics derivations of the free-energy principle. First circulated as a 2021 preprint; final publication in Physics of Life Reviews vol. 40 (2022); slug retained as `aguilera-2021` for back-compatibility."
+  topic: markov_blanket
+
+rougier-2014:
+  authors: "Rougier, N. P., Droettboom, M., Bourne, P. E."
+  year: 2014
+  title: "Ten Simple Rules for Better Figures"
+  venue: "PLOS Computational Biology"
+  volume: "10(9)"
+  pages: "e1003833"
+  doi: "10.1371/journal.pcbi.1003833"
+  url: "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833"
+  note: "Visualization-design checklist used narrowly for self-contained captions, explicit figure purpose, and avoidance of gratuitous complexity."
+  topic: visualization
+
+smekal-friedman-2023:
+  authors: "Smékal, J., Friedman, D. A."
+  year: 2023
+  title: "Generalized Notation Notation for Active Inference Models"
+  venue: "Active Inference Journal. Zenodo"
+  doi: "10.5281/zenodo.7803328"
+  url: "https://zenodo.org/records/7803328"
+  note: "Primary publication of Generalized Notation Notation (GNN), introducing the Triple Play of linguistic, visual, and executable cognitive-model representations that complements the Active Inference Ontology. Cited from the GNN extension supplement as the canonical reference for the shipped fifth (structural-and-numerical) representation of the framework."
+  topic: active_inference
+
+aii-gnn-repo:
+  authors: "Active Inference Institute"
+  year: 2023
+  title: "GeneralizedNotationNotation"
+  venue: "Open-source software (Active Inference Institute)"
+  url: "https://github.com/ActiveInferenceInstitute/GeneralizedNotationNotation"
+  note: "Reference implementation of Generalized Notation Notation. Cited as the upstream of the shipped fifth (structural-and-numerical) representation in the GNN extension supplement; the bridge ships as a project-owned parser, a verified K=2 round-trip, and a Lean typed-contract emitter (empirical per the Claim-Strength Legend), with the upstream first-class coupling primitive named as an honest residual."
   topic: software
 
 # Topic ordering used by the bibliography auto-renderer.  Topics not
@@ -353,26 +1383,36 @@ topic_order:
   - active_inference
   - branching_time
   - information_geometry
+  - information_theory
   - variational_copula
+  - variational_robustness
   - tensor_networks
   - kl_control
+  - control_rl
   - hierarchical_rl
+  - markov_blanket
   - comp_psychiatry
   - consciousness
   - multi_agent
-  - formalisation
+  - formalization
   - software
+  - visualization
 
 topic_titles:
   active_inference: "Active inference and the free-energy principle"
   branching_time: "Branching-time and structured AIF"
   information_geometry: "Information geometry"
+  information_theory: "Information theory and multi-information"
   variational_copula: "Variational and copula inference"
+  variational_robustness: "Variational inference robustness and Lipschitz bounds"
   tensor_networks: "Tensor networks and quantum-inspired ML"
   kl_control: "KL / path-integral control duality"
+  control_rl: "Control / RL as probabilistic inference"
   hierarchical_rl: "Hierarchical RL / options"
+  markov_blanket: "Markov blankets and particular physics"
   comp_psychiatry: "Computational psychiatry"
   consciousness: "Integrated information / consciousness"
   multi_agent: "Multi-agent / interactive inference"
-  formalisation: "Lean / formalisation"
+  formalization: "Lean / formalization"
   software: "Software dependencies (companion code)"
+  visualization: "Scientific visualization"

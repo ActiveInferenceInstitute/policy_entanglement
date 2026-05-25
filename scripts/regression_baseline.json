@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "round": "round-6-thermo-nuclear",
+  "created": "2026-05-23",
+  "description": "Regression baseline after thermo-nuclear refactor: release gates live in src/manuscript/output_gates/ and registry_facts.py (counted in src/ coverage). Refreshed by `uv run python scripts/regression_gate.py --update-baseline` on green runs.",
+  "test_count_min": 1355,
+  "test_failed_max": 0,
+  "coverage_percent_min": 95.22,
+  "invariant_count_min": 47,
+  "lean_lake_jobs_min": 22,
+  "lean_sorry_max": 0,
+  "lean_axiom_max": 0,
+  "lean_unsafe_max": 0,
+  "tolerance": {
+    "comment": "Drift bounds applied between the previous green baseline and the current run. Test count may decrease by at most `test_count_drop_max`; coverage by at most `coverage_drop_pct_max` percentage points; invariant count and Lean budgets are absolute floors / ceilings (not tolerances).",
+    "test_count_drop_max": 2,
+    "coverage_drop_pct_max": 1.0
+  }
+}

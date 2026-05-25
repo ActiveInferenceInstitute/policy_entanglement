@@ -3,7 +3,7 @@
    masses and `List` for the policy support so the boundary fragment
    compiles on stock Lean 4 v4.29.0.
 
-   Numerical realisations live in
+   Numerical realizations live in
    [`src/lean/joint_dist.py`](../../src/lean/joint_dist.py). -/
 
 import ActinfPolicyEntanglement.Basic
@@ -12,7 +12,7 @@ namespace ActinfPolicyEntanglement
 
 /-! ## Distributions over policy spaces
 
-We use plain `Float`-valued mass functions.  Normalisation is supplied
+We use plain `Float`-valued mass functions.  Normalization is supplied
 by the `IsPMF` predicate, which records the (necessarily finite)
 support as a `List` to stay Mathlib-free. -/
 
@@ -21,7 +21,7 @@ mass function. -/
 abbrev JointDist (K : Nat) (Pol : PolicyFactor K) : Type :=
   PolicySpace K Pol → Float
 
-/-- A mean-field (factorised) distribution: one mass function per
+/-- A mean-field (factorized) distribution: one mass function per
 stream. -/
 abbrev MFDist (K : Nat) (Pol : PolicyFactor K) : Type :=
   ∀ k : StreamIdx K, Pol k → Float
@@ -31,7 +31,7 @@ def IsNonNeg {K Pol} (q : JointDist K Pol) : Prop :=
   ∀ π : PolicySpace K Pol, 0.0 ≤ q π
 
 /-- Predicate: `q` has a finite support `support : List (PolicySpace K Pol)`
-on which its values sum to `1.0`.  Mathlib analogue: `PMF` /
+on which its values sum to `1.0`.  Mathlib analog: `PMF` /
 `Finset.sum`. -/
 def IsPMF {K Pol} (q : JointDist K Pol) : Prop :=
   ∃ (support : List (PolicySpace K Pol)),

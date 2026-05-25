@@ -4,8 +4,8 @@
 
 paper:
   title: "Policy Entanglement in Active Inference"
-  subtitle: "A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles, with Information-Geometric, Spectral, and Lean-Formalization Treatments"
-  version: "0.1"
+  subtitle: "A Coupling-Parameter Deformation of Multi-Stream Policy Posteriors, Machine-Checked over the Reals with a Typed Float Boundary"
+  version: "0.3"
   date: ""
 
 authors:
@@ -17,8 +17,10 @@ authors:
 
 publication:
   doi: ""
-  journal: ""
+  journal: "Active Inference Journal"
   year: "2026"
+  repository_url: ""
+  repository_label: "Public source repository pending"
 
 keywords:
   - "active inference"
@@ -31,11 +33,15 @@ keywords:
   - "tensor networks"
   - "sophisticated inference"
   - "Lean theorem proving"
-  - "formal verification"
+  - "machine-checked free-energy identity"
 
 metadata:
   license: "CC-BY-4.0"
   language: "en"
+
+analysis:
+  scripts:
+    - run_all.py
 
 llm:
   reviews:

@@ -1,5 +1,4 @@
-"""Extract Lean theorem signatures from `lean/ActinfPolicyEntanglement/`.
-"""
+"""Extract Lean theorem signatures from `lean/ActinfPolicyEntanglement/`."""
 
 from __future__ import annotations
 
@@ -17,10 +16,11 @@ class LeanSnippet:
     proof (`by`, `:=`, or the final closing of the type).  `docstring`
     is the preceding `/-- … -/` block (if any).
     """
-    label: str               # registry label (`thm_4_1`, …)
-    module: str              # Lean module name (`Decomposition`)
-    qualified_name: str      # full Lean name (`Bipartite.schmidtRank_one_iff_meanField`)
-    keyword: str             # `theorem` / `def` / `lemma` / `instance`
+
+    label: str  # registry label (`thm_4_1`, …)
+    module: str  # Lean module name (`Decomposition`)
+    qualified_name: str  # full Lean name (`Bipartite.schmidtRank_one_iff_meanField`)
+    keyword: str  # `theorem` / `def` / `lemma` / `instance`
     docstring: str
     body: str
     file_path: Path
@@ -100,7 +100,7 @@ def _scan_module(module_path: Path) -> dict[str, LeanSnippet]:
                 while k >= 0 and "/-" not in lines[k]:
                     k -= 1
                 if k >= 0:
-                    doc_lines = lines[k:j + 1]
+                    doc_lines = lines[k : j + 1]
             docstring = "\n".join(doc_lines).strip()
 
             # Walk forward until we see the proof opener: ` by` at end of
@@ -167,16 +167,21 @@ def load_lean_snippets(lean_dir: Path) -> dict[tuple[str, str], LeanSnippet]:
 def render_lean_snippet(snip: LeanSnippet, *, status: str = "") -> str:
     """Render a `LeanSnippet` as a fenced Lean code block with a
     one-line caption pointing at the source file.
+
+    Use tilde fences instead of backtick fences because Lean docstrings
+    may legitimately contain Markdown examples fenced with triple
+    backticks. A tilde fence keeps the entire extracted declaration in
+    one block when Pandoc renders the PDF.
     """
     rel = f"`lean/ActinfPolicyEntanglement/{snip.module}.lean:{snip.start_line}`"
     status_tag = f" [status: **{status}**]" if status else ""
     parts = [
-        f"```lean",
+        "~~~lean",
         f"-- From {rel}{status_tag}",
     ]
     if snip.docstring:
         # Trim leading/trailing whitespace inside the doc block.
         parts.append(snip.docstring)
     parts.append(snip.body)
-    parts.append("```")
+    parts.append("~~~")
     return "\n".join(parts)

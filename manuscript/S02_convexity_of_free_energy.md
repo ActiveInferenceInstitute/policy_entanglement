@@ -1,4 +1,4 @@
-# Convexity of F(q_lambda) in lambda
+# Convexity of Free Energy in Lambda: Conditions and Counter-Example
 
 The free-energy curve along the λ-deformation has a clean
 exponential-family structure that delivers convexity in $\lambda$ on
@@ -7,106 +7,105 @@ case is verified numerically by
 [`scripts/generate_figures.py`](../scripts/generate_figures.py)
 (see [`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png)).
 
-## The exponential-family setup
+## The closed exponential-family form
 
-The λ-entangled posterior
-
-$$
-q_\lambda(\pi) \;\propto\; E(\pi)\,\exp\!\big(\theta(\pi)\cdot\lambda\big),
-\qquad \theta(\pi) \;=\; J(\pi) - \gamma\,K_c(\pi),
-$$
-
-is a *natural-parameter exponential family* in $\lambda$ with sufficient
-statistic $\theta$ and log-partition
+[[SECREF:app.proof_decomp]] establishes the closed identity
 
 $$
-\psi(\lambda) \;=\; \log Z(\lambda) \;=\; \log\sum_\pi E(\pi)\,e^{\theta(\pi)\,\lambda}.
+F[q_\lambda] \;=\; \log Z_E(\lambda) \;-\; \log Z(\lambda),
 $$
 
-By the standard exponential-family identity,
+where the two normalizers are the entangled prior $\mathcal{E}_\lambda$
+and the entangled posterior $q_\lambda$ respectively.  Each is the
+log-partition of an exponential family in $\lambda$ — natural
+parameter $\lambda$, sufficient statistic $J$ (for the prior side)
+and $J - \gamma K_c$ (for the posterior side).  Standard
+exponential-family identities give
 
 $$
-\psi'(\lambda) \;=\; \mathbb{E}_{q_\lambda}[\theta],
+\frac{\mathrm{d}}{\mathrm{d}\lambda}\log Z_E(\lambda)
+  = \langle J\rangle_{\mathcal{E}_\lambda},
 \qquad
-\psi''(\lambda) \;=\; \mathrm{Var}_{q_\lambda}(\theta) \;\geq\; 0,
+\frac{\mathrm{d}^2}{\mathrm{d}\lambda^2}\log Z_E(\lambda)
+  = \mathrm{Var}_{\mathcal{E}_\lambda}(J),
 $$
 
-so $\psi$ is convex in $\lambda$ and *strictly* convex unless $\theta$
-is $q_\lambda$-a.s. constant (the degenerate case where the coupling
-has no effect).
+and analogously for $\log Z(\lambda)$ with statistic $J - \gamma K_c$
+and reference distribution $q_\lambda$.  Both log-partitions are
+*convex* in $\lambda$; their *difference* is a question of which
+side is "more convex" in $\lambda$.
 
-## Decomposition of F(q_lambda)
+## The convexity ledger
 
-Plugging into [[THMREF:thm_4_1]] ([[SECREF:app.proof_decomp]]),
-
-$$
-F[q_\lambda] \;=\; \sum_k F[q_\lambda^k] + \gamma\,\lambda\,\mathbb{E}_{q_\lambda}[K_c]
-                 + \lambda\,\mathbb{E}_{q_\lambda}[J] - \psi(\lambda) - I(q_\lambda).
-$$
-
-Group terms:
+Differentiating the closed identity once more:
 
 $$
-F[q_\lambda] \;=\; \underbrace{\sum_k F[q_\lambda^k] - I(q_\lambda)}_{=: A(\lambda)}
-                 \;+\; \underbrace{\lambda\,\mathbb{E}_{q_\lambda}[\theta] - \psi(\lambda)}_{=: B(\lambda)}.
+\frac{\mathrm{d}^2 F[q_\lambda]}{\mathrm{d}\lambda^2}
+  \;=\; \mathrm{Var}_{\mathcal{E}_\lambda}(J)
+  \;-\; \mathrm{Var}_{q_\lambda}(J - \gamma K_c).
 $$
 
-## Convexity of B(lambda)
+Hence:
 
-By the exponential-family identity above,
-$\mathbb{E}_{q_\lambda}[\theta] = \psi'(\lambda)$, so
+* **Convex regime** — $F''(\lambda) \geq 0$ on an interval iff the
+  *prior* dispersion of $J$ exceeds the *posterior* dispersion of
+  $J - \gamma K_c$ throughout that interval.  This holds, e.g.,
+  whenever the posterior concentrates much faster than the prior in
+  the natural-parameter direction (large $\gamma$, sharply peaked
+  $G_k$).
+* **Concave / saddle regime** — $F''(\lambda) \leq 0$ when the
+  posterior dispersion dominates.  This is the regime in which
+  raising $\lambda$ pays for itself first-order: every example in
+  [[SECREF:examples]] starts here at $\lambda = 0$ ([[THMREF:prop_10_1]]).
+* **Inflection / mixed regime** — $F''$ may change sign exactly once
+  along $[0, \infty)$, locating an *inflection coupling*
+  $\lambda_{\mathrm{infl}}$ that separates the two regimes.  Below
+  $\lambda_{\mathrm{infl}}$ the agent benefits from *more* coupling;
+  above, marginal returns reverse — the location of the optimal
+  $\lambda^\star$ ([[SECREF:decomposition.optimal]]).
+
+## Sufficient condition for global convexity on $[0, \infty)$
+
+If for every $\lambda \geq 0$ the prior dispersion of the habit
+coupling dominates the posterior dispersion of the combined
+statistic,
 
 $$
-B(\lambda) \;=\; \lambda\,\psi'(\lambda) - \psi(\lambda).
+\mathrm{Var}_{\mathcal{E}_\lambda}(J)
+  \;\geq\; \mathrm{Var}_{q_\lambda}(J - \gamma K_c)
+\qquad \text{for all } \lambda \geq 0,
 $$
 
-Differentiating twice:
+then $F[q_\lambda]$ is convex on $[0, \infty)$ and $\lambda^\star$ is
+unique.  This is the crisp form of [[THMREF:thm_4_3]] in the language
+of dispersion comparison; the original "log-concavity of $J - \gamma K_c$"
+sufficient condition implies this dispersion inequality on the natural
+domain via Brascamp–Lieb (we omit the standard argument).
+
+## K = 2 Symmetric Ising specialization
+
+In the symmetric K = 2 Ising example with uniform $E_{\mathrm{MF}}$,
+zero per-stream EFE, and bilinear $J = J_0(2\pi^1 - 1)(2\pi^2 - 1)$:
 
 $$
-B'(\lambda) \;=\; \lambda\,\psi''(\lambda),
+\log Z_E(\lambda) = \log\cosh(\lambda J_0),
 \qquad
-B''(\lambda) \;=\; \psi''(\lambda) + \lambda\,\psi'''(\lambda).
+\log Z(\lambda) = \log\cosh(\lambda J_0)
 $$
 
-For $\lambda \geq 0$ and where $\psi$ is convex with non-decreasing
-second derivative (true for sub-Gaussian $\theta$), $B$ is convex on
-$[0,\infty)$.  In the symmetric K = 2 Ising example, $\psi(\lambda) = \log\cosh(\lambda/2)$
-and $B(\lambda) = \tfrac{\lambda}{2}\tanh(\lambda/2) - \log\cosh(\lambda/2)$,
-which is straightforwardly convex.  This expression coincides with
-$I(\lambda)$ for the symmetric Ising case (see [[SECREF:app.bernoulli]] for the
-algebraic equivalence).
-
-## Concavity of A(lambda) on the MF side
-
-$A(\lambda)$ collects the per-stream marginal free energies and
-subtracts the total correlation.  For $\lambda \geq 0$, the marginals
-$q_\lambda^k$ vary smoothly in $\lambda$ and the *m-projection
-identity* ([[THMREF:prop_6_3]]) gives $I(q_\lambda)$ as a KL distance to the
-(continuously varying) marginal product.  Where $q_\lambda$ remains
-in the regime of *uniform* marginal invariance (e.g. the symmetric
-Ising case where $q_\lambda^k \equiv \tfrac12$ for every $\lambda$),
-$\sum_k F[q_\lambda^k]$ is *constant* in $\lambda$ and convexity of
-$A$ reduces to convexity of $-I(q_\lambda)$, which inherits from
-$\psi$.
-
-## Conclusion (sketch)
-
-For symmetric ensembles with marginal-invariant deformations
-(Bernoulli K = 2 is the prototype), $F[q_\lambda]$ is convex in
-$\lambda \geq 0$.  Beyond this regime, convexity follows under a
-mild log-concavity hypothesis on $\theta = J - \gamma K_c$, which
-covers all common engineered habits (Ising-type couplings, soft
-matching constraints, low-rank tensor-train coupling potentials).
-
-The full proof, including the cross-term bookkeeping when marginals
-themselves move with $\lambda$, follows from a direct second-derivative
-computation that is straightforward but tedious; we omit it here.
+(both partition functions agree because $\gamma K_c \equiv 0$ here),
+so $F[q_\lambda] \equiv 0$ — the toy is *flat* in $\lambda$ when no
+preference coupling is present.  Adding a utility-driven $G$ shifts
+$\log Z(\lambda)$ but leaves $\log Z_E$ invariant; the resulting
+$F[q_\lambda] = \log\cosh(\lambda J_0) - \log Z(\lambda)$ is convex
+in $\lambda$ on $[0, \infty)$ for any utility level (verified
+numerically across $u \in \{0, 0.5, 1, 2\}$ in
+[`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png)).
 
 ## Numerical verification
 
-The K = 2 Ising free-energy curve at three utility values is plotted
+The K = 2 Ising free-energy curve at four utility values is plotted
 in [`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png).
 The curve is monotonically decreasing in $|\lambda|$ for any
 $u \geq 0$, consistent with convexity (and with the closed-form
 expression in [[SECREF:app.bernoulli]]).
-

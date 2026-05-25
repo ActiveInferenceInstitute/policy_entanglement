@@ -1,20 +1,18 @@
-"""Coupled-ensemble rollouts: time-series of POMDP inference + coupling.
-"""
+"""Coupled-ensemble rollouts: time-series of POMDP inference + coupling."""
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
 
-from free_energy import total_correlation
+from lean.free_energy import total_correlation
 
-from agents import _require_pymdp
-from inference import coupled_policy_posterior, per_stream_policy_posterior
-from specs import CoupledEnsembleSpec
+from .agents import _require_pymdp
+from .inference import coupled_policy_posterior, per_stream_policy_posterior
+from .specs import CoupledEnsembleSpec
 
 ArrayF = NDArray[np.float64]
 
@@ -22,6 +20,7 @@ ArrayF = NDArray[np.float64]
 @dataclass(frozen=True)
 class RolloutStep:
     """One time step of a coupled ensemble rollout."""
+
     t: int
     observations: tuple[int, ...]
     mean_field_marginals: tuple[ArrayF, ...]
@@ -33,6 +32,7 @@ class RolloutStep:
 @dataclass(frozen=True)
 class Rollout:
     """A deterministic coupled-ensemble rollout."""
+
     steps: tuple[RolloutStep, ...]
     spec: CoupledEnsembleSpec
     lam: float
@@ -49,19 +49,20 @@ class Rollout:
 def _sample_from_joint(q: ArrayF, rng: np.random.Generator) -> tuple[int, ...]:
     flat = q.reshape(-1)
     idx = int(rng.choice(flat.size, p=flat / flat.sum()))
-    return np.unravel_index(idx, q.shape)
+    idx_coords = np.unravel_index(idx, q.shape)
+    return tuple(int(i) for i in idx_coords)
 
 
 def simulate_coupled_rollout(
     spec: CoupledEnsembleSpec,
     *,
-    T: int = 8,
+    horizon: int = 8,
     lam: float = 1.0,
     seed: int = 0,
     initial_observations: Sequence[int] | None = None,
     on_step: Callable[[RolloutStep], None] | None = None,
 ) -> Rollout:
-    """Drive `spec` for `T` steps under coupling `lam`, deterministically
+    """Drive `spec` for `horizon` steps under coupling `lam`, deterministically
     sampling actions at each step.
 
     The rollout protocol per step:
@@ -77,24 +78,25 @@ def simulate_coupled_rollout(
     _require_pymdp()
     spec.validate()
     rng = np.random.default_rng(int(seed))
-    K = spec.K()
+    n_streams = spec.num_streams()
     if initial_observations is None:
-        initial_observations = tuple(0 for _ in range(K))
-    if len(initial_observations) != K:
-        raise ValueError(
-            f"initial_observations length {len(initial_observations)} != K={K}"
-        )
+        initial_observations = tuple(0 for _ in range(n_streams))
+    if len(initial_observations) != n_streams:
+        raise ValueError(f"initial_observations length {len(initial_observations)} != num_streams={n_streams}")
     obs = list(initial_observations)
     states: list[ArrayF] = [s.D.copy() for s in spec.streams]
 
     steps: list[RolloutStep] = []
-    for t in range(T):
+    for t in range(horizon):
         mf = per_stream_policy_posterior(spec, obs)
-        q_joint = coupled_policy_posterior(spec, obs, lam=lam)
+        # RedTeam Methods C6 (2026-05-20): pass the precomputed `mf` to
+        # avoid pymdp re-inference inside `coupled_policy_posterior`
+        # (used to be 2× pymdp calls per rollout step; now 1×).
+        q_joint = coupled_policy_posterior(spec, obs, lam=lam, precomputed_mf=mf)
         action = _sample_from_joint(q_joint, rng)
         new_states: list[ArrayF] = []
         new_obs: list[int] = []
-        for k in range(K):
+        for k in range(n_streams):
             s_kernel = spec.streams[k]
             s_next = s_kernel.B[:, :, int(action[k])] @ states[k]
             s_next = s_next / s_next.sum()

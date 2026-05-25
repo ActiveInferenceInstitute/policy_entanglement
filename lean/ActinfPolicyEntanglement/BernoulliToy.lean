@@ -2,7 +2,7 @@
    Ising toy model: mutual information, optimal coupling λ*, and
    free-energy curve.
 
-   Mathlib-free boundary fragment using `Float`.  Numerical realisation
+   Mathlib-free boundary fragment using `Float`.  Numerical realization
    in [`src/lean/bernoulli_toy.py`](../../src/lean/bernoulli_toy.py)
    verifies every closed-form to floating tolerance. -/
 

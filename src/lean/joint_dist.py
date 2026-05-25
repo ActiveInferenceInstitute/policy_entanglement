@@ -1,5 +1,4 @@
-"""Joint and mean-field policy distributions over finite policy spaces.
-"""
+"""Joint and mean-field policy distributions over finite policy spaces."""
 
 from __future__ import annotations
 
@@ -37,7 +36,7 @@ def normalize(q: ArrayF) -> ArrayF:
     s = qa.sum()
     if s <= 0.0:
         raise ValueError(f"cannot normalize a non-positive mass: total={s}")
-    return qa / s
+    return np.asarray(qa / s, dtype=np.float64)
 
 
 def mean_field_to_joint(marginals: Sequence[ArrayF]) -> ArrayF:
@@ -64,7 +63,7 @@ def joint_marginal(q: ArrayF, k: int) -> ArrayF:
     if not 0 <= k < qa.ndim:
         raise IndexError(f"stream index {k} out of range for ndim={qa.ndim}")
     other_axes = tuple(i for i in range(qa.ndim) if i != k)
-    return qa.sum(axis=other_axes) if other_axes else qa.copy()
+    return np.asarray(qa.sum(axis=other_axes) if other_axes else qa.copy(), dtype=np.float64)
 
 
 def joint_marginals(q: ArrayF) -> list[ArrayF]:
@@ -77,7 +76,7 @@ def joint_marginals(q: ArrayF) -> list[ArrayF]:
 
 
 def is_mean_field(q: ArrayF, atol: float = 1e-9) -> bool:
-    """Predicate: `q` factorises as the outer product of its marginals.
+    """Predicate: `q` factorizes as the outer product of its marginals.
 
     Mirrors ``ActinfPolicyEntanglement.IsMeanField``.  Numerically: a
     joint is mean-field iff the L1 distance from the m-projection product

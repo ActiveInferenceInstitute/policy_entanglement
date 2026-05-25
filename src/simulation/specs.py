@@ -1,5 +1,4 @@
-"""Deterministic, framework-independent records for coupled POMDP ensembles.
-"""
+"""Deterministic, framework-independent records for coupled POMDP ensembles."""
 
 from __future__ import annotations
 
@@ -27,6 +26,7 @@ class StreamSpec:
     All arrays are ``float64``; the pymdp adapter casts to JAX
     ``float32`` and adds a batch axis at construction time.
     """
+
     A: ArrayF
     B: ArrayF
     C: ArrayF
@@ -49,9 +49,7 @@ class StreamSpec:
         if self.B.ndim != 3 or self.B.shape[0] != self.B.shape[1]:
             raise ValueError(f"B must be (S,S,U), got {self.B.shape}")
         if self.A.shape[1] != self.B.shape[0]:
-            raise ValueError(
-                f"A num_states {self.A.shape[1]} != B num_states {self.B.shape[0]}"
-            )
+            raise ValueError(f"A num_states {self.A.shape[1]} != B num_states {self.B.shape[0]}")
         if self.C.shape != (self.A.shape[0],):
             raise ValueError(f"C shape {self.C.shape} != ({self.A.shape[0]},)")
         if self.D.shape != (self.A.shape[1],):
@@ -71,17 +69,18 @@ class StreamSpec:
 class CoupledEnsembleSpec:
     """K-stream coupled ensemble.
 
-    ``streams`` carries one :class:`StreamSpec` per stream; ``coupling_J``
-    and ``coupling_Kc`` are dense ndarrays of shape
+    ``streams`` carries one :class:`StreamSpec` per stream; ``coupling_j``
+    and ``coupling_kc`` are dense ndarrays of shape
     ``(num_controls_0, num_controls_1, ..., num_controls_{K-1})`` —
     matching the project's analytical convention.
     """
+
     streams: tuple[StreamSpec, ...]
-    coupling_J: ArrayF
-    coupling_Kc: ArrayF
+    coupling_j: ArrayF
+    coupling_kc: ArrayF
     gamma: float = 1.0
 
-    def K(self) -> int:
+    def num_streams(self) -> int:
         return len(self.streams)
 
     def policy_shape(self) -> tuple[int, ...]:
@@ -96,13 +95,9 @@ class CoupledEnsembleSpec:
             except ValueError as exc:
                 raise ValueError(f"stream[{k}] {s.name!r}: {exc}") from exc
         shape = self.policy_shape()
-        if self.coupling_J.shape != shape:
-            raise ValueError(
-                f"coupling_J shape {self.coupling_J.shape} != policy_shape {shape}"
-            )
-        if self.coupling_Kc.shape != shape:
-            raise ValueError(
-                f"coupling_Kc shape {self.coupling_Kc.shape} != policy_shape {shape}"
-            )
+        if self.coupling_j.shape != shape:
+            raise ValueError(f"coupling_j shape {self.coupling_j.shape} != policy_shape {shape}")
+        if self.coupling_kc.shape != shape:
+            raise ValueError(f"coupling_kc shape {self.coupling_kc.shape} != policy_shape {shape}")
         if self.gamma < 0.0:
             raise ValueError(f"gamma must be ≥0, got {self.gamma}")

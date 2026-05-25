@@ -9,6 +9,11 @@ __pycache__/
 .coverage
 .coverage.*
 htmlcov/
+.benchmarks/
+.mypy_cache/
+.ruff_cache/
+.venv/
+*.egg-info/
 
 # Lake build artefacts.
 lean/.lake/
@@ -25,5 +30,5 @@ lean/build/
 *.swp
 *.swo
 
-# uv lockfile is project-level, kept; rule out workspace-local copies.
-uv.lock
+# uv lockfile is project-level and should stay visible for reproducibility.
+!uv.lock

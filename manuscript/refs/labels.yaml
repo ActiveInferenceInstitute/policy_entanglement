@@ -11,374 +11,1184 @@
 # manuscript-relative form (`../output/...`) at render time.
 #
 # Numbering: figures and equations are auto-numbered in the order they
-# appear here.  Manual `number:` overrides are honoured if set.
+# appear here.  Manual `number:` overrides are honored if set.
 
 figures:
   ising_mi_curve:
     path: output/figures/ising_mi_curve.png
     caption: |
-      Closed-form vs empirical mutual information of the K=2 Ising joint
-      at $\lambda \in [0, 6]$. The closed-form curve $I(\lambda)
-      = \log 2 - H_b(\sigma(\lambda))$ overlays the empirical total
-      correlation of the entangled posterior; agreement is to $10^{-6}$
-      across 121 grid points (`output/data/parameter_sweep.csv`).
+      **The closed-form mutual information agrees with the empirical
+      sampler to sweep tolerance** ($\leq
+      [[VAR:param_sweep_agreement_tolerance:.0e]]$ across
+      [[VAR:param_sweep_grid_points]] grid points).  The curve $I(\lambda) = \log 2 - H_b(\sigma(\lambda))$
+      grows from $0$ at $\lambda = 0$ (independence) and saturates at
+      $\log 2 \approx [[VAR:ising_mi_saturation:.3f]]$ as
+      $|\lambda| \to \infty$ (perfect
+      alignment).  Closed form
+      (`lean.bernoulli_toy.ising_mutual_information`,
+      [[EQREF:ising_mi_closed_form]]) and empirical
+      (`lean.bernoulli_toy.empirical_mutual_information`) are overlaid
+      on the [[VAR:param_sweep_grid_points]]-point sweep from
+      `simulation.hyperparameters.PARAMETER_SWEEP_LAMBDAS`
+      ($\lambda \in [[[VAR:param_sweep_lambda_min:g]],
+      [[VAR:param_sweep_lambda_max:g]]]$); CSV at
+      `output/data/parameter_sweep.csv`.  This is the K=2 specialization
+      of the decomposition theorem [[THMREF:thm_4_1]] (Lean companion
+      `ActinfPolicyEntanglement.Decomposition.entanglement_decomposition`).
     short: "Closed-form vs empirical Ising MI"
-    sections: ["§5.1", "§13"]
+    sections: ["§6.1", "§13"]
     source: scripts/generate_figures.py::figure_ising_mi_curve
+    uncertainty: deterministic_grid
 
   free_energy_curve:
     path: output/figures/free_energy_curve.png
     caption: |
-      Free-energy curve $F[q_\lambda]$ for the symmetric K=2 Ising toy
-      across utility surplus $\Delta_{\mathrm{util}} \in \{0, 0.5, 1, 2\}$.
-      The U-shape collapses to a monotone-decreasing curve when
-      $\Delta_{\mathrm{util}} = 0$ (Ising-like degeneracy of §5).
+      **Coupling pays off only when the utility surplus is large
+      enough to overcome the multi-information cost.**  The free-energy
+      curve $F[q_\lambda]$ collapses to a flat zero at zero utility
+      (no preference signal $\Rightarrow$ no incentive to leave the
+      mean-field manifold) and becomes monotonically decreasing as
+      the surplus $\Delta_{\mathrm{util}}$ grows.  Four utility
+      levels $\Delta_{\mathrm{util}} \in \{0, 0.5, 1, 2\}$ shown.
+      All four curves are convex in $\lambda$ on $[0, \infty)$ — the
+      numerical witness of [[THMREF:thm_4_3]] (convexity of $F$ in
+      $\lambda$).  Computed via
+      `lean.bernoulli_toy.ising_free_energy_curve` on the
+      [[VAR:param_sweep_grid_points]]-point sweep
+      `PARAMETER_SWEEP_LAMBDAS`.
     short: "K=2 Ising free-energy curve"
-    sections: ["§5.1", "Appendix B", "§13"]
+    sections: ["§6.1", "Appendix B", "§13"]
     source: scripts/generate_figures.py::figure_free_energy_curve
+    uncertainty: deterministic_grid
 
   coupling_tax_quadratic:
     path: output/figures/coupling_tax_quadratic.png
     caption: |
-      Heterogeneous K=2 coupling tax (blue dots) overlaid with the
-      fitted $O(\lambda^2)$ envelope (dashed) on $\lambda \in [0, 1.5]$.
-      The envelope's curvature constant $C$ is computed from the
-      small-$\lambda$ slope and printed in the figure legend; the
-      same envelope captures the actual tax across the full sweep —
-      i.e. the heterogeneous coupling-tax bound in numerical action.
+      **A reflexive (VFE-only) stream pays a quadratic price for
+      joining a planning (EFE) ensemble — the price is
+      $O(\lambda^2)$, not $O(\lambda)$.**  Numerical tax (dots) lies
+      under the one-point-pinned $C\lambda^2$ envelope (dashed; $C$
+      pinned at the canonical probe $\lambda$, not least-squares
+      fitted) on the entire
+      [[VAR:coupling_tax_grid_points]]-point sweep
+      $\lambda \in [[[VAR:coupling_tax_lambda_min:g]],
+      [[VAR:coupling_tax_lambda_max:g]]]$.  This is the numerical
+      witness of [[THMREF:thm_8_1]] (and its small-$\lambda$ tolerance
+      corollary [[THMREF:cor_8_2]]) — a reflexive controller can ride
+      along with a planner up to a bounded coupling-norm tax.  The
+      curvature constant $C$ (legend) is fit at the canonical probe
+      $\lambda$ from `simulation.hyperparameters.COUPLING_TAX_PROBE_LAMBDA`
+      and tracks the `coupling_tax_curvature_C` entry in
+      `output/data/manuscript_variables.json`.  Per-stream modes are
+      pinned `(VFE, EFE)`; tax values from
+      `lean.heterogeneous.coupling_tax(...)` (Lean companion
+      `ActinfPolicyEntanglement.Heterogeneous.couplingTax_quadratic_bound`).
     short: "O(λ²) coupling-tax envelope"
-    sections: ["§8", "§13"]
+    sections: ["§9", "§13"]
     source: scripts/generate_figures.py::figure_coupling_tax_quadratic
+    uncertainty: deterministic_grid
 
   phase_diagram:
     path: output/figures/phase_diagram.png
     caption: |
-      Coupling phase diagram on $\lambda \in [0, 4]$, with the three
-      phases of §9 (disordered / mixed / frozen) shaded as fill-bands at
-      illustrative critical thresholds $(\lambda_c^{(1)},
-      \lambda_c^{(2)}) = (0.5, 2.5)$.
+      **Three coupling phases — disordered (mean-field), mixed
+      (skilled), and frozen (archetypal) — are separated by two
+      illustrative thresholds $\lambda_c^{(1)}, \lambda_c^{(2)}$.**
+      The disordered band ($\lambda < \lambda_c^{(1)}$) is the
+      mean-field regime: streams sample independently.  The mixed
+      band ($\lambda_c^{(1)} \le \lambda \le \lambda_c^{(2)}$) is the
+      skilled regime: joint structure exists but the agent retains
+      flexibility.  The frozen band ($\lambda > \lambda_c^{(2)}$) is
+      the archetypal regime: the joint collapses onto a small number
+      of dominant modes.  Phases assigned by
+      `lean.bernoulli_toy.coupling_phase_at` on a
+      [[VAR:phase_diagram_grid_points]]-point sweep
+      (`simulation.hyperparameters.PHASE_DIAGRAM_LAMBDAS`); thresholds
+      from `PHASE_LAMBDA_C1`, `PHASE_LAMBDA_C2`.
     short: "1-D phase diagram"
-    sections: ["§9", "§13"]
+    sections: ["§10", "§13"]
     source: scripts/generate_figures.py::figure_phase_diagram
+    uncertainty: deterministic_grid
 
   optimal_lambda:
     path: output/figures/optimal_lambda.png
     caption: |
-      Closed-form optimal coupling
-      $\lambda^\star(\Delta_{\mathrm{util}}) = 2 \,
-      \operatorname{arctanh}(\Delta_{\mathrm{util}} / \Delta_{\max})$
-      across $\Delta_{\mathrm{util}} / \Delta_{\max} \in [-0.95, 0.95]$.
-      Vanishes at $\Delta_{\mathrm{util}} = 0$, saturates at $\pm \infty$
-      as $\Delta_{\mathrm{util}} \to \pm \Delta_{\max}$.
-    short: "Optimal λ*(Δ)"
-    sections: ["§5.1", "§10", "§13"]
+      **The coupling that *realizes* a target alignment
+      $\Delta_{\mathrm{align}}$ in the K=2 Bernoulli toy is
+      $\lambda^\star(\Delta_{\mathrm{align}})
+      = 2\,\operatorname{arctanh}(\Delta_{\mathrm{align}}/\Delta_{\max})$.**
+      This is the *alignment-inversion* formula — the inverse of the
+      alignment–coupling correspondence $\alpha(\lambda) = \tanh(\lambda/2)$
+      — *not* a VFE optimum.  The actual VFE-optimal coupling under a
+      utility scalar $u$ in the same toy is $\lambda^\star = 2u$ at small
+      $u$ and only coincides with $2\,\operatorname{arctanh}(u)$ in that
+      limit (see [[SECREF:app.bernoulli]]).  Numerical witnesses for the
+      existence ([[THMREF:thm_4_2]]) and uniqueness via convexity
+      ([[THMREF:thm_4_3]]) of the *VFE-optimal* $\lambda^\star$ are
+      separate from this alignment-inversion curve.  Closed form from
+      `lean.bernoulli_toy.optimal_lambda` evaluated on the
+      [[VAR:optimal_lambda_grid_points]]-point sweep
+      $\Delta_{\mathrm{align}}/\Delta_{\max} \in
+      [[[VAR:optimal_lambda_delta_min:g]],
+      [[VAR:optimal_lambda_delta_max:g]]]$
+      (`simulation.hyperparameters.OPTIMAL_LAMBDA_DELTAS`).
+    short: "Alignment-inversion λ*(Δ_align)"
+    sections: ["§6.1", "§11", "§13"]
     source: scripts/generate_figures.py::figure_optimal_lambda
+    uncertainty: deterministic_grid
 
   schmidt_rank:
     path: output/figures/schmidt_rank.png
     caption: |
-      Schmidt rank of the K=2 Ising joint posterior as $\lambda$ varies
-      on $[0, 4]$. The integer rank jumps from $1$ (mean-field manifold)
-      to $2$ instantly when any coupling is on — leaving the mean-field
-      submanifold ($r=1$) for $r=2$.
+      **Schmidt rank is integer-valued and steps up from 1
+      (mean-field manifold) to 2 as soon as $\lambda$ exceeds the
+      rank-detection tolerance under pure-$J$ Ising coupling
+      ($K_c = 0$, $\gamma = 0$).**  This step is the visual signature
+      of the "rank-1 iff mean-field" identity [[THMREF:prop_7_1]]
+      (Lean companion `Spectral.Bipartite.isBipartiteMeanField_factors`)
+      and the upper-semicontinuity prediction [[THMREF:prop_7_2]] — a
+      birth-of-archetype crossover at small positive $\lambda$.  Joint
+      posterior built by `lean.coupling.entangled_posterior`; rank
+      extracted by `lean.spectral.schmidt_rank`
+      (`atol = [[VAR:spectral_rank_atol:.0e]]`) on the
+      [[VAR:schmidt_rank_grid_points]]-point sweep
+      `SCHMIDT_RANK_LAMBDAS`.
     short: "Schmidt rank vs λ"
-    sections: ["§7.1", "§13"]
+    sections: ["§8.1", "§13"]
     source: scripts/generate_figures.py::figure_schmidt_rank_vs_lambda
+    uncertainty: deterministic_grid
 
   phase_landscape:
     path: output/figures/phase_landscape.png
     caption: |
-      Free-energy phase landscape: $F(\lambda, \mathrm{utility})$ on
-      $[0,4] \times [0,2]$.  The U-shaped low-utility band (cf. §9)
-      gives way to monotone-decreasing curves at high utility, and the
-      locus of $\lambda^\star$ is the colour minimum at each utility.
+      **The free-energy landscape over (coupling, utility) shows
+      $\lambda^\star$ tracking utility surplus.**  At low utility the
+      landscape is nearly flat in $\lambda$ (no incentive to couple);
+      at high utility a clear minimum-locus emerges and shifts
+      monotonically to the right.  The color minimum at each utility
+      row is the optimal coupling $\lambda^\star$ of [[THMREF:thm_4_2]].
+      Sampled on a
+      $[[VAR:phase_landscape_lambda_points]] \times
+      [[VAR:phase_landscape_utility_points]]$ grid over
+      $\lambda \in [[[VAR:phase_landscape_lambda_min:g]],
+      [[VAR:phase_landscape_lambda_max:g]]]$,
+      $\Delta_{\mathrm{util}} \in
+      [[[VAR:phase_landscape_utility_min:g]],
+      [[VAR:phase_landscape_utility_max:g]]]$
+      (`simulation.hyperparameters.PHASE_LANDSCAPE_LAMBDAS`,
+      `PHASE_LANDSCAPE_UTILITIES`) using
+      `lean.bernoulli_toy.ising_free_energy_curve`.
     short: "F(λ, utility) phase landscape"
-    sections: ["§9", "§13"]
+    sections: ["§13"]
     source: scripts/generate_figures.py::figure_phase_landscape
+    uncertainty: deterministic_grid
 
   schmidt_entropy_surface:
     path: output/figures/schmidt_entropy_surface.png
     caption: |
-      Entanglement entropy $S_E(\lambda, \mathrm{utility})$ heatmap on
-      $[0,4] \times [0,2]$. The $S_E = 0$ band at $\lambda = 0$ marks
-      the mean-field submanifold; $S_E$ grows with $\lambda$ then
-      saturates as the joint approaches an archetypal mode.
+      **Entanglement entropy $S_E$ is zero on the mean-field manifold
+      ($\lambda = 0$), grows with $\lambda$, then saturates as the
+      posterior collapses onto a single archetypal mode.**  The
+      saturation ceiling is utility-dependent: higher utility shifts
+      mass toward fewer archetypes, lowering peak $S_E$.  The dark
+      band at the left edge is the visual marker of the mean-field
+      submanifold.  Computed on a
+      $[[VAR:phase_landscape_lambda_points]] \times
+      [[VAR:phase_landscape_utility_points]]$ grid via
+      `lean.coupling.entangled_posterior` and
+      `lean.spectral.entanglement_entropy`.
     short: "Schmidt entropy heatmap"
-    sections: ["§7", "§13"]
+    sections: ["§8", "§13"]
     source: scripts/generate_figures.py::figure_schmidt_entropy_surface
+    uncertainty: deterministic_grid
 
   joint_heatmap_lambda2:
     path: output/figures/joint_heatmap_lambda2.png
     caption: |
-      K=2 Ising joint posterior at $\lambda = 2$ rendered as a heatmap
-      with side-bar marginals and the m-projection residual $q -
-      \prod_k q^k$ in the upper-right inset. The non-zero residual is
-      the visual signature of departure from the mean-field manifold.
+      **The K=2 Ising joint at
+      $\lambda = [[VAR:joint_heatmap_lambda:g]]$ concentrates probability
+      on the two aligned policies (diagonal) while the per-stream
+      marginals (side bars) remain symmetric.**  The inset residual
+      $q - \prod_k q^k$ is non-zero — the visual signature of departure
+      from the mean-field manifold, and the m-projection witness of
+      [[THMREF:prop_6_2]] (marginalization = m-projection minimizes
+      KL).  Joint built via `lean.bernoulli_toy.ising_joint_posterior`
+      at $\lambda = [[VAR:joint_heatmap_lambda:g]]$
+      (`JOINT_HEATMAP_LAMBDA`); panel layout from
+      `visualizations.joint_plots.plot_joint_heatmap_with_marginals`.
     short: "K=2 joint heatmap with marginals"
-    sections: ["§5.1", "§13"]
+    sections: ["§6.1", "§13"]
     source: scripts/generate_figures.py::figure_joint_heatmap_with_marginals
+    uncertainty: deterministic_grid
 
   archetype_dendrogram:
     path: output/figures/archetype_dendrogram.png
     caption: |
-      Schmidt archetypes for the K=2 Ising joint at $\lambda = 3$. Left
-      panel: archetype weights $\{s_\alpha\}$ in descending order. Right
-      panel: pairwise overlap matrix
-      $|\langle u_i, u_j\rangle| \cdot |\langle v_i, v_j\rangle|$
-      — diagonal-dominant by construction (orthonormal SVD basis).
+      **A small number of Schmidt archetypes carry almost all the
+      mass: at $\lambda = [[VAR:archetype_dendrogram_lambda:g]]$ the leading archetype dominates.**  Left
+      panel: archetype weights $\{s_\alpha\}$ in descending order
+      (rank-effective is small).  Right panel: overlap matrix
+      $|\langle u_i, u_j\rangle| \cdot |\langle v_i, v_j\rangle|$ is
+      diagonal-dominant — archetypes are mutually orthogonal by SVD
+      construction.  Computed via `lean.spectral.schmidt_decomposition`
+      at $\lambda = [[VAR:archetype_dendrogram_lambda:g]]$
+      (`ARCHETYPE_DENDROGRAM_LAMBDA`).
     short: "Schmidt archetype dendrogram"
-    sections: ["§7.2", "§13"]
+    sections: ["§8.2", "§13"]
     source: scripts/generate_figures.py::figure_archetype_dendrogram
+    uncertainty: deterministic_grid
 
   tensor_train_rank_surface:
     path: output/figures/tensor_train_rank_surface.png
     caption: |
-      Tensor-train bond-rank profile $(r_1, \ldots, r_{K-1})$ for the
-      symmetric Ising K-stream coupling at $\lambda = 2$ across
-      $K \in \{2, 3, 4, 5\}$. Bond dimensions saturate at $r_j \le 2$
-      — consistent with the sparsity--rank tradeoff for low-rank couplings.
+      **Bond dimensions stay small even as the stream count grows:
+      $r_j \le 3$ across $K \in \{[[VAR:tt_rank_stream_counts]]\}$.**  This is the
+      sparsity-rank tradeoff in action — low-rank Ising couplings yield
+      low-rank posteriors, the empirical witness of
+      [[THMREF:thm_7_3]].  Each row of the panel is the bond-rank
+      profile $(r_1, \ldots, r_{K-1})$ for one stream count at
+      $\lambda = [[VAR:tt_rank_profile_lambda:g]]$.  Joint built via `lean.coupling.entangled_posterior`
+      over `simulation.builders.ising_coupling_tensor`; bond
+      dimensions from `lean.spectral.tensor_train_ranks`
+      (`atol=[[VAR:spectral_rank_atol:.0e]]`).
     short: "Tensor-train rank surface"
-    sections: ["§7.3", "§13"]
+    sections: ["§8.3", "§13"]
     source: scripts/generate_figures.py::figure_tensor_train_ranks
+    uncertainty: deterministic_grid
+
+  multi_k_total_correlation:
+    path: output/figures/multi_k_total_correlation.png
+    caption: |
+      **Total correlation $I(q_\lambda)$ grows with both coupling
+      $\lambda$ and stream count $K \in \{[[VAR:multi_k_values_list]]\}$ — the multi-stream
+      generalization of the K=2 Ising MI curve.**  At $\lambda = 0$
+      every curve is identically zero (mean-field baseline).  In this
+      binary all-aligned/all-anti-aligned slice, $I$ approaches the
+      $(K-1)\log 2$ ceiling as $\lambda$ grows because the joint
+      concentrates onto the two aligned diagonal corners — derivable
+      from $H_{\text{marginals}} - H_{\text{joint}} = K \log 2 - \log 2$
+      under that mass concentration.  This is the **numerical
+      cross-cut** for [[THMREF:thm_7_3]] (sparsity-rank tradeoff) and
+      [[THMREF:prop_7_2]] (Schmidt-rank upper-semicontinuity) at every
+      $\lambda$ on the sweep; the corresponding rank-saturation
+      witness lives at [[FIGREF:multi_k_tt_rank_profile]].  Computed by
+      `simulation.multi_k_experiments.run_multi_k_sweep` on
+      the K-stream Ising ensemble built by
+      `simulation.builders.ising_coupling_tensor`; sweep grid sourced
+      from `simulation.hyperparameters.MULTI_K_SWEEP_LAMBDAS`; per-$K$
+      summary in `output/data/multi_k_summary.json`.
+    short: "Multi-stream total correlation"
+    sections: ["§8.3", "§13"]
+    source: scripts/simulate_multi_k.py
+    uncertainty: deterministic_grid
+
+  multi_k_aligned_mass:
+    path: output/figures/multi_k_aligned_mass.png
+    caption: |
+      **Aligned-policy mass concentrates onto the two aligned diagonal corners
+      $\{(0,\ldots,0), (1,\ldots,1)\}$ as $\lambda$ grows.**  At
+      $\lambda = 0$ the aligned mass equals the mean-field baseline
+      $2 \cdot 2^{-K}$ (purely uniform); at high $\lambda$ it
+      saturates near $1$.  The cross-over coupling depends on $K$:
+      larger $K$ pays a higher coupling-tax barrier before the
+      aligned modes dominate, locating a $K$-dependent threshold
+      consistent with the disordered → frozen transition predicted
+      by [[SECREF:phase]].  Joint built via
+      `lean.coupling.entangled_posterior` on the K-stream Ising
+      ensemble; aligned mass aggregated by
+      `simulation.metrics.aligned_hypercube_mass` within
+      `simulation.multi_k_experiments.run_multi_k_sweep`; sweep grid sourced
+      from `simulation.hyperparameters.MULTI_K_SWEEP_LAMBDAS`.
+    short: "Aligned mass concentration as K varies"
+    sections: ["§10", "§13"]
+    source: scripts/simulate_multi_k.py
+    uncertainty: deterministic_grid
+
+  multi_k_tt_rank_profile:
+    path: output/figures/multi_k_tt_rank_profile.png
+    caption: |
+      **Tensor-train bond ranks as $\lambda$ varies: ranks rise then
+      saturate at the bond-bound envelope predicted by the
+      sparsity-rank tradeoff.**  Each panel row shows the bond
+      profile $(r_1, \ldots, r_{K-1})$ at
+      $K \in \{[[VAR:multi_k_values_list]]\}$ across
+      `simulation.hyperparameters.MULTI_K_SWEEP_LAMBDAS`.  The envelope
+      ceiling is the empirical witness of the $K \ge 3$
+      generalization of [[THMREF:thm_7_3]] — bond ranks stay bounded
+      by the tensor-train representation of the coupling potential
+      even as $\lambda$ grows.  Bond dimensions extracted by
+      `lean.spectral.tensor_train_ranks`
+      (`atol=[[VAR:spectral_rank_atol:.0e]]`); per-$K$
+      max / sum aggregates in `output/data/multi_k_summary.json`.
+    short: "TT-rank profile as K varies"
+    sections: ["§8.3", "§13"]
+    source: scripts/simulate_multi_k.py
+    uncertainty: deterministic_grid
+
+  long_horizon_marginals:
+    path: output/figures/long_horizon_marginals.png
+    caption: |
+      **A $T = [[VAR:long_horizon_steps]]$-step coupled rollout under fixed seed: per-stream
+      marginals $q_t^k$ evolve from the mean-field initialization
+      toward a coupled steady state.**  The two heatmap rows are the
+      per-stream marginals; the right panel traces the coupled total
+      correlation $I(q_t)$ growing from $0$ to its
+      steady-state plateau.  The plateau exhibits the **habit
+      accumulation** predicted by [[SECREF:heterogeneous.habit]] —
+      the joint posterior settles onto a stable archetype
+      mixture under repeated observation.  Driven by
+      `simulation.rollout.simulate_coupled_rollout` at
+      `simulation.hyperparameters.LONG_HORIZON_STEPS`,
+      $\lambda = [[VAR:long_horizon_lambda:g]]$, seed
+      $[[VAR:long_horizon_seed]]$.  Bit-identical reproducibility under fixed seed is
+      asserted by
+      `tests/test_long_horizon.py::test_long_horizon_deterministic_under_fixed_seed`.
+    short: "Long-horizon coupled rollout marginals"
+    sections: ["§9.5", "§14"]
+    source: scripts/simulate_long_horizon.py
+    uncertainty: canonical_seed
+
+  long_horizon_steady_state:
+    path: output/figures/long_horizon_steady_state.png
+    caption: |
+      **The coupled joint at the tail of a
+      $T = [[VAR:long_horizon_steps]]$ rollout enters a tight
+      trailing-window neighborhood: the per-stream KL
+      $D_{\mathrm{KL}}(q_t^k \,\|\, \bar q^k_{\mathrm{tail}})$
+      stays small across the tail.**
+      The tail window of width
+      `simulation.hyperparameters.LONG_HORIZON_TAIL_WINDOW`
+      ([[VAR:long_horizon_tail_window]] steps) carries first-tail
+      max KL
+      $[[VAR:long_horizon_tail_kl_first_max:.4f]]$, mean-tail max KL
+      $[[VAR:long_horizon_tail_kl_mean_max:.4f]]$, and strict
+      window max KL
+      $[[VAR:long_horizon_tail_kl_window_max:.4f]]$
+      — under repeated observation at fixed
+      $\lambda = [[VAR:long_horizon_lambda:g]]$ the family enters a
+      tight trailing-window neighborhood of an empirical tail mean.
+      This is *not* the $\lambda \to \infty$ limit of
+      [[THMREF:thm_11_1]]; it is the finite-$\lambda$ tail-window
+      KL concentration that [[THMREF:thm_11_1]] would extrapolate to
+      in the limit.  Adjacent-step KL is
+      tracked separately (max
+      $[[VAR:long_horizon_adjacent_kl_max:.4f]]$), avoiding ambiguity
+      between tail-window and step-to-step convergence.  Computed by
+      `simulation.long_horizon.long_horizon_summary` on the rollout
+      trajectory; summary in `output/data/long_horizon_summary.json`.
+    short: "Long-horizon steady-state KL convergence"
+    sections: ["§9.5", "§17.2"]
+    source: scripts/simulate_long_horizon.py
+    uncertainty: canonical_seed
+
+  revertibility_witness:
+    path: output/figures/revertibility_witness.png
+    caption: |
+      **Numerical witness of the multi-information identity
+      $D_{\mathrm{KL}}(q_\lambda \,\|\, \hat m(q_\lambda)) =
+      I(q_\lambda)$ at every $\lambda$ on the sweep.**  Three panels:
+      (a) the residual
+      $|D_{\mathrm{KL}}(q_\lambda \,\|\, \hat m(q_\lambda)) - I(q_\lambda)|$
+      stays below
+      `simulation.hyperparameters.REVERTIBILITY_KL_IDENTITY_TOLERANCE`
+      across the sweep, computed by two independent code paths whose
+      equivalence is [[THMREF:prop_6_3]] (`free_energy.total_correlation`
+      via the entropy route, `free_energy.kl_divergence` via direct
+      $\sum_\pi q \log (q/\hat m)$); (b) per-stream marginal
+      recovery — the m-projection's marginals match $q_\lambda$'s
+      marginals to `REVERTIBILITY_TOLERANCE`; (c) revertibility flag at
+      every $\lambda$.  Code-path agreement is the consistency claim
+      this figure measures; the witness-conformance suite
+      (`tests/test_witness_conformance.py`) supplies the complementary
+      discrimination against wrong-$q$ inputs.  Companion
+      [[FIGREF:pymdp_kl_to_lambda_zero]] shows the KL-to-baseline
+      behavior at $\lambda = 0$.  Sweep grid sourced
+      from `simulation.hyperparameters.REVERTIBILITY_LAMBDAS`; summary
+      in `output/data/revertibility_summary.json`.
+    short: "m-projection KL identity witness"
+    sections: ["§7.1", "§9.5"]
+    source: scripts/simulate_revertibility.py
+    uncertainty: deterministic_grid
+
+  btai_baseline:
+    path: output/figures/btai_baseline.png
+    caption: |
+      **The Branching-Time AIF baseline runs end-to-end and emits the
+      three tracked observables; UCB-MCTS estimates the
+      lowest-EFE joint action rather than the soft policy posterior.**
+      (a) KL of the MCTS visitation posterior against the closed-form
+      $K=2$ Bernoulli reference at
+      $\lambda = [[VAR:btai_reference_lambda:g]]$ across the budget grid
+      $B_{\mathrm{MCTS}} \in \{[[VAR:btai_mcts_min_budget:.0f]], \dots,
+      [[VAR:btai_mcts_max_budget:.0f]]\}$
+      ([[VAR:btai_num_budgets:.0f]] budgets); the fitted slope exponent
+      is $[[VAR:btai_sample_complexity_exponent:.3f]]$ — the visitation
+      KL does not shrink toward the soft reference because UCB
+      concentrates.  (b) the closed-form reference $q_\lambda$;
+      (c) the BTAI visitation posterior at the largest budget, whose
+      total correlation
+      $\approx [[VAR:btai_total_correlation_at_max_budget:.4f]]$ nats is
+      near zero (mass concentrated on one joint action).  A reproducible
+      worked run driven by real pymdp 1.0.1 per-stream expected free
+      energy; the full compute-matched hypothesis test of
+      [[SECREF:discussion]] is author-led future analysis, not asserted
+      here.  Source: `scripts/simulate_btai.py`; data:
+      `output/data/btai_baseline.json`.
+    short: "BTAI visitation vs soft reference"
+    sections: ["§13"]
+    source: scripts/simulate_btai.py::_plot_btai
+    uncertainty: canonical_seed
+
+  adversarial_sweep:
+    path: output/figures/adversarial_sweep.png
+    caption: |
+      **Adversarial bound ratio across the $(\varepsilon, \lambda)$ grid
+      for three adversary classes.**  Each panel shows the ratio of the
+      measured KL drift $D_{\mathrm{KL}}(q_\lambda \,\|\,
+      q_\lambda^{J+\Delta J})$ to the first-order Lipschitz bound
+      $\lambda\,\varepsilon\,\operatorname{Var}_{q_\lambda}(J)^{1/2}$ for
+      the (a) worst-case rank-one, (b) uniform-random, and (c) sparse
+      single-cell adversary, over [[VAR:adversarial_num_scenarios:.0f]]
+      scenarios ([[VAR:adversarial_epsilon_grid_points:.0f]]
+      $\varepsilon$ values $\times$
+      [[VAR:adversarial_lambda_grid_points:.0f]] $\lambda$ values
+      $\times$ 3 classes; the degenerate $\lambda = 0$ column is
+      omitted).  Blue cells (ratio $<1$) are where the first-order
+      bound holds; red cells (ratio $>1$) are where the linearization is
+      exceeded in the large-$\varepsilon$ regime.  The bound holds for a
+      fraction [[VAR:adversarial_bound_holds_fraction:.3f]] of scenarios
+      (empirical Lipschitz constant
+      [[VAR:adversarial_empirical_lipschitz:.3f]]; worst ratio
+      [[VAR:adversarial_max_bound_ratio:.2f]]).  Source:
+      `scripts/simulate_adversarial.py`; data:
+      `output/data/adversarial_sweep.json`.
+    short: "Adversarial bound ratio (epsilon, lambda)"
+    sections: ["§13"]
+    source: scripts/simulate_adversarial.py::_plot_adversarial
+    uncertainty: deterministic_grid
+
+  robustness_tc_envelopes:
+    path: output/figures/robustness_tc_envelopes.png
+    caption: |
+      **One-axis-at-a-time robustness stress tests preserve the same
+      coupling signature.**  The panels vary observation context,
+      precision $\gamma$, preference strength, and Ising coupling scale
+      while holding the other axes at the canonical pymdp setting.  The
+      suite covers [[VAR:robustness_scenario_count:.0f]] scenarios over
+      [[VAR:robustness_sweep_grid_points]] $\lambda$ values on
+      $\lambda \in [[[VAR:robustness_sweep_lambda_min:g]],
+      [[VAR:robustness_sweep_lambda_max:g]]]$.  The null-coupling
+      row is the flatline sentinel
+      (max $I(q_\lambda) =
+      [[VAR:robustness_null_coupling_tc_max:.2e]]$), while all
+      non-null rows keep the positive total-correlation envelope.
+      Data: `output/simulations/pymdp_robustness.csv`; summary:
+      `output/data/robustness_summary.json`.
+    short: "Robustness TC envelopes"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_robustness_tc_envelopes
+    uncertainty: deterministic_grid
+
+  robustness_half_saturation:
+    path: output/figures/robustness_half_saturation.png
+    caption: |
+      **Half-saturation sensitivity identifies which perturbation axes
+      move the coupling threshold.**  For each robustness scenario,
+      $\lambda_{1/2}$ is the first grid value where
+      $I(q_\lambda)$ reaches half of that scenario's sweep maximum.
+      Across the finite half-saturation scenarios, the mean
+      $\lambda_{1/2}$ is
+      [[VAR:robustness_half_saturation_mean:.3f]] and the range is
+      [[[VAR:robustness_half_saturation_min:.3f]],
+      [[VAR:robustness_half_saturation_max:.3f]]].  Null coupling has
+      no positive half-saturation by construction, so it is displayed
+      as the zero baseline rather than as a failed fit.
+    short: "Robustness half-saturation sensitivity"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_robustness_half_saturation
+    uncertainty: deterministic_grid
+
+  robustness_decomposition_residuals:
+    path: output/figures/robustness_decomposition_residuals.png
+    caption: |
+      **The decomposition identity remains numerically closed across
+      every robustness scenario.**  Each point is a scenario-level
+      maximum of
+      $|F[q_\lambda] - \mathrm{RHS}_{\mathrm{decomp}}(q_\lambda)|$
+      over the configured robustness sweep.  The worst residual is
+      [[VAR:robustness_decomposition_residual_max:.2e]], below the
+      validator tolerance
+      [[VAR:pymdp_decomposition_residual_tolerance:.0e]].  This figure
+      links the stress suite back to the same numerical realization of
+      [[THMREF:thm_4_1]] used in the main pymdp free-energy bundle.
+    short: "Robustness decomposition residuals"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_robustness_decomposition_residuals
+    uncertainty: deterministic_grid
+
+  coupling_ablation_summary:
+    path: output/figures/coupling_ablation_summary.png
+    caption: |
+      **Coupling ablations separate structural claims from a single
+      sign choice.**  The four variants are
+      [[VAR:coupling_ablation_variants_list]]: aligned Ising coupling,
+      null coupling, anti-aligned coupling, and a heterogeneous
+      small-tax $K_c$ matrix.  The $\lambda = 0$ mean-field anchor
+      survives every variant
+      (max $I(q_0) =
+      [[VAR:coupling_ablation_lambda_zero_tc_max:.2e]]$); the null
+      variant stays flat
+      (max $I(q_\lambda) =
+      [[VAR:coupling_ablation_null_tc_max:.2e]]$); and the non-null
+      variants shift archetypal mass without breaking the decomposition
+      residual bound
+      ([[VAR:coupling_ablation_decomposition_residual_max:.2e]]).
+      Data: `output/simulations/pymdp_coupling_ablation.csv`.
+    short: "Coupling-ablation summary"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_coupling_ablation_summary
+    uncertainty: deterministic_grid
+
+  marginal_null_control_summary:
+    path: output/figures/marginal_null_control_summary.png
+    caption: |
+      **A fixed-marginal null control removes the dependence signal
+      while preserving each stream's posterior.**  For each configured
+      robustness $\lambda$ value, the control replaces the entangled
+      joint posterior by the product of its own marginals.  The null
+      control's maximum total correlation is
+      [[VAR:robustness_null_control_max_tc:.2e]], while the maximum
+      removed total correlation is
+      [[VAR:robustness_null_control_tc_removed_max:.4f]].  The aligned
+      archetypal-mass shift reaches
+      [[VAR:robustness_null_control_aligned_mass_shift_max:.4f]],
+      showing that the coupling signal is not a univariate marginal
+      artifact.  Data:
+      `output/simulations/pymdp_marginal_null_control.csv`; summary:
+      `output/data/marginal_null_control_summary.json`.
+    short: "Fixed-marginal null control"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_marginal_null_control_summary
+    uncertainty: deterministic_grid
+
+  interaction_robustness_summary:
+    path: output/figures/interaction_robustness_summary.png
+    caption: |
+      **Targeted two-axis stress tests expose interaction effects
+      without expanding to a full Cartesian grid.**  The appendix-only
+      suite covers the configured families
+      [[VAR:robustness_interaction_families_list]] for
+      [[VAR:interaction_robustness_scenario_count:.0f]] scenarios and
+      [[VAR:interaction_robustness_row_count:.0f]] total $\lambda$
+      rows.  The worst decomposition residual is
+      [[VAR:interaction_robustness_decomposition_residual_max:.2e]],
+      while the null-variant interaction flatline has maximum
+      $I(q_\lambda) =
+      [[VAR:interaction_robustness_null_variant_tc_max:.2e]]$.
+      Data: `output/simulations/pymdp_interaction_robustness.csv`;
+      summary: `output/data/interaction_robustness_summary.json`.
+    short: "Two-axis interaction robustness"
+    sections: ["§14", "§15"]
+    source: scripts/simulate_robustness.py::plot_interaction_robustness_summary
+    uncertainty: deterministic_grid
+
+  long_horizon_replicate_envelope:
+    path: output/figures/long_horizon_replicate_envelope.png
+    caption: |
+      **Long-horizon replicate sidecars preserve the canonical figure
+      while reporting seed sensitivity.**  The main long-horizon
+      figures remain the fixed-seed artifact; this sidecar adds the
+      configured replicate seeds
+      $\{[[VAR:long_horizon_replicate_seeds_list]]\}$ and plots the
+      total-correlation median, interquartile band, and min--max
+      envelope over the same $T = [[VAR:long_horizon_steps]]$ rollout.
+      The habit-accumulation pass rate is
+      [[VAR:long_horizon_replicate_habit_pass_rate:.2f]], final
+      total-correlation mean is
+      [[VAR:long_horizon_replicate_tc_final_mean:.4f]], and the
+      maximum tail-window KL over seeds is
+      [[VAR:long_horizon_replicate_tail_kl_window_max:.4f]].  Data:
+      `output/simulations/pymdp_long_horizon_replicates.csv`; summary:
+      `output/data/long_horizon_replicates_summary.json`.
+    short: "Long-horizon replicate TC envelope"
+    sections: ["§14", "§17.2"]
+    source: scripts/simulate_robustness.py::plot_long_horizon_replicate_envelope
+    uncertainty: replicate_envelope
+
+  long_horizon_seed_diagnostics:
+    path: output/figures/long_horizon_seed_diagnostics.png
+    caption: |
+      **Per-seed long-horizon diagnostics explain the replicate pass
+      rate rather than tuning it away.**  Bars show each configured
+      seed's strict tail-window KL and maximum adjacent-step KL, with
+      the canonical habit threshold
+      [[VAR:long_horizon_steady_state_tol:.3f]] drawn as a dashed
+      line.  The threshold-sensitivity probes
+      $\{[[VAR:long_horizon_diagnostic_thresholds_list]]\}$ are
+      reported in `output/data/long_horizon_replicates_summary.json`;
+      the minimum margin to the canonical tolerance is
+      [[VAR:long_horizon_replicate_margin_to_tol_min:.4f]].  Data:
+      `output/simulations/pymdp_long_horizon_seed_diagnostics.csv`.
+    short: "Long-horizon seed diagnostics"
+    sections: ["§14", "§17.2"]
+    source: scripts/simulate_robustness.py::plot_long_horizon_seed_diagnostics
+    uncertainty: replicate_envelope
+
+  long_horizon_threshold_sensitivity:
+    path: output/figures/long_horizon_threshold_sensitivity.png
+    caption: |
+      **Tail-window threshold sensitivity makes the long-horizon habit
+      pass rate auditable rather than tuned.**  Each bar reports the
+      fraction of configured replicate seeds whose strict tail-window
+      KL is below one diagnostic threshold in
+      $\{[[VAR:long_horizon_diagnostic_thresholds_list]]\}$.  The
+      dashed line marks the canonical threshold
+      [[VAR:long_horizon_steady_state_tol:.3f]] used by the main
+      habit-accumulation flag.  Across the diagnostic thresholds the
+      pass-rate range is
+      [[VAR:long_horizon_replicate_threshold_pass_rate_range:.2f]]
+      with Wilson 95% interval
+      [[[VAR:long_horizon_replicate_habit_pass_rate_ci_low:.2f]],
+      [[VAR:long_horizon_replicate_habit_pass_rate_ci_high:.2f]]]
+      around the canonical replicate pass rate
+      [[VAR:long_horizon_replicate_habit_pass_rate:.2f]]
+      (min
+      [[VAR:long_horizon_replicate_threshold_pass_rate_min:.2f]],
+      max
+      [[VAR:long_horizon_replicate_threshold_pass_rate_max:.2f]]).
+      Data: `output/simulations/pymdp_long_horizon_threshold_sensitivity.csv`;
+      summary: `output/data/long_horizon_replicates_summary.json`.
+    short: "Long-horizon threshold sensitivity"
+    sections: ["§14", "§17.2"]
+    source: scripts/simulate_robustness.py::plot_long_horizon_threshold_sensitivity
+    uncertainty: confidence_interval
 
   log_weight_flow:
     path: output/figures/log_weight_flow.png
     caption: |
-      e-geodesic visualisation: unnormalised log-weight $\log
-      \mathcal{E}_\lambda(\pi) - \gamma \lambda K_c(\pi)$ for every
-      policy $\pi \in \{0,1\}^2$ across $\lambda \in [0, 3]$ for the
-      symmetric Ising coupling with $K_c \neq 0$. Each line is exactly
-      affine in $\lambda$ — the numerical signature of an e-geodesic family.
+      **Every policy's log-weight is consistent with exact linearity in
+      $\lambda$ (slope error within floating-point round-off) — the
+      numerical signature of an exponential geodesic.**  Four straight
+      lines (one per policy $\pi \in \{0,1\}^2$) with slopes
+      $J(\pi) - \gamma K_c(\pi)$ depart from the same point at
+      $\lambda = 0$ (the mean-field log-weight).  Linearity is the
+      e-geodesic identity [[EQREF:e_geodesic]] and the numerical
+      witness of [[THMREF:thm_6_4]] (Lean forwarder
+      `Geometry.entangledFamily_eGeodesic`).  Unnormalized log-weight
+      $\log \mathcal{E}_\lambda(\pi) - \gamma \lambda K_c(\pi)$ from
+      `lean.coupling.coupling_log_weight` on the
+      [[VAR:log_weight_flow_grid_points]]-point sweep
+      `LOG_WEIGHT_FLOW_LAMBDAS` under symmetric Ising coupling with
+      $K_c \neq 0$.
     short: "Log-weight e-geodesic flow"
-    sections: ["§6", "§13"]
+    sections: ["§7", "§13"]
     source: scripts/generate_figures.py::figure_log_weight_flow
+    uncertainty: deterministic_grid
 
   coupling_graph:
     path: output/figures/coupling_graph.png
     caption: |
-      Coupling-potential graph for the symmetric K=4 Ising ensemble.
-      Each node is one stream; edge weights are the average $|J|$ across
-      slot pairs. Symmetric coupling produces an evenly-weighted clique;
-      CEREBRUM-style case-grammar couplings would manifest as
-      edge-weight asymmetry.
+      Coupling-potential graph for the symmetric
+      $K=[[VAR:coupling_graph_stream_count]]$ Ising ensemble
+      built by `simulation.builders.ising_coupling_tensor` and rendered via
+      `visualizations.graphs.plot_coupling_graph(threshold=0.0)`.
+      Each node is one stream; edge weights are the mean $|J|$ over
+      slot pairs.  Symmetric coupling produces an evenly-weighted
+      clique; CEREBRUM-style case-grammar couplings would manifest
+      as edge-weight asymmetry.
     short: "Coupling-potential graph"
-    sections: ["§11.12 (CEREBRUM)", "§13"]
+    sections: ["§13", "§19.4 (CEREBRUM)"]
     source: scripts/generate_figures.py::figure_coupling_graph
+    uncertainty: analytical_schematic
 
   pymdp_total_correlation_curve:
     path: output/figures/pymdp_total_correlation_curve.png
     caption: |
-      pymdp-grounded total correlation $I(q_\lambda)$ as a function of
-      coupling $\lambda$ for the K=2 Ising ensemble, observations
-      $(0, 0)$. Smooth monotone increase from the mean-field baseline
-      $0$ toward saturation at $\log 2 \approx 0.693$ — the empirical
-      witness of Prop 6.3 inside a grounded POMDP.
+      pymdp-grounded total correlation $I(q_\lambda)$ from
+      `simulation.inference.coupled_policy_posterior` →
+      `lean.free_energy.total_correlation`, evaluated on a
+      [[VAR:pymdp_sweep_grid_points]]-point linspace over
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$
+      (`simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS`) for the
+      $K=[[VAR:pymdp_ensemble_K]]$ Ising ensemble at observations
+      $(0, 0)$ and ensemble precision
+      $\gamma = [[VAR:pymdp_ensemble_gamma:g]]$.  The CSV at
+      `output/simulations/pymdp_lambda_sweep.csv` is the source data.
+      Smooth monotone increase from the mean-field baseline $0$ toward
+      saturation at $\log 2 \approx [[VAR:ising_mi_saturation:.3f]]$ — the empirical witness of
+      [[THMREF:prop_6_3]] inside a grounded POMDP.
     short: "pymdp total correlation curve"
-    sections: ["§11.1", "§13"]
+    sections: ["§14"]
     source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+    uncertainty: deterministic_grid
 
   pymdp_joint_lambda_0:
     path: output/figures/pymdp_joint_lambda_0.00.png
     caption: |
-      Coupled joint policy posterior at $\lambda = 0$ (pure mean-field).
+      Coupled joint policy posterior at $\lambda = 0$ (pure mean-field
+      sentinel from
+      `simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS`).  The joint is
+      `simulation.inference.coupled_policy_posterior(spec, [0,0],
+      lam=0.0)` rendered with
+      `visualizations.joint_plots.plot_joint_heatmap_with_marginals`.
       Marginals (top / right bars) match the per-stream pymdp
-      posteriors; the m-projection residual (top-right inset) is
-      identically zero.
+      posteriors and the m-projection residual (upper-right inset) is
+      identically zero — exactly the outer-product baseline.
     short: "pymdp joint at λ=0"
-    sections: ["§13"]
+    sections: ["§14"]
     source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+    uncertainty: deterministic_grid
 
   pymdp_joint_lambda_2:
     path: output/figures/pymdp_joint_lambda_2.00.png
     caption: |
-      Coupled joint at $\lambda = 2$. Off-diagonal mass redistributes
-      onto aligned $(0,0) / (1,1)$ corners; m-projection residual is
-      non-zero, confirming Schmidt rank $r = 2 > 1$.
+      Coupled joint at $\lambda = 2$ (mid-grid sentinel of
+      `simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS`).  The joint is
+      `simulation.inference.coupled_policy_posterior(spec, [0,0],
+      lam=2.0)`.  Off-diagonal mass redistributes onto aligned
+      $(0,0) / (1,1)$ corners; the m-projection residual is non-zero,
+      confirming Schmidt rank $r \geq 2$ (strictly greater than the
+      mean-field rank-1).
     short: "pymdp joint at λ=2"
-    sections: ["§13"]
+    sections: ["§14"]
     source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+    uncertainty: deterministic_grid
 
   pymdp_joint_lambda_4:
     path: output/figures/pymdp_joint_lambda_4.00.png
     caption: |
-      Coupled joint at $\lambda = 4$ (frozen regime). Aligned corners
-      dominate; the residual is large; the system has essentially
-      collapsed onto a single archetypal mode.
+      Coupled joint at $\lambda = 4$ (high-end sentinel of
+      `simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS`, frozen regime).
+      The joint is
+      `simulation.inference.coupled_policy_posterior(spec, [0,0],
+      lam=4.0)`.  Aligned corners dominate; the m-projection residual
+      is large; the system has essentially collapsed onto the two
+      aligned-corner archetypal modes $(0,0)$ and $(1,1)$ that share
+      mass under the symmetric Ising coupling.
     short: "pymdp joint at λ=4"
-    sections: ["§13"]
+    sections: ["§14"]
     source: scripts/simulate_pymdp.py::figure_pymdp_lambda_sweep
+    uncertainty: deterministic_grid
+
+  pymdp_free_energy_panel:
+    path: output/figures/pymdp_free_energy_panel.png
+    caption: |
+      Four-panel pymdp free-energy dashboard over the
+      [[VAR:pymdp_sweep_grid_points]]-point linspace on
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$
+      (`simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS`) for the
+      $K=[[VAR:pymdp_ensemble_K]]$
+      Ising ensemble at observations $(0, 0)$.  Panel A: total VFE,
+      coupling term $\lambda \langle J \rangle_{q_\lambda}$, and
+      multi-information $I(q_\lambda)$ (same quantity as the entropy
+      gap in panel D).  Panel B: per-stream VFE
+      $F[q^k_\lambda]$.  Panel C: expected EFE under posterior
+      $\langle G_k\rangle_{q^k_\lambda}$ per stream plus their sum.
+      Panel D: joint vs sum-of-marginal entropy with the gap shaded
+      as the total correlation $I(q_\lambda)$.  Every curve is
+      computed by
+      `simulation.inference.free_energy_curve(spec, [0,0], lams)`
+      and reads off the
+      `output/simulations/pymdp_free_energy_bundle.csv` artifact.
+    short: "pymdp four-panel free-energy dashboard"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_vfe_decomposition:
+    path: output/figures/pymdp_vfe_decomposition.png
+    caption: |
+      pymdp variational free energy decomposed across the
+      [[VAR:pymdp_sweep_grid_points]]-point linspace on
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$.  Top: per-stream
+      $F[q^k_\lambda]$ (one line per stream).  Bottom: total VFE
+      next to the coupling term $\lambda \langle J\rangle_{q_\lambda}$
+      and $I(q_\lambda)$ — the three quantities whose interplay mirrors
+      the entanglement decomposition theorem ([[THMREF:thm_4_1]])
+      inside a real POMDP run.  Computation:
+      `simulation.inference.free_energy_curve`.
+    short: "pymdp VFE decomposition"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_efe_under_posterior:
+    path: output/figures/pymdp_efe_under_posterior.png
+    caption: |
+      **Coupling shifts the expected EFE from its mean-field value
+      at $\lambda = 0$ toward the EFE of the dominant archetype.**
+      Per-stream expected EFE
+      $\langle G_k \rangle_{q^k_\lambda}$ as $\lambda$ sweeps the
+      `simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS` grid.  Each
+      $G_k$ is pymdp's own EFE vector from `Agent.infer_policies`,
+      averaged against the coupled marginal $q^k_\lambda$ via
+      `simulation.inference.expected_free_energy_under_posterior`;
+      the dashed line is the cross-stream sum.  Companion field on
+      `FreeEnergyBundle.efe_under_posterior` (see
+      [[SECREF:app.bundle_stats]]).
+    short: "pymdp EFE under coupled posterior"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_entropy_decomposition:
+    path: output/figures/pymdp_entropy_decomposition.png
+    caption: |
+      Joint entropy $H(q_\lambda)$ vs sum-of-marginal entropy
+      $\sum_k H(q^k_\lambda)$ across the
+      [[VAR:pymdp_sweep_grid_points]]-point pymdp sweep on
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$; the gap (shaded) is the total correlation
+      $I(q_\lambda) = \sum_k H(q^k) - H(q)$.  At $\lambda = 0$ the
+      two curves meet — the visual signature of the mean-field
+      submanifold.  Computation:
+      `lean.free_energy.shannon_entropy` composed with
+      `lean.joint_dist.joint_marginals` on the
+      `simulation.inference.coupled_policy_posterior` output.
+    short: "pymdp joint vs marginal entropy"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_action_distribution:
+    path: output/figures/pymdp_action_distribution.png
+    caption: |
+      Heatmap of the joint action distribution $q_\lambda(\pi)$ over
+      the [[VAR:pymdp_sweep_grid_points]]-point sweep on
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$ (rows) for every
+      joint policy index $\pi \in \prod_k \Pi^k$ (columns, lex order).
+      Mass concentrates onto the aligned diagonal as $\lambda$ grows,
+      visualizing the symmetry-breaking transition predicted by
+      [[SECREF:phase]].  Computation:
+      `simulation.inference.coupled_policy_posterior(spec, [0,0],
+      lam).reshape(-1)` per row.
+    short: "pymdp joint action distribution evolution"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_summary_panel:
+    path: output/figures/pymdp_summary_panel.png
+    caption: |
+      Six-panel pymdp summary dashboard derived from
+      `simulation.inference.free_energy_curve` and
+      `simulation.statistics.pymdp_summary_statistics`.  Panel A:
+      total correlation $I(q_\lambda)$ with the half-saturation
+      $\lambda_{1/2}$ marker.  Panel B: free-energy decomposition
+      (total VFE, coupling term, $I(q_\lambda)$).  Panel C: action-distribution
+      Shannon entropy $H(q_\lambda)$ + mode probability
+      $\max_\pi q_\lambda(\pi)$ (twin axes).  Panel D: KL divergence
+      $D_{\rm KL}(q_\lambda \,\|\, q_0)$ from the mean-field anchor.
+      Panel E: per-stream marginal entropy $H(q^k_\lambda)$.  Panel F:
+      aligned-corner mass $q(0,0)+q(1,1)$ relative to the uniform
+      baseline.  Every panel reads off the same bundle CSV at
+      `output/simulations/pymdp_free_energy_bundle.csv`.  PNG carries
+      reproducibility tEXt (source function, hyperparameter snapshot,
+      git revision, ISO timestamp) per
+      `visualizations.metadata.figure_metadata`.
+    short: "pymdp six-panel summary dashboard"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_action_entropy:
+    path: output/figures/pymdp_action_entropy.png
+    caption: |
+      Joint-action Shannon entropy $H(q_\lambda)$ (left axis, blue)
+      and mode probability $\max_\pi q_\lambda(\pi)$ (right axis, red)
+      across the [[VAR:pymdp_sweep_grid_points]]-point pymdp sweep on
+      $\lambda \in [[[VAR:pymdp_sweep_lambda_min:g]],
+      [[VAR:pymdp_sweep_lambda_max:g]]]$.  As
+      coupling grows, $H$ falls toward 0 and the mode probability
+      rises toward 1 — the visual signature of collapse onto a
+      single archetypal mode.  Computation:
+      `visualizations.pymdp_extras.plot_action_entropy_curve`.
+    short: "pymdp action entropy + mode probability"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_kl_to_lambda_zero:
+    path: output/figures/pymdp_kl_to_lambda_zero.png
+    caption: |
+      KL divergence
+      $D_{\rm KL}(q_\lambda \,\|\, q_0)$ of the coupled action
+      distribution back to the mean-field baseline at $\lambda = 0$,
+      across the [[VAR:pymdp_sweep_grid_points]]-point pymdp sweep.
+      A direct measure of how far
+      the coupled posterior has *moved* from the mean-field anchor —
+      complementary to the total-correlation curve.  At $\lambda = 0$
+      the divergence is identically zero by construction.  Computation:
+      `visualizations.pymdp_extras.plot_kl_to_lambda_zero`.
+    short: "pymdp KL to mean-field baseline"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
+
+  pymdp_marginal_entropy_per_stream:
+    path: output/figures/pymdp_marginal_entropy_per_stream.png
+    caption: |
+      Per-stream marginal entropy $H(q^k_\lambda)$ for each
+      $k \in \{0, \ldots, K-1\}$ across the
+      [[VAR:pymdp_sweep_grid_points]]-point pymdp sweep.  The
+      dashed black line is the joint entropy $H(q_\lambda)$ for
+      reference; the *gap* between the sum of marginal entropies and
+      the joint is the total correlation $I(q_\lambda)$ shown
+      separately in [[FIGREF:pymdp_entropy_decomposition]].
+      Computation:
+      `visualizations.pymdp_extras.plot_marginal_entropy_per_stream`.
+    short: "pymdp per-stream marginal entropy"
+    sections: ["§15"]
+    source: scripts/simulate_pymdp.py::figure_pymdp_free_energies
+    uncertainty: deterministic_grid
 
   pymdp_coupled_rollout:
     path: output/figures/pymdp_coupled_rollout.png
     caption: |
-      Deterministic 10-step coupled rollout under $\lambda = 2$,
-      seed $= 0$. Per-stream marginals $q_t^k$ (left two heatmaps)
-      interleave with the coupled total correlation $I(q_t)$ (right).
-      Reproducibility is asserted by
+      Deterministic
+      $T = [[VAR:pymdp_rollout_steps]]$-step coupled rollout from
+      `simulation.rollout.simulate_coupled_rollout` under
+      $\lambda = [[VAR:pymdp_rollout_lambda:g]]$ and seed
+      $[[VAR:pymdp_rollout_seed]]$
+      (`simulation.hyperparameters.PYMDP_ROLLOUT_STEPS`,
+      `PYMDP_ROLLOUT_LAMBDA`, `PYMDP_ROLLOUT_SEED`).  Per-stream
+      marginals $q_t^k$ from
+      `simulation.inference.per_stream_policy_posterior` (left two
+      heatmaps) interleave with the coupled total correlation
+      $I(q_t)$ from `lean.free_energy.total_correlation` (right).
+      Bit-identical reproducibility under fixed seed is asserted by
       `tests/test_simulation_pymdp.py::test_simulate_coupled_rollout_deterministic_under_fixed_seed`.
     short: "pymdp coupled rollout"
-    sections: ["§11.1", "§13"]
+    sections: ["§14"]
     source: scripts/simulate_pymdp.py::figure_pymdp_rollout
+    uncertainty: canonical_seed
 
   kl_geodesic_simplex:
     path: output/figures/kl_geodesic_simplex.png
     caption: |
-      The K=2 Ising joint posterior traced in a 2-D summary plane
-      spanned by aligned-corner mass $q(0,0)+q(1,1)$ (horizontal) and
-      off-diagonal disparity $|\Delta_{\rm row}|+|\Delta_{\rm col}|$
-      (vertical) as $\lambda \in [0, 4]$.  The trace departs the
-      mean-field anchor (red star) at $\lambda = 0$ and bends toward
-      an archetypal corner — a visual e-geodesic in the simplex
-      coordinates used here.
+      The K=2 Ising joint posterior, computed by
+      `lean.coupling.entangled_posterior` on the
+      [[VAR:kl_geodesic_grid_points]]-point linspace grid over
+      $\lambda \in [[[VAR:kl_geodesic_lambda_min:g]],
+      [[VAR:kl_geodesic_lambda_max:g]]]$
+      (`simulation.hyperparameters.KL_GEODESIC_LAMBDAS`), traced in a
+      2-D summary plane spanned by aligned-corner mass
+      $q(0,0)+q(1,1)$ (horizontal) and off-diagonal disparity
+      $|\Delta_{\rm row}|+|\Delta_{\rm col}|$ (vertical).  The trace
+      departs the mean-field anchor (red star) at $\lambda = 0$ and
+      bends toward an archetypal corner — a visual e-geodesic in the
+      simplex coordinates used here.
     short: "KL geodesic in the 2-D summary plane"
-    sections: ["§6", "§13"]
+    sections: ["§7"]
     source: scripts/generate_figures.py::figure_kl_geodesic_in_simplex
+    uncertainty: deterministic_grid
 
   lambda_star_locus:
     path: output/figures/lambda_star_locus.png
     caption: |
-      Optimal coupling $\lambda^\star$ across $(\mathrm{utility},
-      \gamma)$ for the K=2 Ising toy.  $\lambda^\star$ grows
-      sigmoidally in utility surplus and is amplified by larger EFE
-      precision $\gamma$, locating the *comparative-statics* surface
-      of §10.
+      Optimal coupling $\lambda^\star$ across
+      $(\mathrm{utility}, \gamma)$ for the K=2 Ising toy on a
+      $[[VAR:lambda_star_utility_points]] \times
+      [[VAR:lambda_star_gamma_points]]$ linspace grid over
+      $[[[VAR:lambda_star_utility_min:g]],
+      [[VAR:lambda_star_utility_max:g]]] \times
+      [[[VAR:lambda_star_gamma_min:g]],
+      [[VAR:lambda_star_gamma_max:g]]]$
+      (`simulation.hyperparameters.LAMBDA_STAR_UTILITIES`,
+      `LAMBDA_STAR_GAMMAS`).  Each cell calls
+      `lean.bernoulli_toy.optimal_lambda(np.tanh(γ·u))` so the
+      effective surplus is modulated by the precision $\gamma$.
+      $\lambda^\star$ grows sigmoidally in utility surplus and is
+      amplified by larger EFE precision $\gamma$, locating the
+      comparative-statics surface of [[SECREF:comparative]].
     short: "λ⋆(utility, γ) locus"
-    sections: ["§10", "§13"]
+    sections: ["§11"]
     source: scripts/generate_figures.py::figure_lambda_star_locus
+    uncertainty: deterministic_grid
 
 sections:
   # Top-level body sections (number is purely the registry-assigned text;
   # `parent` is omitted for top-levels).  The renderer substitutes
   # `[[SECREF:label]]` with the literal §<number> string and
   # `[[SEC:label]]` with `§<number> <title>` for use in heading lines.
-  motivation:           {number: "1",  title: "Motivation and Position",                    file: "01_motivation_and_position.md"}
-  setup:                {number: "2",  title: "Setup, Notation, and Standing Assumptions", file: "02_setup_and_assumptions.md"}
-  setup.pomdp:          {number: "2.1", title: "Single-stream POMDP active inference", parent: setup}
-  setup.multistream:    {number: "2.2", title: "The multi-stream extension",            parent: setup}
-  setup.mf_baseline:    {number: "2.3", title: "The mean-field baseline",               parent: setup}
-  notation:             {number: "2a", title: "Notation Glossary",                          file: "02a_notation_glossary.md"}
-  lambda_deformation:   {number: "3",  title: "The λ-Deformation",                         file: "03_lambda_deformation.md"}
-  lambda_deformation.coupling_potentials:    {number: "3.1", title: "Coupling potentials",          parent: lambda_deformation}
-  lambda_deformation.entangled_posterior:    {number: "3.2", title: "λ-entangled policy posterior", parent: lambda_deformation}
-  lambda_deformation.precision:              {number: "3.3", title: "λ as precision",                parent: lambda_deformation}
-  lambda_deformation.examples:               {number: "3.4", title: "What J and K_c look like",      parent: lambda_deformation}
-  decomposition:        {number: "4",  title: "Entanglement Decomposition Theorem",        file: "04_entanglement_decomposition.md"}
-  decomposition.statement: {number: "4.1", title: "Statement",                                  parent: decomposition}
-  decomposition.proof:     {number: "4.2", title: "Proof sketch",                               parent: decomposition}
-  decomposition.reading:   {number: "4.3", title: "What the decomposition says",                parent: decomposition}
-  decomposition.optimal:   {number: "4.4", title: "Optimal coupling: existence of λ*",          parent: decomposition}
-  examples:             {number: "5",  title: "Examples and Worked Cases",                 file: "05_examples_and_worked_cases.md"}
-  examples.bernoulli:        {number: "5.1", title: "K=2 Bernoulli toy: full closed form", parent: examples}
-  examples.motor_attention:  {number: "5.2", title: "Motor + attention with realistic EFE", parent: examples}
-  examples.multitimescale:   {number: "5.3", title: "Multi-timescale coupling",            parent: examples}
-  geometry:             {number: "6",  title: "Information Geometry of the Entanglement Manifold", file: "06_information_geometry.md"}
-  geometry.dual_coords:      {number: "6.1", title: "Dual coordinates and the mean-field submanifold", parent: geometry}
-  geometry.e_geodesic:       {number: "6.2", title: "The λ-family is an e-geodesic",                  parent: geometry}
-  geometry.alpha_proj:       {number: "6.3", title: "Connection to α-projections",                    parent: geometry}
-  geometry.escort:           {number: "6.4", title: "Connection to escort distributions",             parent: geometry}
-  spectral:             {number: "7",  title: "Spectral and Tensor-Network Structure",     file: "07_spectral_and_tensor_network.md"}
-  spectral.bipartite:        {number: "7.1", title: "Bipartite Schmidt decomposition",               parent: spectral}
-  spectral.archetypes:       {number: "7.2", title: "Leading singular vectors as archetypes",        parent: spectral}
-  spectral.multistream_tt:   {number: "7.3", title: "Multi-stream tensor decomposition",             parent: spectral}
-  spectral.births:           {number: "7.4", title: "Birth and death of archetypes",                 parent: spectral}
-  heterogeneous:        {number: "8",  title: "Coupled Updates and Heterogeneous Inference", file: "08_heterogeneous_inference.md"}
-  heterogeneous.three_level: {number: "8.1", title: "Three-level update hierarchy",                  parent: heterogeneous}
-  heterogeneous.coupled:     {number: "8.2", title: "Coupled marginal updates",                       parent: heterogeneous}
-  heterogeneous.bound:       {number: "8.3", title: "VFE-only suboptimality bound",                   parent: heterogeneous}
-  heterogeneous.precision:   {number: "8.4", title: "Updating λ: precision learning on coupling",     parent: heterogeneous}
-  heterogeneous.habit:       {number: "8.5", title: "Habit accumulation and revertibility",           parent: heterogeneous}
-  phase:                {number: "9",  title: "Phase Structure and Symmetry Breaking",     file: "09_phase_structure.md"}
-  phase.diagram:             {number: "9.1", title: "Phase diagram",                                  parent: phase}
-  phase.order:               {number: "9.2", title: "Order parameters",                                parent: phase}
-  phase.predictions:         {number: "9.3", title: "Predictions and clinical phenomena",              parent: phase}
-  comparative:          {number: "10", title: "Comparative Statics",                       file: "10_comparative_statics.md"}
-  comparative.payoff:        {number: "10.1", title: "The pay-off structure",                          parent: comparative}
-  comparative.two_param:     {number: "10.2", title: "Two-parameter generalisation",                   parent: comparative}
-  comparative.sensitivity:   {number: "10.3", title: "Sensitivity to potential structure",             parent: comparative}
-  connections:          {number: "11", title: "Connections to Existing Frameworks",        file: "11_connections_to_existing_frameworks.md"}
-  connections.pymdp:         {number: "11.1",  title: "Mean-field active inference (pymdp)",           parent: connections}
-  connections.hierarchical:  {number: "11.2",  title: "Hierarchical / Deep AIF",                        parent: connections}
-  connections.sophisticated: {number: "11.3",  title: "Sophisticated inference",                        parent: connections}
-  connections.btai:          {number: "11.4",  title: "Branching-time AIF",                             parent: connections}
-  connections.kl_control:    {number: "11.5",  title: "KL / path-integral control",                     parent: connections}
-  connections.options:       {number: "11.6",  title: "Options framework / hierarchical RL",            parent: connections}
-  connections.poe_moe:       {number: "11.7",  title: "Product / Mixture of Experts",                   parent: connections}
-  connections.copula:        {number: "11.8",  title: "Copula variational inference",                   parent: connections}
-  connections.multiagent:    {number: "11.9",  title: "Interactive / multi-agent inference",            parent: connections}
-  connections.rg:            {number: "11.10", title: "Renormalization-group AIF",                       parent: connections}
-  connections.markov:        {number: "11.11", title: "Markov blankets and Bayesian mechanics",          parent: connections}
-  connections.cerebrum:      {number: "11.12", title: "CEREBRUM and case grammar",                       parent: connections}
-  lean_plan:            {number: "12", title: "Lean Formalization Plan",                   file: "12_lean_formalization_plan.md"}
-  empirical:            {number: "13", title: "Empirical / Simulation Suite",              file: "13_empirical_simulation_suite.md"}
-  open_questions:       {number: "14", title: "Open Theoretical Questions",                file: "14_open_theoretical_questions.md"}
-  companion_paper:      {number: "15", title: "Companion Paper Outline",                   file: "15_companion_paper_outline.md"}
-  discussion:           {number: "16", title: "Discussion and Worldview",                  file: "16_discussion_worldview.md"}
-  closing:              {number: "17", title: "Closing Remarks",                            file: "17_closing_remarks.md"}
+  motivation:           {number: "1",  title: "Motivation and Position: Why Multi-Stream Active Inference Needs Parametric Coupling", file: "1B_motivation.md"}
+  background:           {number: "2",  title: "Background and Prior Work: Antecedents in Active Inference, Variational Coupling, Information Geometry, and Tensor Networks", file: "1C_background_and_prior_work.md"}
+  setup:                {number: "3",  title: "Setup and Standing Assumptions: Discrete-Time POMDP Active Inference, Single- and Multi-Stream", file: "2B_setup.md"}
+  setup.pomdp:          {number: "3.1", title: "Single-stream POMDP active inference", parent: setup}
+  setup.multistream:    {number: "3.2", title: "The multi-stream extension",            parent: setup}
+  setup.mf_baseline:    {number: "3.3", title: "The mean-field baseline",               parent: setup}
+  notation:             {number: "S6", title: "Notation Concordance: Symbol Registry Across Manuscript, LaTeX, Python, and Lean", file: "S06_notation_and_concordance.md"}
+  notation.sign_conventions: {number: "S6.1", title: "Sign conventions",                       parent: notation}
+  lambda_deformation:   {number: "4",  title: "The $\\lambda$-Deformation: Coupling the Mean-Field Baseline Toward Arbitrary Joint Policy Structure", file: "2C_lambda_deformation.md"}
+  lambda_deformation.coupling_potentials:    {number: "4.1", title: "Coupling potentials",          parent: lambda_deformation}
+  lambda_deformation.entangled_posterior:    {number: "4.2", title: "λ-entangled policy posterior", parent: lambda_deformation}
+  lambda_deformation.precision:              {number: "4.3", title: "λ as precision",                parent: lambda_deformation}
+  lambda_deformation.examples:               {number: "4.4", title: "What J and K_c look like",      parent: lambda_deformation}
+  decomposition:        {number: "5",  title: "The Entanglement Decomposition Theorem: Variational Free Energy as Marginals + Coupling + Total Correlation", file: "2D_decomposition.md"}
+  decomposition.statement: {number: "5.1", title: "Statement",                                  parent: decomposition}
+  decomposition.proof:     {number: "5.2", title: "Proof sketch",                               parent: decomposition}
+  decomposition.reading:   {number: "5.3", title: "What the decomposition says",                parent: decomposition}
+  decomposition.optimal:   {number: "5.4", title: "Optimal coupling: existence of λ*",          parent: decomposition}
+  examples:             {number: "6",  title: "Examples and Worked Cases: K=2 Bernoulli Closed Form, Motor + Attention, and Multi-Timescale Coupling", file: "2E_examples.md"}
+  examples.bernoulli:        {number: "6.1", title: "K=2 Bernoulli toy: full closed form", parent: examples}
+  examples.motor_attention:  {number: "6.2", title: "Motor + attention with realistic EFE", parent: examples}
+  examples.multitimescale:   {number: "6.3", title: "Multi-timescale coupling",            parent: examples}
+  geometry:             {number: "7",  title: "Information Geometry of the Entanglement Manifold: Dual e/m-Flatness, $\\lambda$-Family as e-Geodesic, and Pythagorean Decomposition", file: "2F_geometry.md"}
+  geometry.dual_coords:      {number: "7.1", title: "Dual coordinates and the mean-field submanifold", parent: geometry}
+  geometry.e_geodesic:       {number: "7.2", title: "The λ-family is an e-geodesic",                  parent: geometry}
+  geometry.alpha_proj:       {number: "7.3", title: "Connection to α-projections",                    parent: geometry}
+  geometry.escort:           {number: "7.4", title: "Connection to escort distributions",             parent: geometry}
+  spectral:             {number: "8",  title: "Spectral and Tensor-Network Structure: Schmidt Decomposition, Archetypal Eigenvectors, and Tensor-Train Bond Dimensions for $K \\geq 2$", file: "2G_spectral.md"}
+  spectral.bipartite:        {number: "8.1", title: "Bipartite Schmidt decomposition",               parent: spectral}
+  spectral.archetypes:       {number: "8.2", title: "Leading singular vectors as archetypes",        parent: spectral}
+  spectral.multistream_tt:   {number: "8.3", title: "Multi-stream tensor decomposition",             parent: spectral}
+  spectral.births:           {number: "8.4", title: "Birth and death of archetypes",                 parent: spectral}
+  heterogeneous:        {number: "9",  title: "Coupled Updates and Heterogeneous Inference: VFE / EFE Mixed Ensembles and the $O(\\lambda^2)$ Coupling-Tax Bound", file: "2H_heterogeneous.md"}
+  heterogeneous.three_level: {number: "9.1", title: "Three-level update hierarchy",                  parent: heterogeneous}
+  heterogeneous.coupled:     {number: "9.2", title: "Coupled marginal updates",                       parent: heterogeneous}
+  heterogeneous.bound:       {number: "9.3", title: "VFE-only suboptimality bound",                   parent: heterogeneous}
+  heterogeneous.precision:   {number: "9.4", title: "Updating λ: precision learning on coupling",     parent: heterogeneous}
+  heterogeneous.habit:       {number: "9.5", title: "Habit accumulation and revertibility",           parent: heterogeneous}
+  phase:                {number: "10",  title: "Phase Structure and Symmetry Breaking: Disordered, Mixed, and Frozen Coupling Regimes with Behavioral Phenomenology", file: "2I_phase_structure.md"}
+  phase.diagram:             {number: "10.1", title: "Phase diagram",                                  parent: phase}
+  phase.order:               {number: "10.2", title: "Order parameters",                                parent: phase}
+  phase.predictions:         {number: "10.3", title: "Predictions and behavioral hypotheses",           parent: phase}
+  comparative:          {number: "11", title: "Comparative Statics: When Does Coupling Pay? Sensitivity, Two-Parameter Generalization, and Potential-Structure Dependence", file: "2J_comparative_statics.md"}
+  comparative.payoff:        {number: "11.1", title: "The pay-off structure",                          parent: comparative}
+  comparative.two_param:     {number: "11.2", title: "Two-parameter generalization",                   parent: comparative}
+  comparative.sensitivity:   {number: "11.3", title: "Sensitivity to potential structure",             parent: comparative}
+  connections:          {number: "17", title: "Connections to Active Inference Frameworks: pymdp / SPM, Hierarchical / Deep AIF, Sophisticated Inference, and Branching-Time AIF", file: "5B_connections_aif.md"}
+  connections_control_rl: {number: "18", title: "Connections to Stochastic Control and Reinforcement Learning: KL / Path-Integral Control, Options, Products / Mixtures of Experts, and Copula VI", file: "5C_connections_control_rl.md"}
+  connections_multi_agent_geometry: {number: "19", title: "Connections to Multi-Agent Inference, Renormalization-Group AIF, Markov Blankets, and CEREBRUM Case Grammar", file: "5D_connections_multi_agent.md"}
+  connections.pymdp:         {number: "17.1",  title: "Mean-field active inference (pymdp)",           parent: connections}
+  connections.hierarchical:  {number: "17.2",  title: "Hierarchical / Deep AIF",                        parent: connections}
+  connections.sophisticated: {number: "17.3",  title: "Sophisticated inference",                        parent: connections}
+  connections.btai:          {number: "17.4",  title: "Branching-time AIF",                             parent: connections}
+  connections.kl_control:    {number: "18.1",  title: "KL / path-integral control",                     parent: connections_control_rl}
+  connections.options:       {number: "18.2",  title: "Options framework / hierarchical RL",            parent: connections_control_rl}
+  connections.poe_moe:       {number: "18.3",  title: "Product / Mixture of Experts",                   parent: connections_control_rl}
+  connections.copula:        {number: "18.4",  title: "Copula variational inference",                   parent: connections_control_rl}
+  connections.multiagent:    {number: "19.1",  title: "Interactive / multi-agent inference",            parent: connections_multi_agent_geometry}
+  connections.rg:            {number: "19.2",  title: "Renormalization-group AIF",                       parent: connections_multi_agent_geometry}
+  connections.markov:        {number: "19.3",  title: "Markov blankets and Bayesian mechanics",          parent: connections_multi_agent_geometry}
+  connections.cerebrum:      {number: "19.4",  title: "CEREBRUM and case grammar",                       parent: connections_multi_agent_geometry}
+  lean_plan:            {number: "12", title: "Lean 4 Formalization: Current Boundary, Witness Contracts, and Mathlib Scope", file: "3B_lean_formalization.md"}
+  empirical:            {number: "13", title: "Empirical Simulation Suite: Closed-Form Validation, Heterogeneous Coupling Tax, Phase Diagram, and Spectral Structure", file: "4B_empirical_suite.md"}
+  pymdp_harness:        {number: "14", title: "pymdp 1.0.1 Grounded POMDP Harness: Layered Architecture, $\\lambda$-Sweep, and Deterministic Coupled Rollout", file: "4C_pymdp_harness.md"}
+  pymdp_free_energy:    {number: "15", title: "pymdp Free-Energy Bundle: VFE / EFE / Entropy / Coupling-Term Observables and Auto-Injected Summary Statistics", file: "4D_pymdp_free_energy.md"}
+  pymdp_validation:     {number: "16", title: "pymdp Validation, Structured JSONL Logging, and the Reproducibility Contract", file: "4E_pymdp_validation.md"}
+  open_questions:       {number: "20", title: "Open Questions: Analytical, Identifiability, Empirical, Conceptual, and Practical", file: "6B_open_questions.md"}
+  discussion:           {number: "21", title: "Discussion and Outlook: Worldview, Live Artifact State, and Limitations", file: "6C_discussion_and_outlook.md"}
   bibliography:         {number: "99", title: "Bibliography",                               file: "99_bibliography.md"}
-  app.proof_decomp:     {number: "A",  title: "Full proof of Theorem 4.1",                 file: "S01_proof_of_decomposition_theorem.md"}
-  app.convexity:        {number: "B",  title: "Convexity of F[q_λ]",                       file: "S02_convexity_of_free_energy.md"}
-  app.bernoulli:        {number: "C",  title: "K=2 Bernoulli derivation",                  file: "S03_bernoulli_complete_derivation.md"}
-  app.tt_inference:     {number: "D",  title: "Tensor-train inference algorithm",          file: "S04_tensor_train_inference_algorithm.md"}
-  app.lean_skeleton:    {number: "E",  title: "Lean code skeleton",                         file: "S05_lean_code_skeleton.md"}
+  app.proof_decomp:     {number: "A",  title: "Full Proof of the Entanglement Decomposition Theorem", file: "S01_proof_of_decomposition_theorem.md"}
+  app.convexity:        {number: "B",  title: "Convexity of the Free Energy in $\\lambda$: Sufficient Conditions and Counter-Example Construction", file: "S02_convexity_of_free_energy.md"}
+  app.bernoulli:        {number: "C",  title: "K=2 Bernoulli Toy: Complete Derivation of $I(\\lambda)$, $\\lambda^\\star(\\Delta)$, and the Closed-Form Free-Energy Curve", file: "S03_bernoulli_complete_derivation.md"}
+  app.tt_inference:     {number: "D",  title: "Tensor-Train Inference Algorithm Sketch: Bond-Dimension Sweep and Sparsity-Rank Trade-Off", file: "S04_tensor_train_inference_algorithm.md"}
+  app.lean_skeleton:    {number: "E",  title: "Lean 4 Boundary Fragment: Live Source Excerpts and Validation Wiring", file: "S05_lean_code_skeleton.md"}
+  app.reference_tables: {number: "S7", title: "Reference Tables: Claim Strength, Variant Recovery, Lean Inventory, pymdp Bundle Statistics, and JSONL Run-Log Schema", file: "S07_reference_tables.md"}
+  app.claim_strength:   {number: "S7.1", title: "Claim-Strength Legend", parent: app.reference_tables}
+  app.aif_recovery:     {number: "S7.2", title: "Active-Inference Variant Recovery Ledger", parent: app.reference_tables}
+  app.lean_modules:     {number: "S7.3", title: "Lean 4 Boundary-Fragment Module Inventory", parent: app.reference_tables}
+  app.mathlib_proofs:   {number: "S7.3b", title: "MathlibProofs ℝ Analytic Discharge Package: Inventory", parent: app.reference_tables}
+  app.bundle_stats:     {number: "S7.4", title: "pymdp Free-Energy Bundle: Auto-Injected Summary Statistics", parent: app.reference_tables}
+  app.jsonl_schema:     {number: "S7.5", title: "pymdp JSONL Run-Log Field Schema", parent: app.reference_tables}
+
+  app.gnn_extension:    {number: "S8", title: "GNN as a Shipped Fifth Track: Triple-Play Mapping, a Verified K=2 Bernoulli Round-Trip, and a Lean Typed-Contract Emitter", file: "S08_gnn_generalized_notation_extension.md"}
+  app.gnn_scope:        {number: "S8.1", title: "Scope and Claim-Strength: a Shipped Bridge, with an Explicit Non-Claim About Proof", parent: app.gnn_extension}
+  app.gnn_background:   {number: "S8.2", title: "GNN Background: the Triple Play and the Active Inference Ontology", parent: app.gnn_extension}
+  app.gnn_disambiguation: {number: "S8.3", title: "Acronym Disambiguation: GNN (Notation) vs. GNN (Graph Neural Network)", parent: app.gnn_extension}
+  app.gnn_tuple_mapping: {number: "S8.4", title: "Mapping the $(A, B, C, D, E, J, \\lambda)$ Tuple to a GNN Spec", parent: app.gnn_extension}
+  app.gnn_bernoulli_example: {number: "S8.5", title: "Worked Example: the K=2 Bernoulli Toy as a Shipped GNN Round-Trip", parent: app.gnn_extension}
+  app.gnn_preserves_abstracts: {number: "S8.6", title: "What GNN Preserves and What It Abstracts Away", parent: app.gnn_extension}
+  app.gnn_lean_path:    {number: "S8.7", title: "Shipped Elaboration: GNN to a Lean Typed-Structure Contract", parent: app.gnn_extension}
+  app.gnn_pymdp_path:   {number: "S8.8", title: "Shipped Round-Trip: GNN to pymdp Harness Configuration", parent: app.gnn_extension}
+  app.gnn_downstream:   {number: "S8.9", title: "Downstream Use, Open Directions, and Open Questions", parent: app.gnn_extension}
 
 theorems:
   # Each theorem has a `kind`, a `number`, an optional `name`, the
   # section in which it is stated, an optional Lean companion
   # (`lean_module` + `lean_name`), and a Mathlib-readiness `status`
-  # (one of: proved, boundary, sorry, sketch, deferred).
+  # (one of: proved, boundary, forwarder, witness).  The older
+  # `sketch` / `deferred` buckets are retired and should remain empty.
   # The `[[LEAN:label]]` token embeds the actual Lean source extracted
   # from `lean/ActinfPolicyEntanglement/<lean_module>.lean`.
-  thm_4_1:    {kind: "Theorem",     number: "4.1",  name: "Entanglement Decomposition",       section: decomposition.statement, lean_module: Decomposition,  lean_name: entanglement_decomposition,                       status: boundary}
-  cor_4_2:    {kind: "Corollary",   number: "4.2",  name: "Coupling-pays-for-itself",          section: decomposition.reading,   lean_module: Decomposition,  lean_name: couplingVerdict,                                  status: sketch}
-  cor_4_3:    {kind: "Corollary",   number: "4.3",  name: "Mean-field at λ = 0",                section: decomposition.reading,   lean_module: Decomposition,  lean_name: decomposition_at_zero,                            status: boundary}
-  cor_4_4:    {kind: "Corollary",   number: "4.4",  name: "Strict gain when q is non-mean-field", section: decomposition.reading, lean_module: Decomposition,  lean_name: strict_gain_iff_nonMeanField,                     status: boundary}
-  thm_4_2:    {kind: "Theorem",     number: "4.5",  name: "Existence of optimal coupling",     section: decomposition.optimal,   lean_module: ~,              lean_name: ~,                                                status: deferred}
-  thm_4_3:    {kind: "Theorem",     number: "4.6",  name: "Convexity of F in λ",                section: decomposition.optimal,   lean_module: ~,              lean_name: ~,                                                status: deferred}
-  prop_6_1:   {kind: "Proposition", number: "6.1",  name: "MF submanifold is e-flat",          section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mfSubmanifold_eFlat,                              status: sketch}
-  prop_6_2:   {kind: "Proposition", number: "6.2",  name: "m-projection / marginalisation",    section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mProjection_minimises_kl,                         status: proved}
-  prop_6_3:   {kind: "Proposition", number: "6.3",  name: "Total correlation as Bregman divergence", section: geometry.dual_coords, lean_module: FreeEnergy,  lean_name: totalCorrelation_eq_kl_to_mprojection,            status: proved}
-  thm_6_4:    {kind: "Theorem",     number: "6.4",  name: "λ-family is an e-geodesic",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: entangledFamily_eGeodesic,                        status: forwarder}
-  prop_6_5:   {kind: "Proposition", number: "6.5",  name: "Pythagorean decomposition",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: dualFlat_pythagorean_sketch,                      status: sketch}
-  prop_7_1:   {kind: "Proposition", number: "7.1",  name: "Schmidt rank 1 ⇔ mean-field",      section: spectral.bipartite,      lean_module: Spectral,       lean_name: "Bipartite.schmidtRank_one_iff_meanField",        status: boundary}
-  prop_7_2:   {kind: "Proposition", number: "7.2",  name: "Schmidt rank upper-semicontinuous in λ", section: spectral.bipartite, lean_module: Spectral,       lean_name: "Bipartite.schmidtRank_upperSemicontinuous_sketch", status: sketch}
-  thm_7_3:    {kind: "Theorem",     number: "7.3",  name: "Sparsity-rank tradeoff",            section: spectral.multistream_tt, lean_module: Spectral,       lean_name: sparsityRank_tradeoff,                            status: sketch}
-  thm_8_1:    {kind: "Theorem",     number: "8.1",  name: "Heterogeneous coupling tax",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_quadratic_bound,                      status: boundary}
-  cor_8_2:    {kind: "Corollary",   number: "8.2",  name: "Reflexive-stream tolerance",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_small_lambda_tolerance,               status: boundary}
-  prop_10_1:  {kind: "Proposition", number: "10.1", name: "Local concavity of F at λ=0",       section: comparative.sensitivity, lean_module: ~,              lean_name: ~,                                                status: deferred}
-  thm_11_1:   {kind: "Theorem",     number: "11.1", name: "Hierarchical AIF as λ→∞ limit",     section: connections.hierarchical, lean_module: ~,             lean_name: ~,                                                status: deferred}
-  prop_11_2:  {kind: "Proposition", number: "11.2", name: "Sophisticated inference embedding", section: connections.sophisticated, lean_module: ~,            lean_name: ~,                                                status: deferred}
-  prop_11_3:  {kind: "Proposition", number: "11.3", name: "Markov-blanket separation as 1 − I/H", section: connections.markov,   lean_module: ~,              lean_name: ~,                                                status: deferred}
+  thm_4_1:    {kind: "Theorem",     number: "5.1",  name: "Entanglement Decomposition",       section: decomposition.statement, lean_module: Decomposition,  lean_name: entanglement_decomposition,                       status: boundary, faithfulness: typed-witness, mathlib_analytic_proof: "MathlibProofs.entanglement_decomposition_generalK", analytic_status: "FULL S01 free-energy identity machine-checked-in-R (MathlibProofs.free_energy_decomposition_full; axiom-clean foundational-only, no sorryAx; logZE genuine definitional normalizer; I(q) via the verified general-K kernel; two independent negative controls; enforced by scripts/build_mathlib_proofs.py). One residual: verified Float<->R bridge (R proof vs Float pipeline = numerically-corroborated shadow). See docs/reference/methods_and_assumptions.md"}
+  cor_4_2:    {kind: "Corollary",   number: "5.2",  name: "Coupling-pays-for-itself",          section: decomposition.reading,   lean_module: Decomposition,  lean_name: couplingVerdict_correct,                          status: proved, faithfulness: substantive}
+  cor_4_3:    {kind: "Corollary",   number: "5.3",  name: "Mean-field at λ = 0",                section: decomposition.reading,   lean_module: Decomposition,  lean_name: couplingLogWeight_pointwise_at_zero,              status: proved, faithfulness: substantive}
+  cor_4_4:    {kind: "Corollary",   number: "5.4",  name: "Strict gain when q is non-mean-field", section: decomposition.reading, lean_module: Decomposition,  lean_name: totalCorrelation_def_unfold,                      status: boundary, faithfulness: typed-witness}
+  thm_4_2:    {kind: "Theorem",     number: "5.5",  name: "Existence of optimal coupling",     section: decomposition.optimal,   lean_module: Decomposition,  lean_name: freeEnergy_closedForm_witness,                    status: boundary, faithfulness: typed-witness}
+  thm_4_3:    {kind: "Theorem",     number: "5.6",  name: "Convexity of F in λ",                section: decomposition.optimal,   lean_module: Convexity,      lean_name: freeEnergy_convex_in_lam_witness,                 status: witness, faithfulness: typed-witness}
+  prop_6_1:   {kind: "Proposition", number: "7.1",  name: "MF submanifold is e-flat",          section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mfImage_isMeanField,                              status: proved, faithfulness: statement-restricted}
+  prop_6_2:   {kind: "Proposition", number: "7.2",  name: "m-projection / marginalization",    section: geometry.dual_coords,    lean_module: Geometry,       lean_name: mProjection_kl_eq_self_when_meanfield,            status: proved, faithfulness: statement-restricted}
+  prop_6_3:   {kind: "Proposition", number: "7.3",  name: "Total correlation as Bregman divergence", section: geometry.dual_coords, lean_module: FreeEnergy,  lean_name: totalCorrelation_eq_kl_to_mprojection,            status: witness, faithfulness: typed-witness}
+  thm_6_4:    {kind: "Theorem",     number: "7.4",  name: "λ-family is an e-geodesic",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: entangledFamily_eGeodesic,                        status: forwarder, faithfulness: forwarder}
+  prop_6_5:   {kind: "Proposition", number: "7.5",  name: "Pythagorean decomposition",         section: geometry.e_geodesic,     lean_module: Geometry,       lean_name: dualFlat_pythagorean_witness,                     status: witness, faithfulness: typed-witness}
+  prop_7_1:   {kind: "Proposition", number: "8.1",  name: "Bipartite mean-field factorization", section: spectral.bipartite,      lean_module: Spectral,       lean_name: "Bipartite.isBipartiteMeanField_factors",         status: proved, faithfulness: statement-restricted}
+  prop_7_2:   {kind: "Proposition", number: "8.2",  name: "Schmidt rank upper-semicontinuous in λ", section: spectral.bipartite, lean_module: SpectralWitnesses, lean_name: schmidtRank_upperSemicontinuous_witness,        status: witness, faithfulness: typed-witness}
+  thm_7_3:    {kind: "Theorem",     number: "8.3",  name: "Sparsity-rank tradeoff",            section: spectral.multistream_tt, lean_module: SpectralWitnesses, lean_name: sparsityRank_tradeoff_witness,                  status: witness, faithfulness: typed-witness}
+  thm_8_1:    {kind: "Theorem",     number: "9.1",  name: "Heterogeneous coupling tax",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_quadratic_bound,                      status: witness, faithfulness: typed-witness}
+  cor_8_2:    {kind: "Corollary",   number: "9.2",  name: "Reflexive-stream tolerance",        section: heterogeneous.bound,     lean_module: Heterogeneous,  lean_name: couplingTax_small_lambda_tolerance,               status: witness, faithfulness: typed-witness}
+  prop_10_1:  {kind: "Proposition", number: "11.1", name: "Local concavity of F at λ=0",       section: comparative.sensitivity, lean_module: Convexity,      lean_name: freeEnergy_localConcavity_at_zero_witness,        status: witness, faithfulness: typed-witness}
+  thm_11_1:   {kind: "Theorem",     number: "17.1", name: "Hierarchical AIF as λ→∞ limit",     section: connections.hierarchical, lean_module: ConnectionsWitnesses, lean_name: hierarchicalAIF_lambda_limit_witness,       status: witness, faithfulness: typed-witness}
+  prop_11_2:  {kind: "Proposition", number: "17.2", name: "Sophisticated inference embedding", section: connections.sophisticated, lean_module: ConnectionsWitnesses, lean_name: sophisticatedInference_embedding_witness,    status: witness, faithfulness: typed-witness}
+  prop_11_3:  {kind: "Proposition", number: "19.3", name: "Markov-blanket separation as 1 − I/H", section: connections.markov,   lean_module: MarkovBlanket,  lean_name: markovBlanket_separation_identity_witness,        status: witness, faithfulness: typed-witness}
+  roadmap_float_real_residual:
+    kind: "Roadmap"
+    number: "99.0"
+    name: "Verified Float↔ℝ residual bridge"
+    section: lean_plan
+    lean_module: FloatRealResidualWitness
+    lean_name: floatRealResidual_witness
+    status: roadmap
+    faithfulness: numerical_corroboration_only
+    artifact: "output/reports/float_real_residual.json"
+    tests: "tests/test_meta_files_and_float_residual.py"
 
 equations:
   tc_decomp:
     latex: |
       F[q] = \sum_k F[q^k]
             + \gamma \, \lambda \, \mathbb{E}_q[K_c]
-            + \lambda \, \mathbb{E}_q[J] - \log Z_E(\lambda)
-            - I(q)
+            + \log Z_E(\lambda)
+            - \lambda \, \mathbb{E}_q[J]
+            + I(q)
     name: "Entanglement decomposition"
-    sections: ["§4"]
+    sections: ["§5", "Appendix A"]
 
   ising_mi_closed_form:
     latex: |
-      I(\lambda) = \log 2 - H_b(\sigma(\lambda)),
-      \quad \sigma(\lambda) = \frac{1}{1 + e^{-\lambda}}
+      I(q_\lambda) \;=\; \lambda J_0 \tanh(\lambda J_0)
+                    \;-\; \log\cosh(\lambda J_0)
+                    \;=\; \log 2 - H_b\!\left(\sigma(2\lambda J_0)\right),
+      \quad \sigma(x) = \frac{1}{1 + e^{-x}}
     name: "Closed-form K=2 Ising mutual information"
-    sections: ["§5.1", "Appendix C"]
+    sections: ["§6.1", "Appendix C"]
 
   optimal_lambda:
     latex: |
-      \lambda^\star(\Delta_{\mathrm{util}})
-        = 2 \, \operatorname{arctanh}\!\left(\frac{\Delta_{\mathrm{util}}}{\Delta_{\max}}\right)
-    name: "Optimal coupling under utility surplus"
-    sections: ["§5.1", "§10"]
+      \lambda^\star(\Delta_{\mathrm{align}})
+        = 2 \, \operatorname{arctanh}\!\left(\frac{\Delta_{\mathrm{align}}}{\Delta_{\max}}\right)
+    name: "Alignment-inversion coupling for the K=2 Bernoulli toy"
+    description: |
+      Inverse map from a *target alignment* $\Delta_{\mathrm{align}}$ to the
+      coupling $\lambda$ that realizes it under the K=2 symmetric Bernoulli
+      toy (so $\alpha(\lambda) = \tanh(\lambda/2) = \Delta_{\mathrm{align}}/\Delta_{\max}$).
+      This is *not* a VFE optimum: it is target-alignment inversion.  Only in
+      the small-utility regime does it coincide with the VFE-optimal
+      $\lambda^\star = 2u$ (see [[SECREF:app.bernoulli]]); it diverges from
+      $2\,\operatorname{arctanh}(u)$ at larger $u$.
+    sections: ["§6.1", "§11", "Appendix C"]
 
   pythagorean:
     latex: |
       D_{\mathrm{KL}}(q \,\|\, q_0^*)
         = I(q) + D_{\mathrm{KL}}(\hat m(q) \,\|\, q_0^*)
     name: "Pythagorean decomposition"
-    sections: ["§6"]
+    sections: ["§7.2"]
 
   e_geodesic:
     latex: |
@@ -386,17 +1196,55 @@ equations:
         = \sum_k \log E_k(\pi^k) - \gamma \sum_k G_k(\pi^k)
           + \lambda \, (J(\pi) - \gamma K_c(\pi))
     name: "e-geodesic affineness in λ"
-    sections: ["§6", "§13"]
+    sections: ["§7.2"]
 
   coupling_tax_bound:
     latex: |
       D_{\mathrm{KL}}(q^k_*\,\|\,q^k_\circ)
         \;\leq\; C \cdot \lambda^2 \, \|\Phi\|_\infty^2 + O(\lambda^3)
     name: "O(λ²) coupling tax"
-    sections: ["§8"]
+    sections: ["§9.3"]
 
   total_correlation:
     latex: |
       I(q) = \sum_k H(q^k) - H(q) = D_{\mathrm{KL}}(q \,\| \, \prod_k q^k)
     name: "Total correlation"
-    sections: ["§4", "§6"]
+    sections: ["§5", "§7.1"]
+
+  closed_form_F:
+    latex: |
+      F[q_\lambda] \;=\; \log Z_E(\lambda) \;-\; \log Z(\lambda)
+    name: "Closed exponential-family form of F[q_lambda]"
+    sections: ["§5", "§11", "Appendix A", "Appendix B"]
+
+  dF_dlambda:
+    latex: |
+      \frac{\mathrm{d} F[q_\lambda]}{\mathrm{d}\lambda}
+        \;=\; \langle J \rangle_{\mathcal{E}_\lambda}
+            \;-\; \langle J \rangle_{q_\lambda}
+            \;+\; \gamma\,\langle K_c \rangle_{q_\lambda}
+    name: "First derivative of F in lambda along the family"
+    sections: ["§5", "§11"]
+
+  d2F_dlambda2:
+    latex: |
+      \frac{\mathrm{d}^2 F[q_\lambda]}{\mathrm{d}\lambda^2}
+        \;=\; \mathrm{Var}_{\mathcal{E}_\lambda}(J)
+            \;-\; \mathrm{Var}_{q_\lambda}(J - \gamma K_c)
+    name: "Second derivative of F in lambda (Fisher form)"
+    sections: ["§11", "Appendix B"]
+
+  dispersion_comparison:
+    latex: |
+      \mathrm{Var}_{\mathcal{E}_\lambda}(J) \;\geq\; \mathrm{Var}_{q_\lambda}(J - \gamma K_c)
+      \qquad \text{for all } \lambda \geq 0
+    name: "Dispersion-comparison inequality (Q1 reformulation of convexity)"
+    sections: ["§20"]
+
+  mi_derivative_covariance:
+    latex: |
+      \frac{\mathrm{d} I(q_\lambda)}{\mathrm{d}\lambda}
+        \;=\; \mathrm{Cov}_{q_\lambda}\!\big(J - \gamma K_c,\;
+                                            \log q_\lambda - \log \hat m(q_\lambda)\big)
+    name: "Covariance form of dI/dlambda along the e-geodesic"
+    sections: ["§5", "§9"]

@@ -1,23 +1,23 @@
 """Tests for the manuscript registry, tokens, and renderer."""
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-import pytest
-
-from registry import (
+from manuscript.bibliography import auto_bibliography, write_references_bib
+from manuscript.meta_files import MANUSCRIPT_NON_BODY_MD
+from manuscript.registry import (
     Citation,
     CitationRegistry,
-    Equation,
-    Figure,
     LabelsRegistry,
     Registry,
     load_citations,
     load_labels,
     load_registry,
 )
-from tokens import (
+from manuscript.renderer import render_all, render_section
+from manuscript.tokens import (
     CITATION_RE,
     EQ_RE,
     EQREF_RE,
@@ -26,17 +26,14 @@ from tokens import (
     VAR_RE,
     iter_tokens,
 )
-from renderer import RenderResult, render_section, render_all
-from bibliography import auto_bibliography
-from validation import (
+from manuscript.validation import (
     ManuscriptValidationReport,
-    validate_undefined_tokens,
-    validate_hyperlinks,
     validate_figure_files,
-    validate_variables_against_ranges,
+    validate_hyperlinks,
     validate_manuscript_tree,
+    validate_undefined_tokens,
+    validate_variables_against_ranges,
 )
-
 
 PROJECT = Path(__file__).resolve().parent.parent
 REFS = PROJECT / "manuscript" / "refs"
@@ -140,21 +137,42 @@ def test_load_registry_round_trip() -> None:
 
 def test_citation_render_inline() -> None:
     c = Citation(
-        key="x", authors="Smith, J., Jones, K.", year=2020,
-        title="t", venue="v",
+        key="x",
+        authors="Smith, J., Jones, K.",
+        year=2020,
+        title="t",
+        venue="v",
     )
     assert c.render_inline() == "(Smith 2020)"
 
 
 def test_citation_render_bibliography_includes_url_and_note() -> None:
     c = Citation(
-        key="x", authors="Doe, A.", year=2021, title="T",
-        venue="V", url="https://example.com", note="A note.",
+        key="x",
+        authors="Doe, A.",
+        year=2021,
+        title="T",
+        venue="V",
+        url="https://example.com",
+        note="A note.",
     )
     line = c.render_bibliography()
     assert line.startswith("- ")
     assert "https://example.com" in line
     assert "*A note.*" in line
+
+
+def test_citation_render_bibliography_preserves_title_question_mark() -> None:
+    c = Citation(
+        key="x",
+        authors="Doe, A.",
+        year=2021,
+        title="A title?",
+        venue="V",
+    )
+
+    assert "A title?. " not in c.render_bibliography()
+    assert "A title? " in c.render_bibliography()
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +184,8 @@ def test_render_section_resolves_var() -> None:
     reg = load_registry(REFS)
     text = "MI at λ=1 is [[VAR:ising_mi_at_lam_1:.3f]] nats."
     result = render_section(
-        text, registry=reg,
+        text,
+        registry=reg,
         variables={"ising_mi_at_lam_1": 0.123456},
         manuscript_dir=MANUSCRIPT,
     )
@@ -178,40 +197,51 @@ def test_render_section_resolves_fig() -> None:
     reg = load_registry(REFS)
     result = render_section(
         "[[FIG:phase_landscape]]",
-        registry=reg, variables={}, manuscript_dir=MANUSCRIPT,
+        registry=reg,
+        variables={},
+        manuscript_dir=MANUSCRIPT,
     )
-    # Markdown image directive `![alt](path)` — alt text is the caption,
-    # downstream pandoc-crossref auto-prefixes "Figure N:".
+    # Pandoc-crossref-attributed image directive: `![caption](path){#fig:LABEL}`.
     assert "![" in result.text
     assert "phase_landscape" in result.text
     assert "(../output/figures/phase_landscape.png)" in result.text
+    assert "{#fig:phase_landscape}" in result.text
+    assert "Uncertainty semantics:" in result.text
 
 
 def test_render_section_resolves_multi_citation() -> None:
-    """`[@a; @b]` renders as `(Author1 year1; Author2 year2)` — single
-    outer parens, semicolon-separated inner list."""
+    """`[@a; @b]` renders as `\\citep{a,b}` — single natbib command,
+    comma-separated keys.
+    """
     reg = load_registry(REFS)
     result = render_section(
         "see [@heins-2022; @friston-2017] for context.",
-        registry=reg, variables={}, manuscript_dir=MANUSCRIPT,
+        registry=reg,
+        variables={},
+        manuscript_dir=MANUSCRIPT,
     )
-    assert "(Heins 2022; Friston 2017)" in result.text
+    assert "\\citep{heins-2022,friston-2017}" in result.text
 
 
 def test_render_section_resolves_citation() -> None:
     reg = load_registry(REFS)
     result = render_section(
         "Per [@heins-2022], pymdp grounds AIF.",
-        registry=reg, variables={}, manuscript_dir=MANUSCRIPT,
+        registry=reg,
+        variables={},
+        manuscript_dir=MANUSCRIPT,
     )
-    assert "(Heins 2022)" in result.text
+    assert "\\citep{heins-2022}" in result.text
 
 
 def test_render_section_marks_missing_tokens() -> None:
     reg = load_registry(REFS)
     text = "[[FIG:does_not_exist]] [[VAR:ghost]] [@nobody]"
     result = render_section(
-        text, registry=reg, variables={}, manuscript_dir=MANUSCRIPT,
+        text,
+        registry=reg,
+        variables={},
+        manuscript_dir=MANUSCRIPT,
     )
     assert not result.is_complete
     assert result.missing_figures == ["does_not_exist"]
@@ -234,12 +264,13 @@ def _ensure_manuscript_variables_json() -> Path:
     if not json_path.exists():
         result = subprocess.run(
             [_sys.executable, str(PROJECT / "scripts" / "manuscript_variables.py")],
-            capture_output=True, text=True, cwd=PROJECT, timeout=120,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT,
+            timeout=120,
         )
         # Surfacing the failure helps quick debugging.
-        assert result.returncode == 0, (
-            f"manuscript_variables.py failed: {result.stderr}"
-        )
+        assert result.returncode == 0, f"manuscript_variables.py failed: {result.stderr}"
         assert json_path.exists(), "expected output/data/manuscript_variables.json"
     return json_path
 
@@ -283,6 +314,25 @@ def test_auto_bibliography_single_topic() -> None:
     assert "Tononi" not in body  # different topic
 
 
+def test_write_references_bib_emits_article_for_journals(tmp_path: Path) -> None:
+    reg = load_citations(REFS / "citations.yaml")
+    out = tmp_path / "references.bib"
+    write_references_bib(reg, out)
+    text = out.read_text()
+    assert "@article{friston-2017," in text
+    assert "journal = {Neural Computation}" in text
+    assert "author = {Friston, K. and FitzGerald, T. and Rigoli, F. and Schwartenbeck, P. and Pezzulo, G.}" in text
+
+
+def test_write_references_bib_misc_for_http_venue(tmp_path: Path) -> None:
+    reg = load_citations(REFS / "citations.yaml")
+    out = tmp_path / "references.bib"
+    write_references_bib(reg, out)
+    text = out.read_text()
+    assert "@misc{bradbury-2018," in text
+    assert "http://github.com/jax-ml/jax" in text
+
+
 # ---------------------------------------------------------------------------
 # Validation helpers
 # ---------------------------------------------------------------------------
@@ -312,7 +362,8 @@ def test_validate_figure_files_requires_existing(tmp_path: Path) -> None:
 
 def test_validate_variables_against_ranges_finds_violation() -> None:
     bad = validate_variables_against_ranges(
-        {"x": 5.0}, {"x": (0.0, 1.0)},
+        {"x": 5.0},
+        {"x": (0.0, 1.0)},
     )
     assert "x" in bad
     assert "out of range" in bad["x"]
@@ -339,3 +390,81 @@ def test_validate_manuscript_tree_clean_repository() -> None:
     assert not report.missing_figure_files, report.missing_figure_files
     assert not report.missing_headings, report.missing_headings
     assert not report.empty_captions, report.empty_captions
+
+
+# ---------------------------------------------------------------------------
+# Round-1 invariants: citation/topic registry coherence.
+#
+# Round 1 added 20 new bibliography entries and 2 new topics
+# (control_rl, markov_blanket). These tests pin the contract that:
+#   * every entry's `topic` field is registered in `topic_order` (else
+#     `auto_bibliography(topic="all")` silently drops that entry),
+#   * citekeys are unique (a duplicate key would silently overwrite
+#     because YAML/dict semantics keep the last one),
+#   * every body-used `[@key]` resolves against the registry.
+# ---------------------------------------------------------------------------
+
+
+def test_every_citation_topic_appears_in_topic_order() -> None:
+    """Every `topic` referenced by a citation entry must be registered
+    in `topic_order` (otherwise `auto_bibliography(topic="all")` skips
+    the entry — a silent failure mode for new bibliography sections).
+    """
+    reg = load_citations(REFS / "citations.yaml")
+    registered = set(reg.topic_order)
+    stray = sorted({c.topic for c in reg.entries.values() if c.topic and c.topic not in registered})
+    assert not stray, (
+        f"citations.yaml has topics not in topic_order: {stray}. "
+        "Add them to `topic_order` (and `topic_titles`) so "
+        "auto-bibliography includes them."
+    )
+
+
+def test_citations_yaml_has_unique_citekeys() -> None:
+    """Every top-level citekey in `citations.yaml` must be unique.
+
+    A duplicate key in the raw YAML would silently survive (PyYAML
+    keeps the last definition under dict semantics), so this test
+    reads the file as text and counts colon-prefixed top-level keys.
+    """
+    import re as _re
+
+    text = (REFS / "citations.yaml").read_text()
+    # Top-level entry keys are at column 0 (no leading whitespace),
+    # end in ':' and are followed by a newline (the YAML payload sits
+    # on the next indented lines).
+    keys = _re.findall(r"(?m)^([A-Za-z][A-Za-z0-9_-]+):\s*$", text)
+    # Drop the registry-level non-entry keys.
+    keys = [k for k in keys if k not in {"topic_order", "topic_titles"}]
+    duplicates = sorted({k for k in keys if keys.count(k) > 1})
+    assert not duplicates, f"duplicate citekeys in citations.yaml: {duplicates}"
+
+
+def test_every_body_used_citation_resolves() -> None:
+    """Every `[@key]` (or `[@a; @b]`) that appears in a manuscript body
+    file must resolve to a real entry in `citations.yaml`.
+
+    Iterates the manuscript tree, scrubs code fences, extracts every
+    citation key via `CITATION_RE`, and asserts each is in the registry.
+    """
+    import re as _re
+
+    reg = load_citations(REFS / "citations.yaml")
+    known = set(reg.entries.keys())
+    # Exclude docs-of-syntax files that show placeholder citations.
+    skip_files = set(MANUSCRIPT_NON_BODY_MD)
+    code_fence_re = _re.compile(r"(```|~~~).*?\1", _re.DOTALL)
+    inline_code_re = _re.compile(r"`[^`\n]*`")
+    failures: list[tuple[str, str]] = []
+    for fp in MANUSCRIPT.rglob("*.md"):
+        if "refs/" in str(fp) or fp.name in skip_files:
+            continue
+        text = code_fence_re.sub("", fp.read_text())
+        text = inline_code_re.sub("", text)
+        for m in CITATION_RE.finditer(text):
+            for key in _re.findall(r"@([A-Za-z0-9_-]+)", m.group("inner")):
+                if key not in known:
+                    failures.append((fp.name, key))
+    assert not failures, "Unresolved citation keys in manuscript bodies:\n  " + "\n  ".join(
+        f"{fname}: [@{k}]" for fname, k in failures
+    )

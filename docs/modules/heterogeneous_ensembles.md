@@ -1,7 +1,7 @@
-# Heterogeneous ensembles and Theorem 8.1
+# Heterogeneous ensembles and Theorem 9.1
 
 Manuscript section:
-[`../manuscript/08_heterogeneous_inference.md`](../../manuscript/08_heterogeneous_inference.md).
+[`../manuscript/2H_heterogeneous.md`](../../manuscript/2H_heterogeneous.md).
 
 ## The setting
 
@@ -31,7 +31,7 @@ $$
 $$
 
 * Lean: `couplingTax (taxFunction : Float → Float) (lam : Float)`
-  — boundary form parameterised by an abstract `taxFunction`; the
+  — boundary form parameterized by an abstract `taxFunction`; the
   numerical content lives on the Python side.
 * Python: `coupling_tax(mf, G, J, K_c, γ, λ, modes)`.
 
@@ -40,7 +40,7 @@ tax is identically 0 (the boundary lemmas in `Constructive.lean`
 discharge `taxFunction 0.0 - taxFunction 0.0 = 0.0`-shape equalities
 by `rfl`).
 
-## Theorem 8.1 — O(λ²) bound
+## Theorem 9.1 — O(λ²) bound
 
 For any heterogeneous ensemble, there is a structural constant $C \geq 0$
 (depending on Fisher information of the marginals at λ = 0) such that
@@ -54,7 +54,7 @@ $$
 * Python: `coupling_tax_within_quadratic_bound(...)` empirically
   verifies the bound for a chosen safety factor.
 
-## Corollary 8.2 — reflexive-stream tolerance
+## Corollary 9.2 — reflexive-stream tolerance
 
 For any tolerance $\varepsilon > 0$, there is a maximum
 $\lambda_{\max}$ such that
@@ -63,23 +63,25 @@ $$
 \lambda \in [0, \lambda_{\max}] \;\Rightarrow\; \mathrm{tax}(\lambda) \leq \varepsilon.
 $$
 
-This formalises "how reflexive can my controllers be while riding
+This formalizes "how reflexive can my controllers be while riding
 along with planners": they are safe to keep pinned as long as the
 coupling stays below the threshold determined by their marginal
 curvatures.
 
-## Phase-7 plan
+## Mathlib refinement plan
 
 The full proof uses:
 
 1. Mathlib's `Real.log` and `Probability.Entropy.Basic` to lift the
-   `Float` boundary stubs.
+   `Float` boundary forms.
 2. Taylor expansion of KL around the m-projection at λ = 0.
 3. Cauchy–Schwarz on the inner product
    $\langle K_c, q_0 - q_\lambda \rangle$.
 
-Once Mathlib is wired in, the Lean theorem will discharge cleanly via
-these three steps.
+As the witness payload is discharged in MathlibProofs, the Lean theorem
+is expected to close through these three steps.  See
+[`../../lean/ActinfPolicyEntanglement/MathlibRefinementRoadmap.md`](../../lean/ActinfPolicyEntanglement/MathlibRefinementRoadmap.md)
+for the full payload-discharge roadmap.
 
 ## Numerical example
 
@@ -96,3 +98,11 @@ slope and bounds the actual tax across the entire λ range tested.
 * Python: [`heterogeneous.py`](../../src/lean/heterogeneous.py).
 * Tests: [`test_heterogeneous.py`](../../tests/test_heterogeneous.py).
 * Figure: [`../output/figures/coupling_tax_quadratic.png`](../../output/figures/coupling_tax_quadratic.png).
+
+**Pattern reuse note:** The witness-structure idiom introduced in this
+module (`BoundedQuadraticTax`, `SmallLambdaTolerance`) is reused in
+[`docs/modules/convexity.md`](convexity.md)
+(`FreeEnergyConvexityWitness`, `LocalConcavityAtZero`) and
+[`docs/modules/markov_blanket.md`](markov_blanket.md)
+(`MarkovBlanketSeparationWitness`) for additional witness theorems
+graduated in round 2.

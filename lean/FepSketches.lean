@@ -1,9 +1,9 @@
 /-
   FepSketches.lean
-  Top-level FEP_Lean / TSRCLean re-export hub for the policy
-  entanglement boundary fragment.  Re-exports every submodule under the
-  `FepSketches.*` namespace so downstream agents can depend on a single
-  import.
+  Top-level re-export hub for the policy entanglement boundary fragment,
+  aligned with the `FepSketches.*` import path used next to
+  `ActiveInferenceInstitute/fep_lean`.  Re-exports every submodule under
+  `FepSketches.*` so downstream agents can depend on a single import.
 -/
 import FepSketches.PolicyEntanglementBoundary
 

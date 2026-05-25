@@ -1,5 +1,4 @@
-"""Parse `manuscript/refs/{labels,citations}.yaml` into typed records.
-"""
+"""Parse `manuscript/refs/{labels,citations}.yaml` into typed records."""
 
 from __future__ import annotations
 
@@ -18,6 +17,7 @@ class Figure:
     sections: tuple[str, ...]
     source: str
     number: int
+    uncertainty: str = ""
 
 
 @dataclass(frozen=True)
@@ -48,9 +48,17 @@ class Citation:
         first_author = self.authors.split(",")[0].strip().split()[-1]
         return f"({first_author} {self.year})"
 
+    @staticmethod
+    def _with_terminal_period(text: str) -> str:
+        """Return ``text`` with exactly one terminal sentence mark."""
+        stripped = text.rstrip()
+        if stripped.endswith((".", "?", "!")):
+            return stripped
+        return stripped + "."
+
     def render_bibliography(self) -> str:
         """Markdown bullet line for the bibliography body."""
-        parts = [self.authors, f"({self.year})", self.title + "."]
+        parts = [self.authors, f"({self.year})", self._with_terminal_period(self.title)]
         venue = f"*{self.venue}*"
         if self.volume:
             venue += f" **{self.volume}**"
@@ -85,9 +93,11 @@ class TheoremEntry:
     name: str
     section: str
     # Optional Lean companion + Mathlib-readiness status.
-    lean_module: str = ""        # e.g. "Decomposition" / "Geometry"
-    lean_name: str = ""          # e.g. "entanglement_decomposition"
-    status: str = ""             # one of: proved | boundary | sorry | sketch | deferred
+    lean_module: str = ""  # e.g. "Decomposition" / "Geometry"
+    lean_name: str = ""  # e.g. "entanglement_decomposition"
+    # Current public statuses. Historical `sketch` / `deferred` rows were
+    # retired in round 3 and are rejected by the status-table tests.
+    status: str = ""  # one of: proved | boundary | forwarder | witness
 
     def render_block(self) -> str:
         if self.name:
@@ -134,9 +144,7 @@ def _seq(value) -> tuple[str, ...]:
 def load_labels(path: Path) -> LabelsRegistry:
     data = yaml.safe_load(path.read_text())
     figures: dict[str, Figure] = {}
-    for n, (label, payload) in enumerate(
-        (data.get("figures") or {}).items(), start=1
-    ):
+    for n, (label, payload) in enumerate((data.get("figures") or {}).items(), start=1):
         figures[label] = Figure(
             label=label,
             path=str(payload["path"]),
@@ -145,11 +153,10 @@ def load_labels(path: Path) -> LabelsRegistry:
             sections=_seq(payload.get("sections")),
             source=str(payload.get("source", "")),
             number=int(payload.get("number") or n),
+            uncertainty=str(payload.get("uncertainty", "") or ""),
         )
     equations: dict[str, Equation] = {}
-    for n, (label, payload) in enumerate(
-        (data.get("equations") or {}).items(), start=1
-    ):
+    for n, (label, payload) in enumerate((data.get("equations") or {}).items(), start=1):
         equations[label] = Equation(
             label=label,
             latex=str(payload["latex"]).strip(),

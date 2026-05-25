@@ -1,10 +1,11 @@
-"""Tests for src/coupling.py."""
+"""Tests for src/lean/coupling.py."""
+
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from coupling import (
+from lean.coupling import (
     coupling_log_weight,
     entangled_log_weight_affine_in_lambda,
     entangled_posterior,
@@ -13,7 +14,7 @@ from coupling import (
     expected_value,
     trivial_coupling,
 )
-from joint_dist import is_pmf, mean_field_to_joint
+from lean.joint_dist import is_pmf, mean_field_to_joint
 
 
 def _symmetric_priors_2x2():
@@ -61,9 +62,7 @@ def test_entangled_posterior_shape_mismatch_raises():
     mf = _symmetric_priors_2x2()
     G = [np.zeros(2), np.zeros(2)]
     with pytest.raises(ValueError, match="K_c shape"):
-        entangled_posterior(
-            mf, G, _ising_J(), np.zeros((3, 3)), gamma=1.0, lam=0.0
-        )
+        entangled_posterior(mf, G, _ising_J(), np.zeros((3, 3)), gamma=1.0, lam=0.0)
 
 
 def test_entangled_posterior_normalises():
@@ -72,6 +71,22 @@ def test_entangled_posterior_normalises():
     Kc = np.zeros((2, 2))
     q = entangled_posterior(mf, G, _ising_J(), Kc, gamma=2.0, lam=0.7)
     assert is_pmf(q)
+
+
+def test_entangled_posterior_strict_positive_marginals_rejects_degenerate():
+    mf = [np.array([1.0, 0.0]), np.array([0.5, 0.5])]
+    G = [np.zeros(2), np.zeros(2)]
+    Kc = np.zeros((2, 2))
+    with pytest.raises(ValueError, match="strict_positive_marginals"):
+        entangled_posterior(
+            mf,
+            G,
+            _ising_J(),
+            Kc,
+            gamma=1.0,
+            lam=0.5,
+            strict_positive_marginals=True,
+        )
 
 
 def test_expected_value_uniform_on_indicator():
@@ -108,6 +123,13 @@ def test_coupling_log_weight_shape_mismatch_raises():
     Kc = np.zeros((2, 3))
     with pytest.raises(ValueError, match="identical shapes"):
         coupling_log_weight(J, Kc, gamma=1.0, lam=1.0)
+
+
+def test_entangled_posterior_strict_positive_marginals_raises() -> None:
+    mf = [np.array([0.0, 1.0]), np.array([0.5, 0.5])]
+    G = [np.array([0.0, 0.5]), np.array([0.0, 0.5])]
+    with pytest.raises(ValueError, match="strict_positive_marginals"):
+        entangled_posterior(mf, G, _ising_J(), np.zeros((2, 2)), gamma=1.0, lam=0.5, strict_positive_marginals=True)
 
 
 def test_entangled_prior_3_stream_normalises():

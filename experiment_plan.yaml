@@ -1,0 +1,38 @@
+conditions:
+  - name: bernoulli_k2_closed_form
+    role: reference
+    description: "K=2 Ising closed-form λ sweep validated against empirical total correlation."
+  - name: pymdp_lambda_sweep
+    role: proposed
+    description: "inferactively-pymdp==1.0.1 coupled rollout with free-energy bundle observables."
+  - name: multi_k_ensemble
+    role: variant
+    description: "Multi-stream (K>2) ensemble sweep with per-K sidecars."
+  - name: long_horizon_rollout
+    role: variant
+    description: "Extended-horizon habit-accumulation trajectory diagnostics."
+  - name: revertibility_witness
+    role: witness
+    description: "m-projection revertibility identity across configured λ grid."
+  - name: robustness_ablation
+    role: ablation
+    description: "One-axis, two-axis, and replicate robustness sidecars."
+metrics:
+  primary:
+    name: decomposition_residual_max
+    direction: minimize
+  secondary:
+    - name: ising_mi_agreement
+      direction: minimize
+    - name: dashboard_invariant_pass_rate
+      direction: maximize
+protocol: "Run scripts/run_all.py (or make pipeline) with uv sync --group sim --group viz; optional --with-pdf --with-mathlib for release gates."
+expected_figures:
+  - registry:labels.yaml
+expected_tables:
+  - output/data/parameter_sweep.csv
+  - output/data/manuscript_variables.json
+baselines:
+  - bernoulli_k2_closed_form
+ablations:
+  - robustness_ablation

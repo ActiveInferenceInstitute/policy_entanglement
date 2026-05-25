@@ -17,7 +17,7 @@ When you add a body citation:
    prefixed with the at-sign; use a semicolon to separate
    multi-references inside a single bracket.
 3. Re-run `uv run python scripts/inject_manuscript_variables.py` and
-   confirm `output/manuscript_rendered/99_bibliography.md` contains
+   confirm `output/manuscript/99_bibliography.md` contains
    the expanded entry.
 
 [[CITELIST:all]]

@@ -1,15 +1,20 @@
-"""Manuscript-rendering and validation toolkit.
-"""
+"""Manuscript-rendering and validation toolkit."""
 
 from __future__ import annotations
 
-from registry import (  # noqa: F401
+from .bibliography import auto_bibliography, write_references_bib  # noqa: F401
+from .registry import (  # noqa: F401
     CitationRegistry,
     LabelsRegistry,
     Registry,
     load_registry,
 )
-from tokens import (  # noqa: F401
+from .renderer import (  # noqa: F401
+    RenderResult,
+    render_all,
+    render_section,
+)
+from .tokens import (  # noqa: F401
     CITATION_RE,
     EQ_RE,
     EQREF_RE,
@@ -18,15 +23,13 @@ from tokens import (  # noqa: F401
     VAR_RE,
     iter_tokens,
 )
-from renderer import (  # noqa: F401
-    RenderResult,
-    render_section,
-    render_all,
-)
-from bibliography import auto_bibliography  # noqa: F401
-from validation import (  # noqa: F401
+from .validation import (  # noqa: F401
     ManuscriptValidationReport,
     validate_manuscript_tree,
+)
+from .variables import (  # noqa: F401
+    build_manuscript_variables,
+    write_manuscript_variables,
 )
 
 __all__ = [
@@ -45,6 +48,9 @@ __all__ = [
     "render_section",
     "render_all",
     "auto_bibliography",
+    "write_references_bib",
     "ManuscriptValidationReport",
     "validate_manuscript_tree",
+    "build_manuscript_variables",
+    "write_manuscript_variables",
 ]

@@ -11,23 +11,24 @@ Thin orchestrator — imports compute helpers from
 ``projects/actinf_policy_entanglement_lean/src/`` and only handles
 I/O / serialisation / stdout-path emission.
 """
+
 from __future__ import annotations
 
 import csv
-import os
 import sys
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = THIS_DIR.parent
-SRC_DIR = PROJECT_ROOT / "src"
-for _sub in ("", "lean", "simulation", "visualizations"):
-    sys.path.insert(0, str(SRC_DIR / _sub if _sub else SRC_DIR))
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from _bootstrap import ensure_project_paths  # noqa: E402
+
+ensure_project_paths(project_root=PROJECT_ROOT)
 
 import numpy as np  # noqa: E402
 
-from bernoulli_toy import ising_joint_posterior  # noqa: E402
-from spectral import schmidt_decomposition  # noqa: E402
+from lean.bernoulli_toy import ising_joint_posterior  # noqa: E402
+from lean.spectral import schmidt_decomposition  # noqa: E402
 
 OUTPUT_DIR = PROJECT_ROOT / "output" / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -38,19 +39,32 @@ def main() -> None:
     out_path = OUTPUT_DIR / "ising_archetypes.csv"
     with out_path.open("w", newline="") as fh:
         writer = csv.writer(fh)
-        writer.writerow([
-            "lambda", "mode_index", "weight",
-            "u_0", "u_1", "v_0", "v_1",
-        ])
+        writer.writerow(
+            [
+                "lambda",
+                "mode_index",
+                "weight",
+                "u_0",
+                "u_1",
+                "v_0",
+                "v_1",
+            ]
+        )
         for lam in lams:
             q = ising_joint_posterior(float(lam))
             modes = schmidt_decomposition(q, atol=1e-12)
             for idx, m in enumerate(modes):
-                writer.writerow([
-                    f"{float(lam):.4f}", idx, f"{m.weight:.10g}",
-                    f"{m.u[0]:.10g}", f"{m.u[1]:.10g}",
-                    f"{m.v[0]:.10g}", f"{m.v[1]:.10g}",
-                ])
+                writer.writerow(
+                    [
+                        f"{float(lam):.4f}",
+                        idx,
+                        f"{m.weight:.10g}",
+                        f"{m.u[0]:.10g}",
+                        f"{m.u[1]:.10g}",
+                        f"{m.v[0]:.10g}",
+                        f"{m.v[1]:.10g}",
+                    ]
+                )
     print(out_path)
 
 

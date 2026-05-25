@@ -4,19 +4,20 @@ These tests exercise the framework-independent record types and do
 *not* require the pymdp ``sim`` group — they run on every CI matrix
 entry.
 """
+
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from specs import CoupledEnsembleSpec, StreamSpec
-from builders import (
+from simulation.builders import (
     ising_coupling_tensor,
     make_bernoulli_stream,
     make_ising_ensemble,
     two_action_swap_transitions,
     two_state_identity_likelihood,
 )
+from simulation.specs import CoupledEnsembleSpec, StreamSpec
 
 
 def _good_stream(name: str = "s0") -> StreamSpec:
@@ -171,24 +172,24 @@ def test_ising_coupling_tensor_zero_scale_returns_zero() -> None:
 
 def test_make_ising_ensemble_default_k2() -> None:
     spec = make_ising_ensemble()
-    assert spec.K() == 2
+    assert spec.num_streams() == 2
     assert spec.policy_shape() == (2, 2)
     spec.validate()
 
 
 def test_make_ising_ensemble_K3() -> None:
-    spec = make_ising_ensemble(K=3, gamma=0.5, coupling_lambda=2.0)
-    assert spec.K() == 3
+    spec = make_ising_ensemble(num_streams=3, gamma=0.5, coupling_amplitude=2.0)
+    assert spec.num_streams() == 3
     assert spec.policy_shape() == (2, 2, 2)
     assert spec.gamma == 0.5
-    assert spec.coupling_J.shape == (2, 2, 2)
+    assert spec.coupling_j.shape == (2, 2, 2)
 
 
 def test_coupled_ensemble_validate_rejects_empty_streams() -> None:
     bad = CoupledEnsembleSpec(
         streams=tuple(),
-        coupling_J=np.zeros((2,)),
-        coupling_Kc=np.zeros((2,)),
+        coupling_j=np.zeros((2,)),
+        coupling_kc=np.zeros((2,)),
     )
     with pytest.raises(ValueError, match="non-empty"):
         bad.validate()
@@ -197,8 +198,8 @@ def test_coupled_ensemble_validate_rejects_empty_streams() -> None:
 def test_coupled_ensemble_validate_rejects_negative_gamma() -> None:
     bad = CoupledEnsembleSpec(
         streams=(_good_stream(),),
-        coupling_J=np.zeros((2,)),
-        coupling_Kc=np.zeros((2,)),
+        coupling_j=np.zeros((2,)),
+        coupling_kc=np.zeros((2,)),
         gamma=-0.5,
     )
     with pytest.raises(ValueError, match="gamma"):
@@ -208,20 +209,20 @@ def test_coupled_ensemble_validate_rejects_negative_gamma() -> None:
 def test_coupled_ensemble_validate_rejects_J_shape_mismatch() -> None:
     bad = CoupledEnsembleSpec(
         streams=(_good_stream(), _good_stream("s1")),
-        coupling_J=np.zeros((3, 2)),
-        coupling_Kc=np.zeros((2, 2)),
+        coupling_j=np.zeros((3, 2)),
+        coupling_kc=np.zeros((2, 2)),
     )
-    with pytest.raises(ValueError, match="coupling_J shape"):
+    with pytest.raises(ValueError, match="coupling_j shape"):
         bad.validate()
 
 
 def test_coupled_ensemble_validate_rejects_Kc_shape_mismatch() -> None:
     bad = CoupledEnsembleSpec(
         streams=(_good_stream(), _good_stream("s1")),
-        coupling_J=np.zeros((2, 2)),
-        coupling_Kc=np.zeros((2, 3)),
+        coupling_j=np.zeros((2, 2)),
+        coupling_kc=np.zeros((2, 3)),
     )
-    with pytest.raises(ValueError, match="coupling_Kc shape"):
+    with pytest.raises(ValueError, match="coupling_kc shape"):
         bad.validate()
 
 
@@ -235,8 +236,8 @@ def test_coupled_ensemble_validate_propagates_stream_errors() -> None:
     )
     bad = CoupledEnsembleSpec(
         streams=(bad_stream,),
-        coupling_J=np.zeros((2,)),
-        coupling_Kc=np.zeros((2,)),
+        coupling_j=np.zeros((2,)),
+        coupling_kc=np.zeros((2,)),
     )
     with pytest.raises(ValueError, match="stream\\[0\\] 'broken'"):
         bad.validate()

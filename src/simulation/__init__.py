@@ -1,33 +1,112 @@
-"""POMDP simulation harness for coupled-policy active-inference ensembles.
-"""
+"""POMDP simulation harness for coupled-policy active-inference ensembles."""
 
 from __future__ import annotations
 
-from specs import CoupledEnsembleSpec, StreamSpec  # noqa: F401
-from builders import (  # noqa: F401
+from . import (
+    hyperparameters,  # noqa: F401
+    pymdp_pipeline,  # noqa: F401
+)
+from .agents import (  # noqa: F401
+    PYMDP_INSTALL_HINT,
+    build_pymdp_agent,
+    build_pymdp_agents,
+    pymdp_available,
+)
+from .builders import (  # noqa: F401
     ising_coupling_tensor,
     make_bernoulli_stream,
     make_ising_ensemble,
     two_action_swap_transitions,
     two_state_identity_likelihood,
 )
-from agents import (  # noqa: F401
-    PYMDP_INSTALL_HINT,
-    build_pymdp_agent,
-    build_pymdp_agents,
-    pymdp_available,
-)
-from inference import (  # noqa: F401
+from .inference import (  # noqa: F401
+    FreeEnergyBundle,
     coupled_policy_posterior,
+    coupling_energy,
+    expected_free_energy_under_posterior,
+    free_energy_bundle,
+    free_energy_curve,
     per_stream_efe,
     per_stream_policy_posterior,
+    variational_free_energy,
 )
-from rollout import (  # noqa: F401
+from .logging_utils import (  # noqa: F401
+    RunLogger,
+    TimedRecord,
+    default_logger,
+)
+from .long_horizon import (  # noqa: F401
+    LongHorizonResult,
+    long_horizon_rollout,
+    long_horizon_summary,
+    tc_trajectory_recomputable,
+    trajectory_marginals_are_pmfs,
+    trajectory_tc_finite,
+    trajectory_tc_nonneg,
+)
+from .multi_k_experiments import (  # noqa: F401
+    MultiKResult,
+    multi_k_joint_snapshot,
+    multi_k_summary,
+    run_multi_k_sweep,
+)
+from .revertibility import (  # noqa: F401
+    RevertibilityRecord,
+    m_projection_witness,
+    revertibility_kl_equals_multiinformation_witness,
+    revertibility_summary,
+    revertibility_test,
+)
+from .robustness import (  # noqa: F401
+    CouplingAblationRow,
+    InteractionRobustnessRow,
+    InteractionRobustnessScenario,
+    InteractionRobustnessSummary,
+    LongHorizonReplicateRecord,
+    LongHorizonSeedDiagnostic,
+    LongHorizonThresholdSensitivityRow,
+    MarginalNullControlRow,
+    RobustnessRow,
+    RobustnessScenario,
+    RobustnessScenarioSummary,
+    coupling_ablation_spec,
+    interaction_robustness_scenarios,
+    long_horizon_replicate_record,
+    long_horizon_seed_diagnostic,
+    long_horizon_seed_diagnostics,
+    long_horizon_tc_envelope,
+    long_horizon_threshold_pass_rates,
+    long_horizon_threshold_sensitivity,
+    long_horizon_threshold_sensitivity_summary,
+    robustness_scenarios,
+    run_coupling_ablation,
+    run_interaction_robustness_suite,
+    run_long_horizon_replicates,
+    run_marginal_null_control,
+    run_robustness_suite,
+    summarize_coupling_ablation_rows,
+    summarize_interaction_robustness_rows,
+    summarize_long_horizon_replicates,
+    summarize_marginal_null_control_rows,
+    summarize_robustness_rows,
+    wilson_score_interval,
+)
+from .rollout import (  # noqa: F401
     Rollout,
     RolloutStep,
     simulate_coupled_rollout,
 )
-from sweep import (  # noqa: F401
+from .specs import CoupledEnsembleSpec, StreamSpec  # noqa: F401
+from .statistics import (  # noqa: F401
+    BundleSummary,
+    QuantileEnvelope,
+    is_monotone_nondecreasing,
+    pymdp_summary_statistics,
+    quantile_envelope_over_sweeps,
+    summary_to_var_dict,
+    total_correlation_saturation_index,
+)
+from .sweep import (  # noqa: F401
     LambdaSweepResult,
     lambda_sweep,
     marginal_trajectory,
@@ -35,6 +114,18 @@ from sweep import (  # noqa: F401
 )
 
 __all__ = [
+    "hyperparameters",
+    "pymdp_pipeline",
+    "RunLogger",
+    "TimedRecord",
+    "default_logger",
+    "BundleSummary",
+    "QuantileEnvelope",
+    "is_monotone_nondecreasing",
+    "pymdp_summary_statistics",
+    "quantile_envelope_over_sweeps",
+    "summary_to_var_dict",
+    "total_correlation_saturation_index",
     # specs
     "StreamSpec",
     "CoupledEnsembleSpec",
@@ -50,9 +141,15 @@ __all__ = [
     "build_pymdp_agents",
     "pymdp_available",
     # inference
+    "FreeEnergyBundle",
     "coupled_policy_posterior",
+    "coupling_energy",
+    "expected_free_energy_under_posterior",
+    "free_energy_bundle",
+    "free_energy_curve",
     "per_stream_efe",
     "per_stream_policy_posterior",
+    "variational_free_energy",
     # rollout
     "Rollout",
     "RolloutStep",
@@ -62,4 +159,53 @@ __all__ = [
     "lambda_sweep",
     "marginal_trajectory",
     "total_correlation_curve",
+    # multi-K, long-horizon, revertibility
+    "MultiKResult",
+    "multi_k_joint_snapshot",
+    "multi_k_summary",
+    "run_multi_k_sweep",
+    "LongHorizonResult",
+    "long_horizon_rollout",
+    "long_horizon_summary",
+    "tc_trajectory_recomputable",
+    "trajectory_marginals_are_pmfs",
+    "trajectory_tc_finite",
+    "trajectory_tc_nonneg",
+    "RevertibilityRecord",
+    "m_projection_witness",
+    "revertibility_kl_equals_multiinformation_witness",
+    "revertibility_summary",
+    "revertibility_test",
+    "CouplingAblationRow",
+    "InteractionRobustnessRow",
+    "InteractionRobustnessScenario",
+    "InteractionRobustnessSummary",
+    "LongHorizonReplicateRecord",
+    "LongHorizonSeedDiagnostic",
+    "LongHorizonThresholdSensitivityRow",
+    "MarginalNullControlRow",
+    "RobustnessRow",
+    "RobustnessScenario",
+    "RobustnessScenarioSummary",
+    "coupling_ablation_spec",
+    "interaction_robustness_scenarios",
+    "long_horizon_replicate_record",
+    "long_horizon_seed_diagnostic",
+    "long_horizon_seed_diagnostics",
+    "long_horizon_threshold_pass_rates",
+    "long_horizon_threshold_sensitivity",
+    "long_horizon_threshold_sensitivity_summary",
+    "long_horizon_tc_envelope",
+    "robustness_scenarios",
+    "run_coupling_ablation",
+    "run_interaction_robustness_suite",
+    "run_long_horizon_replicates",
+    "run_marginal_null_control",
+    "run_robustness_suite",
+    "summarize_coupling_ablation_rows",
+    "summarize_interaction_robustness_rows",
+    "summarize_long_horizon_replicates",
+    "summarize_marginal_null_control_rows",
+    "summarize_robustness_rows",
+    "wilson_score_interval",
 ]

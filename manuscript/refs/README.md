@@ -8,7 +8,7 @@ reads these YAMLs together with
 and resolves every `[[FIG:...]]`, `[[FIGREF:...]]`, `[[EQ:...]]`,
 `[[EQREF:...]]`, `[[VAR:...]]`, `[[CITELIST:topic]]`, and `[@key]`
 token in the source.  Output lands at
-[`output/manuscript_rendered/`](../../output/manuscript_rendered/).
+[`output/manuscript/`](../../output/manuscript/).
 
 ## Files
 
@@ -27,7 +27,14 @@ token in the source.  Output lands at
 * [`citations.yaml`](citations.yaml) — citation registry.  Each entry
   is keyed by a Pandoc-style `lastname-yyyy[-letter]` slug and carries
   `authors`, `year`, `title`, `venue`, optionally `volume`, `pages`,
-  `doi`, `url`, `note`, plus a required `topic` for grouping.
+  `doi`, `url`, `note`, plus a required `topic` for grouping.  Live
+  citation counts come from
+  [`../../scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py)
+  and `output/data/manuscript_variables.json`; the two metadata keys
+  `topic_order:` and `topic_titles:` drive the auto-generated bibliography.  The
+  `topic_order:` list has been extended over revisions with
+  `control_rl` and `markov_blanket` topics; every topic listed in
+  `topic_order:` must have a matching entry in `topic_titles:`.
 
 ## Adding a figure
 
@@ -55,9 +62,10 @@ token in the source.  Output lands at
 * Every numbered theorem / proposition / corollary / lemma is registered
   under `theorems:` in [`labels.yaml`](labels.yaml).
 * In body prose write `[[THMREF:thm_4_1]]` to render the inline label
-  `Theorem 4.1`, or `[[THM:thm_4_1]]` to render the *full bold block*
-  `**Theorem 4.1 (Entanglement Decomposition).**` that opens the
-  statement.
+  `Theorem 5.1`, or `[[THM:thm_4_1]]` to render the *full bold block*
+  `**Theorem 5.1 (Entanglement Decomposition).**` that opens the
+  statement.  (The label slug `thm_4_1` is historical; the registry's
+  `number:` field carries the current section-aligned numbering.)
 * As with sections, hard-coded `Theorem N.M` / `Prop N.M` / `Cor N.M`
   references in body prose are forbidden by the validator.
 
@@ -76,6 +84,26 @@ token in the source.  Output lands at
 3. The bibliography section is auto-rendered from the
    `[[CITELIST:all]]` directive in
    [`../99_bibliography.md`](../99_bibliography.md).
+
+### Slug-vs-year convention (preprint year vs publication year)
+
+When a paper appears as a preprint in year *X* and is published in
+year *Y*, the citekey slug uses *X* (preprint year) and the `year:`
+field stores *Y* (publication year of record). Examples:
+
+* `friston-2024` (slug) → `year: 2025` (Frontiers in Network Physiology
+  publication of the 2024 RGM preprint, arXiv:2407.20292).
+* `vandelaar-devries-2017` (slug) → `year: 2019` (Frontiers in
+  Robotics and AI publication of the 2017 working draft).
+* `glasser-2019` (slug) → `year: 2020` (IEEE Access publication of
+  the 2018 preprint arXiv:1806.05964).
+
+Do **not** rename slugs to match the publication year — slugs are
+stable identifiers that downstream `[@key]` citation calls depend on.
+When the publication form is the canonical reference, prefer adding a
+`note:` to the existing entry over creating a duplicate slug at the
+publication year (e.g. there is no `friston-rgm-2025` entry —
+`friston-2024` is the canonical key for the Frontiers RGM paper).
 
 ## Validation
 

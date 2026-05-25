@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Render every manuscript section into ``output/manuscript/``.
 
-The output directory matches the parent template's rendering pipeline
-convention (`infrastructure.rendering.RenderManager` reads from
-`output/manuscript/` when present, otherwise falls back to the source
-`manuscript/` directory).  Tokens like ``[[FIG:label]]`` /
+The output directory is the canonical source for the local PDF renderer.
+Tokens like ``[[FIG:label]]`` /
 ``[[SECREF:label]]`` / ``[[THMREF:label]]`` / ``[@citekey]`` /
 ``[[VAR:key]]`` are resolved against the registry under
 ``manuscript/refs/`` and the variables JSON under
@@ -24,21 +22,23 @@ Sources:
 Failures are reported on stderr and propagate as a non-zero exit code,
 so this script can run as a CI gate.
 """
+
 from __future__ import annotations
 
-import os
 import shutil
 import sys
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = THIS_DIR.parent
-SRC_DIR = PROJECT_ROOT / "src"
-for _sub in ("", "lean", "simulation", "visualizations", "manuscript"):
-    sys.path.insert(0, str(SRC_DIR / _sub if _sub else SRC_DIR))
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from _bootstrap import ensure_project_paths  # noqa: E402
 
-from registry import load_registry  # noqa: E402
-from renderer import render_all  # noqa: E402
+ensure_project_paths(project_root=PROJECT_ROOT)
+
+from manuscript.bibliography import write_references_bib  # noqa: E402
+from manuscript.registry import load_registry  # noqa: E402
+from manuscript.renderer import render_all  # noqa: E402
 
 
 def main() -> int:
@@ -80,6 +80,7 @@ def main() -> int:
     bib_files = list(manuscript_dir.glob("*.bib"))
     for bib in bib_files:
         shutil.copy2(bib, output_dir / bib.name)
+    write_references_bib(registry.citations, output_dir / "references.bib")
 
     out_count = len(results)
     print(f"\nWrote {out_count} sections to {output_dir.relative_to(PROJECT_ROOT)}")

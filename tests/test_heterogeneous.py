@@ -1,10 +1,11 @@
-"""Tests for src/heterogeneous.py — coupling tax for mixed VFE/EFE ensembles."""
+"""Tests for src/lean/heterogeneous.py — coupling tax for mixed VFE/EFE ensembles."""
+
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from heterogeneous import (
+from lean.heterogeneous import (
     InferenceMode,
     coupling_norm_sq,
     coupling_tax,
@@ -17,7 +18,7 @@ from heterogeneous import (
     is_reflexive_stream,
     quadratic_bound_curvature,
 )
-from joint_dist import is_pmf
+from lean.joint_dist import is_pmf
 
 
 def _ising_J():
@@ -74,16 +75,18 @@ def test_coupling_norm_sq_value():
 def test_fixed_reflexive_posterior_empty_modes_raises():
     mf, G = _setup_K2()
     with pytest.raises(ValueError, match="non-empty"):
-        fixed_reflexive_posterior(
-            mf, G, _ising_J(), _Kc_nonzero(), gamma=1.0, lam=0.5, modes=[]
-        )
+        fixed_reflexive_posterior(mf, G, _ising_J(), _Kc_nonzero(), gamma=1.0, lam=0.5, modes=[])
 
 
 def test_fixed_reflexive_posterior_returns_pmf():
     mf, G = _setup_K2()
     out = fixed_reflexive_posterior(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=0.5,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=0.5,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
     )
     assert is_pmf(out)
@@ -93,8 +96,12 @@ def test_fixed_reflexive_posterior_returns_pmf():
 def test_coupling_tax_zero_for_purely_reflexive():
     mf, G = _setup_K2()
     tax = coupling_tax(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=1.0,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=1.0,
         modes=[InferenceMode.VFE, InferenceMode.VFE],
     )
     assert tax == 0.0
@@ -103,8 +110,12 @@ def test_coupling_tax_zero_for_purely_reflexive():
 def test_coupling_tax_zero_for_purely_planning():
     mf, G = _setup_K2()
     tax = coupling_tax(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=1.0,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=1.0,
         modes=[InferenceMode.EFE, InferenceMode.EFE],
     )
     assert tax == 0.0
@@ -113,8 +124,12 @@ def test_coupling_tax_zero_for_purely_planning():
 def test_coupling_tax_positive_for_heterogeneous_at_nonzero_lambda():
     mf, G = _setup_K2()
     tax = coupling_tax(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=1.0,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=1.0,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
     )
     assert tax > 0.0
@@ -123,8 +138,12 @@ def test_coupling_tax_positive_for_heterogeneous_at_nonzero_lambda():
 def test_coupling_tax_zero_at_lambda_zero():
     mf, G = _setup_K2()
     tax = coupling_tax(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=0.0,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=0.0,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
     )
     assert abs(tax) < 1e-9
@@ -133,7 +152,10 @@ def test_coupling_tax_zero_at_lambda_zero():
 def test_quadratic_bound_curvature_zero_when_kc_zero():
     mf, G = _setup_K2()
     C = quadratic_bound_curvature(
-        mf, G, _ising_J(), np.zeros((2, 2)),
+        mf,
+        G,
+        _ising_J(),
+        np.zeros((2, 2)),
         gamma=1.0,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
     )
@@ -143,7 +165,10 @@ def test_quadratic_bound_curvature_zero_when_kc_zero():
 def test_quadratic_bound_curvature_zero_when_homogeneous():
     mf, G = _setup_K2()
     C = quadratic_bound_curvature(
-        mf, G, _ising_J(), _Kc_nonzero(),
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
         gamma=1.0,
         modes=[InferenceMode.VFE, InferenceMode.VFE],
     )
@@ -153,7 +178,10 @@ def test_quadratic_bound_curvature_zero_when_homogeneous():
 def test_quadratic_bound_curvature_nonzero_for_heterogeneous():
     mf, G = _setup_K2()
     C = quadratic_bound_curvature(
-        mf, G, _ising_J(), _Kc_nonzero(),
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
         gamma=1.0,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
     )
@@ -164,7 +192,10 @@ def test_quadratic_bound_curvature_invalid_probe_raises():
     mf, G = _setup_K2()
     with pytest.raises(ValueError, match="non-zero"):
         quadratic_bound_curvature(
-            mf, G, _ising_J(), _Kc_nonzero(),
+            mf,
+            G,
+            _ising_J(),
+            _Kc_nonzero(),
             gamma=1.0,
             modes=[InferenceMode.VFE, InferenceMode.EFE],
             lam_probe=0.0,
@@ -174,8 +205,12 @@ def test_quadratic_bound_curvature_invalid_probe_raises():
 def test_coupling_tax_within_quadratic_bound_holds_for_small_lambda():
     mf, G = _setup_K2()
     assert coupling_tax_within_quadratic_bound(
-        mf, G, _ising_J(), _Kc_nonzero(),
-        gamma=1.0, lam=0.05,
+        mf,
+        G,
+        _ising_J(),
+        _Kc_nonzero(),
+        gamma=1.0,
+        lam=0.05,
         modes=[InferenceMode.VFE, InferenceMode.EFE],
         safety_factor=2.0,
     )

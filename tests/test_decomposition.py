@@ -1,11 +1,11 @@
-"""Tests for src/decomposition.py — Theorem 4.1 entanglement decomposition."""
+"""Tests for src/lean/decomposition.py — Theorem 5.1 entanglement decomposition."""
+
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
-from coupling import entangled_posterior
-from decomposition import (
+from lean.coupling import entangled_posterior
+from lean.decomposition import (
     DecompositionTerms,
     coupling_cost_term,
     coupling_pays_for_itself,
@@ -15,8 +15,7 @@ from decomposition import (
     sum_marginal_free_energies,
     total_correlation_gain,
 )
-from free_energy import total_correlation
-from joint_dist import is_pmf
+from lean.joint_dist import mean_field_to_joint
 
 
 def _ising_J():
@@ -34,8 +33,8 @@ def _setup():
 
 
 def test_decomposition_terms_total_sums_components():
-    terms = DecompositionTerms(1.0, 2.0, 3.0, -0.5)
-    assert abs(terms.total - 5.5) < 1e-12
+    terms = DecompositionTerms(1.0, 2.0, 3.0, 0.5)
+    assert abs(terms.total - 6.5) < 1e-12
 
 
 def test_sum_marginal_free_energies_positive_for_uniform_q():
@@ -62,15 +61,15 @@ def test_coupling_cost_term_linear_in_lambda():
 def test_coupling_prior_term_at_zero_lambda():
     q = np.full((2, 2), 0.25)
     mf, _ = _setup()
-    # At lam=0: lam·E_q[J] = 0, log Z_E(0) = log 1 = 0 -> term = 0
+    # At lam=0: log Z_E(0)=0, lam·E_q[J]=0 -> coupling_prior_term = 0
     assert abs(coupling_prior_term(q, _ising_J(), mf, lam=0.0)) < 1e-12
 
 
-def test_total_correlation_gain_negative_for_correlated_q():
+def test_total_correlation_gain_positive_for_correlated_q():
     q = np.array([[0.5, 0.0], [0.0, 0.5]])
     g = total_correlation_gain(q)
-    assert g < 0.0
-    assert abs(g + np.log(2.0)) < 1e-9
+    assert g > 0.0
+    assert abs(g - np.log(2.0)) < 1e-9
 
 
 def test_total_correlation_gain_zero_for_mean_field():
@@ -81,20 +80,37 @@ def test_total_correlation_gain_zero_for_mean_field():
 def test_entanglement_decomposition_rhs_returns_terms():
     q = np.full((2, 2), 0.25)
     mf, G = _setup()
-    rhs = entanglement_decomposition_rhs(
-        q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.5
-    )
+    rhs = entanglement_decomposition_rhs(q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.5)
     assert isinstance(rhs, DecompositionTerms)
     assert np.isfinite(rhs.total)
 
 
 def test_free_energy_against_entangled_prior_returns_finite():
     q = np.full((2, 2), 0.25)
-    mf, _ = _setup()
-    F = free_energy_against_entangled_prior(
-        q, mf, _ising_J(), _Kc(), gamma=1.0, lam=0.5
-    )
+    mf, G = _setup()
+    F = free_energy_against_entangled_prior(q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.5)
     assert np.isfinite(F)
+
+
+def test_free_energy_against_entangled_prior_matches_rhs_total() -> None:
+    """LHS Gibbs F[q] equals decomposition RHS.total for sampled joints."""
+    rng = np.random.default_rng(3)
+    mf, G = _setup()
+    J = _ising_J()
+    Kc = _Kc()
+    for _ in range(6):
+        q = rng.dirichlet(np.ones(4)).reshape(2, 2)
+        for lam in (0.0, 0.4, 1.1):
+            lhs = free_energy_against_entangled_prior(q, mf, G, J, Kc, gamma=1.0, lam=lam)
+            rhs = entanglement_decomposition_rhs(q, mf, G, J, Kc, 1.0, lam).total
+            assert abs(lhs - rhs) < 1e-9, (lhs, rhs, lam)
+
+
+def test_decomposition_terms_exposes_multi_information_alias():
+    q = np.array([[0.5, 0.0], [0.0, 0.5]])
+    mf, G = _setup()
+    rhs = entanglement_decomposition_rhs(q, mf, G, _ising_J(), _Kc(), 1.0, 0.3)
+    assert rhs.multi_information_term == rhs.total_correlation_gain
 
 
 def test_coupling_pays_for_itself_strict_increase_in_tc():
@@ -112,9 +128,7 @@ def test_decomposition_consistency_at_zero_lambda():
     decomposition reduces to per-stream FE plus the gain."""
     q = np.array([[0.4, 0.1], [0.2, 0.3]])
     mf, G = _setup()
-    rhs = entanglement_decomposition_rhs(
-        q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.0
-    )
+    rhs = entanglement_decomposition_rhs(q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.0)
     assert abs(rhs.coupling_cost_term) < 1e-12
     assert abs(rhs.coupling_prior_term) < 1e-12
 
@@ -122,12 +136,11 @@ def test_decomposition_consistency_at_zero_lambda():
 def test_decomposition_at_zero_helper_matches_general_call():
     """`decomposition_at_zero` (Cor 4.3 mirror) equals
     `entanglement_decomposition_rhs(..., lam=0.0)` byte-for-byte."""
-    from decomposition import decomposition_at_zero
+    from lean.decomposition import decomposition_at_zero
+
     q = np.array([[0.3, 0.2], [0.1, 0.4]])
     mf, G = _setup()
-    rhs0 = entanglement_decomposition_rhs(
-        q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.0
-    )
+    rhs0 = entanglement_decomposition_rhs(q, mf, G, _ising_J(), _Kc(), gamma=1.0, lam=0.0)
     rhs_helper = decomposition_at_zero(q, mf, G, _ising_J(), _Kc(), gamma=1.0)
     assert rhs0.sum_marginal_free_energies == rhs_helper.sum_marginal_free_energies
     assert rhs0.coupling_cost_term == rhs_helper.coupling_cost_term
@@ -138,8 +151,37 @@ def test_decomposition_at_zero_helper_matches_general_call():
     assert abs(rhs_helper.coupling_prior_term) < 1e-12
 
 
+def test_decomposition_matches_gibbs_expansion_random_joints() -> None:
+    """Theorem 5.1 RHS equals E[γ G_λ − log E_λ] − H for random valid q."""
+
+    def gibbs_F(q, mf, G, J, Kc, gamma, lam):
+        base = mean_field_to_joint(mf)
+        unnorm = base * np.exp(lam * J)
+        log_Z = float(np.log(np.sum(unnorm)))
+        gtot = np.zeros_like(q)
+        for idx in np.ndindex(q.shape):
+            gtot[idx] = sum(G[k][idx[k]] for k in range(len(G))) + lam * Kc[idx]
+        log_E = np.zeros_like(q)
+        for idx in np.ndindex(q.shape):
+            log_E[idx] = sum(np.log(mf[k][idx[k]]) for k in range(len(mf))) + lam * J[idx] - log_Z
+        from lean.free_energy import shannon_entropy
+
+        return float(np.sum(q * (gamma * gtot - log_E))) - shannon_entropy(q)
+
+    mf, G = _setup()
+    J = _ising_J()
+    Kc = _Kc()
+    rng = np.random.default_rng(7)
+    for _ in range(4):
+        q = rng.dirichlet(np.ones(4)).reshape(2, 2)
+        for lam in (0.0, 0.3, 1.2):
+            lhs = gibbs_F(q, mf, G, J, Kc, 1.0, lam)
+            rhs = entanglement_decomposition_rhs(q, mf, G, J, Kc, 1.0, lam).total
+            assert abs(lhs - rhs) < 1e-9, (lhs, rhs, lam)
+
+
 def test_decomposition_is_finite_for_random_inputs():
-    """Theorem 4.1 RHS is a finite real for any valid (q, E, G, J, K_c, gamma, lam)."""
+    """Theorem 5.1 RHS is a finite real for any valid (q, E, G, J, K_c, gamma, lam)."""
     rng = np.random.default_rng(seed=42)
     for _ in range(5):
         q = rng.dirichlet(np.ones(4)).reshape(2, 2)

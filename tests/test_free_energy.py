@@ -1,10 +1,11 @@
-"""Tests for src/free_energy.py."""
+"""Tests for src/lean/free_energy.py."""
+
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from free_energy import (
+from lean.free_energy import (
     free_energy,
     joint_entropy,
     kl_divergence,
@@ -12,9 +13,10 @@ from free_energy import (
     marginal_free_energy,
     shannon_entropy,
     total_correlation,
+    total_correlation_lean_companion,
     total_correlation_via_kl,
 )
-from joint_dist import mean_field_to_joint
+from lean.joint_dist import joint_marginals, mean_field_to_joint
 
 
 def test_shannon_entropy_uniform_2():
@@ -83,12 +85,59 @@ def test_total_correlation_positive_for_correlated():
 
 
 def test_total_correlation_via_kl_matches_direct():
-    """Prop 6.3: I(q) == KL(q ‖ ∏ q^k) numerically."""
+    """Prop 7.3: I(q) == KL(q ‖ ∏ q^k) numerically."""
     rng = np.random.default_rng(seed=42)
     q = rng.dirichlet(np.ones(6)).reshape(2, 3)
     direct = total_correlation(q)
     via_kl = total_correlation_via_kl(q)
     assert abs(direct - via_kl) < 1e-9
+
+
+def test_total_correlation_lean_companion_matches_python_for_K2():
+    """Numerical witness: the boundary-fragment Lean signature
+    ``totalCorrelation q s sumStreamEntropies`` returns the multi-
+    information when the caller passes ``Σ_k H(q^k)``.
+
+    This is the parity invariant that distinguishes the new
+    boundary-fragment definition (``sumStreamEntropies − H(q)``) from
+    the prior placeholder (``kl q q s ≡ 0``).
+    """
+    rng = np.random.default_rng(seed=2026)
+    for _ in range(10):
+        q = rng.dirichlet(np.ones(4)).reshape(2, 2)
+        margs = joint_marginals(q)
+        sum_stream_entropies = float(sum(shannon_entropy(m) for m in margs))
+        lean_form = total_correlation_lean_companion(q, sum_stream_entropies)
+        python_form = total_correlation(q)
+        assert abs(lean_form - python_form) < 1e-12, (lean_form, python_form)
+
+
+def test_total_correlation_lean_companion_vanishes_at_mean_field():
+    """Mean-field anchor: ``totalCorrelation_vanishes_at_meanField``
+    in Lean asserts the formula collapses to 0 when the per-stream
+    entropies sum to the joint entropy.  The Python companion
+    reproduces this numerically."""
+    q_mf = np.full((2, 2), 0.25)  # uniform K=2 joint, exactly mean-field
+    margs = joint_marginals(q_mf)
+    sum_stream_entropies = float(sum(shannon_entropy(m) for m in margs))
+    H_joint = joint_entropy(q_mf)
+    # The two scalars are equal by hand: 2 * log 2 = log 4.
+    assert abs(sum_stream_entropies - H_joint) < 1e-12
+    lean_form = total_correlation_lean_companion(q_mf, sum_stream_entropies)
+    assert abs(lean_form) < 1e-12
+
+
+def test_total_correlation_lean_companion_strictly_positive_off_mean_field():
+    """Off-mean-field invariant: when sumStreamEntropies > H(q), the
+    Lean form is strictly positive — confirming the boundary fragment
+    is **not** identically zero (the prior bug)."""
+    q_corr = np.array([[0.5, 0.0], [0.0, 0.5]])  # maximally correlated bipartite
+    margs = joint_marginals(q_corr)
+    sum_stream_entropies = float(sum(shannon_entropy(m) for m in margs))
+    lean_form = total_correlation_lean_companion(q_corr, sum_stream_entropies)
+    # I = log 2 - 0 = log 2 for the antidiagonal joint.
+    assert lean_form > 0.0
+    assert abs(lean_form - float(np.log(2.0))) < 1e-9
 
 
 def test_joint_entropy_3_stream():

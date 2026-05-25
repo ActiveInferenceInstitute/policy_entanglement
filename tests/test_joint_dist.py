@@ -1,13 +1,14 @@
-"""Tests for src/joint_dist.py.
+"""Tests for src/lean/joint_dist.py.
 
 Real numerical examples; no mocks per the project's no-mocks policy.
 """
+
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from joint_dist import (
+from lean.joint_dist import (
     is_mean_field,
     is_non_negative,
     is_pmf,

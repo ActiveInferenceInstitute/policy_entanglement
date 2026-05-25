@@ -1,0 +1,52 @@
+domain: formal_verification_research
+display_name: Policy Entanglement in Active Inference
+required_packages:
+  - numpy
+  - scipy
+  - matplotlib
+  - pyyaml
+  - pytest
+preferred_outputs:
+  - pdf
+  - html
+validation_gates:
+  - lean_hygiene
+  - manuscript_token_integrity
+  - artifact_manifest
+  - regression_gate
+  # publication_readiness: requires `run_all --with-pdf` (readiness_report.py)
+figure_types:
+  - analytical_heatmap
+  - pymdp_dashboard
+  - phase_diagram
+  - spectral_plot
+citation_policy: official_or_scholarly
+source_policy: "Prefer registry-backed manuscript tokens, generated sidecars, Lean build reports, and primary active-inference literature."
+review_gates:
+  - lean_hygiene
+  - manuscript_token_integrity
+  - render_validation
+  - publication_readiness
+optional_validation_gates:
+  - publication_readiness  # scripts/readiness_report.py; PDF path only
+artifact_expectations:
+  - output/data/manuscript_variables.json
+  - output/data/parameter_sweep.csv
+  - output/reports/test_results.json
+  - output/reports/dashboard_invariants.txt
+  - output/reports/release_readiness.json
+  - output/pdf/actinf_policy_entanglement_lean_combined.pdf
+benchmark_rubric:
+  name: four-track-readiness
+  dimensions:
+    - name: lean_boundary_hygiene
+      weight: 2.0
+    - name: numerical_witness_invariants
+      weight: 2.0
+    - name: manuscript_token_integrity
+      weight: 2.0
+    - name: reproducibility_bundle
+      weight: 1.0
+    - name: publication_readiness
+      weight: 1.0
+llm_prompt_guidance: "Use output/data/manuscript_variables.json and output/reports/release_readiness.json; never invent numeric manuscript values."

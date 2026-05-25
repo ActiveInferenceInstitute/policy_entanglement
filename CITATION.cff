@@ -1,0 +1,58 @@
+# Citation File Format (CFF) 1.2.0 — https://citation-file-format.github.io/
+# Machine-readable citation metadata for the Policy Entanglement in Active
+# Inference research artifact.  The repository's "Cite this repository" button
+# reads this file.
+
+cff-version: 1.2.0
+message: |
+  If you use this software or the accompanying manuscript, please cite it
+  using the metadata below.  The four-track artifact (prose, equations,
+  Python/pymdp, Lean 4) is reproducible from a single command
+  (`./run.sh --project actinf_policy_entanglement_lean --pipeline` inside
+  the docxology/template monorepo, or `uv run python scripts/run_all.py`
+  inside this repository's own working tree).
+
+title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
+abstract: >
+  A tunable scalar parameter λ smoothly deforms the joint policy posterior
+  of finite-POMDP active inference between strict per-stream mean-field
+  (λ = 0) and concentration on archetypal joint policies (λ → ∞), with a
+  closed-form free-energy decomposition theorem, an information-geometric
+  e-geodesic embedding, a Schmidt-spectral interpretation, an O(λ²)
+  heterogeneous-ensemble coupling-tax bound, and a phase classification.
+  The central identity is machine-checked in ℝ by MathlibProofs with
+  foundational-only `#print axioms`.  The artifact ships prose, equations,
+  Python/pymdp numerical companion, and Lean 4 boundary fragment on four
+  parallel CI-gated tracks.
+
+type: software
+license: MIT
+
+authors:
+  - family-names: Friedman
+    given-names: Daniel Ari
+    orcid: "https://orcid.org/0000-0001-6232-9096"
+    affiliation: "Active Inference Institute"
+
+keywords:
+  - active inference
+  - free energy principle
+  - policy entanglement
+  - mean-field variational inference
+  - information geometry
+  - tensor networks
+  - Lean 4
+  - formal verification
+  - pymdp
+
+# Preferred citation form for academic use.
+preferred-citation:
+  type: software
+  title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
+  authors:
+    - family-names: Friedman
+      given-names: Daniel Ari
+      orcid: "https://orcid.org/0000-0001-6232-9096"
+      affiliation: "Active Inference Institute"
+  year: 2026
+  notes: "Working manuscript and software artifact; public Zenodo DOI and public source archive pending."

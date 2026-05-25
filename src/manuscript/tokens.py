@@ -1,5 +1,4 @@
-"""Token regular expressions and a single resolver entry point.
-"""
+"""Token regular expressions and a single resolver entry point."""
 
 from __future__ import annotations
 
@@ -9,16 +8,12 @@ FIG_RE = re.compile(r"\[\[FIG:(?P<label>[A-Za-z0-9_]+)\]\]")
 FIGREF_RE = re.compile(r"\[\[FIGREF:(?P<label>[A-Za-z0-9_]+)\]\]")
 EQ_RE = re.compile(r"\[\[EQ:(?P<label>[A-Za-z0-9_]+)\]\]")
 EQREF_RE = re.compile(r"\[\[EQREF:(?P<label>[A-Za-z0-9_]+)\]\]")
-VAR_RE = re.compile(
-    r"\[\[VAR:(?P<key>[A-Za-z0-9_]+)(?::(?P<fmt>[^\]]+))?\]\]"
-)
+VAR_RE = re.compile(r"\[\[VAR:(?P<key>[A-Za-z0-9_]+)(?::(?P<fmt>[^\]]+))?\]\]")
 # Citation token: matches single `[@key]` AND multi-citation
 # `[@key1; @key2; @key3]` (Pandoc semicolon-separated form).  The
 # `inner` group captures the body inside the outer brackets so the
 # resolver can split on `;` and emit each key.
-CITATION_RE = re.compile(
-    r"\[(?P<inner>@[A-Za-z0-9_-]+(?:\s*;\s*@[A-Za-z0-9_-]+)*)\]"
-)
+CITATION_RE = re.compile(r"\[(?P<inner>@[A-Za-z0-9_-]+(?:\s*;\s*@[A-Za-z0-9_-]+)*)\]")
 CITELIST_RE = re.compile(r"\[\[CITELIST:(?P<topic>[A-Za-z0-9_]+)\]\]")
 
 # Section + theorem tokens.

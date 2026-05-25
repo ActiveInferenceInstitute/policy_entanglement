@@ -1,16 +1,48 @@
-"""Closed-form K=2 Bernoulli / Ising worked example (manuscript §5.1).
+"""Closed-form K=2 Bernoulli / Ising worked example (manuscript §6.1).
+
+The simplest non-trivial instance of the framework: two binary policy
+streams with a symmetric Ising habit coupling
+``J(π) = (2π¹-1)(2π²-1)``.  Every framework theorem has a closed-form
+witness here that can be checked algebraically *and* numerically.
+
+Key closed forms:
+
+* ``ising_mutual_information(λ) = log 2 - H_b(σ(λ))`` — analytical MI
+  of the K=2 joint, where ``σ`` is the logistic and ``H_b`` the binary
+  entropy.  Saturates at ``log 2`` as ``|λ| → ∞``.
+* ``optimal_lambda(Δ) = 2 · arctanh(Δ/Δ_max)`` — the coupling that
+  realizes a target alignment surplus ``Δ`` ([[THMREF:thm_4_2]]).
+* ``ising_free_energy_curve(λ, u) = -u·tanh(λ/2) - I(λ)`` — closed-form
+  free-energy curve for the symmetric toy at utility surplus ``u``.
+
+Example::
+
+    >>> import numpy as np
+    >>> from lean.bernoulli_toy import (
+    ...     ising_mutual_information, optimal_lambda, ising_joint_posterior,
+    ... )
+    >>> round(ising_mutual_information(0.0), 6)
+    0.0
+    >>> round(ising_mutual_information(10.0), 4)  # near saturation log 2
+    0.6926
+    >>> round(optimal_lambda(0.5), 4)             # 2·arctanh(0.5)
+    1.0986
+    >>> q = ising_joint_posterior(2.0)
+    >>> bool(np.allclose(q.sum(), 1.0))           # PMF
+    True
+
+Lean companion: ``ActinfPolicyEntanglement.BernoulliToy``.
 """
 
 from __future__ import annotations
 
-from typing import cast
-
 import numpy as np
 from numpy.typing import NDArray
 
-from coupling import entangled_posterior, expected_value
-from free_energy import free_energy, total_correlation
-from joint_dist import is_mean_field, mean_field_to_joint
+from .coupling import entangled_posterior
+from .free_energy import total_correlation
+from .joint_dist import is_mean_field
+from .phase_constants import PHASE_LAMBDA_C1, PHASE_LAMBDA_C2
 
 ArrayF = NDArray[np.float64]
 
@@ -54,10 +86,7 @@ def ising_mutual_information(lam: float) -> float:
         e = np.exp(lam)
         pa = e / (1.0 + e)
     # Binary entropy with safe logs.
-    if pa <= 0.0 or pa >= 1.0:
-        H_b = 0.0
-    else:
-        H_b = -pa * np.log(pa) - (1.0 - pa) * np.log(1.0 - pa)
+    H_b = 0.0 if pa <= 0.0 or pa >= 1.0 else -pa * np.log(pa) - (1.0 - pa) * np.log(1.0 - pa)
     return float(np.log(2.0) - H_b)
 
 
@@ -70,23 +99,65 @@ def ising_joint_posterior(lam: float) -> ArrayF:
     return entangled_posterior(
         mf_prior=mf,
         per_stream_G=[np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)],
-        coupling_J=ising_coupling(),
-        coupling_Kc=Kc,
+        coupling_j=ising_coupling(),
+        coupling_kc=Kc,
         gamma=0.0,
         lam=lam,
     )
 
 
 def empirical_mutual_information(lam: float) -> float:
-    """Total correlation of the K=2 Ising joint posterior — should match
-    :func:`ising_mutual_information` to floating tolerance.
+    """Numeric total correlation of the *closed-form* K=2 Ising joint.
+
+    **This is NOT a Monte-Carlo sampler.** It evaluates the audited
+    :func:`~lean.free_energy.total_correlation` on the exact analytic
+    joint :func:`ising_joint_posterior`, so agreement with
+    :func:`ising_mutual_information` (to ``BERNOULLI_VERIFICATION_TOLERANCE``)
+    is an *internal analytic-consistency* check: two algebraically
+    independent closed forms for the same quantity must coincide to
+    numerical precision.  For the genuine finite-sample empirical witness
+    (a seeded multinomial estimator with a sampling-error bound) see
+    :func:`empirical_mutual_information_montecarlo`.
     """
     return total_correlation(ising_joint_posterior(lam))
 
 
+def empirical_mutual_information_montecarlo(lam: float, n_samples: int, seed: int) -> float:
+    """Genuine finite-N Monte-Carlo estimate of the K=2 Ising total
+    correlation.
+
+    Draws ``n_samples`` i.i.d. categorical samples from the four-atom
+    distribution ``ising_joint_posterior(lam)`` using a seeded
+    ``numpy.random.default_rng`` generator, forms the empirical 2x2 joint
+    (counts / N), and returns the audited
+    :func:`~lean.free_energy.total_correlation` of that *empirical*
+    joint.  Unlike :func:`empirical_mutual_information` this is a real
+    stochastic estimator: the estimate is a random variable whose bias is
+    ``O(1/N)`` (plug-in entropy bias) and whose standard deviation is
+    ``O(1/sqrt(N))``, so it converges to
+    :func:`ising_mutual_information` only in the finite-sample sense, not
+    to floating-point tolerance.  Deterministic given ``(lam, n_samples,
+    seed)``.
+
+    The empirical-agreement claim in the manuscript is witnessed by this
+    function (and ``tests/test_bernoulli_toy.py``'s convergence /
+    concentration tests), not by :func:`empirical_mutual_information`.
+    """
+    if n_samples <= 0:
+        raise ValueError("n_samples must be positive")
+    joint = np.asarray(ising_joint_posterior(lam), dtype=np.float64)
+    flat = joint.reshape(-1)
+    flat = flat / flat.sum()
+    rng = np.random.default_rng(seed)
+    draws = rng.choice(flat.size, size=int(n_samples), p=flat)
+    counts = np.bincount(draws, minlength=flat.size).astype(np.float64)
+    empirical_joint = (counts / float(n_samples)).reshape(joint.shape)
+    return total_correlation(empirical_joint)
+
+
 def optimal_lambda(delta: float, delta_max: float = 1.0) -> float:
     """`lam* = 2 · arctanh(delta / delta_max)` — the coupling that
-    *realises* a target expected alignment ``delta``.
+    *realizes* a target expected alignment ``delta``.
 
     Concretely: under the symmetric K=2 Ising joint, the expected
     alignment is ``alpha(lam) = tanh(lam/2)``; inverting gives
@@ -107,33 +178,54 @@ def optimal_lambda(delta: float, delta_max: float = 1.0) -> float:
 
 
 def ising_free_energy_curve(lam: float, utility: float) -> float:
-    """`F(lam) = -utility · alignment_prob(lam) − I(lam)`.
+    """`F(lam) = -utility · alignment(lam) − I(lam)`.
 
     The closed-form free-energy curve for the K=2 Ising toy with a
     single utility scalar — *utility* is the surplus an aligned outcome
-    delivers, and ``alignment_prob(lam) = 2 sigma(lam) − 1`` is the
-    expected alignment under the lambda-entangled posterior.
+    delivers, and ``alignment(lam) = 2σ(lam) − 1 = tanh(lam/2)`` is the
+    signed expected alignment under the lambda-entangled posterior.
 
-    Both summands are non-positive (utility · alignment_prob ≥ 0; MI ≥
-    0), so `F` is monotonically decreasing in `|lam|` whenever
-    ``utility ≥ 0``.  Mirrors ``BernoulliToy.isingFreeEnergyCurve``.
+    * For ``lam > 0``: alignment is positive; F decreases (coupling pays).
+    * For ``lam < 0``: alignment is negative (coupling *penalises*
+      alignment); F increases, reflecting anti-alignment coupling.
+    * For ``utility ≥ 0`` and ``lam ≥ 0``: F is monotonically decreasing
+      in lam (both summands non-positive).
+
+    Mirrors ``BernoulliToy.isingFreeEnergyCurve``.
     """
-    alignment = 2.0 / (1.0 + np.exp(-abs(float(lam)))) - 1.0
-    return float(-utility * alignment - ising_mutual_information(lam))
+    lam_f = float(lam)
+    # Numerically stable logistic for the signed alignment tanh(lam/2).
+    if lam_f >= 0.0:
+        sigma = 1.0 / (1.0 + np.exp(-lam_f))
+    else:
+        e = np.exp(lam_f)
+        sigma = e / (1.0 + e)
+    alignment = 2.0 * sigma - 1.0
+    return float(-float(utility) * alignment - ising_mutual_information(lam_f))
 
 
 def coupling_phase_at(
     lam: float,
-    lam_c1: float = 0.5,
-    lam_c2: float = 2.5,
+    lam_c1: float | None = None,
+    lam_c2: float | None = None,
 ) -> str:
     """Determine the coupling phase from `lam` and two critical couplings.
 
     Returns one of ``"disordered"``, ``"mixed"``, ``"frozen"`` —
-    matches the Lean ``CouplingPhase`` inductive.  The default critical
-    couplings ``(0.5, 2.5)`` are illustrative (they make the K=2 phase
-    boundaries non-degenerate); real values are model-dependent.
+    matches the Lean ``CouplingPhase`` inductive.
+
+    The critical couplings default to the centralized hyperparameter
+    constants ``PHASE_LAMBDA_C1`` and ``PHASE_LAMBDA_C2`` (in
+    :mod:`lean.phase_constants`) rather than to inline magic
+    numbers (RedTeam Methods C2 / M3, 2026-05-20).  Both constants are
+    illustrative (they make the K=2 phase boundaries non-degenerate);
+    real values are model-dependent.  Callers that need the inline
+    defaults preserved should pass them explicitly.
     """
+    if lam_c1 is None:
+        lam_c1 = float(PHASE_LAMBDA_C1)
+    if lam_c2 is None:
+        lam_c2 = float(PHASE_LAMBDA_C2)
     if lam < lam_c1:
         return "disordered"
     if lam <= lam_c2:

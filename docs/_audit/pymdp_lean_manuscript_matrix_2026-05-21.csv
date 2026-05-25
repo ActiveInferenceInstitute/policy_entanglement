@@ -1,0 +1,2 @@
+claim_area,public_surface,generating_source,config_or_var_key,artifact_or_sidecar,verification_gate,verdict,remediation
+Historical audit pointer,docs/FAQ.md,docs/_audit/FOUR_SKILL_ASSESSMENT_2026-05-19.md,not_applicable,docs/_audit/FOUR_SKILL_ASSESSMENT_2026-05-19.md,tests/test_project_wide_hyperlinks.py,superseded,current claims validated by source gates and generated artifacts
