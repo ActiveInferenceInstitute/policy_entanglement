@@ -12,21 +12,22 @@ message: |
   the docxology/template monorepo, or `uv run python scripts/run_all.py`
   inside this repository's own working tree).
 
-title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
+title: "Policy Entanglement in Active Inference: A Coupling-Parameter Deformation Framework for Multi-Stream Policy Posterior Distributions, Machine-Checked and Simulated with a Typed Float Boundary"
 abstract: >
-  A tunable scalar parameter λ smoothly deforms the joint policy posterior
-  of finite-POMDP active inference between strict per-stream mean-field
-  (λ = 0) and concentration on archetypal joint policies (λ → ∞), with a
-  closed-form free-energy decomposition theorem, an information-geometric
-  e-geodesic embedding, a Schmidt-spectral interpretation, an O(λ²)
-  heterogeneous-ensemble coupling-tax bound, and a phase classification.
-  The central identity is machine-checked in ℝ by MathlibProofs with
-  foundational-only `#print axioms`.  The artifact ships prose, equations,
-  Python/pymdp numerical companion, and Lean 4 boundary fragment on four
-  parallel CI-gated tracks.
+  A scalar coupling parameter λ deforms the joint policy posterior of
+  finite-POMDP active inference between strict per-stream mean-field
+  (λ = 0) and structured joint policies (λ → ∞), with a closed-form
+  free-energy decomposition, information-geometric e-geodesic embedding,
+  Schmidt-spectral interpretation, heterogeneous-ensemble coupling-tax
+  bound, and phase classification. The central identity is machine-checked
+  in ℝ (MathlibProofs) with foundational-only axiom audit; a stock-Lean
+  boundary fragment exposes typed contracts for Python witnesses. The
+  artifact ships prose, equations, pymdp numerical companion, and Lean 4
+  on four CI-gated tracks.
 
 type: software
 license: MIT
+repository-code: "https://github.com/docxology/policy_entanglement"
 
 authors:
   - family-names: Friedman
@@ -48,11 +49,14 @@ keywords:
 # Preferred citation form for academic use.
 preferred-citation:
   type: software
-  title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
+  title: "Policy Entanglement in Active Inference: A Coupling-Parameter Deformation Framework for Multi-Stream Policy Posterior Distributions, Machine-Checked and Simulated with a Typed Float Boundary"
   authors:
     - family-names: Friedman
       given-names: Daniel Ari
       orcid: "https://orcid.org/0000-0001-6232-9096"
       affiliation: "Active Inference Institute"
   year: 2026
-  notes: "Working manuscript and software artifact; public Zenodo DOI and public source archive pending."
+  notes: >
+    Working manuscript (CC-BY-4.0) and software artifact (MIT).
+    Source: https://github.com/docxology/policy_entanglement .
+    Public Zenodo DOI pending deposit.

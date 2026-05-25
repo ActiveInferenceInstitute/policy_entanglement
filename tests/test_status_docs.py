@@ -135,6 +135,8 @@ GNN_STALE_ALLOWLIST_ROOTS = (
 UNRESOLVED_PUBLICATION_DOI = "10.5281/zenodo.20301239"
 UNRESOLVED_ZENODO_RECORD = "https://zenodo.org/records/20301239"
 UNRESOLVED_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
+CANONICAL_SOURCE_REPOSITORY = UNRESOLVED_SOURCE_REPOSITORY
+WRONG_SOURCE_REPOSITORY = "https://github.com/ActiveInferenceInstitute/policy_entanglement"
 PUBLICATION_METADATA_PATHS = (
     PROJECT / "README.md",
     PROJECT / "docs" / "README.md",
@@ -144,6 +146,11 @@ PUBLICATION_METADATA_PATHS = (
     PROJECT / "manuscript" / "refs" / "citations.yaml",
     PROJECT / "manuscript" / "1A_part1_introduction.md",
     PROJECT / "manuscript" / "6C_discussion_and_outlook.md",
+)
+PUBLICATION_REPOSITORY_PATHS = (
+    *PUBLICATION_METADATA_PATHS,
+    PROJECT / "CONTRIBUTING.md",
+    PROJECT / "manuscript" / "0A_abstract.md",
 )
 PUBLICATION_BANNER_PATHS = (
     PROJECT / "README.md",
@@ -322,6 +329,12 @@ def _gnn_stale_candidate_issues() -> list[str]:
     return issues
 
 
+def _repository_url_from_config() -> str:
+    config_text = (PROJECT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    match = re.search(r'(?m)^\s*repository_url:\s*"([^"]*)"\s*$', config_text)
+    return match.group(1) if match else ""
+
+
 def _publication_metadata_issues() -> list[str]:
     """Reject contradictory public DOI / source-repository states."""
 
@@ -360,6 +373,26 @@ def _publication_metadata_issues() -> list[str]:
                 issues.append(
                     f"{path.relative_to(PROJECT)}: publishes unresolved source repository while config repository is pending"
                 )
+    else:
+        configured_url = _repository_url_from_config()
+        if configured_url != CANONICAL_SOURCE_REPOSITORY:
+            issues.append(
+                f"manuscript/config.yaml: repository_url {configured_url!r} != canonical {CANONICAL_SOURCE_REPOSITORY!r}"
+            )
+        for path in PUBLICATION_REPOSITORY_PATHS:
+            if not path.exists():
+                continue
+            text = path.read_text(encoding="utf-8")
+            rel = path.relative_to(PROJECT)
+            if WRONG_SOURCE_REPOSITORY in text:
+                issues.append(f"{rel}: cites wrong source repository {WRONG_SOURCE_REPOSITORY!r}")
+            if "no public repository URL" in text:
+                issues.append(f"{rel}: claims no public repository URL while config repository is set")
+        combined_banners = "\n".join(
+            path.read_text(encoding="utf-8") for path in PUBLICATION_BANNER_PATHS if path.exists()
+        )
+        if "public source archive pending" in combined_banners:
+            issues.append("current-facing banners still describe source archive as pending")
 
     return issues
 

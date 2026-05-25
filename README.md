@@ -1,7 +1,7 @@
 # Policy Entanglement in Active Inference
 
-> **Citation metadata:** public Zenodo DOI and public source archive pending
-> (live checks do not yet resolve the draft DOI or repository URL)
+> **Citation metadata:** public Zenodo DOI pending · source repository
+> [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement)
 > · cite via [`CITATION.cff`](CITATION.cff)
 
 A research project that develops a **tunable mean-field deformation
@@ -367,6 +367,7 @@ Lean-Formalization Treatments.* Active Inference Institute (working
 manuscript).
 
 > **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) currently
-> carries `doi: ""` and no public repository URL. The public archive and
-> source URL fields will be populated when the manuscript is deposited;
-> until then, please cite the working manuscript as above.
+> carries `doi: ""` (Zenodo deposit pending). Source code and reproducibility
+> artifacts live at
+> [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement).
+> Cite the working manuscript as above until a DOI is minted.

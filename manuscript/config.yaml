@@ -5,7 +5,7 @@
 paper:
   title: "Policy Entanglement in Active Inference"
   subtitle: "A Coupling-Parameter Deformation Framework for Multi-Stream Policy Posterior Distributions, Machine-Checked and Simulated with a Typed Float Boundary"
-  version: "0.3"
+  version: "1.0"
   date: ""
 
 authors:
@@ -19,7 +19,7 @@ publication:
   doi: ""
   journal: "Active Inference Journal"
   year: "2026"
-  repository_url: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
+  repository_url: "https://github.com/docxology/policy_entanglement"
   repository_label: "Policy Entanglement source repository"
 
 keywords:

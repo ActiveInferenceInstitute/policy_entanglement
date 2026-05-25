@@ -1,7 +1,7 @@
 # AGENTS.md — `actinf_policy_entanglement_lean`
 
-**Citation metadata:** public Zenodo DOI and public source archive pending
-(live checks do not yet resolve the draft DOI or repository URL)
+**Citation metadata:** public Zenodo DOI pending · source repository
+[`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement)
 · cite via [`CITATION.cff`](CITATION.cff) and [`manuscript/config.yaml`](manuscript/config.yaml).
 
 This is the agent / contributor onboarding guide for the

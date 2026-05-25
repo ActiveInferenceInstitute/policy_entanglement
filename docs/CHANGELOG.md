@@ -11,6 +11,22 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-25 (publication 1.0 prep — RedTeam metadata canon)
+
+**Publication canon.** `paper.version` → **1.0**; canonical source repository
+`https://github.com/docxology/policy_entanglement` aligned across
+`config.yaml`, abstract, `CITATION.cff`, `citations.yaml`, README, and
+AGENTS. Corrects the mistaken ActiveInferenceInstitute URL from the
+round-9 follow-up. Dual-license note: manuscript CC-BY-4.0, software MIT.
+
+**Oracle hardening.** `tests/test_status_docs.py` now rejects wrong-org
+repository URLs, stale “no public repository URL” prose, and pending-source
+banners when `repository_url` is populated.
+
+**Still pending for deposit:** Zenodo DOI mint (`publication.doi` empty by design).
+
+---
+
 ## Maintenance — 2026-05-25 (round-9 follow-up — audit docs, manuscript grounding, scenario/plot split)
 
 **RedTeam follow-up.** Thermo-nuclear executive summary refreshed to Round-9 baseline
@@ -27,8 +43,8 @@ symbols with identity checks.
 `validate_outputs.py`, `validate_manuscript.py` (including rendered token leak scan),
 and PDF validation exit 0. `release_readiness.json` green.
 
-**Manuscript pass.** `config.yaml` `publication.repository_url` aligned with abstract
-(`https://github.com/ActiveInferenceInstitute/policy_entanglement`); S08 anti-meta
+**Manuscript pass.** `config.yaml` `publication.repository_url` set (later corrected
+to `docxology/policy_entanglement` in publication 1.0 prep); S08 anti-meta
 trim (removed prior-version scaffolding); `docs/README.md` citation note updated.
 Part IV registry paths unchanged — sidecar names already match post–Round-9 layout.
 
