@@ -11,6 +11,31 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-25 (round-9 follow-up — audit docs, manuscript grounding, scenario/plot split)
+
+**RedTeam follow-up.** Thermo-nuclear executive summary refreshed to Round-9 baseline
+(1451 tests, 95.36% coverage); J5 footnote corrected (hyperparameters deferred closed
+in round-8). `simulation/AGENTS.md` disk-touch rule fixed; ISA documents
+`robustness_emit` test exception. Facade binding tests cover all `robustness.__all__`
+symbols with identity checks.
+
+**Round-10 split.** `robustness_scenarios.py` → `robustness_types.py` +
+`robustness_scenario_builders.py` (facade preserved). `robustness_plots.py` →
+`robustness_plots_one_axis.py` + `robustness_plots_sidecars.py` (facade preserved).
+
+**Publication pipeline.** Full `run_all.py --with-pdf --with-mathlib` re-run;
+`validate_outputs.py`, `validate_manuscript.py` (including rendered token leak scan),
+and PDF validation exit 0. `release_readiness.json` green.
+
+**Manuscript pass.** `config.yaml` `publication.repository_url` aligned with abstract
+(`https://github.com/ActiveInferenceInstitute/policy_entanglement`); S08 anti-meta
+trim (removed prior-version scaffolding); `docs/README.md` citation note updated.
+Part IV registry paths unchanged — sidecar names already match post–Round-9 layout.
+
+**Gates.** pytest 1451 passed / 1 skipped; regression 47/47; ruff + mypy clean.
+
+---
+
 ## Maintenance — 2026-05-25 (round-9 thermo-nuclear — robustness cluster split)
 
 **Robustness domain split.** `simulation/robustness.py` (~678 lines) decomposed

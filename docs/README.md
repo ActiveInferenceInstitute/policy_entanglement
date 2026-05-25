@@ -4,8 +4,8 @@ A complete technical reference for the Policy Entanglement project,
 organized into four topic subdirectories so a reader can find any
 concept in two clicks.
 
-> **Citation metadata:** public Zenodo DOI and public source archive pending
-> (live checks do not yet resolve the draft DOI or repository URL)
+> **Citation metadata:** public Zenodo DOI pending; source repository URL
+> is set in [`manuscript/config.yaml`](../manuscript/config.yaml) and the abstract
 > · cite via [`CITATION.cff`](../CITATION.cff)
 
 > **Latest generated audit:** live counts come from generated reports,
