@@ -9,3 +9,6 @@ when the live method stack changes. Current-facing claims belong in
 `README.md`, `AGENTS.md`, `docs/reference/`, `manuscript/`, and generated
 reports under `output/reports/`.
 
+| Snapshot | Role |
+| --- | --- |
+| [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md) | Round-7 code-quality audit + applied fixes |

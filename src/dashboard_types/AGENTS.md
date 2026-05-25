@@ -21,5 +21,5 @@ and [`scripts/build_dashboard.py`](../../scripts/build_dashboard.py).
 ## Tests
 
 [`tests/test_dashboard_types.py`](../../tests/test_dashboard_types.py),
-[`tests/test_coverage_95_final.py`](../../tests/test_coverage_95_final.py)
+[`tests/coverage/test_coverage_95_final.py`](../../tests/coverage/test_coverage_95_final.py)
 (`test_dashboard_types_main_success_and_failure`).

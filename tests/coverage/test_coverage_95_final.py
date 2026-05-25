@@ -24,7 +24,7 @@ from orchestration.build_pdf import main as build_pdf_main
 from orchestration.run_all import main as run_all_main
 from reporting import _interactive_dashboard_local as idash
 
-PROJECT = Path(__file__).resolve().parent.parent
+PROJECT = Path(__file__).resolve().parent.parent.parent
 
 KEYSTONE_BODY = "\n".join(f"theorem {name} : True := trivial" for name in mpg.KEYSTONE_THEOREMS)
 
@@ -515,7 +515,7 @@ def test_interactive_dashboard_local_full_render_bundle(tmp_path: Path, monkeypa
     assert set(paths) == {"html", "json", "summary", "invariants"}
     html = paths["html"].read_text(encoding="utf-8")
     assert "cdn.plot.ly" in html
-    assert "data-tab=\"raw\"" in html
+    assert 'data-tab="raw"' in html
     assert "CONTROL_VALUES" in html
 
     written = json.loads(paths["json"].read_text(encoding="utf-8"))

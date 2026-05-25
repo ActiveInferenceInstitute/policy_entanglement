@@ -14,25 +14,19 @@ from pathlib import Path
 
 import pytest
 
-from manuscript.output_gates import artifact_validators, csv_helpers, png_validation, pymdp_validators
+from manuscript.output_gates import csv_helpers, png_validation, pymdp_validators
 from manuscript.output_gates.constants import (
     MIN_FIGURE_HEIGHT,
     MIN_FIGURE_WIDTH,
     VALID_UNCERTAINTY_SEMANTICS,
 )
 from simulation import hyperparameters as H
+from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 
 PROJECT = Path(__file__).resolve().parent.parent
 SIM_DIR = PROJECT / "output" / "simulations"
 DATA_DIR = PROJECT / "output" / "data"
 FIG_DIR = PROJECT / "output" / "figures"
-
-
-def _patch_output_dir(monkeypatch: pytest.MonkeyPatch, root: Path) -> Path:
-    out = root if root.name == "output" else root / "output"
-    monkeypatch.setattr(artifact_validators, "OUTPUT_DIR", out)
-    monkeypatch.setattr(pymdp_validators, "OUTPUT_DIR", out)
-    return out
 
 
 def _stage_output_tree(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
@@ -64,9 +58,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_staged_output_tree_passes_all_pymdp_validators(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_staged_output_tree_passes_all_pymdp_validators(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _stage_output_tree(tmp_path, monkeypatch)
     validators = (
         pymdp_validators.validate_sweep,
@@ -102,10 +94,7 @@ def test_sweep_mi_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
             "lambda,mi_closed_form,mi_empirical,mi_residual,free_energy_u0,"
             "free_energy_u1,free_energy_u2,schmidt_rank,entanglement_entropy,phase\n"
         )
-        rows = [
-            f"{lam},0.1,0.1,0.0,0.0,0.0,0.0,2,0.5,p\n"
-            for lam in H.PARAMETER_SWEEP_LAMBDAS.values()
-        ]
+        rows = [f"{lam},0.1,0.1,0.0,0.0,0.0,0.0,2,0.5,p\n" for lam in H.PARAMETER_SWEEP_LAMBDAS.values()]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(header + "".join(rows), encoding="utf-8")
     fields, rows = _read_csv(path)
@@ -211,9 +200,7 @@ def test_robustness_nonmonotone_tc(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     assert pymdp_validators.validate_robustness_suite() >= 1
 
 
-def test_coupling_ablation_null_variant_positive_tc(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_coupling_ablation_null_variant_positive_tc(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = _stage_output_tree(tmp_path, monkeypatch)
     path = out / "simulations" / "pymdp_coupling_ablation.csv"
     fields, rows = _read_csv(path)
@@ -233,9 +220,7 @@ def test_marginal_null_control_bad_null_tc(tmp_path: Path, monkeypatch: pytest.M
     assert pymdp_validators.validate_marginal_null_control() >= 1
 
 
-def test_long_horizon_replicates_bad_habit_flag(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_long_horizon_replicates_bad_habit_flag(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = _stage_output_tree(tmp_path, monkeypatch)
     path = out / "simulations" / "pymdp_long_horizon_replicates.csv"
     fields, rows = _read_csv(path)
@@ -244,9 +229,7 @@ def test_long_horizon_replicates_bad_habit_flag(
     assert pymdp_validators.validate_long_horizon_replicates() >= 1
 
 
-def test_seed_diagnostics_wrong_failure_mode(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_seed_diagnostics_wrong_failure_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = _stage_output_tree(tmp_path, monkeypatch)
     path = out / "simulations" / "pymdp_long_horizon_seed_diagnostics.csv"
     fields, rows = _read_csv(path)
@@ -258,9 +241,7 @@ def test_seed_diagnostics_wrong_failure_mode(
     assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
 
 
-def test_threshold_sensitivity_nonmonotone_rates(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_threshold_sensitivity_nonmonotone_rates(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = _stage_output_tree(tmp_path, monkeypatch)
     path = out / "simulations" / "pymdp_long_horizon_threshold_sensitivity.csv"
     fields, rows = _read_csv(path)
@@ -592,9 +573,7 @@ def test_interaction_robustness_errors(tmp_path: Path, monkeypatch: pytest.Monke
     assert pymdp_validators.validate_interaction_robustness() >= 1
 
 
-def test_long_horizon_replicates_seed_and_summary_errors(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_long_horizon_replicates_seed_and_summary_errors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = _stage_output_tree(tmp_path, monkeypatch)
     path = out / "simulations" / "pymdp_long_horizon_replicates.csv"
     fields, rows = _read_csv(path)

@@ -96,6 +96,36 @@ def local_warning_issues(output: str) -> list[str]:
     return [line for line in output.splitlines() if re.search(r"warning: MathlibProofs\.lean:", line)]
 
 
+def _hydrate_mathlib_cache(mathlib_dir: Path) -> None:
+    """Best-effort download of Mathlib oleans before the proof build.
+
+    A cold `lake build` for this scaffold otherwise compiles all of Mathlib
+    from source. The cache step is not a substitute for the build or axiom
+    audit; it only provisions dependencies so the fail-closed gate can run in
+    the normal project-test path.
+    """
+    print(">>> lake exe cache get (hydrate Mathlib build cache)")
+    proc = subprocess.run(
+        ["lake", "exe", "cache", "get"],
+        cwd=str(mathlib_dir),
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode == 0:
+        print("OK  Mathlib cache hydrated.")
+        return
+
+    combined = (proc.stdout or "") + (proc.stderr or "")
+    print(
+        "!!! Mathlib cache hydration failed; falling back to lake build "
+        f"(exit {proc.returncode}).",
+        file=sys.stderr,
+    )
+    if combined.strip():
+        print(combined.strip()[-1200:], file=sys.stderr)
+
+
 def run_mathlib_proofs_gate(project_root: Path) -> int:
     mathlib_dir = project_root / "lean" / "MathlibProofs"
     mathlib_src = mathlib_dir / "MathlibProofs.lean"
@@ -104,8 +134,9 @@ def run_mathlib_proofs_gate(project_root: Path) -> int:
         print("MathlibProofs has no Lake scaffold yet; nothing to build.")
         return 0
 
-    print(">>> lake build (lean/MathlibProofs optional additive scaffold)")
     with mathlib_proofs_lock(project_root):
+        _hydrate_mathlib_cache(mathlib_dir)
+        print(">>> lake build (lean/MathlibProofs optional additive scaffold)")
         proc = subprocess.run(
             ["lake", "build"],
             cwd=str(mathlib_dir),

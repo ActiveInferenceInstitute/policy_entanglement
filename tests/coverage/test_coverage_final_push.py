@@ -9,15 +9,16 @@ import pytest
 
 from manuscript import validation_cli as vc
 from manuscript.output_gates import pymdp_validators
+from tests.output_gates_helpers import patch_output_dir
 
-PROJECT = Path(__file__).resolve().parent.parent
+PROJECT = Path(__file__).resolve().parent.parent.parent
 
 
 def test_pymdp_validators_optional_missing_are_ok(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     out = tmp_path / "output"
     (out / "data").mkdir(parents=True)
     (out / "simulations").mkdir(parents=True)
-    monkeypatch.setattr(pymdp_validators, "OUTPUT_DIR", out)
+    patch_output_dir(monkeypatch, tmp_path)
     assert pymdp_validators.validate_sweep() == 0
     assert pymdp_validators.validate_free_energy_bundle() == 0
     assert pymdp_validators.validate_multi_k_sweep() == 0
@@ -28,7 +29,7 @@ def test_pymdp_validate_sweep_missing_columns(tmp_path: Path, monkeypatch: pytes
     out.mkdir(parents=True)
     path = out / "parameter_sweep.csv"
     path.write_text("lambda,mi_closed_form\n0.0,0.1\n1.0,0.2\n", encoding="utf-8")
-    monkeypatch.setattr(pymdp_validators, "OUTPUT_DIR", tmp_path / "output")
+    patch_output_dir(monkeypatch, tmp_path)
     assert pymdp_validators.validate_sweep() >= 1
 
 
@@ -42,7 +43,7 @@ def test_pymdp_validate_sweep_too_few_rows(tmp_path: Path, monkeypatch: pytest.M
         "0.0,0.1,0.1,0.0,0.0,0.0,0.0,2,0.5,p\n",
         encoding="utf-8",
     )
-    monkeypatch.setattr(pymdp_validators, "OUTPUT_DIR", tmp_path / "output")
+    patch_output_dir(monkeypatch, tmp_path)
     assert pymdp_validators.validate_sweep() >= 1
 
 

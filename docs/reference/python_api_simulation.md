@@ -552,6 +552,19 @@ def run_robustness_pipeline(
 ) -> list[Path]
 ```
 
+### `revertibility_pipeline.py`
+
+Thin orchestration for the m-projection witness sweep. Consumed by
+``scripts/simulate_revertibility.py``.
+
+```python
+def revertibility_figure_metadata(project_root: Path, source_function: str, **extra: object) -> dict[str, str]
+def write_revertibility_csv(path: Path, records: Sequence[RevertibilityRecord]) -> None
+def write_revertibility_summary(path: Path, records: Sequence[RevertibilityRecord]) -> dict[str, float]
+def run_revertibility_pipeline(*, project_root: Path, fig_dir: Path | None = None, sim_dir: Path | None = None, data_dir: Path | None = None) -> Mapping[str, Path]
+def main(project_root: Path | None = None) -> int
+```
+
 ### `revertibility.py` (T3: m-projection back-to-mean-field witness)
 
 ```python

@@ -166,3 +166,44 @@ def test_revertibility_marginals_identity_pure_numpy() -> None:
         mp = m_projection(q)
         for m_orig, m_proj in zip(joint_marginals(q), joint_marginals(mp), strict=True):
             assert np.max(np.abs(m_orig - m_proj)) <= 1e-15
+
+
+def test_revertibility_pipeline_write_artifacts(tmp_path) -> None:
+    """CSV/JSON writers are pure I/O over witness records (no pymdp)."""
+    from simulation.revertibility import RevertibilityRecord
+    from simulation.revertibility_pipeline import write_revertibility_csv, write_revertibility_summary
+
+    records = [
+        RevertibilityRecord(
+            lam=0.0,
+            multi_information=0.0,
+            kl_q_to_mproj=0.0,
+            kl_identity_residual=0.0,
+            marginal_max_abs_diff=0.0,
+            marginals_match=True,
+            kl_identity_holds=True,
+            revertible=True,
+        ),
+        RevertibilityRecord(
+            lam=1.0,
+            multi_information=0.05,
+            kl_q_to_mproj=0.05,
+            kl_identity_residual=1e-16,
+            marginal_max_abs_diff=1e-15,
+            marginals_match=True,
+            kl_identity_holds=True,
+            revertible=True,
+        ),
+    ]
+    csv_path = tmp_path / "pymdp_revertibility.csv"
+    write_revertibility_csv(csv_path, records)
+    assert csv_path.exists()
+    text = csv_path.read_text()
+    assert "multi_information" in text
+    assert "0.000000" in text
+
+    summary_path = tmp_path / "revertibility_summary.json"
+    summary = write_revertibility_summary(summary_path, records)
+    assert summary_path.exists()
+    assert summary["revertibility_num_lambdas"] == 2.0
+    assert summary["revertibility_all_revertible"] == 1.0

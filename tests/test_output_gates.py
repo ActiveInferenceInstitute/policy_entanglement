@@ -14,19 +14,12 @@ from manuscript import output_gates
 from manuscript.output_gates import artifact_validators, csv_helpers, png_validation, pymdp_validators
 from manuscript.output_gates.constants import REQUIRED_VARIABLES
 from simulation import hyperparameters as H
+from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 
 PROJECT = Path(__file__).resolve().parent.parent
 FIG_DIR = PROJECT / "output" / "figures"
 SIM_DIR = PROJECT / "output" / "simulations"
 DATA_DIR = PROJECT / "output" / "data"
-
-
-def _patch_output_dir(monkeypatch: pytest.MonkeyPatch, root: Path) -> Path:
-    """Point gate modules at ``root`` (typically ``tmp_path / 'output'``)."""
-    out = root if root.name == "output" else root / "output"
-    monkeypatch.setattr(artifact_validators, "OUTPUT_DIR", out)
-    monkeypatch.setattr(pymdp_validators, "OUTPUT_DIR", out)
-    return out
 
 
 VALIDATOR_FUNCS = (

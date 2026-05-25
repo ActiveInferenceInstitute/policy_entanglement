@@ -7,11 +7,34 @@ internal review cadence; each round closes with a green
 authoritative — this file is the human-readable explanation of *why*
 those counts moved between rounds.
 
-*Last reviewed: 2026-05-23.*
+*Last reviewed: 2026-05-25.*
 
 ---
 
-## Maintenance — 2026-05-23 (round-6 thermo-nuclear completion — library refactor + 95% coverage gate)
+## Maintenance — 2026-05-25 (round-7 thermo-nuclear — validator decomposition + revertibility pipeline)
+
+**Manuscript / output-gate split.** `manuscript/validation.py` (795 lines)
+decomposed into `validation_report.py`, `validation_patterns.py`,
+`validation_scan.py`, and `validation_checks.py` with a backward-compatible
+facade. `output_gates/pymdp_validators.py` (807 lines) split into
+`sweep`, `long_horizon`, `revertibility`, and `robustness` domain modules
+plus a 41-line re-export facade.
+
+**Revertibility pipeline.** CSV/JSON/figure orchestration moved from
+`scripts/simulate_revertibility.py` into
+`simulation/revertibility_pipeline.py`; script is now a thin bootstrap
+wrapper matching `simulate_pymdp.py`.
+
+**Test hygiene.** Six `test_coverage_*.py` modules relocated to
+`tests/coverage/`; shared `tests/output_gates_helpers.patch_output_dir`
+patches all pymdp gate submodules. Abstract gains `[[SECREF:notation]]`
+cross-reference required by notation glossary gate.
+
+**Verification.** **1410 passed**, **`src/` coverage 95.25%**,
+regression gate green, audit at
+[`docs/_audit/THERMO_NUCLEAR_REVIEW_2026-05-25.md`](_audit/THERMO_NUCLEAR_REVIEW_2026-05-25.md).
+
+---
 
 **Library split.** Business logic moved from monolithic scripts into
 `src/`: `manuscript/output_gates/` (validators package),

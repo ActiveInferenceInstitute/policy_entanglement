@@ -16,7 +16,7 @@ from manuscript import readiness as readiness_mod
 from orchestration import build_pdf as bp
 from orchestration.run_all import main as run_all_main
 
-PROJECT = Path(__file__).resolve().parent.parent
+PROJECT = Path(__file__).resolve().parent.parent.parent
 
 
 def _seed_labels_yaml(project_root: Path) -> None:

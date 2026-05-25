@@ -25,7 +25,7 @@ from orchestration.build_pdf import (
 )
 from orchestration.run_all import StageResult, _run_parallel_batch, _run_serial, _spawn
 
-PROJECT = Path(__file__).resolve().parent.parent
+PROJECT = Path(__file__).resolve().parent.parent.parent
 
 
 def test_validation_cli_report_issues_prints_every_branch(capsys) -> None:

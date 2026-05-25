@@ -27,7 +27,7 @@ bare-import-friendly entry.
   `_coverage_percent_from_json`, `_count_invariants`, `_coverage_fail_under`) accept all paths as
   arguments and have no module-level side effects — they are exercised by
   [`tests/test_regression_gate.py`](../../tests/test_regression_gate.py) and
-  [`tests/test_coverage_95_final.py`](../../tests/test_coverage_95_final.py).
+  [`tests/coverage/test_coverage_95_final.py`](../../tests/coverage/test_coverage_95_final.py).
 * `gate()` derives `output/reports/*` paths from `project_root` and runs
   `build_lean.py` via `subprocess` (no Lean import dependency in this layer).
 * `CRITICAL_COVERAGE_MODULES` is the per-module coverage floor for **five**

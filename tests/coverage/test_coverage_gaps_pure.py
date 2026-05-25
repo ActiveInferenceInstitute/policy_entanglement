@@ -51,7 +51,7 @@ from manuscript.validation import (
     validate_manuscript_tree,
 )
 
-MANUSCRIPT = Path(__file__).resolve().parent.parent / "manuscript"
+MANUSCRIPT = Path(__file__).resolve().parent.parent.parent / "manuscript"
 
 
 # ---------------------------------------------------------------------------

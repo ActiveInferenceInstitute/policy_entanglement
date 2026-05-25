@@ -32,7 +32,7 @@ Library-refactor coverage tests (import `src/` directly):
 | `test_build_gate_unit.py` | `lean.build_gate` scanners |
 | `test_validation_cli_gate.py` | `manuscript.validation_cli` |
 | `test_orchestration_unit.py` | `orchestration.build_pdf`, `orchestration.run_all` |
-| `test_coverage_library_gaps.py` | cross-cutting library branches |
+| `coverage/test_coverage_library_gaps.py` | cross-cutting library branches |
 
 ## Mathlib / Lean tests
 

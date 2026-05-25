@@ -184,7 +184,13 @@ def assign_within_section_numbers(text: str
 def retag_display_math(text: str, section_number: str) -> str
 ```
 
-### `validation.py`
+### `validation.py` (facade)
+
+Implementation split across ``validation_report.py`` (report model),
+``validation_patterns.py`` (regex constants), ``validation_scan.py``
+(section discovery and hardcoded-ref scanners), and
+``validation_checks.py`` (field validators). The public import surface
+below is unchanged.
 
 ```python
 @dataclass
@@ -485,10 +491,48 @@ def rows_match_grid(
 ) -> bool
 ```
 
-#### `output_gates/pymdp_validators.py`
+#### `output_gates/pymdp_validators.py` (facade)
 
-pymdp simulation CSV sidecar validators. Re-exported through
-``artifact_validators`` and ``manuscript.output_gates``.
+Re-exports pymdp sidecar validators from domain modules below.
+Import surface unchanged for ``scripts/validate_outputs.py`` and tests.
+
+#### `output_gates/pymdp_sweep_validators.py`
+
+```python
+def validate_sweep() -> int
+def validate_free_energy_bundle() -> int
+def validate_multi_k_sweep() -> int
+```
+
+#### `output_gates/pymdp_long_horizon_validators.py`
+
+```python
+def validate_long_horizon() -> int
+def validate_long_horizon_replicates() -> int
+def validate_long_horizon_seed_diagnostics() -> int
+def validate_long_horizon_threshold_sensitivity() -> int
+```
+
+#### `output_gates/pymdp_revertibility_validators.py`
+
+```python
+def validate_revertibility() -> int
+def validate_run_log() -> int
+```
+
+#### `output_gates/pymdp_robustness_validators.py`
+
+```python
+def validate_robustness_suite() -> int
+def validate_coupling_ablation() -> int
+def validate_marginal_null_control() -> int
+def validate_interaction_robustness() -> int
+```
+
+#### Legacy pymdp validator surface (re-exported)
+
+All ``validate_*`` entry points above are also available via
+``from manuscript.output_gates import pymdp_validators``:
 
 ```python
 def validate_sweep() -> int
