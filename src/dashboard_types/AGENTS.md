@@ -8,7 +8,12 @@ and [`scripts/build_dashboard.py`](../../scripts/build_dashboard.py).
 
 | File | Role |
 | --- | --- |
-| [`dashboard.py`](dashboard.py) | `Panel`, `Control`, `Invariant` datatypes; `build_dashboard_payload`, `build_dashboard`, CLI `main` |
+| [`types.py`](types.py) | `Panel`, `Control`, `Invariant` datatypes and `evaluate()` dispatch |
+| [`paths.py`](paths.py) | Project root and `output/` path constants |
+| [`cli.py`](cli.py) | `parse_dashboard_args` |
+| [`payload.py`](payload.py) | `build_dashboard_payload` — numerical sweep over Lean mirrors |
+| [`panels.py`](panels.py) | `build_dashboard`, `write_dashboard`, CLI `main` |
+| [`dashboard.py`](dashboard.py) | Backward-compatible re-export facade |
 
 ## Conventions
 

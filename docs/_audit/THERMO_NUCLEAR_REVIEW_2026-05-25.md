@@ -6,7 +6,7 @@
 
 ## Executive summary
 
-Round-7 decomposed the two largest remaining Python monoliths (`pymdp_validators.py` at 807 lines, `validation.py` at 795 lines), moved revertibility script I/O into `src/simulation/revertibility_pipeline.py`, and relocated six coverage-meta test modules under `tests/coverage/`. All 1,410 tests pass; `src/` coverage **95.25%** (floor 95%).
+Round-7 decomposed the two largest remaining Python monoliths (`pymdp_validators.py` at 807 lines, `validation.py` at 795 lines), moved revertibility script I/O into `src/simulation/revertibility_pipeline.py`, relocated six coverage-meta test modules under `tests/coverage/`, and completed follow-on splits (dashboard package, readiness emitters, JSON sidecar registry, shared TC helper wiring). **1417** tests pass; `src/` coverage **95.34%** (floor 95%).
 
 ## Findings (rubric order)
 
@@ -25,8 +25,9 @@ No other structural regressions identified.
 | J1 | HIGH | `output_gates/pymdp_validators.py` — 807 lines, 13 validators | Split into sweep / long-horizon / revertibility / robustness modules; 41-line facade | **Applied** |
 | J2 | HIGH | `manuscript/validation.py` — 795 lines mixed scan + check + tree | Split into `validation_report`, `validation_patterns`, `validation_scan`, `validation_checks`; 210-line facade | **Applied** |
 | J3 | MEDIUM | `scripts/simulate_revertibility.py` — 165 lines inline CSV/JSON/plot I/O | `simulation/revertibility_pipeline.py` + 48-line script wrapper | **Applied** |
-| J4 | MEDIUM | Six `test_coverage_*.py` at repo `tests/` root (~2.2k LOC meta-tests) | Move to `tests/coverage/`; shared `output_gates_helpers.py` | **Applied** |
-| J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Domain split after hyperparameters ISA | **Deferred** |
+| J4 | MEDIUM | Six `test_coverage_*.py` at repo `tests/` root (~2.2k LOC meta-tests) | Move to `tests/coverage/`; `tests/coverage/README.md`; shared `output_gates_helpers.py` | **Applied** |
+| J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (partial — `hyperparameters.py` still deferred) |
+| J8 | HIGH | `validate_free_energy_bundle` duplicated TC/decomposition loops | `validate_tc_decomposition_group` with `check_lhs_rhs` + `finite_columns` | **Applied** |
 | J6 | MEDIUM | `reporting/_interactive_dashboard_local.py` (646) duplicates template infra | Prefer `infrastructure.reporting` when on PYTHONPATH | **Deferred** |
 | J7 | LOW | `simulation/robustness*.py` four-module cluster | Consolidate orchestration vs stats after robustness ISA | **Deferred** |
 
@@ -54,7 +55,10 @@ None introduced in round-7. Facade re-exports preserve import paths; no new ad-h
 | `validation_checks.py` | — | 315 |
 | `validation_report.py` | — | 81 |
 | `validation_patterns.py` | — | 42 |
-| `simulate_revertibility.py` | 165 | 48 |
+| `simulate_revertibility.py` | 165 | 30 |
+| `dashboard.py` (facade) | 776 | 78 |
+| `dashboard_types/panels.py` | — | 483 |
+| `readiness_emit.py` | — | 210 |
 
 No file crosses the 1k-line rubric threshold.
 
@@ -70,8 +74,8 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 
 | Gate | Result |
 |------|--------|
-| `pytest tests/ --cov=src --cov-fail-under=95` | 1410 passed, 1 skipped; **95.25%** |
-| `scripts/regression_gate.py` | green (baseline refresh on commit) |
+| `pytest tests/ --cov=src --cov-fail-under=95` | 1417 passed, 1 skipped; **95.34%** |
+| `scripts/regression_gate.py` | green (baseline refreshed) |
 | `ruff check src/ scripts/ tests/` | clean |
 | `mypy src/ scripts/` | clean |
 

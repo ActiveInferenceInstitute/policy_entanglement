@@ -14,11 +14,16 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | `bibliography.py` | `auto_bibliography(citations, topic)` — emits Markdown bullet list grouped by `topic:`; powers `[[CITELIST:topic]]`. |
 | `renderer.py` | The `render_section` / `render_all` entry points: resolve every token and run the equation auto-numbering pre-pass; called by [`scripts/inject_manuscript_variables.py`](../../scripts/inject_manuscript_variables.py). |
 | `index_generator.py` | Auto-generated TOC builder consumed by [`scripts/generate_index.py`](../../scripts/generate_index.py). |
-| `validation.py` | Pure-function manuscript validators: undefined tokens, broken hyperlinks, missing image files, out-of-range numeric variables, hardcoded section refs, missing top-level headings, empty alt-text captions. |
+| `validation.py` | Tree orchestrator facade; delegates to `validation_{report,patterns,scan,checks}.py`. |
+| `validation_report.py` | `ManuscriptValidationReport` dataclass and provenance class constants. |
+| `validation_patterns.py` | Shared regex patterns for headings, hyperlinks, hardcoded refs. |
+| `validation_scan.py` | Section discovery, hardcoded-ref scans, rendered-token leak checks. |
+| `validation_checks.py` | Per-check validators (tokens, figures, Lean wiring, hyperlinks). |
 | `validation_cli.py` | Library implementation of [`scripts/validate_manuscript.py`](../../scripts/validate_manuscript.py) (tree validation + rendered-token leaks + status gates). |
 | `status.py` / `status_patterns.py` | Live project-status loading and stale-pattern detectors for docs and gates. |
 | `pdf_validation.py` | PDF / TeX / log validation helpers consumed by [`scripts/validate_pdf.py`](../../scripts/validate_pdf.py). |
-| `readiness.py` | Release-readiness orchestration consumed by [`scripts/readiness_report.py`](../../scripts/readiness_report.py). |
+| `readiness.py` | Release-readiness orchestration; emitters in `readiness_emit.py`. |
+| `readiness_emit.py` | Markdown/JSON/index writers for reviewer release artifacts. |
 | `theorem_map.py` | Four-track theorem wiring table generator for [`scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). |
 | `variables.py` | `build_manuscript_variables` / `write_manuscript_variables` for [`scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py). |
 | `stale_patterns.py` | Shared stale-reference regex constants for status and validation gates. |

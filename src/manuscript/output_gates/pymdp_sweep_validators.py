@@ -14,6 +14,7 @@ from manuscript.output_gates.csv_helpers import (
 from manuscript.output_gates.sweep_validation import (
     finite,
     validate_lambda_zero_mean_field_row,
+    validate_tc_decomposition_group,
 )
 from simulation import hyperparameters as H  # noqa: N812
 
@@ -80,7 +81,6 @@ def validate_free_energy_bundle() -> int:
         report_fail("fewer than 2 rows")
         return 1
     fail = 0
-    fail += rows_match_grid(rows, H.PYMDP_SWEEP_LAMBDAS, label="pymdp free-energy bundle")
     zero_tol = float(H.PYMDP_COUPLING_ZERO_TOLERANCE)
     tc_zero_tol = float(H.PYMDP_TC_ZERO_TOLERANCE)
     entropy_tol = float(H.PYMDP_ENTROPY_ADD_TOLERANCE)
@@ -94,37 +94,23 @@ def validate_free_energy_bundle() -> int:
             tc_zero_tol=tc_zero_tol,
             entropy_tol=entropy_tol,
         )
-    for r in rows:
-        tc = finite(r["total_correlation"])
-        h_gap = finite(r["marginal_entropy_sum"]) - finite(r["joint_entropy"])
-        if tc < -zero_tol:
-            report_fail(f"λ={r['lambda']}: TC = {r['total_correlation']} < 0")
-            fail += 1
-        if abs(h_gap - tc) > entropy_tol:
-            report_fail(f"λ={r['lambda']}: H-gap {h_gap} != TC {tc}")
-            fail += 1
-        lhs = finite(r["decomposition_lhs"])
-        rhs = finite(r["decomposition_rhs"])
-        residual = finite(r["decomposition_residual"])
-        if abs(lhs - rhs) > decomp_tol:
-            report_fail(f"λ={r['lambda']}: decomposition lhs/rhs gap {abs(lhs - rhs)}")
-            fail += 1
-        if residual > decomp_tol:
-            report_fail(f"λ={r['lambda']}: decomposition residual {residual}")
-            fail += 1
-        for col in (
+    fail += validate_tc_decomposition_group(
+        rows,
+        label="pymdp free-energy bundle",
+        grid=H.PYMDP_SWEEP_LAMBDAS,
+        tol=decomp_tol,
+        entropy_tol=entropy_tol,
+        zero_tol=zero_tol,
+        check_lhs_rhs=True,
+        finite_columns=(
             "vfe_total",
             "joint_entropy",
             "marginal_entropy_sum",
             "coupling_term",
             "decomposition_lhs",
             "decomposition_rhs",
-        ):
-            try:
-                finite(r[col])
-            except ValueError as exc:
-                report_fail(f"λ={r['lambda']}: {col} invalid ({exc})")
-                fail += 1
+        ),
+    )
     if fail == 0:
         report_ok(f"{len(rows)} rows; λ=0 baseline + TC ≥ 0 everywhere")
     return fail

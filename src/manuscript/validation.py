@@ -20,8 +20,24 @@ from .validation_checks import (
     validate_undefined_tokens,
     validate_variables_against_ranges,
 )
-from .validation_patterns import HEADING_RE
-from .validation_report import ManuscriptValidationReport
+from .validation_patterns import (
+    FENCED_CODE_RE,
+    FORBIDDEN_CODE_FENCE_TOKEN_RE,
+    HARDCODED_APPENDIX_RE,
+    HARDCODED_FIG_EQ_RE,
+    HARDCODED_SEC_RE,
+    HARDCODED_SEC_WORD_RE,
+    HARDCODED_TABLE_RE,
+    HARDCODED_THM_RE,
+    HEADING_RE,
+    HYPERLINK_RE,
+    SECTION_FILES_RE,
+    SECTION_REF_RE,
+)
+from .validation_report import (
+    VARIABLE_PROVENANCE_CLASSES,
+    ManuscriptValidationReport,
+)
 from .validation_scan import (
     classify_variable_provenance,
     collect_section_subheadings,
@@ -137,24 +153,6 @@ def validate_manuscript_tree(
         report.hardcoded_rendered_source_fields.update(strict_registry_hits)
     return report
 
-
-# Backward-compatible re-exports for existing import paths.
-from .validation_patterns import (  # noqa: E402
-    FENCED_CODE_RE,
-    FORBIDDEN_CODE_FENCE_TOKEN_RE,
-    HARDCODED_APPENDIX_RE,
-    HARDCODED_FIG_EQ_RE,
-    HARDCODED_SEC_RE,
-    HARDCODED_SEC_WORD_RE,
-    HARDCODED_TABLE_RE,
-    HARDCODED_THM_RE,
-    HYPERLINK_RE,
-    SECTION_FILES_RE,
-    SECTION_REF_RE,
-)
-from .validation_report import (  # noqa: E402
-    VARIABLE_PROVENANCE_CLASSES,
-)
 
 __all__ = [
     "FENCED_CODE_RE",

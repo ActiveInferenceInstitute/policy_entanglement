@@ -34,6 +34,16 @@ cross-reference required by notation glossary gate.
 regression gate green, audit at
 [`docs/_audit/THERMO_NUCLEAR_REVIEW_2026-05-25.md`](_audit/THERMO_NUCLEAR_REVIEW_2026-05-25.md).
 
+**Round-7 completion (same day).** Wired `validate_tc_decomposition_group`
+through `pymdp_sweep_validators.validate_free_energy_bundle` (shared TC /
+lhs-rhs / finiteness checks). JSON sidecar readers consolidated via
+`_JSON_SIDECAR_REGISTRY` in `variables.py`. Dashboard split into
+`types` / `paths` / `cli` / `payload` / `panels` with facade
+`dashboard.py`. Readiness emitters moved to `readiness_emit.py`.
+`simulate_revertibility.py` reduced to bootstrap + `main()` only.
+Single import surface on `validation.py`; `tests/coverage/README.md`
+documents meta-test ownership.
+
 ---
 
 **Library split.** Business logic moved from monolithic scripts into

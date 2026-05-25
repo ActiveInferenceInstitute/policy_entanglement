@@ -22,6 +22,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -393,65 +394,28 @@ def _numeric_only_json_sidecar(path: Path, sentinel_key: str) -> dict[str, objec
     return out
 
 
-def _multi_k_facts(project_root: Path) -> dict[str, object]:
-    return _numeric_only_json_sidecar(project_root / "output" / "data" / "multi_k_summary.json", "multi_k")
+SidecarReader = Callable[[Path, str], dict[str, object]]
+
+_JSON_SIDECAR_REGISTRY: tuple[tuple[str, str, SidecarReader], ...] = (
+    ("multi_k", "output/data/multi_k_summary.json", _numeric_only_json_sidecar),
+    ("long_horizon", "output/data/long_horizon_summary.json", _numeric_only_json_sidecar),
+    ("revertibility", "output/data/revertibility_summary.json", _numeric_only_json_sidecar),
+    ("robustness", "output/data/robustness_summary.json", _scalar_json_sidecar),
+    ("coupling_ablation", "output/data/coupling_ablation_summary.json", _scalar_json_sidecar),
+    ("marginal_null_control", "output/data/marginal_null_control_summary.json", _scalar_json_sidecar),
+    ("long_horizon_replicates", "output/data/long_horizon_replicates_summary.json", _scalar_json_sidecar),
+    ("interaction_robustness", "output/data/interaction_robustness_summary.json", _scalar_json_sidecar),
+    ("btai", "output/data/btai_baseline.json", _scalar_json_sidecar),
+    ("adversarial", "output/data/adversarial_sweep.json", _scalar_json_sidecar),
+)
 
 
-def _long_horizon_facts(project_root: Path) -> dict[str, object]:
-    return _numeric_only_json_sidecar(
-        project_root / "output" / "data" / "long_horizon_summary.json",
-        "long_horizon",
-    )
-
-
-def _revertibility_facts(project_root: Path) -> dict[str, object]:
-    return _numeric_only_json_sidecar(
-        project_root / "output" / "data" / "revertibility_summary.json",
-        "revertibility",
-    )
-
-
-def _robustness_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(
-        project_root / "output" / "data" / "robustness_summary.json",
-        "robustness",
-    )
-
-
-def _coupling_ablation_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(
-        project_root / "output" / "data" / "coupling_ablation_summary.json",
-        "coupling_ablation",
-    )
-
-
-def _marginal_null_control_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(
-        project_root / "output" / "data" / "marginal_null_control_summary.json",
-        "marginal_null_control",
-    )
-
-
-def _long_horizon_replicate_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(
-        project_root / "output" / "data" / "long_horizon_replicates_summary.json",
-        "long_horizon_replicates",
-    )
-
-
-def _interaction_robustness_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(
-        project_root / "output" / "data" / "interaction_robustness_summary.json",
-        "interaction_robustness",
-    )
-
-
-def _btai_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(project_root / "output" / "data" / "btai_baseline.json", "btai")
-
-
-def _adversarial_facts(project_root: Path) -> dict[str, object]:
-    return _scalar_json_sidecar(project_root / "output" / "data" / "adversarial_sweep.json", "adversarial")
+def _json_sidecar_facts(project_root: Path) -> dict[str, object]:
+    """Load every registered JSON sidecar into the manuscript-variable namespace."""
+    facts: dict[str, object] = {}
+    for sentinel_key, rel_path, reader in _JSON_SIDECAR_REGISTRY:
+        facts.update(reader(project_root / rel_path, sentinel_key))
+    return facts
 
 
 def _gnn_facts(project_root: Path) -> dict[str, object]:
@@ -574,16 +538,7 @@ def build_manuscript_variables(project_root: Path | None = None) -> dict[str, An
     facts.update(_registry_facts(root))
     facts.update(_tensor_train_facts())
     facts.update(_pymdp_facts())
-    facts.update(_multi_k_facts(root))
-    facts.update(_long_horizon_facts(root))
-    facts.update(_revertibility_facts(root))
-    facts.update(_robustness_facts(root))
-    facts.update(_coupling_ablation_facts(root))
-    facts.update(_marginal_null_control_facts(root))
-    facts.update(_interaction_robustness_facts(root))
-    facts.update(_long_horizon_replicate_facts(root))
-    facts.update(_btai_facts(root))
-    facts.update(_adversarial_facts(root))
+    facts.update(_json_sidecar_facts(root))
     facts.update(_gnn_facts(root))
     facts.update(_sentinel_list_facts())
     # Hyperparameters last so their stable shape is preserved verbatim.

@@ -9,10 +9,11 @@ without pymdp, a live Lean toolchain, or external CLIs -- the
 pymdp/Lean/CLI surface is the documented CLAUDE.md rotating-project
 exception and is intentionally CI-only.
 
-Source lines targeted (from --cov-report=term-missing):
+Source lines targeted (refresh via ``pytest --cov-report=term-missing``):
 
-* manuscript/bibliography.py   38, 100-101
-* manuscript/validation.py     107-108, 137-138, 142, 536, 608, 643, 654
+* manuscript/validation_checks.py, validation_scan.py — hyperlink and scan branches
+* manuscript/output_gates/pymdp_sweep_validators.py — TC helper wiring
+* manuscript/bibliography.py — citation grouping edge cases
 * manuscript/_resolvers.py     61, 64, 332-333
 * manuscript/renderer.py       316, 341, 446, 450, 497
 * manuscript/pdf_validation.py 213-214, 259-260

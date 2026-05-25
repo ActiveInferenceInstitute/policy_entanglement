@@ -23,27 +23,7 @@ from _bootstrap import ensure_project_paths  # noqa: E402
 
 ensure_project_paths(project_root=PROJECT_ROOT)
 
-from simulation.revertibility_pipeline import (  # noqa: E402
-    DATA_DIR,
-    FIG_DIR,
-    SIM_DIR,
-    main,
-    run_revertibility_pipeline,
-    write_revertibility_csv,
-    write_revertibility_summary,
-)
-
-__all__ = [
-    "DATA_DIR",
-    "FIG_DIR",
-    "PROJECT_ROOT",
-    "SIM_DIR",
-    "main",
-    "run_revertibility_pipeline",
-    "write_revertibility_csv",
-    "write_revertibility_summary",
-]
-
+from simulation.revertibility_pipeline import main  # noqa: E402
 
 if __name__ == "__main__":
     sys.exit(main(project_root=PROJECT_ROOT))

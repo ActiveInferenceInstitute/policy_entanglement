@@ -12,9 +12,9 @@ import pytest
 
 from manuscript import output_gates
 from manuscript.output_gates import artifact_validators, csv_helpers, png_validation, pymdp_validators
+from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 from manuscript.output_gates.constants import REQUIRED_VARIABLES
 from simulation import hyperparameters as H
-from tests.output_gates_helpers import patch_output_dir as _patch_output_dir
 
 PROJECT = Path(__file__).resolve().parent.parent
 FIG_DIR = PROJECT / "output" / "figures"
