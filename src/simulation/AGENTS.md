@@ -15,7 +15,7 @@ Companion to the analytical mirrors in `src/lean/`.
 | `rollout.py` | `RolloutStep`, `Rollout`, `simulate_coupled_rollout` |
 | `sweep.py` | `LambdaSweepResult`, `lambda_sweep`, `total_correlation_curve`, `marginal_trajectory` |
 | `statistics.py` | Reduce a list of `FreeEnergyBundle` records to a flat `BundleSummary` and a `QuantileEnvelope` over multi-seed sweeps; emit `[[VAR:...]]`-ready scalars via `summary_to_var_dict`. |
-| `logging_utils.py` | Append-only JSONL `RunLogger` for structured pymdp run records; the **only** module in this subpackage that touches disk.  Disabled with `PYMDP_RUN_LOG_DISABLED=1`. |
+| `logging_utils.py` | Append-only JSONL `RunLogger` for structured pymdp run records. Disabled with `PYMDP_RUN_LOG_DISABLED=1`. |
 | `hyperparameters.py` | **Facade** — import hyperparameters from here only. Re-exports domain modules below and hosts `grid_count()` / `figure_hyperparameter_summary()`. |
 | `hyperparameters_grids.py` | `FigureGrid`, analytical figure λ/utility grids, `FIGURE_GLOBAL_SEED`. |
 | `hyperparameters_pymdp.py` | pymdp sweep/rollout/ensemble knobs, `MULTI_K_*`, `LONG_HORIZON_*`. |
@@ -26,7 +26,9 @@ Companion to the analytical mirrors in `src/lean/`.
 | `multi_k_experiments.py` | $K \in \{3, 4, 5\}$ ensemble sweeps for the multi-stream Ising case (the K > 2 generalization). |
 | `revertibility.py` | $m$-projection revertibility witness: two independent code paths on $D_{\mathrm{KL}}(q\,\|\,\hat m(q)) = I(q)$. |
 | `robustness.py` | **Facade** — import robustness helpers from here only. Re-exports compute, scenario dataclasses, and Wilson stats. |
-| `robustness_scenarios.py` | Scenario dataclasses, `robustness_scenarios()`, `interaction_robustness_scenarios()`, `coupling_ablation_spec()`. |
+| `robustness_types.py` | Frozen dataclasses for robustness rows and summaries. |
+| `robustness_scenario_builders.py` | Scenario lists, `_spec_for_*`, `coupling_ablation_spec()`, `_product_of_marginals()`. |
+| `robustness_scenarios.py` | Stable re-export path for types + builders (import here, not submodules). |
 | `robustness_core.py` | Shared λ-loop (`rows_for_spec`) for one-axis, interaction, and ablation sweeps. |
 | `robustness_one_axis.py` | `run_robustness_suite`, `summarize_robustness_rows`. |
 | `robustness_interaction.py` | Two-axis interaction suite run/summarize. |

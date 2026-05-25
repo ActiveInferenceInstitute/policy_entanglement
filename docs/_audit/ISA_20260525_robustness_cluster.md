@@ -15,6 +15,10 @@ External code imports from `simulation.robustness` only. Submodules under
 `simulation/robustness_*.py` are package-internal unless re-exported by the
 facade.
 
+**Test exception:** `tests/test_robustness_runner.py` may import
+`simulation.robustness_emit` directly for CSV/metadata round-trip tests;
+production scripts and library code stay on the facade or runner entrypoint.
+
 ## Layering
 
 ```text

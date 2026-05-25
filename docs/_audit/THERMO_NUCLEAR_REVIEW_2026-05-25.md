@@ -6,7 +6,7 @@
 
 ## Executive summary
 
-Round-7 decomposed the two largest remaining Python monoliths (`pymdp_validators.py` at 807 lines, `validation.py` at 795 lines), moved revertibility script I/O into `src/simulation/revertibility_pipeline.py`, relocated six coverage-meta test modules under `tests/coverage/`, and completed follow-on splits (dashboard package, readiness emitters, JSON sidecar registry, shared TC helper wiring). **1417** tests pass; `src/` coverage **95.34%** (floor 95%).
+Round-7 decomposed the two largest remaining Python monoliths (`pymdp_validators.py` at 807 lines, `validation.py` at 795 lines), moved revertibility script I/O into `src/simulation/revertibility_pipeline.py`, relocated six coverage-meta test modules under `tests/coverage/`, and completed follow-on splits (dashboard package, readiness emitters, JSON sidecar registry, shared TC helper wiring). **Latest gate (round-9):** **1428** tests pass; `src/` coverage **95.36%** (floor 95%). See Round-9 verification below for the current baseline.
 
 ## Findings (rubric order)
 
@@ -26,7 +26,7 @@ No other structural regressions identified.
 | J2 | HIGH | `manuscript/validation.py` — 795 lines mixed scan + check + tree | Split into `validation_report`, `validation_patterns`, `validation_scan`, `validation_checks`; 210-line facade | **Applied** |
 | J3 | MEDIUM | `scripts/simulate_revertibility.py` — 165 lines inline CSV/JSON/plot I/O | `simulation/revertibility_pipeline.py` + 48-line script wrapper | **Applied** |
 | J4 | MEDIUM | Six `test_coverage_*.py` at repo `tests/` root (~2.2k LOC meta-tests) | Move to `tests/coverage/`; `tests/coverage/README.md`; shared `output_gates_helpers.py` | **Applied** |
-| J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (partial — `hyperparameters.py` still deferred) |
+| J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (round-7 dashboard split; `hyperparameters.py` deferred item closed round-8) |
 | J8 | HIGH | `validate_free_energy_bundle` duplicated TC/decomposition loops | `validate_tc_decomposition_group` with `check_lhs_rhs` + `finite_columns` | **Applied** |
 | J6 | MEDIUM | `reporting/_interactive_dashboard_local.py` (646) duplicates template infra | Prefer `infrastructure.reporting` when on PYTHONPATH | **Applied** (round-8) |
 | J7 | LOW | `simulation/robustness*.py` four-module cluster | Consolidate orchestration vs stats after robustness ISA | **Applied** (round-9) |

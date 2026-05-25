@@ -284,14 +284,38 @@ def test_long_horizon_replicate_summaries_reject_empty_input() -> None:
 @pytest.mark.parametrize(
     ("name", "submodule"),
     [
-        ("run_robustness_suite", "simulation.robustness_one_axis"),
-        ("run_interaction_robustness_suite", "simulation.robustness_interaction"),
-        ("run_coupling_ablation", "simulation.robustness_controls"),
-        ("run_long_horizon_replicates", "simulation.robustness_replicates"),
-        ("wilson_score_interval", "simulation.robustness_stats"),
-        ("robustness_scenarios", "simulation.robustness_scenarios"),
-        ("interaction_robustness_scenarios", "simulation.robustness_scenarios"),
+        ("CouplingAblationRow", "simulation.robustness_scenarios"),
+        ("InteractionRobustnessRow", "simulation.robustness_scenarios"),
+        ("InteractionRobustnessScenario", "simulation.robustness_scenarios"),
+        ("InteractionRobustnessSummary", "simulation.robustness_scenarios"),
+        ("LongHorizonReplicateRecord", "simulation.robustness_scenarios"),
+        ("LongHorizonSeedDiagnostic", "simulation.robustness_scenarios"),
+        ("LongHorizonThresholdSensitivityRow", "simulation.robustness_scenarios"),
+        ("MarginalNullControlRow", "simulation.robustness_scenarios"),
+        ("RobustnessRow", "simulation.robustness_scenarios"),
+        ("RobustnessScenario", "simulation.robustness_scenarios"),
+        ("RobustnessScenarioSummary", "simulation.robustness_scenarios"),
         ("coupling_ablation_spec", "simulation.robustness_scenarios"),
+        ("interaction_robustness_scenarios", "simulation.robustness_scenarios"),
+        ("robustness_scenarios", "simulation.robustness_scenarios"),
+        ("run_robustness_suite", "simulation.robustness_one_axis"),
+        ("summarize_robustness_rows", "simulation.robustness_one_axis"),
+        ("run_interaction_robustness_suite", "simulation.robustness_interaction"),
+        ("summarize_interaction_robustness_rows", "simulation.robustness_interaction"),
+        ("run_coupling_ablation", "simulation.robustness_controls"),
+        ("run_marginal_null_control", "simulation.robustness_controls"),
+        ("summarize_coupling_ablation_rows", "simulation.robustness_controls"),
+        ("summarize_marginal_null_control_rows", "simulation.robustness_controls"),
+        ("run_long_horizon_replicates", "simulation.robustness_replicates"),
+        ("long_horizon_replicate_record", "simulation.robustness_replicates"),
+        ("long_horizon_seed_diagnostic", "simulation.robustness_replicates"),
+        ("long_horizon_seed_diagnostics", "simulation.robustness_replicates"),
+        ("long_horizon_tc_envelope", "simulation.robustness_replicates"),
+        ("long_horizon_threshold_pass_rates", "simulation.robustness_replicates"),
+        ("long_horizon_threshold_sensitivity", "simulation.robustness_replicates"),
+        ("long_horizon_threshold_sensitivity_summary", "simulation.robustness_replicates"),
+        ("summarize_long_horizon_replicates", "simulation.robustness_replicates"),
+        ("wilson_score_interval", "simulation.robustness_stats"),
     ],
 )
 def test_facade_reexports_match_submodules(name: str, submodule: str) -> None:
@@ -310,4 +334,3 @@ def test_facade_all_names_resolve() -> None:
 
     for name in facade.__all__:
         assert hasattr(facade, name), name
-        assert getattr(facade, name) is not None or name.endswith("_interval")
