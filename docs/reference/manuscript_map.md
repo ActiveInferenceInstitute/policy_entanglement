@@ -8,8 +8,8 @@ remaining `deferred` theorems to `witness` status.  Per-section rows
 below reference all four round-2/round-3 modules.
 
 A canonical lookup table that, for every numbered body section of the
-manuscript plus supplements S01–S05 (part dividers and supplements
-S06/S07 are not mapped here),
+manuscript plus supplements S01–S08 (part dividers are mapped where
+they carry substantive orientation),
 points to (a) the Lean module that formalizes its claims, (b) the
 Python module that computes them, (c) the test file that verifies
 them, and (d) the docs page that explains them in technical depth.

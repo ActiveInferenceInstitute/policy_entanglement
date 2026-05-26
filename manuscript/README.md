@@ -10,7 +10,7 @@ The manuscript is organized into **six IMRAD parts**.  Body files use a
 divider files (`1A_*`, `2A_*`, …, `6A_*`) carry an unnumbered Part
 heading and a one-paragraph orientation.
 
-**Current state.**  28 front/body/part section files (front matter
+**Current state.**  29 front/body/part section files (front matter
 `0A`; Part I `1A`–`1C`; Part II `2A`–`2J`; Part III `3A`–`3B`; Part IV
 `4A`–`4E`; Part V `5A`–`5D`; Part VI `6A`–`6C`), 8 supplements
 (`S01`–`S08`), 1 auto-generated bibliography (`99_bibliography.md`)

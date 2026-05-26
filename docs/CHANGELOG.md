@@ -38,6 +38,9 @@ those counts moved between rounds.
 - Audit matrix: `TheoremEntry` extended fields, `manuscript/refs/audit_tracks.yaml`,
   collapsed test-gate normalizer, drift test for silent veridical fallback.
 
+**Verification:** 1470 passed, 1 skipped, 95.02% `src/` coverage, regression 47/47,
+`make readiness` exit 0 @ `8b41085`.
+
 ---
 
 ## Maintenance — 2026-05-25 (round-10 thermo-nuclear — variables/readiness/regression splits)

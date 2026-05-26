@@ -15,8 +15,8 @@ from lean.decomposition import (
     sum_marginal_free_energies,
     total_correlation_gain,
 )
-from lean.invariants import SweepGrid, decomposition_invariants, decomposition_sweep_points
 from lean.joint_dist import mean_field_to_joint
+from lean.invariants import SweepGrid, decomposition_invariants, decomposition_sweep_points
 
 
 def test_decomposition_sweep_points_matches_invariants_max() -> None:

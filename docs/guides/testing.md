@@ -35,9 +35,9 @@ uv run pytest --co -q | tail -1                    # collected count
 uv run pytest tests/ --cov=src -q | tail -3        # coverage line
 ```
 
-The seven `src/` packages (`lean/`, `simulation/`, `visualizations/`,
-`manuscript/`, `gates/`, `orchestration/`, `dashboard_types/`) are
-exercised by the test suite. Prefer **direct library imports**
+The nine `src/` packages (`lean/`, `simulation/`, `gnn/`,
+`visualizations/`, `manuscript/`, `reporting/`, `gates/`,
+`orchestration/`, `dashboard_types/`) are exercised by the test suite. Prefer **direct library imports**
 (`from gates.regression_gate import …`, `from orchestration.run_all import …`)
 so coverage attributes to `src/` rather than only hitting thin
 `scripts/` wrappers via subprocess.

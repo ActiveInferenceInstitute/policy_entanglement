@@ -65,6 +65,12 @@ for the witness-payload-discharge plan.
 The per-round revision history with explanations of *why* counts
 moved between rounds lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
+**Claim audit matrix:** CSV
+[`docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv);
+regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matrix.py)
+(`--write` / `--check`); cross-track rows from
+[`manuscript/refs/audit_tracks.yaml`](manuscript/refs/audit_tracks.yaml).
+
 ## Repository layout
 
 ```
@@ -89,8 +95,13 @@ moved between rounds lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 ├── src/
 │   ├── lean/            ← Analytical mirrors of the Lean modules
 │   ├── simulation/      ← pymdp 1.0.1 POMDP harness (specs, builders, agents, …)
+│   ├── gnn/             ← Fifth-track GNN round-trip (parse → bridge → sidecar)
 │   ├── visualizations/  ← Reusable plotting helpers
-│   └── manuscript/      ← Registry, validators, renderer, lean-snippet extractor
+│   ├── manuscript/      ← Registry, validators, renderer, lean-snippet extractor
+│   ├── reporting/       ← Dashboard HTML/JSON/plaintext emission
+│   ├── gates/           ← Parameterised pipeline gate logic (`regression_gate.py`)
+│   ├── orchestration/   ← End-to-end pipeline runner (`run_all.py`)
+│   └── dashboard_types/ ← Shared panel/control/invariant dataclasses
 ├── tests/               ← live full-suite collection from output/reports/test_results.json (pure-numpy + pymdp-marked + viz + lean-build gate + hyperparameters + equation auto-numbering + free-energy bundle + statistics + metadata + veridicality + python-api coverage + token-resolution + project-wide hyperlink audit)
 ├── scripts/             ← thin orchestrators; `run_all.py` runs the canonical default pipeline
 └── output/              ← Generated artifacts (figures, data, simulations, manuscript, pdf) — disposable

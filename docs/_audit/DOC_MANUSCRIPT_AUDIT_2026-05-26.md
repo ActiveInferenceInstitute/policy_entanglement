@@ -7,6 +7,8 @@
 
 ---
 
+*Historical baseline at `5e7be2d`; superseded by §7–§8.*
+
 ## 1 — Gate summary
 
 | Gate | Result | Measured value |
@@ -53,6 +55,8 @@ Source: `output/reports/release_readiness.json`, `output/reports/test_results.js
 
 ---
 
+*Historical baseline at `5e7be2d`; superseded by §7–§8.*
+
 ## 2 — Documentation findings
 
 ### Automated coverage (green)
@@ -81,6 +85,8 @@ Source: `output/reports/release_readiness.json`, `output/reports/test_results.js
 Initial `make readiness` failed at **ruff import-order** on five files (`regression_gate.py`, `regression_pytest.py`, `readiness.py`, `validation_cli.py`, `variables_sidecars.py`). Local `uvx ruff check --fix` restored a clean tree matching commit `5e7be2d`; subsequent lint, mypy, and readiness report steps passed. No source edits required beyond formatter normalization on unrelated files already in the worktree.
 
 ---
+
+*Historical baseline at `5e7be2d`; superseded by §7–§8.*
 
 ## 3 — Manuscript claim findings
 
@@ -112,6 +118,8 @@ Initial `make readiness` failed at **ruff import-order** on five files (`regress
 - **No `??` or `[?]`** in combined PDF intermediates (log grep clean).
 
 ---
+
+*Historical baseline at `5e7be2d`; superseded by §7–§8.*
 
 ## 4 — Known intentional open items
 
@@ -181,4 +189,25 @@ Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contra
 | Interval witness | Two-source `decomposition_invariant_within_interval`; removed tautological contains flag |
 | Publication aliases | `LEGACY_*` in `__all__`; `UNRESOLVED_*` deprecated module aliases |
 | Audit matrix | `audit_tracks.yaml`, single YAML read via extended `TheoremEntry`, gate drift test |
+
+---
+
+## 8 — v1 gate snapshot (`8b41085`)
+
+**Commit:** `8b41085` — thermo re-audit follow-up (honest interval witness and audit matrix)  
+**Generated at:** 2026-05-26 (local gates; authoritative JSON under `output/reports/`)
+
+| Gate | v1 value |
+| --- | --- |
+| Commit | `8b41085` |
+| Pytest | 1471 collected; 1470 passed / 0 failed / 1 skipped |
+| Coverage (`src/`) | 95.02% |
+| Regression invariants | 47/47 |
+| Combined PDF pages | 169 |
+| DOI | `10.5281/zenodo.20301239` (live in `manuscript/config.yaml`) |
+| Audit matrix | 28 rows (`manuscript/refs/audit_tracks.yaml` + theorem registry) |
+| Float interval JSON field | `decomposition_invariant_within_interval` |
+| Rendered manuscript markdown | 38 |
+
+**Verdict:** v1 documentation and manuscript claims are **consistent with live implementation and gates** at commit `8b41085`. Historical §1–§4 rows (pending DOI, stub audit matrix) are preserved for audit trail only.
 

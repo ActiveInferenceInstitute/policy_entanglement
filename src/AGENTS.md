@@ -5,8 +5,9 @@
 ## Layout
 
 Python companion package for the Policy Entanglement project, organized
-into five subpackages — the four domain subpackages each have their own
-`AGENTS.md`, while `reporting/` is a small local support package:
+into nine logical areas under `src/` — the four domain subpackages each
+have their own `AGENTS.md`, while `reporting/`, `gates/`,
+`orchestration/`, and `dashboard_types/` are support packages:
 
 | Subpackage | Path | Purpose |
 |---|---|---|

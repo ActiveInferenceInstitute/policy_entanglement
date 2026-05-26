@@ -184,3 +184,7 @@ Round-9/10 robustness splits (`robustness_types`, `robustness_scenario_builders`
 - [`docs/CHANGELOG.md`](../CHANGELOG.md) — round-10 entry  
 - [`docs/_audit/README.md`](README.md) — audit vault index  
 - Round-6 baseline: [`scripts/regression_baseline.json`](../../scripts/regression_baseline.json)
+
+---
+
+*Superseded for v1 closure by thermo re-audit follow-up @ commit `8b41085`; see [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) §8.*

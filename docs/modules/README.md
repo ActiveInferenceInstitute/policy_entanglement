@@ -22,3 +22,4 @@ proof, numerical realization, and Lean status.
 | [`bernoulli_toy.md`](bernoulli_toy.md) | §6 (examples), App. C | [`BernoulliToy`](../../lean/ActinfPolicyEntanglement/BernoulliToy.lean) | [`lean/bernoulli_toy`](../../src/lean/bernoulli_toy.py) |
 | [`monotonicity.md`](monotonicity.md) | (constructive helper) | [`Monotonicity`](../../lean/ActinfPolicyEntanglement/Monotonicity.lean) | (no Python mirror) |
 | [`constructive.md`](constructive.md) | §4 (λ-deformation) / §5 baseline (λ = 0) | [`Constructive`](../../lean/ActinfPolicyEntanglement/Constructive.lean) | (realized in [`lean/decomposition`](../../src/lean/decomposition.py)) |
+| GNN fifth track (S08) | [`S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md) | (empirical; no Lean proof row) | [`src/gnn/AGENTS.md`](../../src/gnn/AGENTS.md) · [`reference/python_api_gnn.md`](../reference/python_api_gnn.md) |
