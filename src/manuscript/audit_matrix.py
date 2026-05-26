@@ -180,9 +180,7 @@ def render_audit_matrix_csv(project_root: Path) -> str:
 
 def write_audit_matrix(project_root: Path, output_path: Path | None = None) -> Path:
     """Write the audit matrix CSV and return its path."""
-    target = output_path or (
-        project_root / "docs" / "_audit" / "pymdp_lean_manuscript_matrix_2026-05-21.csv"
-    )
+    target = output_path or (project_root / "docs" / "_audit" / "pymdp_lean_manuscript_matrix_2026-05-21.csv")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(render_audit_matrix_csv(project_root), encoding="utf-8")
     return target

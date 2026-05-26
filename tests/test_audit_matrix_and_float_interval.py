@@ -17,9 +17,9 @@ from manuscript.audit_matrix import (
     render_audit_matrix_csv,
     write_audit_matrix,
 )
+from manuscript.float_real_interval import decomposition_interval_bracket
 from manuscript.registry import TheoremEntry
 from manuscript.theorem_map import TEST_GATE
-from manuscript.float_real_interval import decomposition_interval_bracket
 from manuscript.variables import build_float_real_residual, write_float_real_residual
 
 
@@ -41,10 +41,7 @@ def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
 
 def test_resolve_test_gate_formats() -> None:
     assert _resolve_test_gate("roadmap_float_real_residual", {}) == "tests/test_meta_files_and_float_residual.py"
-    assert (
-        _resolve_test_gate("x", {"tests": "tests/test_custom.py"})
-        == "tests/test_custom.py"
-    )
+    assert _resolve_test_gate("x", {"tests": "tests/test_custom.py"}) == "tests/test_custom.py"
     assert _resolve_test_gate("x", {"tests": "custom.py"}) == "tests/custom.py"
     assert _resolve_test_gate("x", {"tests": "custom"}) == "tests/test_custom.py"
     assert _resolve_test_gate("missing_label", {}) == "tests/test_veridical_status_doc.py"

@@ -69,10 +69,10 @@ Source: `output/reports/release_readiness.json`, `output/reports/test_results.js
 | Surface | Finding | Severity |
 | --- | --- | --- |
 | Publication URL | `manuscript/config.yaml`, README, AGENTS, abstract, CONTRIBUTING all use `https://github.com/docxology/policy_entanglement` | OK |
-| `publication.doi` | Empty by design; `validate_manuscript` publication-metadata gate accepts pending DOI | Intentional open |
+| `publication.doi` | Live: `10.5281/zenodo.20301239`; inverted gates forbid pending-DOI prose on current-facing paths | OK (superseded §7) |
 | ActiveInferenceInstitute URLs | Present only as **upstream** citations (`fep_lean`, `GeneralizedNotationNotation`) in lean docs, citations.yaml, S05, FAQ — not mistaken for this repo's canonical URL | OK |
 | `docs/reference/lean_reference.md` vs `labels.yaml` | Automated theorem-map and veridical-status tests enforce alignment; manual spot-check of decomposition row matches MathlibProofs + boundary split | OK |
-| `src/gnn/`, `src/reporting/` | No folder-level `AGENTS.md` (not in required audit set per `test_agents_readme_audit.py`) | Informational |
+| `src/gnn/`, `src/reporting/` | Folder-level `AGENTS.md` / `README.md` added; in `REQUIRED_DOCUMENTED_DIRS` | OK (superseded §7) |
 | `docs/modules/*.md` | May lag newest GNN surface; API coverage tests pass for public symbols | Informational |
 | `docs/_audit/`, `docs/CHANGELOG.md` | Exempt from count gates; historical round narrative only | OK |
 
@@ -155,8 +155,21 @@ Follow-on work from the *Publication DOI, Full Audit Matrix, Docs Sweep, and Flo
 | --- | --- |
 | Zenodo DOI | Live: `10.5281/zenodo.20301239` in config, CFF, README/AGENTS/docs hubs, abstract/introduction; `publication_metadata.py` forbids pending-DOI prose on current-facing paths |
 | Claim audit matrix | `docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv` regenerated (28 rows: 21 registry theorems + 7 cross-track rows); `scripts/generate_audit_matrix.py --write/--check` |
-| Float interval witness | `src/manuscript/float_real_interval.py` → bracket fields in `float_real_residual.json`; documented in `methods_and_assumptions.md` §2 as Tier **N** corroboration (not route (b) discharged) |
+| Float interval witness | `src/manuscript/float_real_interval.py` → bracket fields in `float_real_residual.json`; Tier **N** corroboration via `float64+decimal_outward_margin` (not route (b) discharged; no sham longdouble path) |
 | Folder docs | `src/gnn/`, `src/reporting/` AGENTS/README added; hub AGENTS updated with DOI + matrix pointer |
 
 Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contract bundle (see updated `release_readiness.json` after readiness completes).
+
+### Post-commit closure (`fd95c99` + lint fix)
+
+| Gate | Result |
+| --- | --- |
+| Full pipeline (`run_all.py --with-pdf --with-mathlib`) | **PASS** (~1017 s) |
+| `validate_pdf.py` | **PASS** (169 pages) |
+| Full pytest + 95% coverage | **PASS** — 1465 passed, 1 skipped; **95.02%** |
+| ruff + mypy | **PASS** (after import-order + format fix on audit-matrix tests) |
+| `readiness_report.py` | **PASS** — see `release_readiness.json` |
+| Thermo-nuclear blocker | **FIXED** — removed sham `longdouble` path; witness reference `float64+decimal_outward_margin` |
+
+**Commit:** `fd95c99` — canonical DOI, audit matrix, Float interval witness, folder docs.
 

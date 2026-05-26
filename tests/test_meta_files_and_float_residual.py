@@ -41,10 +41,7 @@ def test_float_real_residual_artifact_finite_and_consistent(tmp_path: Path) -> N
         assert value == value  # finite
     assert payload["decomposition_lhs_eq_rhs_max_residual"] >= 0.0
     assert payload["capstone_conjunct_tolerance"] == 1e-9
-    assert (
-        payload["decomposition_lhs_eq_rhs_max_residual"]
-        <= float(payload["decomposition_interval_upper"]) + 1e-18
-    )
+    assert payload["decomposition_lhs_eq_rhs_max_residual"] <= float(payload["decomposition_interval_upper"]) + 1e-18
     assert payload["decomposition_interval_contains_float"] is True
     assert (
         abs(payload["montecarlo_mi_sample_mean"] - payload["montecarlo_mi_closed_form"])
