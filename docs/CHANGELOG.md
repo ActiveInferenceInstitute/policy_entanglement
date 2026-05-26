@@ -11,6 +11,30 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-25 (round-10 thermo-nuclear — variables/readiness/regression splits)
+
+**J9 — variables cluster.** Split `manuscript/variables.py` (651 LOC) into
+`variables_analytical.py`, `variables_pipeline.py`, and `variables_sidecars.py`
+with a thin facade preserving `build_manuscript_variables` import paths.
+Facade binding tests in `tests/test_manuscript_variables_builder.py`.
+
+**J10 — readiness audit.** Extracted pure audit helpers to
+`manuscript/readiness_audit.py`; `readiness.py` is orchestrator-only.
+
+**J11 — regression gate.** Split baseline I/O (`regression_baseline.py`) and
+pytest snapshot runners (`regression_pytest.py`); `regression_gate.py` remains
+the thin `gate()` facade with test re-exports.
+
+**J12 — publication metadata oracle.** Moved publication canon checks from
+`tests/test_status_docs.py` into `manuscript/publication_metadata.py` and wired
+`_report_status()` in `validation_cli.py` so wrong-org repository URLs fail
+the manuscript validator, not only pytest.
+
+**Verification:** 1454 pytest passed, 95.09% `src/` coverage, regression 47/47,
+ruff/mypy clean, `validate_manuscript.py` green.
+
+---
+
 ## Maintenance — 2026-05-25 (publication 1.0 prep — RedTeam metadata canon)
 
 **Publication canon.** `paper.version` → **1.0**; canonical source repository

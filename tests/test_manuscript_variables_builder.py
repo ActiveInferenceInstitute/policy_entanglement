@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 
+import pytest
+
+from manuscript import variables as facade
 from manuscript.variables import (
     PROJECT_ROOT,
     _format_lambda_key,
@@ -12,6 +16,42 @@ from manuscript.variables import (
     write_manuscript_variables,
 )
 from simulation import hyperparameters as H
+
+
+@pytest.mark.parametrize(
+    ("facade_name", "submodule", "submodule_name"),
+    [
+        ("_format_lambda_key", "manuscript.variables_analytical", "format_lambda_key"),
+        ("_format_lambda_list", "manuscript.variables_analytical", "format_lambda_list"),
+    ],
+)
+def test_facade_reexports_match_submodules(facade_name: str, submodule: str, submodule_name: str) -> None:
+    """Public facade aliases must mirror their domain submodule source."""
+    mod = importlib.import_module(submodule)
+    assert getattr(facade, facade_name) is getattr(mod, submodule_name)
+
+
+def test_build_manuscript_variables_uses_domain_modules() -> None:
+    from manuscript import variables_analytical, variables_pipeline, variables_sidecars
+
+    root = PROJECT_ROOT
+    merged: dict[str, object] = {}
+    merged.update(variables_analytical.bernoulli_facts())
+    merged.update(variables_analytical.spectral_facts())
+    merged.update(variables_analytical.alignment_and_phase_facts())
+    merged.update(variables_analytical.motor_attention_facts())
+    merged.update(variables_analytical.coupling_tax_curvature())
+    merged.update(variables_pipeline.run_all_facts(root))
+    merged.update(variables_pipeline.lean_facts(root))
+    merged.update(variables_pipeline.toolchain_facts(root))
+    merged.update(variables_pipeline.registry_facts(root))
+    merged.update(variables_analytical.tensor_train_facts())
+    merged.update(variables_sidecars.pymdp_facts())
+    merged.update(variables_sidecars.json_sidecar_facts(root))
+    merged.update(variables_sidecars.gnn_facts(root))
+    merged.update(variables_analytical.sentinel_list_facts())
+    merged.update(variables_sidecars.hyperparameter_facts())
+    assert build_manuscript_variables(root) == merged
 
 
 def test_format_lambda_key_stable_shapes() -> None:

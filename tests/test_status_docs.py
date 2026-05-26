@@ -13,6 +13,9 @@ from pathlib import Path
 
 import pytest
 
+from manuscript.publication_metadata import (
+    publication_metadata_issues,
+)
 from manuscript.status import (
     ProjectStatus,
     _parse_pdfinfo,
@@ -131,31 +134,6 @@ GNN_CURRENT_SCAN_ROOTS = (
 GNN_STALE_ALLOWLIST_ROOTS = (
     PROJECT / "docs" / "_audit",
     PROJECT / "docs" / "CHANGELOG.md",
-)
-UNRESOLVED_PUBLICATION_DOI = "10.5281/zenodo.20301239"
-UNRESOLVED_ZENODO_RECORD = "https://zenodo.org/records/20301239"
-UNRESOLVED_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
-CANONICAL_SOURCE_REPOSITORY = UNRESOLVED_SOURCE_REPOSITORY
-WRONG_SOURCE_REPOSITORY = "https://github.com/ActiveInferenceInstitute/policy_entanglement"
-PUBLICATION_METADATA_PATHS = (
-    PROJECT / "README.md",
-    PROJECT / "docs" / "README.md",
-    PROJECT / "AGENTS.md",
-    PROJECT / "CITATION.cff",
-    PROJECT / "manuscript" / "config.yaml",
-    PROJECT / "manuscript" / "refs" / "citations.yaml",
-    PROJECT / "manuscript" / "1A_part1_introduction.md",
-    PROJECT / "manuscript" / "6C_discussion_and_outlook.md",
-)
-PUBLICATION_REPOSITORY_PATHS = (
-    *PUBLICATION_METADATA_PATHS,
-    PROJECT / "CONTRIBUTING.md",
-    PROJECT / "manuscript" / "0A_abstract.md",
-)
-PUBLICATION_BANNER_PATHS = (
-    PROJECT / "README.md",
-    PROJECT / "docs" / "README.md",
-    PROJECT / "AGENTS.md",
 )
 
 
@@ -329,74 +307,6 @@ def _gnn_stale_candidate_issues() -> list[str]:
     return issues
 
 
-def _repository_url_from_config() -> str:
-    config_text = (PROJECT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
-    match = re.search(r'(?m)^\s*repository_url:\s*"([^"]*)"\s*$', config_text)
-    return match.group(1) if match else ""
-
-
-def _publication_metadata_issues() -> list[str]:
-    """Reject contradictory public DOI / source-repository states."""
-
-    config_text = (PROJECT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
-    doi_is_pending = bool(re.search(r"(?m)^\s*doi:\s*\"\"\s*$", config_text))
-    repository_is_pending = bool(re.search(r"(?m)^\s*repository_url:\s*\"\"\s*$", config_text))
-    issues: list[str] = []
-
-    if doi_is_pending:
-        for path in PUBLICATION_METADATA_PATHS:
-            if not path.exists():
-                continue
-            text = path.read_text(encoding="utf-8")
-            rel = path.relative_to(PROJECT)
-            if UNRESOLVED_PUBLICATION_DOI in text:
-                issues.append(f"{rel}: publishes unresolved DOI while config DOI is pending")
-            if UNRESOLVED_ZENODO_RECORD in text:
-                issues.append(f"{rel}: publishes unresolved Zenodo record while config DOI is pending")
-        for path in PUBLICATION_BANNER_PATHS:
-            if not path.exists():
-                continue
-            if "**Publication:**" in path.read_text(encoding="utf-8"):
-                issues.append(f"{path.relative_to(PROJECT)}: uses public Publication banner while DOI is pending")
-    else:
-        combined = "\n".join(
-            path.read_text(encoding="utf-8") for path in PUBLICATION_METADATA_PATHS if path.exists()
-        )
-        if "no Zenodo DOI has been minted yet" in combined or "public Zenodo DOI" in combined:
-            issues.append("config DOI is present but current-facing docs still describe the DOI as pending")
-
-    if repository_is_pending:
-        for path in PUBLICATION_METADATA_PATHS:
-            if not path.exists():
-                continue
-            if UNRESOLVED_SOURCE_REPOSITORY in path.read_text(encoding="utf-8"):
-                issues.append(
-                    f"{path.relative_to(PROJECT)}: publishes unresolved source repository while config repository is pending"
-                )
-    else:
-        configured_url = _repository_url_from_config()
-        if configured_url != CANONICAL_SOURCE_REPOSITORY:
-            issues.append(
-                f"manuscript/config.yaml: repository_url {configured_url!r} != canonical {CANONICAL_SOURCE_REPOSITORY!r}"
-            )
-        for path in PUBLICATION_REPOSITORY_PATHS:
-            if not path.exists():
-                continue
-            text = path.read_text(encoding="utf-8")
-            rel = path.relative_to(PROJECT)
-            if WRONG_SOURCE_REPOSITORY in text:
-                issues.append(f"{rel}: cites wrong source repository {WRONG_SOURCE_REPOSITORY!r}")
-            if "no public repository URL" in text:
-                issues.append(f"{rel}: claims no public repository URL while config repository is set")
-        combined_banners = "\n".join(
-            path.read_text(encoding="utf-8") for path in PUBLICATION_BANNER_PATHS if path.exists()
-        )
-        if "public source archive pending" in combined_banners:
-            issues.append("current-facing banners still describe source archive as pending")
-
-    return issues
-
-
 def test_status_docs_do_not_contain_stale_live_counts() -> None:
     reference_issues = stale_reference_issues(PROJECT)
     assert not reference_issues, "\n".join(reference_issues)
@@ -422,8 +332,8 @@ def test_status_docs_do_not_contain_stale_live_counts() -> None:
     gnn_stale_candidate_issues = _gnn_stale_candidate_issues()
     assert not gnn_stale_candidate_issues, "\n".join(gnn_stale_candidate_issues)
 
-    publication_metadata_issues = _publication_metadata_issues()
-    assert not publication_metadata_issues, "\n".join(publication_metadata_issues)
+    pub_issues = publication_metadata_issues(PROJECT)
+    assert not pub_issues, "\n".join(pub_issues)
 
     test_path = PROJECT / "output" / "reports" / "test_results.json"
     pdf_path = PROJECT / "output" / "pdf" / "actinf_policy_entanglement_lean_combined.pdf"

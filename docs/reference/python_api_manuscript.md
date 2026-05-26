@@ -379,12 +379,13 @@ def validate_pdf_artifacts(*, project_root: Path,
 
 ### `variables.py`
 
-Importable manuscript-variable builder consumed by
-``scripts/manuscript_variables.py``. Reads hyperparameters from
-``simulation.hyperparameters``, analytical mirrors from ``lean/``, and
-pymdp sidecars under ``output/`` when present.
+Thin facade for the manuscript-variable builder consumed by
+``scripts/manuscript_variables.py``. Domain producers live in
+``variables_analytical.py``, ``variables_pipeline.py``, and
+``variables_sidecars.py``.
 
 ```python
+PROJECT_ROOT: Path
 def build_manuscript_variables(project_root: Path | None = None) -> dict[str, Any]
 def build_float_real_residual(project_root: Path | None = None) -> dict[str, float]
 def write_float_real_residual(
@@ -393,17 +394,80 @@ def write_float_real_residual(
     project_root: Path | None = None,
 ) -> Path
 def write_manuscript_variables(
-    project_root: Path | None = None,
+    output_path: Path | None = None,
     *,
-    out_path: Path | None = None,
+    project_root: Path | None = None,
 ) -> Path
+def _format_lambda_key(lam: float) -> str
+def _format_lambda_list(values: tuple[float, ...]) -> str
+```
+
+### `variables_analytical.py`
+
+Closed-form Bernoulli, spectral, alignment, motor-attention, coupling-tax,
+tensor-train, and sentinel-list producers.
+
+```python
+def format_lambda_key(lam: float) -> str
+def format_lambda_list(values: tuple[float, ...]) -> str
+def bernoulli_facts() -> dict[str, float]
+def spectral_facts() -> dict[str, float]
+def alignment_and_phase_facts() -> dict[str, float]
+def motor_attention_facts() -> dict[str, float]
+def coupling_tax_curvature() -> dict[str, float]
+def tensor_train_facts() -> dict[str, list[int]]
+def sentinel_list_facts() -> dict[str, str | int | float]
+```
+
+### `variables_pipeline.py`
+
+Orchestrator counts, Lean declaration scans, registry facts, toolchain pins.
+
+```python
+def run_all_facts(project_root: Path) -> dict[str, int]
+def strip_lean_comments(src: str) -> str
+def count_lean_declarations(project_root: Path, pattern: str) -> int
+def lean_facts(project_root: Path) -> dict[str, int]
+def registry_facts(project_root: Path) -> dict[str, int]
+def toolchain_facts(project_root: Path) -> dict[str, str]
+```
+
+### `variables_sidecars.py`
+
+JSON sidecar readers, pymdp facts, GNN round-trip facts, hyperparameter snapshot.
+
+```python
+SCALAR_SIDECAR_SENTINEL_RE: re.Pattern[str]
+JSON_SIDECAR_REGISTRY: tuple[tuple[str, str, SidecarReader], ...]
+def scalar_json_sidecar(path: Path, sentinel_key: str) -> dict[str, object]
+def numeric_only_json_sidecar(path: Path, sentinel_key: str) -> dict[str, object]
+def json_sidecar_facts(project_root: Path) -> dict[str, object]
+def pymdp_facts() -> dict[str, float] | dict[str, str]
+def gnn_facts(project_root: Path) -> dict[str, object]
+def hyperparameter_facts() -> dict[str, object]
+```
+
+### `publication_metadata.py`
+
+Publication canon checks (canonical repository URL, pending DOI banners).
+
+```python
+CANONICAL_SOURCE_REPOSITORY: str
+WRONG_SOURCE_REPOSITORY: str
+UNRESOLVED_SOURCE_REPOSITORY: str
+UNRESOLVED_PUBLICATION_DOI: str
+UNRESOLVED_ZENODO_RECORD: str
+DEFAULT_PUBLICATION_METADATA_PATHS: tuple[str, ...]
+DEFAULT_PUBLICATION_REPOSITORY_PATHS: tuple[str, ...]
+DEFAULT_PUBLICATION_BANNER_PATHS: tuple[str, ...]
+def publication_metadata_issues(project_root: Path, ...) -> list[str]
 ```
 
 ### `readiness.py`
 
 Release-readiness orchestrator consumed by ``scripts/readiness_report.py``.
 Emits ``output/reports/release_readiness.{md,json}``, ``release_note.md``,
-and ``release_index.md``.
+and ``release_index.md``. Pure audit helpers live in ``readiness_audit.py``.
 
 Hygiene regex constants: ``FORBIDDEN_MATHLIB_LOCAL_TOKENS``,
 ``MANIFEST_STAGE_RE``, ``MANIFEST_TOTAL_RE``.
@@ -411,6 +475,29 @@ Hygiene regex constants: ``FORBIDDEN_MATHLIB_LOCAL_TOKENS``,
 ```python
 def write_release_readiness(project_root: Path) -> Path
 def refresh_release_readiness_runtime_budget(project_root: Path) -> None
+```
+
+### `readiness_audit.py`
+
+Pure audit helpers for manifest timings, MathlibProofs hygiene, figure/PDF
+audits, and git worktree summaries.
+
+```python
+def status_counts(lines: list[str]) -> dict[str, int]
+def as_float(value: object, default: float = 0.0) -> float
+def as_int(value: object, default: int = 0) -> int
+def runtime_stage_dicts(runtime_budget: dict[str, object], key: str = "stages") -> list[dict[str, Any]]
+def runtime_failed_stage_names(runtime_budget: dict[str, object]) -> list[str]
+def format_stage_list(stages: list[dict[str, Any]]) -> str
+def optional_json(path: Path) -> dict[str, object]
+def git_status_lines(project_root: Path) -> list[str]
+def theorem_status_counts(project_root: Path) -> dict[str, int]
+def manifest_stage_timings(manifest_path: Path | None = None, *, project_root: Path | None = None) -> dict[str, object]
+def mathlib_proofs_status(project_root: Path, runtime_budget: dict[str, object] | None = None) -> dict[str, object]
+def registered_figure_paths(project_root: Path) -> set[str]
+def figure_audit(project_root: Path, figures: list[Path]) -> dict[str, object]
+def pdf_artifact_audit(project_root: Path, status) -> dict[str, object]
+def reconcile_runtime_budget(runtime_budget: dict[str, object], *, status, test_results: dict[str, object]) -> dict[str, object]
 ```
 
 ### `index_generator.py`

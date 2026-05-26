@@ -157,9 +157,43 @@ def render_combined_pdf(*, project_root: Path) -> int
 
 ### `gates/regression_gate.py`
 
-Library implementation of the pipeline regression gate (consumed by
-`scripts/regression_gate.py`). Exposes `gate`, `_parse_pytest_counts`, and
-`_critical_module_coverage_issues` for unit tests.
+Thin orchestrator facade for the pipeline regression gate (consumed by
+`scripts/regression_gate.py`). Baseline I/O lives in
+`gates/regression_baseline.py`; pytest subprocess runners in
+`gates/regression_pytest.py`.
+
+```python
+def gate(*, project_root: Path, scripts_dir: Path, baseline_path: Path | None = None, update_baseline: bool = False) -> int
+```
+
+Re-exports for unit tests: `_parse_pytest_counts`, `_critical_module_coverage_issues`,
+`_write_fresh_test_results`, `_coverage_fail_under`, `_load_baseline`, `_load_test_results`.
+
+### `gates/regression_baseline.py`
+
+Baseline JSON load/save and refresh helpers.
+
+```python
+def load_baseline(baseline_path: Path) -> dict[str, Any]
+def load_test_results(test_results_path: Path) -> dict[str, Any] | None
+def refresh_baseline(baseline: dict[str, Any], *, baseline_path: Path, project_root: Path, ...) -> None
+```
+
+### `gates/regression_pytest.py`
+
+Fresh pytest+coverage snapshot, invariant parsing, Lean budget parse.
+
+```python
+CRITICAL_COVERAGE_MODULES: dict[str, float]
+def coverage_fail_under(project_root: Path) -> float
+def parse_pytest_counts(output: str) -> dict[str, int]
+def coverage_percent_from_json(path: Path) -> float
+def critical_module_coverage_issues(path: Path, thresholds: dict[str, float] | None = None) -> list[str]
+def clear_bytecode_cache(project_root: Path) -> int
+def write_fresh_test_results(*, project_root: Path, test_results_path: Path, pytest_log_path: Path, coverage_json_path: Path) -> dict[str, Any] | None
+def count_invariants(invariants_path: Path) -> tuple[int, int] | None
+def lean_budget_snapshot(*, project_root: Path, scripts_dir: Path) -> dict[str, int] | None
+```
 
 ## Conventions
 

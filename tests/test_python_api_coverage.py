@@ -175,6 +175,13 @@ def test_new_modules_have_subsections(api_doc_text) -> None:
         "### `orchestration/run_all.py`",
         "### `orchestration/build_pdf.py`",
         "### `gates/regression_gate.py`",
+        "### `gates/regression_baseline.py`",
+        "### `gates/regression_pytest.py`",
+        "### `variables_analytical.py`",
+        "### `variables_pipeline.py`",
+        "### `variables_sidecars.py`",
+        "### `publication_metadata.py`",
+        "### `readiness_audit.py`",
     ):
         assert sub in api_doc_text, f"new-module subsection missing: {sub!r}"
 

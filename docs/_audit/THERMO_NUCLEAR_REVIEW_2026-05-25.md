@@ -131,8 +131,56 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 | `gnn/bridge.py` | mypy-clean `nditer` broadcast via `cast(Any, …)` |
 | `tests/coverage/test_dashboard_coverage.py` | Removed spurious cross-domain imports |
 
+## Round-10 additions (2026-05-25)
+
+**Baseline:** **1451** pytest passed, **95.36%** `src/` coverage, regression **47/47**, no file above **1k LOC** (commit `274654b` pre-split).
+
+### Applied (J9–J12)
+
+| ID | Change | Disposition |
+|----|--------|-------------|
+| J9 | `variables_{analytical,pipeline,sidecars}.py` + ~150 LOC `variables.py` facade | **Applied** |
+| J10 | `readiness_audit.py` (~280 LOC); `readiness.py` orchestrator only | **Applied** |
+| J11 | `regression_{baseline,pytest}.py`; thin `regression_gate.py` facade | **Applied** |
+| J12 | `publication_metadata.py`; wired into `validation_cli._report_status` | **Applied** |
+
+Round-9/10 robustness splits (`robustness_types`, `robustness_scenario_builders`, `robustness_plots_one_axis`, `robustness_plots_sidecars`) remain clean — facade binding tests pass.
+
+### Round-11 candidates (J13–J15, deferred)
+
+| ID | Module | LOC | Remedy |
+|----|--------|-----|--------|
+| J13 | `pymdp_long_horizon_validators.py` | 251 | Reuse `validate_tc_decomposition_group` where columns align |
+| J14 | `analytical_figures.py`, `pymdp_figures.py` | 566 / 485 | Optional `*_core.py` plot builders |
+| J15 | `renderer.py` | 560 | Extract `renderer_anchors.py` |
+
+### File-size snapshot (post Round-10 split)
+
+| Module | LOC (approx) |
+|--------|----------------|
+| `variables.py` (facade) | ~150 |
+| `variables_analytical.py` | ~180 |
+| `variables_pipeline.py` | ~120 |
+| `variables_sidecars.py` | ~200 |
+| `readiness.py` | ~250 |
+| `readiness_audit.py` | ~280 |
+| `regression_gate.py` | ~180 |
+| `regression_pytest.py` | ~240 |
+| `regression_baseline.py` | ~70 |
+| `publication_metadata.py` | ~120 |
+
+## Verification (round-10)
+
+| Gate | Result |
+|------|--------|
+| `pytest tests/ --cov=src --cov-fail-under=95` | **1454 passed**, 1 skipped; **95.09%** |
+| `scripts/regression_gate.py` | green — 47/47 invariants, 22 Lean jobs |
+| `ruff check src/ tests/ scripts/` | clean |
+| `mypy src/ scripts/` | clean |
+| `scripts/validate_manuscript.py` | green (includes publication metadata gate) |
+
 ## Related
 
-- [`docs/CHANGELOG.md`](../CHANGELOG.md) — round-7 entry  
+- [`docs/CHANGELOG.md`](../CHANGELOG.md) — round-10 entry  
 - [`docs/_audit/README.md`](README.md) — audit vault index  
 - Round-6 baseline: [`scripts/regression_baseline.json`](../../scripts/regression_baseline.json)

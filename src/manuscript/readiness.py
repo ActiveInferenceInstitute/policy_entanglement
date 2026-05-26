@@ -1,30 +1,58 @@
-"""Reviewer-facing release-readiness summary — pure helpers and orchestrator.
-
-Business logic for ``scripts/readiness_report.py``. The script is a thin
-wrapper that binds ``PROJECT_ROOT`` and re-exports the test-facing
-helpers (``tests/test_readiness_report.py`` loads the script module via
-``importlib`` and asserts on the underscore-prefixed names below).
-
-The orchestrator emits a single set of artifacts under
-``<project_root>/output/reports/``:
-
-* ``release_readiness.md`` — human-readable reviewer summary.
-* ``release_readiness.json`` — machine-readable parallel.
-* ``release_note.md`` — compact reviewer release note.
-* ``release_index.md`` — landing page linking the others.
-"""
+"""Reviewer-facing release-readiness summary — orchestrator facade."""
 
 from __future__ import annotations
 
-import json
-import re
-import subprocess
 import time
 from pathlib import Path
-from typing import Any
 
-import yaml
-
+from manuscript.readiness_audit import (
+    FORBIDDEN_MATHLIB_LOCAL_TOKENS,
+    MANIFEST_STAGE_RE,
+    MANIFEST_TOTAL_RE,
+    subprocess,  # noqa: F401 — test monkeypatch target
+)
+from manuscript.readiness_audit import (
+    as_float as _as_float,
+)
+from manuscript.readiness_audit import (
+    figure_audit as _figure_audit,
+)
+from manuscript.readiness_audit import (
+    format_stage_list as _format_stage_list,
+)
+from manuscript.readiness_audit import (
+    git_status_lines as _git_status_lines,
+)
+from manuscript.readiness_audit import (
+    manifest_stage_timings as _manifest_stage_timings,
+)
+from manuscript.readiness_audit import (
+    mathlib_proofs_status as _mathlib_proofs_status,
+)
+from manuscript.readiness_audit import (
+    optional_json as _optional_json,
+)
+from manuscript.readiness_audit import (
+    pdf_artifact_audit as _pdf_artifact_audit,
+)
+from manuscript.readiness_audit import (
+    reconcile_runtime_budget as _reconcile_runtime_budget,
+)
+from manuscript.readiness_audit import (
+    registered_figure_paths as _registered_figure_paths,
+)
+from manuscript.readiness_audit import (
+    runtime_failed_stage_names as _runtime_failed_stage_names,
+)
+from manuscript.readiness_audit import (
+    runtime_stage_dicts as _runtime_stage_dicts,
+)
+from manuscript.readiness_audit import (
+    status_counts as _status_counts,
+)
+from manuscript.readiness_audit import (
+    theorem_status_counts as _theorem_status_counts,
+)
 from manuscript.readiness_emit import (
     _write_readiness_json,
     _write_release_index,
@@ -32,342 +60,10 @@ from manuscript.readiness_emit import (
 )
 from manuscript.status import load_project_status
 
-# `noncomputable` is intentionally absent: the genuine real-valued S01
-# definitions use `Real.exp`/`Real.log` and MUST be `noncomputable` in
-# Lean 4 + Mathlib — the keyword does not weaken the proof. Axiom-clean
-# status is enforced separately and authoritatively by `#print axioms`
-# (foundational-only) in `build_mathlib_proofs.py` /
-# `test_mathlib_axiom_audit.py`; this string set must stay consistent
-# with that corrected set so `hygiene_clean` does not false-fail on a
-# genuinely machine-checked proof. `sorry`/`axiom `/`unsafe `/`partial `
-# stay forbidden — they genuinely indicate a non-clean proof.
-FORBIDDEN_MATHLIB_LOCAL_TOKENS = ("sorry", "admit ", "axiom ", "unsafe ", "partial ")
-MANIFEST_STAGE_RE = re.compile(
-    r"^\|\s*`(?P<script>[^`]+)`\s*\|\s*(?P<duration>[0-9.]+)\s*\|\s*(?P<status>OK|FAIL)\s*\|$"
-)
-MANIFEST_TOTAL_RE = re.compile(r"\*\*Total wall-clock\*\*:\s*([0-9.]+)s")
-
-
-# ---------------------------------------------------------------------------
-# Pure helpers (no project_root dependency).
-# ---------------------------------------------------------------------------
-
-
-def _status_counts(lines: list[str]) -> dict[str, int]:
-    counts = {"modified": 0, "deleted": 0, "added": 0, "untracked": 0, "other": 0}
-    for line in lines:
-        code = line[:2]
-        if code == "??":
-            counts["untracked"] += 1
-        elif "D" in code:
-            counts["deleted"] += 1
-        elif "A" in code:
-            counts["added"] += 1
-        elif "M" in code:
-            counts["modified"] += 1
-        else:
-            counts["other"] += 1
-    return counts
-
-
-def _as_float(value: object, default: float = 0.0) -> float:
-    """Best-effort conversion of JSON/Markdown parsed scalar values."""
-
-    if isinstance(value, (int, float, str)):
-        return float(value)
-    return default
-
-
-def _as_int(value: object, default: int = 0) -> int:
-    """Best-effort conversion of JSON/Markdown parsed integer values."""
-
-    if isinstance(value, (int, str)):
-        return int(value)
-    return default
-
-
-def _runtime_stage_dicts(runtime_budget: dict[str, object], key: str = "stages") -> list[dict[str, Any]]:
-    """Extract a list of stage dictionaries from a runtime-budget payload."""
-
-    value = runtime_budget.get(key, [])
-    if not isinstance(value, list):
-        return []
-    return [stage for stage in value if isinstance(stage, dict)]
-
-
-def _runtime_failed_stage_names(runtime_budget: dict[str, object]) -> list[str]:
-    """Extract failed stage names from runtime-budget payload."""
-
-    value = runtime_budget.get("failed_stages", [])
-    if not isinstance(value, list):
-        return []
-    return [str(stage) for stage in value]
-
-
-def _format_stage_list(stages: list[dict[str, Any]]) -> str:
-    """Human-readable stage timing list."""
-
-    return ", ".join(f"{row.get('script', '?')} ({_as_float(row.get('duration_s')):.1f}s)" for row in stages)
-
-
-def _optional_json(path: Path) -> dict[str, object]:
-    if not path.exists():
-        return {}
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return {}
-    return value if isinstance(value, dict) else {}
-
-
-# ---------------------------------------------------------------------------
-# Project-root-dependent helpers.
-# ---------------------------------------------------------------------------
-
-
-def _git_status_lines(project_root: Path) -> list[str]:
-    proc = subprocess.run(
-        ["git", "status", "--short"],
-        cwd=str(project_root),
-        capture_output=True,
-        check=False,
-        text=True,
-        timeout=10.0,
-    )
-    if proc.returncode != 0:
-        return [f"(git status failed: {proc.stderr.strip()})"]
-    return proc.stdout.splitlines()
-
-
-def _theorem_status_counts(project_root: Path) -> dict[str, int]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
-    labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
-    theorems = labels.get("theorems") or {}
-    counts = {"proved": 0, "witness": 0, "boundary": 0, "forwarder": 0, "sketch": 0, "deferred": 0}
-    for row in theorems.values():
-        if isinstance(row, dict):
-            status = str(row.get("status", ""))
-            if status in counts:
-                counts[status] += 1
-    counts["total"] = len(theorems)
-    return counts
-
-
-def _manifest_stage_timings(
-    manifest_path: Path | None = None,
-    *,
-    project_root: Path | None = None,
-) -> dict[str, object]:
-    """Parse ``output/MANIFEST.md`` stage timings into JSON-safe fields."""
-
-    if manifest_path is None:
-        if project_root is None:
-            raise ValueError("either manifest_path or project_root must be supplied")
-        manifest_path = project_root / "output" / "MANIFEST.md"
-    if not manifest_path.exists():
-        return {
-            "manifest_present": False,
-            "total_wall_s": None,
-            "stage_count": 0,
-            "failed_stages": [],
-            "slowest_stages": [],
-            "stages": [],
-        }
-    stages: list[dict[str, object]] = []
-    total_wall_s: float | None = None
-    for line in manifest_path.read_text(encoding="utf-8", errors="ignore").splitlines():
-        stage_match = MANIFEST_STAGE_RE.match(line.strip())
-        if stage_match:
-            stages.append(
-                {
-                    "script": stage_match.group("script"),
-                    "duration_s": float(stage_match.group("duration")),
-                    "status": stage_match.group("status"),
-                }
-            )
-            continue
-        total_match = MANIFEST_TOTAL_RE.search(line)
-        if total_match:
-            total_wall_s = float(total_match.group(1))
-    slowest = sorted(stages, key=lambda row: _as_float(row.get("duration_s")), reverse=True)[:5]
-    return {
-        "manifest_present": True,
-        "total_wall_s": total_wall_s,
-        "stage_count": len(stages),
-        "failed_stages": [row["script"] for row in stages if row["status"] != "OK"],
-        "slowest_stages": slowest,
-        "stages": stages,
-    }
-
-
-def _mathlib_proofs_status(
-    project_root: Path,
-    runtime_budget: dict[str, object] | None = None,
-) -> dict[str, object]:
-    """Summarize MathlibProofs source, hygiene, and latest manifest state."""
-
-    root = project_root / "lean" / "MathlibProofs"
-    source = root / "MathlibProofs.lean"
-    lakefile = root / "lakefile.lean"
-    payload: dict[str, object] = {
-        "present": source.exists(),
-        "lakefile_present": lakefile.exists(),
-        "path": "lean/MathlibProofs/MathlibProofs.lean",
-        "claim_status": (
-            "separate Mathlib package; headline real-valued decomposition "
-            "discharged when keystone build and axiom audit pass"
-        ),
-        "build_checked": False,
-        "build_status": "not_checked",
-        "returncode": None,
-        "proofSliceVersion": None,
-        "theorem_count": 0,
-        "hygiene_clean": False,
-        "forbidden_token_counts": {token.strip(): 0 for token in FORBIDDEN_MATHLIB_LOCAL_TOKENS},
-    }
-    if source.exists():
-        text = source.read_text(encoding="utf-8")
-        version_match = re.search(r"\bdef\s+proofSliceVersion\s*:\s*Nat\s*:=\s*(\d+)", text)
-        theorem_count = len(re.findall(r"^\s*theorem\s+\w+", text, flags=re.MULTILINE))
-        token_counts = {token.strip(): text.count(token) for token in FORBIDDEN_MATHLIB_LOCAL_TOKENS}
-        payload.update(
-            {
-                "proofSliceVersion": int(version_match.group(1)) if version_match else None,
-                "theorem_count": theorem_count,
-                "hygiene_clean": all(count == 0 for count in token_counts.values()),
-                "forbidden_token_counts": token_counts,
-            }
-        )
-    budget = runtime_budget or _manifest_stage_timings(project_root=project_root)
-    for stage in _runtime_stage_dicts(budget):
-        if stage.get("script") == "build_mathlib_proofs.py":
-            payload["build_checked"] = True
-            ok = stage.get("status") == "OK"
-            payload["build_status"] = "passed" if ok else "failed"
-            payload["returncode"] = 0 if ok else 1
-            break
-    return payload
-
-
-def _registered_figure_paths(project_root: Path) -> set[str]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
-    labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
-    figures = labels.get("figures") or {}
-    out: set[str] = set()
-    for row in figures.values():
-        if isinstance(row, dict) and row.get("path"):
-            out.add(str(row["path"]))
-    return out
-
-
-def _figure_audit(project_root: Path, figures: list[Path]) -> dict[str, object]:
-    """Summarize generated PNG presence, metadata, and minimum dimensions."""
-
-    registered = _registered_figure_paths(project_root)
-    present_rel = {path.relative_to(project_root).as_posix() for path in figures if path.exists()}
-    missing_registered = sorted(registered - present_rel)
-    payload: dict[str, object] = {
-        "png_figures": len(figures),
-        "registered_figures": len(registered),
-        "missing_registered_figures": missing_registered,
-        "pil_available": False,
-        "min_width_px": None,
-        "min_height_px": None,
-        "project_metadata_count": 0,
-        "schema_v2_metadata_count": 0,
-    }
-    try:
-        from PIL import Image  # noqa: WPS433
-    except ImportError:
-        return payload
-    widths: list[int] = []
-    heights: list[int] = []
-    project_metadata_count = 0
-    schema_v2_count = 0
-    for path in figures:
-        if not path.exists():
-            continue
-        try:
-            with Image.open(path) as img:
-                width, height = img.size
-                info = {str(k): str(v) for k, v in img.info.items()}
-        except OSError:
-            continue
-        widths.append(int(width))
-        heights.append(int(height))
-        if any(key.startswith("project.") for key in info):
-            project_metadata_count += 1
-        stats = info.get("project.figure_statistics")
-        if stats:
-            try:
-                if int(json.loads(stats).get("schema_version", 0)) >= 2:
-                    schema_v2_count += 1
-            except (json.JSONDecodeError, TypeError, ValueError):
-                pass
-    payload.update(
-        {
-            "pil_available": True,
-            "min_width_px": min(widths) if widths else None,
-            "min_height_px": min(heights) if heights else None,
-            "project_metadata_count": project_metadata_count,
-            "schema_v2_metadata_count": schema_v2_count,
-        }
-    )
-    return payload
-
-
-def _pdf_artifact_audit(project_root: Path, status) -> dict[str, object]:
-    """Summarize PDF existence, intermediates, and margin contract."""
-
-    pdf_dir = project_root / "output" / "pdf"
-    pdf_path = pdf_dir / "actinf_policy_entanglement_lean_combined.pdf"
-    intermediates = {
-        "_combined_manuscript.md": (pdf_dir / "_combined_manuscript.md").exists(),
-        "_combined_manuscript.tex": (pdf_dir / "_combined_manuscript.tex").exists(),
-        "_combined_manuscript.log": (pdf_dir / "_combined_manuscript.log").exists(),
-        "_xelatex_stdout.log": (pdf_dir / "_xelatex_stdout.log").exists(),
-    }
-    preamble = project_root / "manuscript" / "preamble.md"
-    margins: dict[str, float] = {}
-    margin_contract_ok = False
-    if preamble.exists():
-        from manuscript.pdf_validation import EXPECTED_PDF_MARGINS_IN, parse_geometry_margins  # noqa: WPS433
-
-        margins = parse_geometry_margins(preamble.read_text(encoding="utf-8"))
-        margin_contract_ok = all(
-            abs(float(margins.get(key, -1.0)) - expected) <= 1e-9 for key, expected in EXPECTED_PDF_MARGINS_IN.items()
-        )
-    return {
-        "exists": pdf_path.exists(),
-        "pages": int(status.pdf_pages),
-        "size_bytes": int(status.pdf_size_bytes),
-        "size_mb": float(status.pdf_size_mb),
-        "intermediates_present": intermediates,
-        "all_intermediates_present": all(intermediates.values()),
-        "margins_in": margins,
-        "margin_contract_ok": margin_contract_ok,
-    }
-
-
-def _reconcile_runtime_budget(
-    runtime_budget: dict[str, object],
-    *,
-    status,
-    test_results: dict[str, object],
-) -> dict[str, object]:
-    """Drop stale manifest failures when live pytest/regression gates are green."""
-
-    if int(status.tests_failed) != 0:
-        return runtime_budget
-    if _as_int(test_results.get("total_failed")) != 0:
-        return runtime_budget
-    reconciled = dict(runtime_budget)
-    reconciled["failed_stages"] = []
-    return reconciled
-
 
 def refresh_release_readiness_runtime_budget(project_root: Path) -> None:
     """Re-sync ``release_readiness.json`` runtime budget from the final manifest."""
+    import json
 
     json_path = project_root / "output" / "reports" / "release_readiness.json"
     if not json_path.exists():
@@ -383,10 +79,7 @@ def refresh_release_readiness_runtime_budget(project_root: Path) -> None:
 
 
 def write_release_readiness(project_root: Path) -> Path:
-    """Full release-readiness orchestrator; emits all four artifacts.
-
-    Returns the path to the human-readable ``release_readiness.md``.
-    """
+    """Full release-readiness orchestrator; emits all four artifacts."""
     out = project_root / "output" / "reports" / "release_readiness.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     status = load_project_status(project_root)
@@ -525,5 +218,6 @@ __all__ = [
     "_write_readiness_json",
     "_write_release_index",
     "refresh_release_readiness_runtime_budget",
+    "subprocess",
     "write_release_readiness",
 ]

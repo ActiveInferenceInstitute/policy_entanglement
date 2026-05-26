@@ -26,6 +26,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from manuscript.publication_metadata import publication_metadata_issues
 from manuscript.registry import load_registry
 from manuscript.status import (
     load_project_status,
@@ -188,6 +189,9 @@ def _report_status(project_root: Path) -> int:
         issues += 1
     for issue in mathlibproofs_claim_issues(project_root):
         print(f"  ✗ MathlibProofs scope: {issue}")
+        issues += 1
+    for issue in publication_metadata_issues(project_root):
+        print(f"  ✗ publication metadata: {issue}")
         issues += 1
     return issues
 
