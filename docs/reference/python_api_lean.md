@@ -208,6 +208,15 @@ class SweepGrid:
     num: int
     def values(self) -> ArrayF
 
+@dataclass(frozen=True)
+class DecompositionSweepPoint:
+    lam: float
+    residual: float
+    lhs: float
+    rhs_total: float
+
+def decomposition_sweep_points(grid: SweepGrid) -> list[DecompositionSweepPoint]
+
 def ising_invariants(grid: SweepGrid, agreement_tol: float = 1e-9) -> list[Invariant]
 def free_energy_invariants(grid: SweepGrid,
                            utilities: Sequence[float] = (0.0, 0.5, 1.0, 2.0)) -> list[Invariant]

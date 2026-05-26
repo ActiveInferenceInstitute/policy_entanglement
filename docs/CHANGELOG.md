@@ -27,6 +27,19 @@ those counts moved between rounds.
 
 ---
 
+## Maintenance — 2026-05-26 (thermo re-audit follow-up)
+
+- Shared `decomposition_sweep_points` in `lean/invariants.py`; single grid via
+  `decomposition_certificate_grid()` in `variables.py`.
+- Interval witness: two-source `decomposition_invariant_within_interval` check
+  (replaces tautological `decomposition_interval_contains_float`).
+- `publication_metadata.py`: `LEGACY_*` exports; `UNRESOLVED_*` demoted from
+  `__all__`.
+- Audit matrix: `TheoremEntry` extended fields, `manuscript/refs/audit_tracks.yaml`,
+  collapsed test-gate normalizer, drift test for silent veridical fallback.
+
+---
+
 ## Maintenance — 2026-05-25 (round-10 thermo-nuclear — variables/readiness/regression splits)
 
 **J9 — variables cluster.** Split `manuscript/variables.py` (651 LOC) into

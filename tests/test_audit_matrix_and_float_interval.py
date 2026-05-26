@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from lean.invariants import SweepGrid
+from lean.invariants import decomposition_sweep_points
 from manuscript.audit_matrix import (
     AUDIT_MATRIX_COLUMNS,
     _resolve_test_gate,
@@ -18,9 +18,13 @@ from manuscript.audit_matrix import (
     write_audit_matrix,
 )
 from manuscript.float_real_interval import decomposition_interval_bracket
-from manuscript.registry import TheoremEntry
+from manuscript.registry import TheoremEntry, load_labels
 from manuscript.theorem_map import TEST_GATE
-from manuscript.variables import build_float_real_residual, write_float_real_residual
+from manuscript.variables import (
+    build_float_real_residual,
+    decomposition_certificate_grid,
+    write_float_real_residual,
+)
 
 
 def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
@@ -28,10 +32,8 @@ def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
     rows = build_audit_matrix_rows(project)
     assert len(rows) >= 28
     assert tuple(rows[0].keys()) == AUDIT_MATRIX_COLUMNS
-    labels = __import__("yaml").safe_load(
-        (project / "manuscript" / "refs" / "labels.yaml").read_text(encoding="utf-8")
-    )["theorems"]
-    for label in labels:
+    labels = load_labels(project / "manuscript" / "refs" / "labels.yaml")
+    for label in labels.theorems:
         assert any(row["claim_area"].startswith(f"{label} (") for row in rows)
     roadmap = next(row for row in rows if row["claim_area"].startswith("roadmap_float_real_residual"))
     assert "interval-bracket" in roadmap["remediation"] or "Flocq" in roadmap["remediation"]
@@ -39,13 +41,31 @@ def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
     assert witness["remediation"] != "none"
 
 
+def test_audit_matrix_no_silent_veridical_fallback() -> None:
+    project = Path(__file__).resolve().parent.parent
+    labels = load_labels(project / "manuscript" / "refs" / "labels.yaml")
+    missing: list[str] = []
+    for label, entry in labels.theorems.items():
+        if entry.tests.strip():
+            continue
+        if label not in TEST_GATE:
+            missing.append(label)
+    assert missing == [], f"theorem labels missing TEST_GATE and explicit tests: {missing}"
+
+
 def test_resolve_test_gate_formats() -> None:
-    assert _resolve_test_gate("roadmap_float_real_residual", {}) == "tests/test_meta_files_and_float_residual.py"
-    assert _resolve_test_gate("x", {"tests": "tests/test_custom.py"}) == "tests/test_custom.py"
-    assert _resolve_test_gate("x", {"tests": "custom.py"}) == "tests/custom.py"
-    assert _resolve_test_gate("x", {"tests": "custom"}) == "tests/test_custom.py"
-    assert _resolve_test_gate("missing_label", {}) == "tests/test_veridical_status_doc.py"
-    assert _resolve_test_gate("thm_4_1", {}) == "tests/test_decomposition.py"
+    empty = TheoremEntry(label="x", kind="Theorem", number="1", name="n", section="s")
+    assert _resolve_test_gate("roadmap_float_real_residual", empty) == "tests/test_meta_files_and_float_residual.py"
+    assert (
+        _resolve_test_gate("x", TheoremEntry("x", "Theorem", "1", "n", "s", tests="tests/test_custom.py"))
+        == "tests/test_custom.py"
+    )
+    assert _resolve_test_gate("x", TheoremEntry("x", "Theorem", "1", "n", "s", tests="custom.py")) == "tests/custom.py"
+    assert (
+        _resolve_test_gate("x", TheoremEntry("x", "Theorem", "1", "n", "s", tests="custom")) == "tests/test_custom.py"
+    )
+    assert _resolve_test_gate("missing_label", empty) == "tests/test_veridical_status_doc.py"
+    assert _resolve_test_gate("thm_4_1", empty) == "tests/test_decomposition.py"
 
 
 def test_theorem_row_proved_remediation_none() -> None:
@@ -58,8 +78,9 @@ def test_theorem_row_proved_remediation_none() -> None:
         lean_module="Decomposition",
         lean_name="couplingVerdict_correct",
         status="proved",
+        faithfulness="substantive",
     )
-    row = _theorem_row("cor_4_2", entry, {"faithfulness": "substantive"})
+    row = _theorem_row("cor_4_2", entry)
     assert row["remediation"] == "none"
     assert row["verdict"] == "proved/substantive"
 
@@ -73,15 +94,16 @@ def test_theorem_row_without_faithfulness_uses_status_only() -> None:
         section="decomposition",
         status="proved",
     )
-    row = _theorem_row("cor_4_2", entry, {})
+    row = _theorem_row("cor_4_2", entry)
     assert row["verdict"] == "proved"
 
 
 def test_resolve_test_gate_test_gate_path_branches(monkeypatch: pytest.MonkeyPatch) -> None:
+    empty = TheoremEntry(label="x", kind="Theorem", number="1", name="n", section="s")
     monkeypatch.setitem(TEST_GATE, "full_path", "tests/already/full.py")
-    assert _resolve_test_gate("full_path", {}) == "tests/already/full.py"
+    assert _resolve_test_gate("full_path", empty) == "tests/already/full.py"
     monkeypatch.setitem(TEST_GATE, "bare_py", "custom_gate.py")
-    assert _resolve_test_gate("bare_py", {}) == "tests/custom_gate.py"
+    assert _resolve_test_gate("bare_py", empty) == "tests/custom_gate.py"
 
 
 def test_render_and_write_audit_matrix_csv(tmp_path: Path) -> None:
@@ -104,18 +126,47 @@ def test_generate_audit_matrix_script_check() -> None:
     assert proc.returncode == 0, proc.stderr
 
 
-def test_decomposition_interval_bracket_contains_float_residual() -> None:
-    grid = SweepGrid(0.0, 4.0, 21)
-    bracket = decomposition_interval_bracket(grid)
-    assert bracket["decomposition_interval_contains_float"] is True
-    assert float(bracket["decomposition_interval_upper"]) >= 0.0
-    assert float(bracket["decomposition_interval_grid_points"]) == 21.0
+def test_load_audit_track_rows_rejects_invalid_track(tmp_path: Path) -> None:
+    from manuscript.audit_matrix import _load_audit_track_rows
+
+    tracks_dir = tmp_path / "manuscript" / "refs"
+    tracks_dir.mkdir(parents=True)
+    (tracks_dir / "audit_tracks.yaml").write_text("tracks:\n  - claim_area: only-one-column\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="missing columns"):
+        _load_audit_track_rows(tmp_path)
+
+
+def test_decomposition_interval_bracket_two_source_check() -> None:
+    grid = decomposition_certificate_grid()
+    points = decomposition_sweep_points(grid)
+    max_residual = max(point.residual for point in points)
+    bracket = decomposition_interval_bracket(points, invariant_max_residual=max_residual)
+    assert bracket["decomposition_invariant_within_interval"] is True
+    assert float(bracket["decomposition_interval_upper"]) >= max_residual
+    assert float(bracket["decomposition_interval_grid_points"]) == float(len(points))
+
+
+def test_decomposition_interval_bracket_rejects_empty_points() -> None:
+    with pytest.raises(ValueError, match="at least one sweep point"):
+        decomposition_interval_bracket([], invariant_max_residual=0.0)
+
+
+def test_build_float_real_residual_rejects_sweep_invariant_mismatch(monkeypatch: pytest.MonkeyPatch) -> None:
+    from lean.invariants import DecompositionSweepPoint
+
+    monkeypatch.setattr(
+        "manuscript.variables.decomposition_sweep_points",
+        lambda _grid: [DecompositionSweepPoint(lam=0.0, residual=1.0, lhs=0.0, rhs_total=0.0)],
+    )
+    with pytest.raises(RuntimeError, match="disagrees with decomposition_invariants"):
+        build_float_real_residual()
 
 
 def test_build_and_write_float_real_residual_on_project() -> None:
     project = Path(__file__).resolve().parent.parent
     payload = build_float_real_residual(project)
-    assert payload["decomposition_interval_contains_float"] is True
+    assert payload["decomposition_invariant_within_interval"] is True
+    assert payload["decomposition_lhs_eq_rhs_max_residual"] <= float(payload["decomposition_interval_upper"]) + 1e-18
     out = write_float_real_residual(project_root=project)
     assert out.exists()
 
@@ -123,7 +174,7 @@ def test_build_and_write_float_real_residual_on_project() -> None:
 def test_build_float_real_residual_rejects_non_scalar_invariant(monkeypatch: pytest.MonkeyPatch) -> None:
     from reporting.interactive_dashboard import Invariant
 
-    def _bad_decomposition(_grid: SweepGrid) -> list[Invariant]:
+    def _bad_decomposition(_grid: object) -> list[Invariant]:
         return [
             Invariant(
                 name="decomposition_lhs_eq_rhs_max_residual",

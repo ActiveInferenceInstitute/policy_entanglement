@@ -98,6 +98,9 @@ class TheoremEntry:
     # Current public statuses. Historical `sketch` / `deferred` rows were
     # retired in round 3 and are rejected by the status-table tests.
     status: str = ""  # one of: proved | boundary | forwarder | witness
+    faithfulness: str = ""
+    tests: str = ""
+    artifact: str = ""
 
     def render_block(self) -> str:
         if self.name:
@@ -188,6 +191,9 @@ def load_labels(path: Path) -> LabelsRegistry:
             lean_module=str(payload.get("lean_module", "") or ""),
             lean_name=str(payload.get("lean_name", "") or ""),
             status=str(payload.get("status", "") or ""),
+            faithfulness=str(payload.get("faithfulness", "") or ""),
+            tests=str(payload.get("tests", "") or ""),
+            artifact=str(payload.get("artifact", "") or ""),
         )
     return LabelsRegistry(
         figures=figures,

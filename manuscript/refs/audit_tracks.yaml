@@ -1,0 +1,66 @@
+# Cross-track rows for docs/_audit/pymdp_lean_manuscript_matrix_*.csv
+# (theorem rows come from labels.yaml via scripts/generate_audit_matrix.py)
+
+tracks:
+  - claim_area: pymdp free-energy bundle
+    public_surface: manuscript/4C_pymdp_harness.md; manuscript/4E_pymdp_validation.md
+    generating_source: scripts/simulate_pymdp.py
+    config_or_var_key: simulation.hyperparameters_pymdp
+    artifact_or_sidecar: output/simulations/pymdp_free_energy_bundle.csv
+    verification_gate: scripts/validate_outputs.py; tests/test_pymdp_pipeline.py
+    verdict: empirical
+    remediation: none
+
+  - claim_area: pymdp robustness suite
+    public_surface: manuscript/4B_empirical_suite.md
+    generating_source: scripts/simulate_robustness.py
+    config_or_var_key: "[[VAR:robustness_scenario_count]]"
+    artifact_or_sidecar: output/simulations/pymdp_robustness.csv
+    verification_gate: scripts/validate_outputs.py; tests/test_robustness.py
+    verdict: empirical
+    remediation: none
+
+  - claim_area: GNN fifth track (Bernoulli round-trip)
+    public_surface: manuscript/S08_gnn_generalized_notation_extension.md
+    generating_source: scripts/simulate_gnn.py; src/gnn/runner.py
+    config_or_var_key: "[[VAR:gnn_roundtrip_max_residual]]"
+    artifact_or_sidecar: output/data/gnn_bernoulli_roundtrip.json
+    verification_gate: tests/test_gnn_round_trip.py; tests/test_gnn_concordance.py
+    verdict: empirical
+    remediation: none
+
+  - claim_area: MathlibProofs headline real-valued decomposition
+    public_surface: manuscript/2D_decomposition.md; docs/reference/methods_and_assumptions.md
+    generating_source: scripts/build_mathlib_proofs.py
+    config_or_var_key: labels.yaml::thm_4_1::mathlib_analytic_proof
+    artifact_or_sidecar: lean/MathlibProofs/MathlibProofs.lean
+    verification_gate: tests/test_mathlib_proofs_integrity.py; tests/test_mathlib_axiom_audit.py
+    verdict: proved-in-R
+    remediation: none
+
+  - claim_area: Publication DOI and source repository
+    public_surface: README.md; AGENTS.md; manuscript/config.yaml; CITATION.cff
+    generating_source: src/manuscript/publication_metadata.py
+    config_or_var_key: publication.doi; publication.repository_url
+    artifact_or_sidecar: manuscript/config.yaml; CITATION.cff
+    verification_gate: tests/test_status_docs.py::publication_metadata_issues
+    verdict: canonical
+    remediation: none
+
+  - claim_area: Regression and release readiness
+    public_surface: README.md; output/reports/release_readiness.md
+    generating_source: scripts/regression_gate.py; scripts/readiness_report.py
+    config_or_var_key: output/reports/test_results.json
+    artifact_or_sidecar: output/reports/test_results.json; output/reports/dashboard_invariants.txt
+    verification_gate: scripts/regression_gate.py; tests/test_regression_gate.py
+    verdict: 47/47 invariants + 95% coverage gate
+    remediation: none
+
+  - claim_area: Manuscript variable injection
+    public_surface: manuscript/SYNTAX.md; [[VAR:...]] tokens across manuscript
+    generating_source: scripts/manuscript_variables.py; src/manuscript/variables.py
+    config_or_var_key: output/data/manuscript_variables.json
+    artifact_or_sidecar: output/data/manuscript_variables.json
+    verification_gate: tests/test_manuscript_variables.py; tests/test_manuscript_validation.py
+    verdict: generated
+    remediation: none

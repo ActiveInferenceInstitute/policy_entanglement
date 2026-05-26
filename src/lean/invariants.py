@@ -291,6 +291,40 @@ def marginal_invariants(grid: SweepGrid) -> list[Invariant]:
     return out
 
 
+@dataclass(frozen=True)
+class DecompositionSweepPoint:
+    """One grid point of the K=2 decomposition residual sweep."""
+
+    lam: float
+    residual: float
+    lhs: float
+    rhs_total: float
+
+
+def decomposition_sweep_points(grid: SweepGrid) -> list[DecompositionSweepPoint]:
+    """Evaluate decomposition LHS/RHS residuals at every ``grid`` point."""
+    mf = list(symmetric_mean_field_prior())
+    ja = ising_coupling()
+    kc = np.zeros_like(ja)
+    gs = [np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)]
+    gamma = 1.0
+    points: list[DecompositionSweepPoint] = []
+    for lam in grid.values():
+        lam_f = float(lam)
+        q = ising_joint_posterior(lam_f)
+        rhs = entanglement_decomposition_rhs(q, mf, gs, ja, kc, gamma, lam_f)
+        lhs_v = free_energy_against_entangled_prior(q, mf, gs, ja, kc, gamma, lam_f)
+        points.append(
+            DecompositionSweepPoint(
+                lam=lam_f,
+                residual=float(abs(lhs_v - rhs.total)),
+                lhs=float(lhs_v),
+                rhs_total=float(rhs.total),
+            )
+        )
+    return points
+
+
 def decomposition_invariants(grid: SweepGrid) -> list[Invariant]:
     """Theorem 5.1 numerical witness: ``F[q_λ]`` (Gibbs LHS) equals the
     sum of the four RHS bookkeeping terms produced by
@@ -301,23 +335,10 @@ def decomposition_invariants(grid: SweepGrid) -> list[Invariant]:
     ``sum_marginal_free_energies`` carries the marginal split, and
     ``multi_information_term`` carries ``I(q_λ)``).
     """
-    lams = grid.values()
-    mf = list(symmetric_mean_field_prior())
-    Ja = ising_coupling()
-    Kc = np.zeros_like(Ja)
-    Gs = [np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)]
-    gamma = 1.0
-    residuals: list[float] = []
-    totals: list[float] = []
-    lhs: list[float] = []
-    for lam in lams:
-        lam_f = float(lam)
-        q = ising_joint_posterior(lam_f)
-        rhs = entanglement_decomposition_rhs(q, mf, Gs, Ja, Kc, gamma, lam_f)
-        lhs_v = free_energy_against_entangled_prior(q, mf, Gs, Ja, Kc, gamma, lam_f)
-        residuals.append(abs(lhs_v - rhs.total))
-        totals.append(rhs.total)
-        lhs.append(lhs_v)
+    points = decomposition_sweep_points(grid)
+    residuals = [point.residual for point in points]
+    lhs = [point.lhs for point in points]
+    totals = [point.rhs_total for point in points]
     return [
         Invariant(
             name="decomposition_lhs_eq_rhs_max_residual",
@@ -473,11 +494,13 @@ def all_invariants(
 
 
 __all__ = [
+    "DecompositionSweepPoint",
     "SweepGrid",
     "affine_log_weight_invariants",
     "all_invariants",
     "coupling_pays_invariants",
     "decomposition_invariants",
+    "decomposition_sweep_points",
     "free_energy_invariants",
     "ising_invariants",
     "marginal_invariants",

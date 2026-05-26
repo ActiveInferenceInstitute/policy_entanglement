@@ -7,28 +7,11 @@ outward margin envelope.  This is **not** a Flocq IEEE-754 proof.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from decimal import Decimal, localcontext
 from typing import Any
 
-import numpy as np
-
-from lean.bernoulli_toy import ising_coupling, ising_joint_posterior, symmetric_mean_field_prior
-from lean.decomposition import entanglement_decomposition_rhs, free_energy_against_entangled_prior
-from lean.invariants import SweepGrid
-
-
-def _residual_at_lambda(lam: float) -> tuple[float, float, float]:
-    """Return ``(residual, lhs, rhs.total)`` at one grid point."""
-    lam_f = float(lam)
-    mf = list(symmetric_mean_field_prior())
-    ja = ising_coupling()
-    kc = np.zeros_like(ja)
-    gs = [np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)]
-    gamma = 1.0
-    q = ising_joint_posterior(lam_f)
-    rhs = entanglement_decomposition_rhs(q, mf, gs, ja, kc, gamma, lam_f)
-    lhs = free_energy_against_entangled_prior(q, mf, gs, ja, kc, gamma, lam_f)
-    return abs(lhs - rhs.total), float(lhs), float(rhs.total)
+from lean.invariants import DecompositionSweepPoint
 
 
 def _decimal_interval_upper(residual: float, lhs: float, rhs_total: float) -> Decimal:
@@ -41,26 +24,37 @@ def _decimal_interval_upper(residual: float, lhs: float, rhs_total: float) -> De
         return base + margin
 
 
-def decomposition_interval_bracket(grid: SweepGrid) -> dict[str, Any]:
-    """Bracket certificate for ``decomposition_lhs_eq_rhs_max_residual``."""
-    max_float = 0.0
+def decomposition_interval_bracket(
+    points: Sequence[DecompositionSweepPoint],
+    *,
+    invariant_max_residual: float,
+) -> dict[str, Any]:
+    """Bracket certificate for ``decomposition_lhs_eq_rhs_max_residual``.
+
+    ``invariant_max_residual`` must come from the invariants path (e.g.
+    :func:`lean.invariants.decomposition_invariants`) so
+    ``decomposition_invariant_within_interval`` is a genuine two-source check.
+    """
+    if not points:
+        raise ValueError("decomposition_interval_bracket requires at least one sweep point")
+
     max_interval = Decimal(0)
-    worst_lambda = float(grid.values()[0])
-    for lam in grid.values():
-        residual, lhs, rhs_total = _residual_at_lambda(lam)
-        point_upper = _decimal_interval_upper(residual, lhs, rhs_total)
-        if residual > max_float:
-            max_float = residual
-            worst_lambda = float(lam)
+    worst_lambda = points[0].lam
+    worst_residual = points[0].residual
+    for point in points:
+        point_upper = _decimal_interval_upper(point.residual, point.lhs, point.rhs_total)
+        if point.residual > worst_residual:
+            worst_residual = point.residual
+            worst_lambda = point.lam
         max_interval = max(max_interval, point_upper)
 
     interval_upper = float(max_interval)
-    contains = max_float <= interval_upper + 1e-18
+    within = float(invariant_max_residual) <= interval_upper + 1e-18
     return {
         "decomposition_interval_upper": interval_upper,
-        "decomposition_interval_contains_float": contains,
+        "decomposition_invariant_within_interval": within,
         "decomposition_interval_worst_lambda": worst_lambda,
-        "decomposition_interval_grid_points": float(len(grid.values())),
+        "decomposition_interval_grid_points": float(len(points)),
         "decomposition_interval_reference": "float64+decimal_outward_margin",
     }
 

@@ -26,7 +26,7 @@ from typing import Any
 import numpy as np
 
 from lean.bernoulli_toy import empirical_mutual_information_montecarlo, ising_mutual_information
-from lean.invariants import SweepGrid, decomposition_invariants
+from lean.invariants import SweepGrid, decomposition_invariants, decomposition_sweep_points
 from manuscript.float_real_interval import decomposition_interval_bracket
 from manuscript.variables_analytical import (
     alignment_and_phase_facts,
@@ -69,19 +69,30 @@ def build_manuscript_variables(project_root: Path | None = None) -> dict[str, An
     return facts
 
 
-def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]:
-    """Machine-readable Float↔ℝ residual certificate (scaffold, not a proof)."""
-    _ = project_root
-    grid = SweepGrid(
+def decomposition_certificate_grid() -> SweepGrid:
+    """λ-grid shared by decomposition invariants and the interval bracket witness."""
+    return SweepGrid(
         lam_min=float(H.PARAMETER_SWEEP_LAMBDAS.start),
         lam_max=float(H.PARAMETER_SWEEP_LAMBDAS.stop),
         num=min(31, int(H.PARAMETER_SWEEP_LAMBDAS.num)),
     )
+
+
+def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]:
+    """Machine-readable Float↔ℝ residual certificate (scaffold, not a proof)."""
+    _ = project_root
+    grid = decomposition_certificate_grid()
+    points = decomposition_sweep_points(grid)
+    sweep_max = max(point.residual for point in points)
     decomp = decomposition_invariants(grid)
     max_residual_actual = next(inv for inv in decomp if inv.name == "decomposition_lhs_eq_rhs_max_residual").actual
     if not isinstance(max_residual_actual, int | float):
         raise TypeError("decomposition_lhs_eq_rhs_max_residual invariant must be scalar")
     max_residual = float(max_residual_actual)
+    if abs(max_residual - sweep_max) > 1e-18:
+        raise RuntimeError(
+            f"decomposition sweep max residual disagrees with decomposition_invariants: {sweep_max} vs {max_residual}"
+        )
 
     lam = float(H.MONTECARLO_MI_LAMBDA)
     n_samples = int(H.MONTECARLO_MI_N)
@@ -93,7 +104,7 @@ def build_float_real_residual(project_root: Path | None = None) -> dict[str, flo
     closed = float(ising_mutual_information(lam))
     concentration_radius = float(4.0 * sd / np.sqrt(n_seeds) + bias_tol)
 
-    bracket = decomposition_interval_bracket(grid)
+    bracket = decomposition_interval_bracket(points, invariant_max_residual=max_residual)
     payload: dict[str, float | bool] = {
         "decomposition_lhs_eq_rhs_max_residual": max_residual,
         "montecarlo_mi_lambda": lam,
@@ -150,6 +161,7 @@ __all__ = [
     "PROJECT_ROOT",
     "build_float_real_residual",
     "build_manuscript_variables",
+    "decomposition_certificate_grid",
     "main",
     "write_float_real_residual",
     "write_manuscript_variables",

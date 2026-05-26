@@ -394,8 +394,17 @@ Tier-N interval bracket witness for Float decomposition residuals on the K=2
 sweep grid (numerical corroboration only — not a Lean/Flocq proof).
 
 ```python
-def decomposition_interval_bracket(grid: SweepGrid) -> dict[str, Any]
+def decomposition_interval_bracket(
+    points: Sequence[DecompositionSweepPoint],
+    *,
+    invariant_max_residual: float,
+) -> dict[str, Any]
 ```
+
+JSON field ``decomposition_invariant_within_interval`` is a two-source check:
+``invariant_max_residual`` from :func:`lean.invariants.decomposition_invariants`
+must lie below the Decimal outward margin upper bound computed from
+:func:`lean.invariants.decomposition_sweep_points`.
 
 ### `variables.py`
 
@@ -406,6 +415,7 @@ Thin facade for the manuscript-variable builder consumed by
 
 ```python
 PROJECT_ROOT: Path
+def decomposition_certificate_grid() -> SweepGrid
 def build_manuscript_variables(project_root: Path | None = None) -> dict[str, Any]
 def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]
 def write_float_real_residual(
@@ -477,7 +487,11 @@ CANONICAL_ZENODO_RECORD: str
 CANONICAL_DOI_URL: str
 CANONICAL_SOURCE_REPOSITORY: str
 WRONG_SOURCE_REPOSITORY: str
-UNRESOLVED_PUBLICATION_DOI: str  # alias of CANONICAL_PUBLICATION_DOI
+LEGACY_PUBLICATION_DOI: str  # deprecated Round-11 guard name
+LEGACY_ZENODO_RECORD: str
+LEGACY_SOURCE_REPOSITORY: str
+# Deprecated module-level aliases (import only; omitted from __all__)
+UNRESOLVED_PUBLICATION_DOI: str
 UNRESOLVED_ZENODO_RECORD: str
 UNRESOLVED_SOURCE_REPOSITORY: str
 DOI_REQUIRED_PATHS: tuple[str, ...]

@@ -173,3 +173,12 @@ Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contra
 
 **Commit:** `fd95c99` — canonical DOI, audit matrix, Float interval witness, folder docs.
 
+### Thermo re-audit follow-up (pending commit)
+
+| Item | Change |
+| --- | --- |
+| Shared sweep | `decomposition_sweep_points` + `decomposition_certificate_grid()` |
+| Interval witness | Two-source `decomposition_invariant_within_interval`; removed tautological contains flag |
+| Publication aliases | `LEGACY_*` in `__all__`; `UNRESOLVED_*` deprecated module aliases |
+| Audit matrix | `audit_tracks.yaml`, single YAML read via extended `TheoremEntry`, gate drift test |
+

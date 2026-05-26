@@ -81,7 +81,10 @@ mechanisms: dashboard invariant `decomposition_lhs_eq_rhs_max_residual`
 decomposition sweep grid
 (`src/manuscript/float_real_interval.py` →
 `output/reports/float_real_residual.json`; Tier **N** corroboration
-only — not route (b) discharged), the seeded Monte-Carlo MI concentration /
+only — not route (b) discharged; the exported
+`decomposition_invariant_within_interval` flag cross-checks the
+invariants-path max residual against a Decimal outward margin from
+`decomposition_sweep_points`), the seeded Monte-Carlo MI concentration /
 √N-convergence tests (§4), and the K=2 numerical witness of the ℝ
 capstone (`tests/test_theorem_map_content.py`, all three capstone
 conjuncts to `1e-9`). This is corroboration, **not** a proof that the
