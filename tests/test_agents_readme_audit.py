@@ -27,6 +27,8 @@ REQUIRED_DOCUMENTED_DIRS = (
     PROJECT / "src" / "lean",
     PROJECT / "src" / "manuscript",
     PROJECT / "src" / "simulation",
+    PROJECT / "src" / "gnn",
+    PROJECT / "src" / "reporting",
     PROJECT / "src" / "visualizations",
     PROJECT / "tests",
     PROJECT / "tests" / "lean",

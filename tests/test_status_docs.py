@@ -44,6 +44,8 @@ AUDIT_MATRIX_COLUMNS = (
     "verdict",
     "remediation",
 )
+MIN_AUDIT_MATRIX_ROWS = 28
+AUDIT_MATRIX_THEOREM_LABEL_RE = re.compile(r"^([a-z0-9_]+)\s+\(")
 AUDIT_PATH_PREFIXES = ("output/", "docs/", "manuscript/", "scripts/", "tests/", "lean/")
 AUDIT_PATH_SUFFIXES = (".csv", ".json", ".md", ".pdf", ".html", ".lean")
 RETIRED_DISCUSSION_LABEL_RE = re.compile(r"\b[wW]ork[- ]?[pP]lan\b")
@@ -162,6 +164,25 @@ def _audit_matrix_issues() -> list[str]:
                     continue
                 if not (PROJECT / item).exists():
                     issues.append(f"{row.get('claim_area', '<unknown>')}: missing evidence path {item}")
+    if len(rows) < MIN_AUDIT_MATRIX_ROWS:
+        issues.append(f"audit matrix has {len(rows)} rows; expected at least {MIN_AUDIT_MATRIX_ROWS}")
+    labels_path = PROJECT / "manuscript" / "refs" / "labels.yaml"
+    if labels_path.exists():
+        import yaml
+
+        theorem_ids = set((yaml.safe_load(labels_path.read_text(encoding="utf-8")).get("theorems") or {}).keys())
+        seen: dict[str, int] = {}
+        for row in rows:
+            match = AUDIT_MATRIX_THEOREM_LABEL_RE.match(row.get("claim_area", ""))
+            if match:
+                label = match.group(1)
+                seen[label] = seen.get(label, 0) + 1
+        for label in sorted(theorem_ids):
+            count = seen.get(label, 0)
+            if count == 0:
+                issues.append(f"audit matrix missing theorem row for {label}")
+            elif count != 1:
+                issues.append(f"audit matrix has {count} rows for theorem {label}; expected exactly 1")
     return issues
 
 

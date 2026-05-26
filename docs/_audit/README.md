@@ -11,5 +11,7 @@ reports under `output/reports/`.
 
 | Snapshot | Role |
 | --- | --- |
+| [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) | Full doc-drift + claim-contract gate sweep; manuscript section review |
+| [`pymdp_lean_manuscript_matrix_2026-05-21.csv`](pymdp_lean_manuscript_matrix_2026-05-21.csv) | Live claim audit matrix (28 rows; regenerate via `scripts/generate_audit_matrix.py --write`) |
 | [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md) | Round-7–10 code-quality audits + applied fixes |
 | [`ISA_20260525_robustness_cluster.md`](ISA_20260525_robustness_cluster.md) | Round-9 robustness cluster module boundaries |

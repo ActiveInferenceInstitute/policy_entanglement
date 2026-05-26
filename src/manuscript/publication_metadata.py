@@ -5,11 +5,16 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-UNRESOLVED_PUBLICATION_DOI = "10.5281/zenodo.20301239"
-UNRESOLVED_ZENODO_RECORD = "https://zenodo.org/records/20301239"
-UNRESOLVED_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
-CANONICAL_SOURCE_REPOSITORY = UNRESOLVED_SOURCE_REPOSITORY
+CANONICAL_PUBLICATION_DOI = "10.5281/zenodo.20301239"
+CANONICAL_ZENODO_RECORD = "https://zenodo.org/records/20301239"
+CANONICAL_DOI_URL = f"https://doi.org/{CANONICAL_PUBLICATION_DOI}"
+CANONICAL_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
 WRONG_SOURCE_REPOSITORY = "https://github.com/ActiveInferenceInstitute/policy_entanglement"
+
+# Backward-compatible aliases (pre-Round-11 guard names).
+UNRESOLVED_PUBLICATION_DOI = CANONICAL_PUBLICATION_DOI
+UNRESOLVED_ZENODO_RECORD = CANONICAL_ZENODO_RECORD
+UNRESOLVED_SOURCE_REPOSITORY = CANONICAL_SOURCE_REPOSITORY
 
 DEFAULT_PUBLICATION_METADATA_PATHS = (
     "README.md",
@@ -34,10 +39,35 @@ DEFAULT_PUBLICATION_BANNER_PATHS = (
     "AGENTS.md",
 )
 
+DOI_REQUIRED_PATHS = (
+    "README.md",
+    "AGENTS.md",
+    "docs/README.md",
+    "CITATION.cff",
+    "manuscript/config.yaml",
+)
+
+DOI_PENDING_PHRASES = (
+    "public Zenodo DOI pending",
+    "Zenodo DOI pending",
+    "Zenodo deposit pending",
+    "no Zenodo DOI has been minted yet",
+    "public source archive are pending",
+    "public source archive pending",
+    "until a DOI is minted",
+    "Public Zenodo DOI pending deposit",
+)
+
 
 def _repository_url_from_config(project_root: Path) -> str:
     config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     match = re.search(r'(?m)^\s*repository_url:\s*"([^"]*)"\s*$', config_text)
+    return match.group(1) if match else ""
+
+
+def _doi_from_config(project_root: Path) -> str:
+    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    match = re.search(r'(?m)^\s*doi:\s*"([^"]*)"\s*$', config_text)
     return match.group(1) if match else ""
 
 
@@ -53,7 +83,8 @@ def publication_metadata_issues(
     if not config_path.exists():
         return []
     config_text = config_path.read_text(encoding="utf-8")
-    doi_is_pending = bool(re.search(r"(?m)^\s*doi:\s*\"\"\s*$", config_text))
+    configured_doi = _doi_from_config(project_root)
+    doi_is_pending = configured_doi == ""
     repository_is_pending = bool(re.search(r"(?m)^\s*repository_url:\s*\"\"\s*$", config_text))
     issues: list[str] = []
 
@@ -67,27 +98,38 @@ def publication_metadata_issues(
                 continue
             text = path.read_text(encoding="utf-8")
             rel = path.relative_to(project_root)
-            if UNRESOLVED_PUBLICATION_DOI in text:
-                issues.append(f"{rel}: publishes unresolved DOI while config DOI is pending")
-            if UNRESOLVED_ZENODO_RECORD in text:
-                issues.append(f"{rel}: publishes unresolved Zenodo record while config DOI is pending")
+            if CANONICAL_PUBLICATION_DOI in text:
+                issues.append(f"{rel}: publishes canonical DOI while config DOI is pending")
+            if CANONICAL_ZENODO_RECORD in text:
+                issues.append(f"{rel}: publishes Zenodo record while config DOI is pending")
         for path in banner_files:
             if not path.exists():
                 continue
             if "**Publication:**" in path.read_text(encoding="utf-8"):
                 issues.append(f"{path.relative_to(project_root)}: uses public Publication banner while DOI is pending")
     else:
+        if configured_doi != CANONICAL_PUBLICATION_DOI:
+            issues.append(f"manuscript/config.yaml: doi {configured_doi!r} != canonical {CANONICAL_PUBLICATION_DOI!r}")
         combined = "\n".join(path.read_text(encoding="utf-8") for path in metadata_files if path.exists())
-        if "no Zenodo DOI has been minted yet" in combined or "public Zenodo DOI" in combined:
-            issues.append("config DOI is present but current-facing docs still describe the DOI as pending")
+        for phrase in DOI_PENDING_PHRASES:
+            if phrase in combined:
+                issues.append(f"config DOI is present but current-facing docs still contain pending phrase: {phrase!r}")
+        for rel_path_str in DOI_REQUIRED_PATHS:
+            surface_path = project_root / rel_path_str
+            if not surface_path.exists():
+                issues.append(f"{rel_path_str}: missing required publication surface for configured DOI")
+                continue
+            text = surface_path.read_text(encoding="utf-8")
+            if CANONICAL_PUBLICATION_DOI not in text and CANONICAL_DOI_URL not in text:
+                issues.append(f"{rel_path_str}: configured DOI not cited on required publication surface")
 
     if repository_is_pending:
         for path in metadata_files:
             if not path.exists():
                 continue
-            if UNRESOLVED_SOURCE_REPOSITORY in path.read_text(encoding="utf-8"):
+            if CANONICAL_SOURCE_REPOSITORY in path.read_text(encoding="utf-8"):
                 issues.append(
-                    f"{path.relative_to(project_root)}: publishes unresolved source repository while config repository is pending"
+                    f"{path.relative_to(project_root)}: publishes canonical repository while config repository is pending"
                 )
     else:
         configured_url = _repository_url_from_config(project_root)
@@ -112,10 +154,15 @@ def publication_metadata_issues(
 
 
 __all__ = [
+    "CANONICAL_DOI_URL",
+    "CANONICAL_PUBLICATION_DOI",
     "CANONICAL_SOURCE_REPOSITORY",
+    "CANONICAL_ZENODO_RECORD",
     "DEFAULT_PUBLICATION_BANNER_PATHS",
     "DEFAULT_PUBLICATION_METADATA_PATHS",
     "DEFAULT_PUBLICATION_REPOSITORY_PATHS",
+    "DOI_PENDING_PHRASES",
+    "DOI_REQUIRED_PATHS",
     "UNRESOLVED_PUBLICATION_DOI",
     "UNRESOLVED_SOURCE_REPOSITORY",
     "UNRESOLVED_ZENODO_RECORD",

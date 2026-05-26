@@ -326,4 +326,3 @@ def validate_lean_wiring(
                 f"such declaration was found in the live source"
             )
     return broken
-

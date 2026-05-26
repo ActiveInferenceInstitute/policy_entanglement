@@ -1,5 +1,7 @@
 # AGENTS.md — `src/`
 
+**Publication:** DOI https://doi.org/10.5281/zenodo.20301239 · source https://github.com/docxology/policy_entanglement · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+
 ## Layout
 
 Python companion package for the Policy Entanglement project, organized
@@ -10,6 +12,7 @@ into five subpackages — the four domain subpackages each have their own
 |---|---|---|
 | `lean` | [`src/lean/`](lean/) | Analytical mirrors of the Lean 4 boundary fragment (joint distributions, coupling, free energies, geometry, spectral, heterogeneous, Bernoulli toy, decomposition theorem) plus a numerical-witness layer (`invariants.py`) feeding the dashboard |
 | `simulation` | [`src/simulation/`](simulation/) | pymdp 1.0.1 POMDP harness for coupled-policy ensembles (specs, builders, agents, inference, rollout, sweep, statistics) — also owns the `hyperparameters.py` source-of-truth, the `FreeEnergyBundle` (VFE / EFE / entropy / coupling-term / TC / action-distribution), and the JSONL `RunLogger` |
+| `gnn` | [`src/gnn/`](gnn/) | Fifth-track GNN round-trip (parse → bridge → closed-form comparison → sidecar) |
 | `visualizations` | [`src/visualizations/`](visualizations/) | Reusable plotting helpers (heatmaps, joint plots, spectral, trajectory, graph, log-weight, free-energy dashboards, pymdp-extra dashboards) plus the PNG `tEXt` reproducibility-metadata helpers |
 | `manuscript` | [`src/manuscript/`](manuscript/) | Manuscript registry, token renderer, equation auto-numbering pipeline, citation / bibliography helpers, Lean-source extraction, validators, release output gates (`output_gates/`, `registry_facts.py`, `stale_patterns.py`, `status_patterns.py`) |
 | `reporting` | [`src/reporting/`](reporting/) | Dashboard HTML/JSON/plaintext emission; prefers `infrastructure.reporting.interactive_dashboard` when the repo root is on `PYTHONPATH`, otherwise falls back to `_interactive_dashboard_local.py` |

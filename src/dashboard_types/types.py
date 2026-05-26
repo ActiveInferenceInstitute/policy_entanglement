@@ -150,4 +150,5 @@ class Invariant:
             return False, f"evaluation error: {exc!r}"
         return False, f"unknown kind {self.kind!r}"
 
+
 __all__ = ["Control", "Invariant", "Panel"]

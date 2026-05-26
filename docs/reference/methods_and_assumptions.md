@@ -75,9 +75,13 @@ therefore rests on a reproducible enforced command, not an assertion.
 `ℝ` layer certifies the *exact-arithmetic* mathematics. The Float
 boundary companion `Decomposition.entanglement_decomposition` (Tier
 T3, a typed `hWitness ↦ hWitness` contract) is its
-**numerically-corroborated computational shadow**, corroborated by three independent existing
+**numerically-corroborated computational shadow**, corroborated by four independent existing
 mechanisms: dashboard invariant `decomposition_lhs_eq_rhs_max_residual`
-(worst-case `5.55e-16`), the seeded Monte-Carlo MI concentration /
+(worst-case `5.55e-16`), conservative interval brackets on the K=2
+decomposition sweep grid
+(`src/manuscript/float_real_interval.py` →
+`output/reports/float_real_residual.json`; Tier **N** corroboration
+only — not route (b) discharged), the seeded Monte-Carlo MI concentration /
 √N-convergence tests (§4), and the K=2 numerical witness of the ℝ
 capstone (`tests/test_theorem_map_content.py`, all three capstone
 conjuncts to `1e-9`). This is corroboration, **not** a proof that the

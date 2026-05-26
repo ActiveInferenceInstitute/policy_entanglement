@@ -40,6 +40,7 @@ PROJECT = Path(__file__).resolve().parent.parent.parent
 
 KEYSTONE_BODY = "\n".join(f"theorem {name} : True := trivial" for name in mpg.KEYSTONE_THEOREMS)
 
+
 def _write_fake_lake_script(bin_dir: Path, *, build_rc: int = 0, build_out: str = "OK\n") -> None:
     bin_dir.mkdir(parents=True, exist_ok=True)
     script = bin_dir / "lake"
@@ -73,12 +74,15 @@ exit 1
     )
     script.chmod(0o755)
 
+
 PROJECT = Path(__file__).resolve().parent.parent.parent
+
 
 def _seed_labels_yaml(project_root: Path) -> None:
     refs = project_root / "manuscript" / "refs"
     refs.mkdir(parents=True, exist_ok=True)
     shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+
 
 def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     bindir = tmp_path / "bin"
@@ -88,6 +92,7 @@ def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     lake.chmod(lake.stat().st_mode | stat.S_IXUSR)
     monkeypatch.setenv("PATH", f"{bindir}{os.pathsep}{os.environ.get('PATH', '')}")
 
+
 def _seed_boundary_lean(tmp_path: Path, *, body: str) -> None:
     lean = tmp_path / "lean"
     pkg = lean / "ActinfPolicyEntanglement"
@@ -95,7 +100,9 @@ def _seed_boundary_lean(tmp_path: Path, *, body: str) -> None:
     (pkg / "Demo.lean").write_text(body, encoding="utf-8")
     (lean / "ActinfPolicyEntanglement.lean").write_text("import ActinfPolicyEntanglement.Demo\n", encoding="utf-8")
 
+
 PROJECT = Path(__file__).resolve().parent.parent.parent
+
 
 def test_regression_gate_write_fresh_test_results_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     cov_path = tmp_path / "output" / "reports" / "coverage.json"
@@ -124,6 +131,7 @@ def test_regression_gate_write_fresh_test_results_stub(tmp_path: Path, monkeypat
     assert test_path.exists()
     assert log_path.exists()
 
+
 def test_regression_gate_write_fresh_test_results_pytest_fail(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     cov_path = tmp_path / "output" / "reports" / "coverage.json"
     test_path = tmp_path / "output" / "reports" / "test_results.json"
@@ -144,6 +152,7 @@ def test_regression_gate_write_fresh_test_results_pytest_fail(tmp_path: Path, mo
     )
     assert report is not None
     assert report["pytest_returncode"] == 1
+
 
 def test_regression_gate_critical_coverage_and_invariants(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert rg._critical_module_coverage_issues(tmp_path / "missing.json") == [
@@ -198,6 +207,7 @@ def test_regression_gate_critical_coverage_and_invariants(tmp_path: Path, monkey
     )
     assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 1
 
+
 def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     reports = tmp_path / "output" / "reports"
@@ -242,6 +252,7 @@ def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pyte
     monkeypatch.setattr(rg, "_lean_budget_snapshot", _bad_jobs)
     assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 1
 
+
 def test_theorem_map_helpers_and_write() -> None:
     refs = PROJECT / "manuscript" / "refs"
     registry = load_registry(refs)
@@ -260,6 +271,7 @@ def test_theorem_map_helpers_and_write() -> None:
     assert "Per-theorem four-track" in md
     out = tm.write(PROJECT)
     assert out.exists()
+
 
 def test_build_pdf_mirror_run_and_main_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     bp._mirror_render_auxiliary_files(source_manuscript=tmp_path / "nope", injected_manuscript=tmp_path / "also_nope")
@@ -298,6 +310,7 @@ def test_build_pdf_mirror_run_and_main_paths(tmp_path: Path, monkeypatch: pytest
     monkeypatch.setattr(bp, "render_combined_pdf", _boom)
     assert build_pdf_main(project_root=tmp_path) == 1
 
+
 def test_run_all_manifest_large_file_and_parallel_stderr(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -320,6 +333,7 @@ def test_run_all_manifest_large_file_and_parallel_stderr(tmp_path: Path, monkeyp
     code = run_all_main(["--no-manifest"], project_root=tmp_path, scripts_dir=scripts)
     assert code == 0
 
+
 def test_run_all_validator_break(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -330,10 +344,12 @@ def test_run_all_validator_break(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
         run_all_main(["--only", "validate_outputs", "--no-manifest"], project_root=tmp_path, scripts_dir=scripts) == 1
     )
 
+
 def test_run_all_build_parser_pdf_mathlib_flags() -> None:
     args = ra.build_parser().parse_args(["--with-pdf", "--with-mathlib", "--only", "build_lean"])
     assert args.with_pdf is True
     assert args.with_mathlib is True
+
 
 def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     counts = readiness_mod._status_counts([" R file", "?? x"])
@@ -376,6 +392,7 @@ def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.Mo
     monkeypatch.setattr(readiness_mod.subprocess, "run", _bad_git)
     assert readiness_mod._git_status_lines(tmp_path) == ["(git status failed: no repo)"]
 
+
 def test_validation_cli_rendered_leaks_and_status(tmp_path: Path) -> None:
     rendered = tmp_path / "output" / "manuscript"
     rendered.mkdir(parents=True)
@@ -387,8 +404,10 @@ def test_validation_cli_rendered_leaks_and_status(tmp_path: Path) -> None:
 
     assert _report_status(PROJECT) >= 0
 
+
 def test_validation_cli_main_on_live_manuscript() -> None:
     assert validation_cli_main([], project_root=PROJECT) in (0, 1)
+
 
 def test_pymdp_pipeline_main_stubbed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     import visualizations.pymdp_figures as pf
@@ -416,6 +435,7 @@ def test_pymdp_pipeline_main_stubbed(monkeypatch: pytest.MonkeyPatch, tmp_path: 
     monkeypatch.setattr(pf, "figure_pymdp_free_energies", lambda: (_path("f1.png"), _path("f2.png")))
     pp.main([])
 
+
 def test_mathlib_proofs_gate_branches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     mathlib_dir = tmp_path / "lean" / "MathlibProofs"
     mathlib_dir.mkdir(parents=True)
@@ -437,6 +457,7 @@ def test_mathlib_proofs_gate_branches(tmp_path: Path, monkeypatch: pytest.Monkey
     src.write_text("theorem streamMarginal_productDist : True := trivial\n", encoding="utf-8")
     assert any("expected keystone" in issue for issue in mpg.axiom_audit(mathlib_dir, src))
 
+
 def test_axiom_audit_subprocess_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     mathlib_dir = tmp_path / "lean" / "MathlibProofs"
     mathlib_dir.mkdir(parents=True)
@@ -448,6 +469,7 @@ def test_axiom_audit_subprocess_failure(tmp_path: Path, monkeypatch: pytest.Monk
 
     monkeypatch.setattr(mpg.subprocess, "run", _bad_lean)
     assert any("failed to run" in issue for issue in mpg.axiom_audit(mathlib_dir, src))
+
 
 def test_theorem_map_no_lean_companion_branch() -> None:
     class _Thm:
@@ -463,6 +485,7 @@ def test_theorem_map_no_lean_companion_branch() -> None:
     assert tm._theorem_token(_Thm()) == "`[[THMREF:demo]]`"
     assert tm._lean_link(_Thm()) == "—"
 
+
 def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
     src_ms = tmp_path / "manuscript"
     inj_ms = tmp_path / "output" / "manuscript"
@@ -475,12 +498,14 @@ def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
     assert (inj_ms / "config.yaml").exists()
     assert (inj_ms / "refs.bib").exists()
 
+
 def test_metrics_half_saturation_branches() -> None:
     from simulation.metrics import half_saturation_interpolated
 
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.5, 0.6, 0.6]) == pytest.approx((0.0, 0.5))
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.0, 0.5, 0.5]) == pytest.approx((0.5, 0.25))
     assert half_saturation_interpolated([0.0, 1.0, 2.0], [0.0, 0.4, 0.8]) == pytest.approx((1.0, 0.4))
+
 
 def test_trajectory_plot_rejects_empty_total_correlations(tmp_path: Path) -> None:
     import numpy as np
@@ -494,6 +519,7 @@ def test_trajectory_plot_rejects_empty_total_correlations(tmp_path: Path) -> Non
             total_correlations=np.array([]),
             out_path=tmp_path / "out.png",
         )
+
 
 def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
     import shutil
@@ -511,28 +537,34 @@ def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
     facts = registry_structural_facts(tmp_path)
     assert facts["theorem_registry_count"] >= 1
 
+
 def test_regression_gate_coverage_fail_under_reads_pyproject() -> None:
     assert rg._coverage_fail_under(PROJECT) == pytest.approx(95.0)
+
 
 def test_build_gate_main_detects_disallowed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _install_fake_lake(tmp_path, monkeypatch)
     _seed_boundary_lean(tmp_path, body="unsafe def bad : Nat := 0\n")
     assert build_gate_main(project_root=tmp_path) == 1
 
+
 def test_build_gate_main_detects_sorry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _install_fake_lake(tmp_path, monkeypatch)
     _seed_boundary_lean(tmp_path, body="theorem t : True := by sorry\n")
     assert build_gate_main(project_root=tmp_path) == 1
+
 
 def test_build_gate_main_detects_axiom(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _install_fake_lake(tmp_path, monkeypatch)
     _seed_boundary_lean(tmp_path, body="axiom cheat : True\n")
     assert build_gate_main(project_root=tmp_path) == 1
 
+
 def test_build_gate_main_detects_mathlib_import(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _install_fake_lake(tmp_path, monkeypatch)
     _seed_boundary_lean(tmp_path, body="import Mathlib.Data.Nat.Basic\n")
     assert build_gate_main(project_root=tmp_path) == 1
+
 
 def test_build_gate_main_success_summary(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
@@ -542,6 +574,7 @@ def test_build_gate_main_success_summary(
     assert build_gate_main(project_root=tmp_path) == 0
     out = capsys.readouterr().out
     assert "OK  lake build succeeded" in out
+
 
 def test_regression_gate_lean_budget_snapshot_parses_script(tmp_path: Path) -> None:
     scripts = tmp_path / "scripts"
@@ -553,11 +586,13 @@ def test_regression_gate_lean_budget_snapshot_parses_script(tmp_path: Path) -> N
     snap = rg._lean_budget_snapshot(project_root=tmp_path, scripts_dir=scripts)
     assert snap == {"lake_jobs": 21, "sorries": 0, "axioms": 0, "unsafe": 0}
 
+
 def test_regression_gate_lean_budget_snapshot_returns_none_on_failure(tmp_path: Path) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
     (scripts / "build_lean.py").write_text("import sys\nsys.exit(1)\n", encoding="utf-8")
     assert rg._lean_budget_snapshot(project_root=tmp_path, scripts_dir=scripts) is None
+
 
 def test_regression_gate_gate_with_lean_snapshot(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     reports = tmp_path / "output" / "reports"
@@ -614,6 +649,7 @@ def test_regression_gate_gate_with_lean_snapshot(tmp_path: Path, monkeypatch: py
     monkeypatch.setenv("REGRESSION_GATE_USE_EXISTING_TEST_REPORT", "1")
     assert rg.gate(project_root=tmp_path, scripts_dir=scripts, baseline_path=baseline) == 0
 
+
 def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     class _Status:
         tests_total = 10
@@ -650,6 +686,7 @@ def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: py
     assert path.exists()
     assert "Release Readiness Report" in path.read_text(encoding="utf-8")
 
+
 def test_build_pdf_main_success_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -676,6 +713,7 @@ def test_build_pdf_main_success_path(tmp_path: Path, monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(bp, "render_combined_pdf", _fake_render)
     assert bp.main(project_root=tmp_path) == 0
 
+
 def test_run_all_inserts_pdf_and_mathlib_stages(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -699,6 +737,7 @@ def test_run_all_inserts_pdf_and_mathlib_stages(tmp_path: Path, monkeypatch: pyt
     )
     assert code == 0
 
+
 def test_run_all_validator_failure_stops_early(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     scripts = tmp_path / "scripts"
     scripts.mkdir()
@@ -709,6 +748,7 @@ def test_run_all_validator_failure_stops_early(tmp_path: Path, monkeypatch: pyte
     )
     code = run_all_main(["--no-manifest"], project_root=tmp_path, scripts_dir=scripts)
     assert code == 1
+
 
 def test_validation_cli_report_issues_prints_every_branch(capsys) -> None:
     report = ManuscriptValidationReport(
@@ -732,6 +772,7 @@ def test_validation_cli_report_issues_prints_every_branch(capsys) -> None:
     assert "missing leading heading" in captured
     assert "four-track wiring" in captured
 
+
 def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys) -> None:
     rendered = tmp_path / "output" / "manuscript"
     rendered.mkdir(parents=True)
@@ -743,6 +784,7 @@ def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys)
     assert "skipped" in capsys.readouterr().out
 
     assert _report_status(PROJECT) >= 0
+
 
 def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
     ms = tmp_path / "manuscript"
@@ -766,8 +808,10 @@ def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
     _write_preamble_tex(source_manuscript=ms, preamble_tex=pre)
     assert "custom" in pre.read_text(encoding="utf-8")
 
+
 def test_build_pdf_main_missing_manuscript(tmp_path: Path) -> None:
     assert build_pdf_main(project_root=tmp_path) != 0
+
 
 def test_regenerate_injected_manuscript_fails_on_bad_script(tmp_path: Path) -> None:
     scripts = tmp_path / "scripts"
@@ -776,8 +820,10 @@ def test_regenerate_injected_manuscript_fails_on_bad_script(tmp_path: Path) -> N
     code = regenerate_injected_manuscript(project_root=tmp_path)
     assert code == 3
 
+
 def test_build_gate_main_missing_lean_dir(tmp_path: Path) -> None:
     assert build_gate_main(project_root=tmp_path) == 2
+
 
 def test_run_all_spawn_serial_and_parallel(tmp_path: Path) -> None:
     scripts = tmp_path / "scripts"
@@ -792,9 +838,11 @@ def test_run_all_spawn_serial_and_parallel(tmp_path: Path) -> None:
     batch = _run_parallel_batch(["ok.py"], max_workers=1, scripts_dir=scripts, project_root=tmp_path)
     assert batch[0].returncode == 0
 
+
 def test_regression_gate_parse_pytest_counts_errors_alias() -> None:
     counts = rg._parse_pytest_counts("==== 1 passed, 2 error in 0.1s ====")
     assert counts["errors"] == 2
+
 
 def test_regression_gate_update_baseline_on_pass(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     reports = tmp_path / "output" / "reports"

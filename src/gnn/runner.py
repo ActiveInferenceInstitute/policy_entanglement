@@ -142,9 +142,7 @@ def _plot(payload: dict[str, object], fig_path: Path) -> None:
             statistics={
                 "max_abs_residual": payload["max_abs_residual"],
                 "tolerance": payload["tolerance"],
-                "negative_control_zero_coupling_max_residual": payload[
-                    "negative_control_zero_coupling_max_residual"
-                ],
+                "negative_control_zero_coupling_max_residual": payload["negative_control_zero_coupling_max_residual"],
             },
             uncertainty_semantics="deterministic_grid",
         ),
@@ -187,7 +185,9 @@ def run(*, data_dir: Path, fig_dir: Path, gnn_dir: Path, lean_out: Path | None =
     if not payload["round_trip_passes"]:
         print(f"GNN round-trip FAILED: max residual {payload['max_abs_residual']} > tol {payload['tolerance']}")
         return 1
-    if not payload["negative_control_discriminates"]:  # pragma: no cover - defensive: the fixed non-trivial lambda grid makes zero-coupling always diverge
+    if not payload[
+        "negative_control_discriminates"
+    ]:  # pragma: no cover - defensive: the fixed non-trivial lambda grid makes zero-coupling always diverge
         print("GNN round-trip negative control is VACUOUS (zero-coupling did not diverge)")
         return 1
     print(

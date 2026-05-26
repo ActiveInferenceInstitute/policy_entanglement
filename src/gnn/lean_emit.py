@@ -46,9 +46,7 @@ def _emit_binary_fn1(name: str, vec: np.ndarray) -> str:
 def _emit_binary_fn2(name: str, mat: np.ndarray) -> str:
     """Emit a ``Bool -> Bool -> Float`` function body from a 2x2 matrix."""
     arms = "\n".join(
-        f"  | {_bool_arg(i)}, {_bool_arg(j)} => {_lean_float(float(mat[i, j]))}"
-        for i in range(2)
-        for j in range(2)
+        f"  | {_bool_arg(i)}, {_bool_arg(j)} => {_lean_float(float(mat[i, j]))}" for i in range(2) for j in range(2)
     )
     return f"def {name} : Bool → Bool → Float := fun a b =>\n  match a, b with\n{arms}"
 
@@ -69,9 +67,7 @@ def emit_lean_structure(model: GnnModel, *, namespace: str = "GnnGenerated") -> 
     k = model.num_streams
     card = stream_cardinality(model)
     if k != 2 or card != 2:
-        raise ValueError(
-            f"emit_lean_structure targets the K=2 binary contract; got K={k}, cardinality={card}"
-        )
+        raise ValueError(f"emit_lean_structure targets the K=2 binary contract; got K={k}, cardinality={card}")
     priors = per_stream_priors(model)
     coupling = model.variable("J").matrix()
     lam = model.variable("lam").scalar() if model.has("lam") else 0.0

@@ -377,6 +377,26 @@ def validate_pdf_artifacts(*, project_root: Path,
                            template_root: Path | None = None) -> list[PdfValidationIssue]
 ```
 
+### `audit_matrix.py`
+
+Claim audit matrix rows for the pymdp / Lean / manuscript cross-check CSV.
+
+```python
+AUDIT_MATRIX_COLUMNS: tuple[str, ...]
+def build_audit_matrix_rows(project_root: Path) -> list[dict[str, str]]
+def render_audit_matrix_csv(project_root: Path) -> str
+def write_audit_matrix(project_root: Path, output_path: Path | None = None) -> Path
+```
+
+### `float_real_interval.py`
+
+Tier-N interval bracket witness for Float decomposition residuals on the K=2
+sweep grid (numerical corroboration only — not a Lean/Flocq proof).
+
+```python
+def decomposition_interval_bracket(grid: SweepGrid) -> dict[str, Any]
+```
+
 ### `variables.py`
 
 Thin facade for the manuscript-variable builder consumed by
@@ -387,7 +407,7 @@ Thin facade for the manuscript-variable builder consumed by
 ```python
 PROJECT_ROOT: Path
 def build_manuscript_variables(project_root: Path | None = None) -> dict[str, Any]
-def build_float_real_residual(project_root: Path | None = None) -> dict[str, float]
+def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]
 def write_float_real_residual(
     output_path: Path | None = None,
     *,
@@ -449,14 +469,19 @@ def hyperparameter_facts() -> dict[str, object]
 
 ### `publication_metadata.py`
 
-Publication canon checks (canonical repository URL, pending DOI banners).
+Publication canon checks (canonical repository URL and DOI state).
 
 ```python
+CANONICAL_PUBLICATION_DOI: str
+CANONICAL_ZENODO_RECORD: str
+CANONICAL_DOI_URL: str
 CANONICAL_SOURCE_REPOSITORY: str
 WRONG_SOURCE_REPOSITORY: str
-UNRESOLVED_SOURCE_REPOSITORY: str
-UNRESOLVED_PUBLICATION_DOI: str
+UNRESOLVED_PUBLICATION_DOI: str  # alias of CANONICAL_PUBLICATION_DOI
 UNRESOLVED_ZENODO_RECORD: str
+UNRESOLVED_SOURCE_REPOSITORY: str
+DOI_REQUIRED_PATHS: tuple[str, ...]
+DOI_PENDING_PHRASES: tuple[str, ...]
 DEFAULT_PUBLICATION_METADATA_PATHS: tuple[str, ...]
 DEFAULT_PUBLICATION_REPOSITORY_PATHS: tuple[str, ...]
 DEFAULT_PUBLICATION_BANNER_PATHS: tuple[str, ...]

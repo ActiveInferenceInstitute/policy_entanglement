@@ -64,10 +64,10 @@ for the Python computational layer and the manuscript registry;
 
 **Repository artifact.** All four tracks (prose, equations, Python /
 pymdp, Lean 4) are maintained as a single working repository artifact
-[@friedman-2026-actinf-policy-entanglement]. The public Zenodo DOI and
-public source archive are pending, so the current citation metadata is
-intentionally limited to the working-manuscript entry rather than a
-canonical archival URL. The entire build — rendered PDF, pymdp
+[@friedman-2026-actinf-policy-entanglement]. The public Zenodo DOI
+(`10.5281/zenodo.20301239`) and source repository are recorded in
+[`manuscript/config.yaml`](config.yaml) and [`CITATION.cff`](../CITATION.cff).
+The entire build — rendered PDF, pymdp
 1.0.1 numerical sidecars, dashboard invariants, and the `MathlibProofs`
 $\mathbb{R}$-level discharge — regenerates from a single command
 (`./run.sh --pipeline` or `python scripts/run_all.py`), and the

@@ -438,7 +438,6 @@ Plotly.restyle(panelId, {z: [Z]}, [0]);
     return d
 
 
-
 def write_dashboard(args: argparse.Namespace) -> dict[str, Path]:
     """Compute, build, and persist all dashboard artifacts.
 

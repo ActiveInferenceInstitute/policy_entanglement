@@ -1,6 +1,6 @@
 # Policy Entanglement in Active Inference
 
-> **Citation metadata:** public Zenodo DOI pending · source repository
+> **Citation metadata:** DOI [`10.5281/zenodo.20301239`](https://doi.org/10.5281/zenodo.20301239) · source repository
 > [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement)
 > · cite via [`CITATION.cff`](CITATION.cff)
 
@@ -366,8 +366,7 @@ Ensembles, with Information-Geometric, Spectral, and
 Lean-Formalization Treatments.* Active Inference Institute (working
 manuscript).
 
-> **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) currently
-> carries `doi: ""` (Zenodo deposit pending). Source code and reproducibility
-> artifacts live at
+> **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) carries DOI
+> [`10.5281/zenodo.20301239`](https://doi.org/10.5281/zenodo.20301239). Source code and
+> reproducibility artifacts live at
 > [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement).
-> Cite the working manuscript as above until a DOI is minted.

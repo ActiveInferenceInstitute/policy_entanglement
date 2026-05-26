@@ -122,3 +122,14 @@ It should not say:
 * "pymdp is required for the whole project"; it is optional and guarded.
 * "The analytical layer recomputes pymdp EFE"; it deliberately passes
   zero per-stream `G` to avoid double counting.
+
+## Claim audit matrix
+
+Cross-track claim ledger (theorem rows + pymdp / GNN / Mathlib / publication /
+regression tracks):
+
+- CSV: [`../_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+- Generator: `uv run python scripts/generate_audit_matrix.py --write`
+- Drift gate: `tests/test_status_docs.py` (minimum row count, theorem coverage, artifact paths)
+- Publication DOI: https://doi.org/10.5281/zenodo.20301239 (wired in `manuscript/config.yaml`, `CITATION.cff`, and `src/manuscript/publication_metadata.py`)
+

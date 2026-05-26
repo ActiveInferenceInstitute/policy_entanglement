@@ -89,7 +89,8 @@ MATHLIB_PROOF_SCRIPTS: list[tuple[str, str]] = [
 # Validators that abort the pipeline immediately on non-zero exit (derived
 # from the post-empirical tail plus optional PDF/readiness gates).
 FAIL_FAST_VALIDATORS: frozenset[str] = frozenset(
-    name for name, _ in (
+    name
+    for name, _ in (
         ("validate_outputs.py", ""),
         ("validate_manuscript.py", ""),
         *PDF_BUILD_SCRIPTS,

@@ -29,11 +29,23 @@ def test_parameter_sweep_required_columns_matches_default_utilities() -> None:
 
 def test_float_real_residual_artifact_finite_and_consistent(tmp_path: Path) -> None:
     payload = build_float_real_residual(tmp_path)
-    for value in payload.values():
+    for key, value in payload.items():
+        if key.endswith("_contains_float"):
+            assert isinstance(value, bool)
+            assert value is True
+            continue
+        if key.endswith("_reference"):
+            assert isinstance(value, str)
+            continue
         assert isinstance(value, float)
         assert value == value  # finite
     assert payload["decomposition_lhs_eq_rhs_max_residual"] >= 0.0
     assert payload["capstone_conjunct_tolerance"] == 1e-9
+    assert (
+        payload["decomposition_lhs_eq_rhs_max_residual"]
+        <= float(payload["decomposition_interval_upper"]) + 1e-18
+    )
+    assert payload["decomposition_interval_contains_float"] is True
     assert (
         abs(payload["montecarlo_mi_sample_mean"] - payload["montecarlo_mi_closed_form"])
         <= payload["montecarlo_mi_concentration_radius"] + 1e-12

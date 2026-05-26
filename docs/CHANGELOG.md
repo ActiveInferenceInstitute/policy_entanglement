@@ -7,7 +7,23 @@ internal review cadence; each round closes with a green
 authoritative — this file is the human-readable explanation of *why*
 those counts moved between rounds.
 
-*Last reviewed: 2026-05-25.*
+*Last reviewed: 2026-05-26.*
+
+---
+
+## Maintenance — 2026-05-26 (publication DOI, audit matrix, interval witness)
+
+- Wired Zenodo DOI `10.5281/zenodo.20301239` through `manuscript/config.yaml`,
+  `CITATION.cff`, citation registry, and `src/manuscript/publication_metadata.py`
+  (inverted pending-DOI gates for current-facing docs).
+- Added `src/manuscript/audit_matrix.py` +
+  `scripts/generate_audit_matrix.py` → 28-row claim ledger CSV under
+  `docs/_audit/` with drift gates in `tests/test_status_docs.py`.
+- Added Tier-N interval bracket witness
+  (`src/manuscript/float_real_interval.py`) extending
+  `output/reports/float_real_residual.json`; registry row
+  `roadmap_float_real_residual` remains `roadmap`.
+- New folder docs: `src/gnn/`, `src/reporting/` (`AGENTS.md` / `README.md`).
 
 ---
 

@@ -66,7 +66,10 @@ COUNT_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s+scripts\b"), "run_all_scripts_len"),
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)(?:st|nd|rd|th)?[`*]*\s+lake jobs?\b"), "lean_lake_jobs_total"),
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)(?:st|nd|rd|th)?[`*]*\s+`?lake`?\s+jobs?\b"), "lean_lake_jobs_total"),
-    (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s*/\s*[`*]*\d+[`*]*\s+(?:`?lake`?\s+)?jobs?\b"), "lean_lake_jobs_total"),
+    (
+        re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s*/\s*[`*]*\d+[`*]*\s+(?:`?lake`?\s+)?jobs?\b"),
+        "lean_lake_jobs_total",
+    ),
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s+Lean submodules\b"), "lean_submodule_count"),
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s+submodules\b"), "lean_submodule_count"),
     (re.compile(r"(?i)(?:^|[^\w])[`*]*(\d+)[`*]*\s+proved\b(?!\s+\w)"), "tally_proved"),

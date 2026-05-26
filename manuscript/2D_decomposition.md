@@ -49,7 +49,9 @@ source:
 > computational image of the $\mathbb{R}$ proof; closing the
 > Float$\leftrightarrow\mathbb{R}$ formal bridge is the one
 > *verification-stack interface* residual (the open residual discussed
-> at [[SECREF:discussion]]; the remaining typed-API rows are the
+> at [[SECREF:discussion]]; interval brackets on the K=2 sweep grid in
+> `output/reports/float_real_residual.json` corroborate Float
+> decomposition residuals but do not discharge the bridge); the remaining typed-API rows are the
 > analytic-discharge follow-on tracked at [[SECREF:open_questions]], not
 > a separate verification gap).
 > See the *honest substantive / typed-API split* in

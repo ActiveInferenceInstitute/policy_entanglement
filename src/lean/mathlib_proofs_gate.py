@@ -118,8 +118,7 @@ def _hydrate_mathlib_cache(mathlib_dir: Path) -> None:
 
     combined = (proc.stdout or "") + (proc.stderr or "")
     print(
-        "!!! Mathlib cache hydration failed; falling back to lake build "
-        f"(exit {proc.returncode}).",
+        f"!!! Mathlib cache hydration failed; falling back to lake build (exit {proc.returncode}).",
         file=sys.stderr,
     )
     if combined.strip():

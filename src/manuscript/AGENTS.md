@@ -26,7 +26,10 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | `readiness.py` | Release-readiness orchestration; emitters in `readiness_emit.py`. |
 | `readiness_emit.py` | Markdown/JSON/index writers for reviewer release artifacts. |
 | `theorem_map.py` | Four-track theorem wiring table generator for [`scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). |
-| `variables.py` | `build_manuscript_variables` / `write_manuscript_variables` for [`scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py). |
+| `audit_matrix.py` | Claim audit matrix rows for [`scripts/generate_audit_matrix.py`](../../scripts/generate_audit_matrix.py). |
+| `float_real_interval.py` | Tier-N interval bracket witness for Float decomposition residuals (not a Lean proof). |
+| `publication_metadata.py` | DOI / repository URL drift gates for current-facing docs. |
+| `variables.py` | `build_manuscript_variables` / `write_manuscript_variables` / `build_float_real_residual` for [`scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py). |
 | `stale_patterns.py` | Shared stale-reference regex constants for status and validation gates. |
 | `output_gates/` | Release validators for `output/` artifacts (PNG metadata, CSV sidecars, pymdp bundles, manuscript-variable ranges); thin CLI: [`scripts/validate_outputs.py`](../../scripts/validate_outputs.py). |
 

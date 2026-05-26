@@ -27,6 +27,7 @@ import numpy as np
 
 from lean.bernoulli_toy import empirical_mutual_information_montecarlo, ising_mutual_information
 from lean.invariants import SweepGrid, decomposition_invariants
+from manuscript.float_real_interval import decomposition_interval_bracket
 from manuscript.variables_analytical import (
     alignment_and_phase_facts,
     bernoulli_facts,
@@ -68,7 +69,7 @@ def build_manuscript_variables(project_root: Path | None = None) -> dict[str, An
     return facts
 
 
-def build_float_real_residual(project_root: Path | None = None) -> dict[str, float]:
+def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]:
     """Machine-readable Float↔ℝ residual certificate (scaffold, not a proof)."""
     _ = project_root
     grid = SweepGrid(
@@ -92,7 +93,8 @@ def build_float_real_residual(project_root: Path | None = None) -> dict[str, flo
     closed = float(ising_mutual_information(lam))
     concentration_radius = float(4.0 * sd / np.sqrt(n_seeds) + bias_tol)
 
-    return {
+    bracket = decomposition_interval_bracket(grid)
+    payload: dict[str, float | bool] = {
         "decomposition_lhs_eq_rhs_max_residual": max_residual,
         "montecarlo_mi_lambda": lam,
         "montecarlo_mi_closed_form": closed,
@@ -100,6 +102,8 @@ def build_float_real_residual(project_root: Path | None = None) -> dict[str, flo
         "montecarlo_mi_concentration_radius": concentration_radius,
         "capstone_conjunct_tolerance": 1e-9,
     }
+    payload.update(bracket)
+    return payload
 
 
 def write_float_real_residual(

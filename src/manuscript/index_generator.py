@@ -102,8 +102,7 @@ def build_index_text(*, manuscript_dir: Path) -> str:
     body_files = sorted(
         p
         for p in manuscript_dir.glob("*.md")
-        if p.name not in MANUSCRIPT_NON_BODY_MD
-        and (p.name[0].isdigit() and not p.name.startswith("99_"))
+        if p.name not in MANUSCRIPT_NON_BODY_MD and (p.name[0].isdigit() and not p.name.startswith("99_"))
     )
     for p in body_files:
         if p.name in file_to_section:

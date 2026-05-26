@@ -1,5 +1,7 @@
 # AGENTS.md — `manuscript/`
 
+**Publication:** DOI https://doi.org/10.5281/zenodo.20301239 · configured in [`config.yaml`](config.yaml) · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+
 ## Current state
 
 * **28 front/body/part section files** (Part I 1A–1C; Part II 2A–2J; Part III 3A–3B;

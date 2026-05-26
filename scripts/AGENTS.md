@@ -1,5 +1,7 @@
 # AGENTS.md — `scripts/`
 
+**Publication:** DOI https://doi.org/10.5281/zenodo.20301239 · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+
 ## Constitution (thin-orchestrator rules)
 
 1. **No business logic.**  If a function does math, it belongs in
@@ -83,6 +85,7 @@
 | `build_dashboard.py` | sim + web | interactive multi-view Plotly dashboard at `output/web/dashboard.html` (six panels, three live controls), companion plaintext `output/reports/dashboard_invariants.txt` + `output/reports/dashboard_summary.txt` + `output/data/dashboard_payload.json`. Every grid / utility / threshold is a CLI flag; exits non-zero on any invariant failure. |
 | `generate_index.py` | manuscript | regenerate `manuscript/INDEX.md` from registry |
 | `generate_theorem_map.py` | manuscript | regenerate `docs/reference/_theorem_map.md` four-track wiring table |
+| `generate_audit_matrix.py` | manuscript | regenerate `docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv` claim ledger |
 | `inject_manuscript_variables.py` | manuscript | resolve every `[[…]]` token, auto-number every `$$..$$` |
 | `validate_outputs.py` | gate | thin CLI → `manuscript.output_gates/` package |
 | `validate_manuscript.py` | gate | tokens / citations / links / hardcoded refs / numeric ranges |
