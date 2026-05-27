@@ -66,6 +66,21 @@ None for v1 ship.
 
 ---
 
+## Post-polish re-verdict (`4b312d4..86b9557`)
+
+**Verdict:** **APPROVE**
+
+Optional findings F2–F5 are closed with structural refactors only: `decomposition_invariants_from_points` eliminates the redundant sweep; `decomposition_interval_worst_lambda` tracks the margin-widened peak in one pass; dead API surface (`project_root`, legacy publication aliases) is removed; tests add the negative inflated-invariant case and pin worst-λ to the interval peak.
+
+| ID | Severity | Location | Finding |
+| --- | --- | --- | --- |
+| F1′ | Informational (carry-forward) | `float_real_interval.py`, `variables.py` | `decomposition_invariant_within_interval` remains a same-sweep wiring check — Tier-N labeling correct. |
+| NP1 | Informational | `tests/test_audit_matrix_and_float_interval.py` | Worst-λ test inlines margin math; acceptable isolation, minor drift risk if formula changes. |
+
+No new blockers. Review date: 2026-05-27.
+
+---
+
 ## Related
 
 - Prior round review: [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md)

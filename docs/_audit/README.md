@@ -15,12 +15,17 @@ reports under `output/reports/`.
 root `ISA.md`). See [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) §8 and root
 [`ISA.md`](../../ISA.md) v1 ship closure.
 
+**Supersession (post-v1 thermo polish @ `86b9557`):** closed optional findings
+F2–F5 from the v1 thermo closure review; see Applied section in
+[`THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md`](THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md)
+and [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) §9.
+
 | Snapshot | Role |
 | --- | --- |
-| [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) | Full doc-drift + claim-contract gate sweep; §8 v1 gate snapshot |
+| [`DOC_MANUSCRIPT_AUDIT_2026-05-26.md`](DOC_MANUSCRIPT_AUDIT_2026-05-26.md) | Full doc-drift + claim-contract gate sweep; §8 v1 gate snapshot; §9 post-polish snapshot |
 | [`pymdp_lean_manuscript_matrix_2026-05-21.csv`](pymdp_lean_manuscript_matrix_2026-05-21.csv) | Live claim audit matrix (28 rows; regenerate via `scripts/generate_audit_matrix.py --write`) |
 | [`MATHLIB_AXIOM_AUDIT.md`](MATHLIB_AXIOM_AUDIT.md) | Dated static `#print axioms` witness for MathlibProofs keystone (referee-readable without rebuild) |
 | [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md) | Round-7–10 code-quality audits + applied fixes (superseded by v1 closure review) |
-| [`THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md`](THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md) | v1 ship thermo-nuclear sign-off @ `8b41085` / `85a8224` |
+| [`THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md`](THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md) | v1 ship thermo-nuclear sign-off @ `8b41085` / `85a8224`; post-polish F2–F5 closed @ `86b9557` |
 | [`FOUR_SKILL_ASSESSMENT_2026-05-19.md`](FOUR_SKILL_ASSESSMENT_2026-05-19.md) | Pass-2 RedTeam deferred-item disposition (FAQ/CHANGELOG reference) |
 | [`ISA_20260525_robustness_cluster.md`](ISA_20260525_robustness_cluster.md) | Round-9 robustness cluster module boundaries |

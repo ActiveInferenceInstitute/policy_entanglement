@@ -181,7 +181,7 @@ Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contra
 
 **Commit:** `fd95c99` — canonical DOI, audit matrix, Float interval witness, folder docs.
 
-### Thermo re-audit follow-up (pending commit)
+### Thermo re-audit follow-up (shipped @ 8b41085)
 
 | Item | Change |
 | --- | --- |
@@ -210,4 +210,22 @@ Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contra
 | Rendered manuscript markdown | 38 |
 
 **Verdict:** v1 documentation and manuscript claims are **consistent with live implementation and gates** at commit `8b41085`. Historical §1–§4 rows (pending DOI, stub audit matrix) are preserved for audit trail only.
+
+---
+
+## 9 — post-polish gate snapshot (`86b9557`)
+
+**Commit:** `86b9557` — post-v1 thermo polish (single sweep, interval worst-λ, API cleanup, alias consolidation)  
+**Generated at:** 2026-05-27 (local gates; authoritative JSON under `output/reports/`)
+
+| Gate | value |
+| --- | --- |
+| Commit | `86b9557` |
+| Pytest | 1473 passed / 1 skipped |
+| Coverage (`src/`) | 95.02% |
+| Regression invariants | 47/47 |
+| Combined PDF pages | 169 (re-rendered) |
+| Delta vs §8 | F2–F5 refactor only; no claim-matrix or DOI changes |
+
+**Verdict:** post-polish code and documentation are **consistent with live gates** at commit `86b9557`. §8 remains the v1 baseline snapshot; this section records the optional thermo polish ship only.
 

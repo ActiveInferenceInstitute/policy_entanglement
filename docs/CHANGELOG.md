@@ -7,7 +7,21 @@ internal review cadence; each round closes with a green
 authoritative — this file is the human-readable explanation of *why*
 those counts moved between rounds.
 
-*Last reviewed: 2026-05-26.*
+*Last reviewed: 2026-05-27.*
+
+---
+
+## Maintenance — 2026-05-27 (post-v1 thermo polish @ 86b9557)
+
+- `decomposition_invariants_from_points`; single sweep in `build_float_real_residual`.
+- Interval worst-λ tracks margin-widened upper peak.
+- Removed `project_root` from `build_float_real_residual()`; `CANONICAL_*` only in
+  `publication_metadata` (`LEGACY_*` / `UNRESOLVED_*` aliases removed — supersede
+  the demoted-export note in the 2026-05-26 thermo re-audit entry below).
+- Negative witness: `test_decomposition_interval_bracket_rejects_inflated_invariant`.
+
+**Verification:** 1473 passed, 1 skipped, 95.02% `src/` coverage, `make readiness` +
+PDF validation @ `86b9557`.
 
 ---
 
@@ -34,7 +48,7 @@ those counts moved between rounds.
 - Interval witness: two-source `decomposition_invariant_within_interval` check
   (replaces tautological `decomposition_interval_contains_float`).
 - `publication_metadata.py`: `LEGACY_*` exports; `UNRESOLVED_*` demoted from
-  `__all__`.
+  `__all__` (aliases **removed** in post-v1 polish @ `86b9557`).
 - Audit matrix: `TheoremEntry` extended fields, `manuscript/refs/audit_tracks.yaml`,
   collapsed test-gate normalizer, drift test for silent veridical fallback.
 
