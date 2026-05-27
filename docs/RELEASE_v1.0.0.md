@@ -11,8 +11,9 @@ Publication surfaces for the public release under
 | Git tag | `v1.0.0` |
 | Zenodo concept record | https://zenodo.org/records/20418904 |
 | Citation DOI (concept) | https://doi.org/10.5281/zenodo.20418904 |
-| Latest version record (v1.0.0) | https://zenodo.org/records/20419536 |
-| Latest version DOI | https://doi.org/10.5281/zenodo.20419536 |
+| Latest version record (v1.0.0) | https://zenodo.org/records/20419637 |
+| Latest version DOI | https://doi.org/10.5281/zenodo.20419637 |
+| Deposit PDF (v1.0.0) | `Friedman_2026_Policy_ae7cdd62.pdf` (SHA-256 `ae7cdd62…`) |
 
 Release receipt: see `release_bundle/RELEASE_RECEIPT.json` under the template
 monorepo copy step when publishing via `scripts/publish_project_release.py`.
