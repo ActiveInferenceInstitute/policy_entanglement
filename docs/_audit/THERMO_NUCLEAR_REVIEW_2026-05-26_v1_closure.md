@@ -62,7 +62,7 @@ None for v1 ship.
 | F5 | **Closed** | Removed `LEGACY_*` / `UNRESOLVED_*` aliases; `CANONICAL_*` only in `__all__` |
 | Test | **Closed** | `test_decomposition_interval_bracket_rejects_inflated_invariant` |
 
-**Re-verdict:** APPROVE after polish. `make readiness` exit 0; `validate_pdf.py` pass; 1473 passed / 1 skipped; 95.02% coverage; combined PDF under `output/pdf/`.
+**Ship @ `86b9557`:** `make readiness` exit 0; `validate_pdf.py` pass; 1473 passed / 1 skipped; 95.02% coverage; combined PDF under `output/pdf/`.
 
 ---
 
