@@ -35,6 +35,17 @@ witnesses, and the Python numerics would be untethered to anything
 written down. The four-track contract — and the CI gates that
 enforce it — exist to make that drift impossible.
 
+**Four-track proof contract vs GNN fifth track.** The four CI-gated tracks
+above bind the **theorem registry** (prose, equations, Python numerical
+companions, Lean boundary fragment). Supplement
+[`S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md)
+adds a **fifth empirical track** — GNN parse, round-trip, and sidecar
+evidence under `src/gnn/` — that does **not** promote registry rows or
+extend the four-track proof contract. S08 is concordance-checked and
+VAR-bound, but GNN remains explicitly non-proof-promoting; see
+[`veridical_status.md`](veridical_status.md) and the GNN row in
+[`docs/modules/README.md`](../modules/README.md).
+
 ## The four tracks
 
 | Track | Source of truth | Render path |

@@ -5,7 +5,7 @@
 ## Current state
 
 * **29 front/body/part section files** (front matter `0A`; Part I 1A–1C; Part II 2A–2J; Part III 3A–3B;
-  Part IV 4A–4E; Part V 5A–5D; Part VI 6A–6C, plus front-matter `0A`).
+  Part IV 4A–4E; Part V 5A–5D; Part VI 6A–6C).
 * **8 supplements** (`S01`–`S08`).
 * **1 auto-generated bibliography** (`99_bibliography.md`) sourced from
   [`refs/citations.yaml`](refs/citations.yaml).  Live citation and

@@ -8,6 +8,8 @@ progress: 26/26
 mode: complete
 started: 2026-05-24T15:30:00-07:00
 updated: 2026-05-24T16:30:00-07:00
+v1_commit: 8b41085
+docs_commit: 85a8224
 ---
 
 # ISA — actinf_policy_entanglement_lean: whole-project publication-readiness review
@@ -176,3 +178,10 @@ RedTeam concur, and a certify verdict issued.
 - ISC-25: **VERDICT = READY (CERTIFY) with named residuals.** The artifact is accurate and complete and the gate + ℝ-keystone audit + cross-vendor + advisor concur; the named residuals are honest *future work*, not blockers: (a) the Float↔ℝ verified bridge (multi-week Lean research, never to be faked); (b) terminal `prop_11_2`/`thm_11_1` (no independent numeric route possible in principle); (c) the H-gap sweep gate is a column-consistency check, not a two-route witness (bounded — single-column drift caught + genuine two-route TC test exists); (d) oracle-completeness gaps (the green gate cannot see semantic-but-valid token mis-targets, hardcoded-numeric recurrence, or reader surfaces outside the 4-file whitelist — mitigated by this review's manual pass + the fail-closed axiom gate + the dated witness).
 
 🔒 ARTIFACT-BACKING: every `[x]` carries a quoted token (gate output, axiom line, render check, test names, file:line fixes). 0 reverted.
+
+## v1 ship closure (`8b41085` / `85a8224`)
+
+- **Code ship @ `8b41085`:** Zenodo DOI live (`10.5281/zenodo.20301239`); 28-row claim audit matrix; honest Tier-N interval witness field `decomposition_invariant_within_interval` (two-source check; no tautological contains flag).
+- **Docs sweep @ `85a8224`:** manuscript section arithmetic 29 + 8 + 1 = 38 rendered; audit snapshot §8; signposting (package lists, claim-matrix pointers, CONTRIBUTING layout).
+- **Gates @ `8b41085`:** 1471 collected; 1470 passed / 0 failed / 1 skipped; 95.02% `src/` coverage; 47/47 dashboard invariants; 169-page combined PDF.
+- **Transient audit cleanup:** removed superseded shards `ISA_20260522_workplan_implement.md` and `ISA_20260524_gnn_fifth_track.md` from `docs/_audit/` (outcomes live in shipped code, S08, and this ledger).
