@@ -4,7 +4,7 @@ A complete technical reference for the Policy Entanglement project,
 organized into four topic subdirectories so a reader can find any
 concept in two clicks.
 
-> **Citation metadata:** DOI [`10.5281/zenodo.20419509`](https://doi.org/10.5281/zenodo.20419509); source repository URL
+> **Citation metadata:** DOI [`10.5281/zenodo.20419536`](https://doi.org/10.5281/zenodo.20419536); source repository URL
 > is set in [`manuscript/config.yaml`](../manuscript/config.yaml) and the abstract
 > · cite via [`CITATION.cff`](../CITATION.cff)
 
