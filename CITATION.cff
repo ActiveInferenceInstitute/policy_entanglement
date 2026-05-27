@@ -27,7 +27,7 @@ abstract: >
 
 type: software
 license: MIT
-doi: 10.5281/zenodo.20418905
+doi: 10.5281/zenodo.20419149
 repository-code: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
 
 authors:
@@ -57,8 +57,8 @@ preferred-citation:
       orcid: "https://orcid.org/0000-0001-6232-9096"
       affiliation: "Active Inference Institute"
   year: 2026
-  doi: 10.5281/zenodo.20418905
+  doi: 10.5281/zenodo.20419149
   notes: >
     Working manuscript (CC-BY-4.0) and software artifact (MIT).
     Source: https://github.com/ActiveInferenceInstitute/policy_entanglement .
-    Zenodo: https://doi.org/10.5281/zenodo.20418905 .
+    Zenodo: https://doi.org/10.5281/zenodo.20419149 .

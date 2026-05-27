@@ -9,7 +9,7 @@ Parent: [`../AGENTS.md`](../AGENTS.md)
 
 ## Publication
 
-- DOI: https://doi.org/10.5281/zenodo.20418905
+- DOI: https://doi.org/10.5281/zenodo.20419149
 - Source: https://github.com/ActiveInferenceInstitute/policy_entanglement
 
 ## Module map
