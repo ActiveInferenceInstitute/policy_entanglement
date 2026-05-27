@@ -7,6 +7,8 @@ from pathlib import Path
 
 CANONICAL_PUBLICATION_DOI = "10.5281/zenodo.20418904"
 CANONICAL_ZENODO_RECORD = "https://zenodo.org/records/20418904"
+CANONICAL_VERSION_DOI = "10.5281/zenodo.20419637"
+CANONICAL_VERSION_RECORD = "https://zenodo.org/records/20419637"
 CANONICAL_DOI_URL = f"https://doi.org/{CANONICAL_PUBLICATION_DOI}"
 CANONICAL_SOURCE_REPOSITORY = "https://github.com/ActiveInferenceInstitute/policy_entanglement"
 WRONG_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
@@ -66,6 +68,18 @@ def _doi_from_config(project_root: Path) -> str:
     return match.group(1) if match else ""
 
 
+def _version_doi_from_config(project_root: Path) -> str:
+    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    match = re.search(r'(?m)^\s*version_doi:\s*"([^"]*)"\s*$', config_text)
+    return match.group(1) if match else ""
+
+
+def _version_record_from_config(project_root: Path) -> str:
+    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    match = re.search(r'(?m)^\s*version_record:\s*"([^"]*)"\s*$', config_text)
+    return match.group(1) if match else ""
+
+
 def publication_metadata_issues(
     project_root: Path,
     *,
@@ -105,6 +119,21 @@ def publication_metadata_issues(
     else:
         if configured_doi != CANONICAL_PUBLICATION_DOI:
             issues.append(f"manuscript/config.yaml: doi {configured_doi!r} != canonical {CANONICAL_PUBLICATION_DOI!r}")
+        configured_version_doi = _version_doi_from_config(project_root)
+        configured_version_record = _version_record_from_config(project_root)
+        if not configured_version_doi:
+            issues.append("manuscript/config.yaml: missing publication.version_doi (latest Zenodo deposit)")
+        elif configured_version_doi != CANONICAL_VERSION_DOI:
+            issues.append(
+                f"manuscript/config.yaml: version_doi {configured_version_doi!r} != canonical {CANONICAL_VERSION_DOI!r}"
+            )
+        if not configured_version_record:
+            issues.append("manuscript/config.yaml: missing publication.version_record (latest Zenodo record URL)")
+        elif configured_version_record != CANONICAL_VERSION_RECORD:
+            issues.append(
+                "manuscript/config.yaml: version_record "
+                f"{configured_version_record!r} != canonical {CANONICAL_VERSION_RECORD!r}"
+            )
         combined = "\n".join(path.read_text(encoding="utf-8") for path in metadata_files if path.exists())
         for phrase in DOI_PENDING_PHRASES:
             if phrase in combined:
@@ -152,6 +181,8 @@ __all__ = [
     "CANONICAL_DOI_URL",
     "CANONICAL_PUBLICATION_DOI",
     "CANONICAL_SOURCE_REPOSITORY",
+    "CANONICAL_VERSION_DOI",
+    "CANONICAL_VERSION_RECORD",
     "CANONICAL_ZENODO_RECORD",
     "DEFAULT_PUBLICATION_BANNER_PATHS",
     "DEFAULT_PUBLICATION_METADATA_PATHS",

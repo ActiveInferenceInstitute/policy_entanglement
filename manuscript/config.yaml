@@ -16,7 +16,9 @@ authors:
     corresponding: true
 
 publication:
+  # Citation DOI (Zenodo concept — stable; cite this in papers and on the PDF cover)
   doi: "10.5281/zenodo.20418904"
+  # Latest published deposit (update via publish_project_release.py --new-version)
   version_doi: "10.5281/zenodo.20419637"
   version_record: "https://zenodo.org/records/20419637"
   journal: "Active Inference Journal"

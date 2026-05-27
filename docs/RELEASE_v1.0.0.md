@@ -40,3 +40,9 @@ monorepo copy step when publishing via `scripts/publish_project_release.py`.
 ## Citation (preferred)
 
 See [`CITATION.cff`](../CITATION.cff). BibTeX key: `friedman-2026-actinf-policy-entanglement`.
+
+**Cite the concept DOI** (`10.5281/zenodo.20418904`) in papers and bibliographies. Use the
+**version DOI** (`10.5281/zenodo.20419637`) only when you must pin the exact v1.0.0 deposit
+bytes or audit trail.
+
+Full Zenodo chain policy: [`docs/guides/zenodo-doi-strategy.md`](guides/zenodo-doi-strategy.md).
