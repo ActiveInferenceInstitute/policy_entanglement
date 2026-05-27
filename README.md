@@ -1,6 +1,6 @@
 # Policy Entanglement in Active Inference
 
-> **Citation metadata:** DOI [`10.5281/zenodo.20419149`](https://doi.org/10.5281/zenodo.20419149) · source repository
+> **Citation metadata:** DOI [`10.5281/zenodo.20419257`](https://doi.org/10.5281/zenodo.20419257) · source repository
 > [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement)
 > · cite via [`CITATION.cff`](CITATION.cff)
 
@@ -367,6 +367,6 @@ Lean-Formalization Treatments.* Active Inference Institute (working
 manuscript).
 
 > **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) carries DOI
-> [`10.5281/zenodo.20419149`](https://doi.org/10.5281/zenodo.20419149). Source code and
+> [`10.5281/zenodo.20419257`](https://doi.org/10.5281/zenodo.20419257). Source code and
 > reproducibility artifacts live at
 > [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement).

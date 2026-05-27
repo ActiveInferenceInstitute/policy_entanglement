@@ -1,6 +1,6 @@
 # AGENTS.md — `manuscript/`
 
-**Publication:** DOI https://doi.org/10.5281/zenodo.20419149 · configured in [`config.yaml`](config.yaml) · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+**Publication:** DOI https://doi.org/10.5281/zenodo.20419257 · configured in [`config.yaml`](config.yaml) · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
 
 ## Current state
 

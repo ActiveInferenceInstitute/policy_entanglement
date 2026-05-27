@@ -9,8 +9,8 @@ Publication surfaces for the public release under
 | --- | --- |
 | GitHub repository | https://github.com/ActiveInferenceInstitute/policy_entanglement |
 | Git tag | `v1.0.0` |
-| Zenodo record | https://zenodo.org/records/20419149 |
-| DOI | https://doi.org/10.5281/zenodo.20419149 |
+| Zenodo record | https://zenodo.org/records/20419257 |
+| DOI | https://doi.org/10.5281/zenodo.20419257 |
 | Deposit PDF (v1.0.0) | `Friedman_2026_Policy_a34d2776.pdf` (SHA-256 `a34d2776…`) |
 
 Release receipt: see `release_bundle/RELEASE_RECEIPT.json` under the template
@@ -21,20 +21,19 @@ monorepo copy step when publishing via `scripts/publish_project_release.py`.
 - [x] Flip canonical repository URL across `manuscript/config.yaml`, `CITATION.cff`,
   README/AGENTS hubs, abstract, introduction, and `friedman-2026-actinf-policy-entanglement`
   bibliography entry.
-- [x] Mint production Zenodo DOI `10.5281/zenodo.20419149` (deposit includes combined PDF).
+- [x] Mint production Zenodo DOI `10.5281/zenodo.20419257` (deposit includes combined PDF).
 - [x] Update `src/manuscript/publication_metadata.py` canon constants and inverted-repo guard.
 - [x] Add `manuscript/00_abstract.md` → `0A_abstract.md` symlink for unified release workflow.
 - [x] Remove stale “pending DOI / pending archive” prose from §6C.
 
 - [x] Public GitHub repo live at `ActiveInferenceInstitute/policy_entanglement` (org push access confirmed for `docxology`).
 
-## Remaining (release execution)
+## Release execution (2026-05-27)
 
-1. **Push source and tag** — see commands below.
-
-2. **Re-render PDF** with live DOI/repo in rendered output.
-
-3. **Create GitHub release v1.0.0** and upload corrected **Zenodo version**.
+- [x] Push `main` and annotated tag `v1.0.0` to `ActiveInferenceInstitute/policy_entanglement`.
+- [x] Re-render combined PDF with live AII repository URL and DOI `10.5281/zenodo.20419257`.
+- [x] GitHub release [v1.0.0](https://github.com/ActiveInferenceInstitute/policy_entanglement/releases/tag/v1.0.0) with deposit PDF asset.
+- [x] Zenodo version upload (concept record `20418904`; latest version DOI above).
 
 ## Citation (preferred)
 
