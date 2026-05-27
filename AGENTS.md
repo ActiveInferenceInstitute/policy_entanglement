@@ -1,6 +1,6 @@
 # AGENTS.md — `actinf_policy_entanglement_lean`
 
-**Citation metadata:** DOI [`10.5281/zenodo.20419431`](https://doi.org/10.5281/zenodo.20419431) · source repository
+**Citation metadata:** DOI [`10.5281/zenodo.20419509`](https://doi.org/10.5281/zenodo.20419509) · source repository
 [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement)
 · cite via [`CITATION.cff`](CITATION.cff) and [`manuscript/config.yaml`](manuscript/config.yaml).
 

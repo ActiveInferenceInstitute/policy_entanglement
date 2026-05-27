@@ -17,7 +17,7 @@ those counts moved between rounds.
   `https://github.com/ActiveInferenceInstitute/policy_entanglement` (replacing
   private staging repo `docxology/policy_entanglement`).
 - Production Zenodo deposit published:
-  [`10.5281/zenodo.20419431`](https://doi.org/10.5281/zenodo.20419431)
+  [`10.5281/zenodo.20419509`](https://doi.org/10.5281/zenodo.20419509)
   (first registered v1.0.0 archive).
 - `publication_metadata.py`, `CITATION.cff`, manuscript abstract/introduction,
   and hub AGENTS/README surfaces updated for cross-linked GitHub + Zenodo citation.

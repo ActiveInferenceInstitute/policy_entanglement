@@ -352,8 +352,8 @@ friedman-2026-actinf-policy-entanglement:
   title: "Policy Entanglement in Active Inference: A Tunable Mean-Field Deformation Framework for Multi-Stream Policy Ensembles"
   venue: "Active Inference Institute"
   url: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
-  doi: "10.5281/zenodo.20419431"
-  note: "Working four-track research artifact (prose, equations, Python/pymdp, Lean 4); source at github.com/ActiveInferenceInstitute/policy_entanglement; Zenodo DOI 10.5281/zenodo.20419431."
+  doi: "10.5281/zenodo.20419509"
+  note: "Working four-track research artifact (prose, equations, Python/pymdp, Lean 4); source at github.com/ActiveInferenceInstitute/policy_entanglement; Zenodo DOI 10.5281/zenodo.20419509."
   topic: software
 
 friedman-2025-cerebrum:
