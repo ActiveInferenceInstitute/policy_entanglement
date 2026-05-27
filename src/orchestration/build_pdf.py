@@ -23,6 +23,29 @@ from manuscript.meta_files import MANUSCRIPT_NON_BODY_MD
 
 COMBINED_STEM = "_combined_manuscript"
 
+_LATEX_ESCAPE_REPLACEMENTS = {
+    "\\": r"\textbackslash{}",
+    "&": r"\&",
+    "%": r"\%",
+    "$": r"\$",
+    "#": r"\#",
+    "_": r"\_",
+    "{": r"\{",
+    "}": r"\}",
+    "~": r"\textasciitilde{}",
+    "^": r"\textasciicircum{}",
+}
+
+
+def _latex_text(value: object) -> str:
+    text = str(value)
+    return "".join(_LATEX_ESCAPE_REPLACEMENTS.get(ch, ch) for ch in text)
+
+
+def _latex_href_url(url: str) -> str:
+    minimal = {"\\": r"\\", "%": r"\%", "#": r"\#", "&": r"\&"}
+    return "".join(minimal.get(ch, ch) for ch in url)
+
 
 def _run_project_script(script_name: str, *, project_root: Path) -> int:
     script = project_root / "scripts" / script_name
@@ -121,12 +144,11 @@ def _metadata_args(*, source_manuscript: Path, project_root: Path) -> list[str]:
     first_author = _as_mapping(authors[0]) if authors else {}
 
     title = str(paper.get("title") or project_root.name)
-    subtitle = str(paper.get("subtitle") or "")
     date = str(paper.get("date") or "")
     author_name = str(first_author.get("name") or "")
 
     metadata = [
-        "title=" + (f"{title}\\\\\\normalsize {subtitle}" if subtitle else title),
+        f"title={title}",
         f"date={date}",
     ]
     if author_name:
@@ -135,6 +157,171 @@ def _metadata_args(*, source_manuscript: Path, project_root: Path) -> list[str]:
     for item in metadata:
         args.extend(["--metadata", item])
     return args
+
+
+def _author_block_from_config(config: Mapping[str, Any]) -> str:
+    """Build a LaTeX ``\\author{...}`` body with affiliation, email, ORCID, and DOI."""
+    authors = _as_sequence(config.get("authors"))
+    publication = _as_mapping(config.get("publication"))
+    paper = _as_mapping(config.get("paper"))
+    metadata = _as_mapping(config.get("metadata"))
+
+    doi = str(publication.get("doi") or "")
+    version = str(paper.get("version") or "")
+    license_name = str(metadata.get("license") or "")
+    repository_url = str(publication.get("repository_url") or "")
+    repository_label = str(publication.get("repository_label") or repository_url)
+    journal = str(publication.get("journal") or "")
+    pub_year = str(publication.get("year") or "")
+
+    author_blocks: list[str] = []
+    for author_raw in authors:
+        author = _as_mapping(author_raw)
+        name = str(author.get("name") or "")
+        if not name:
+            continue
+        parts = [_latex_text(name)]
+        affils: list[str] = []
+        if "affiliations" in author:
+            raw = author["affiliations"]
+            affils = [str(raw)] if isinstance(raw, str) else [str(item) for item in _as_sequence(raw)]
+        elif "affiliation" in author:
+            affils = [str(author["affiliation"])]
+        for affil in affils:
+            parts.append(f"\\\\\\footnotesize{{{_latex_text(affil)}}}")
+        if "email" in author:
+            parts.append(f"\\\\\\footnotesize{{\\texttt{{{_latex_text(author['email'])}}}}}")
+        if "orcid" in author:
+            orcid = str(author["orcid"])
+            parts.append(
+                f"\\\\\\footnotesize{{\\href{{https://orcid.org/{_latex_href_url(orcid)}}}{{ORCID: {_latex_text(orcid)}}}}}"
+            )
+        author_blocks.append("".join(parts))
+
+    if not author_blocks:
+        return ""
+
+    author_str = " \\\\and ".join(author_blocks)
+    extras: list[str] = []
+    if doi:
+        extras.append(f"\\href{{https://doi.org/{_latex_href_url(doi)}}}{{DOI: {_latex_text(doi)}}}")
+    if version:
+        extras.append(f"Version {_latex_text(version)}")
+    if journal:
+        journal_line = _latex_text(journal)
+        if pub_year:
+            journal_line = f"{journal_line} ({_latex_text(pub_year)})"
+        extras.append(journal_line)
+    if license_name:
+        extras.append(f"License: {_latex_text(license_name)}")
+    if repository_url:
+        label = _latex_text(repository_label or repository_url)
+        extras.append(
+            f"\\href{{{_latex_href_url(repository_url)}}}{{{label}}}"
+        )
+    if extras:
+        author_str += " \\\\ " + " \\\\ ".join(f"\\footnotesize{{{item}}}" for item in extras)
+    return author_str
+
+
+def _title_page_body_from_config(config: Mapping[str, Any]) -> str:
+    """Replace Pandoc's bare ``\\maketitle`` with a metadata-rich title page."""
+    paper = _as_mapping(config.get("paper"))
+    title = _latex_text(paper.get("title") or "")
+    subtitle = _latex_text(paper.get("subtitle") or "")
+    if subtitle:
+        return "\n".join(
+            [
+                r"\begin{titlepage}",
+                r"\centering",
+                r"\vspace*{2cm}",
+                r"{\LARGE\bfseries " + title + r"\par}",
+                r"\vspace{0.75em}",
+                r"{\large " + subtitle + r"\par}",
+                r"\vfill",
+                r"\makeatletter",
+                r"{\@author\par}",
+                r"\vspace{1em}",
+                r"{\@date\par}",
+                r"\makeatother",
+                r"\vfill",
+                r"\end{titlepage}",
+                r"\thispagestyle{empty}",
+            ]
+        )
+    return "\\maketitle\n\\thispagestyle{empty}"
+
+
+def _patch_red_hyperlinks(tex_content: str) -> str:
+    """Turn Pandoc's ``hidelinks`` into uniform red ``colorlinks``."""
+    if "hidelinks" in tex_content:
+        tex_content = tex_content.replace(
+            "hidelinks,",
+            "colorlinks=true,linkcolor=red,urlcolor=red,citecolor=red,anchorcolor=red,filecolor=red,",
+        )
+        tex_content = tex_content.replace(
+            "  hidelinks,\n",
+            "  colorlinks=true,\n  linkcolor=red,\n  urlcolor=red,\n  citecolor=red,\n",
+        )
+    color_keys = ("linkcolor", "urlcolor", "citecolor", "anchorcolor", "filecolor")
+    marker = "\\hypersetup{"
+    blocks: list[tuple[int, int, str]] = []
+    i = 0
+    while True:
+        idx = tex_content.find(marker, i)
+        if idx < 0:
+            break
+        body_start = idx + len(marker)
+        depth = 1
+        j = body_start
+        while j < len(tex_content) and depth > 0:
+            ch = tex_content[j]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+            j += 1
+        if depth != 0:
+            break
+        blocks.append((idx, j, tex_content[body_start : j - 1]))
+        i = j
+    for start, end, body in reversed(blocks):
+        if not any(re.search(rf"\b{k}\s*=", body) for k in color_keys):
+            continue
+        new_body = body
+        for key in color_keys:
+            new_body = re.sub(rf"\b{key}\s*=\s*[A-Za-z][A-Za-z0-9]*", f"{key}=red", new_body)
+        tex_content = tex_content[:start] + "\\hypersetup{" + new_body + "}" + tex_content[end:]
+    return tex_content
+
+
+def _postprocess_combined_tex(*, combined_tex: Path, source_manuscript: Path) -> None:
+    """Patch hyperref colours and inject config-driven title-page metadata."""
+    config = _load_config(source_manuscript)
+    text = combined_tex.read_text(encoding="utf-8")
+    text = _patch_red_hyperlinks(text)
+
+    author_block = _author_block_from_config(config)
+    if author_block:
+        replacement = "\\author{" + author_block + "}"
+
+        def _swap_author(_: re.Match[str]) -> str:
+            return replacement
+
+        text, subs = re.subn(r"\\author\{[^}]*\}", _swap_author, text, count=1)
+        if subs == 0:
+            text = text.replace("\\begin{document}", f"{replacement}\n\\begin{{document}}", 1)
+
+    paper = _as_mapping(config.get("paper"))
+    date = str(paper.get("date") or "")
+    if not date:
+        text, subs = re.subn(r"\\date\{\s*\}", r"\\date{\\today}", text, count=1)
+        if subs == 0:
+            pass
+
+    title_body = _title_page_body_from_config(config)
+    text = text.replace("\\maketitle", title_body, 1)
+    combined_tex.write_text(text, encoding="utf-8")
 
 
 def _run(cmd: Sequence[str], *, cwd: Path, stdout_path: Path | None = None) -> None:
@@ -198,6 +385,7 @@ def _pandoc_to_tex(
     _run(command, cwd=pdf_dir)
     _insert_preamble_into_tex(combined_tex=combined_tex, preamble_tex=preamble_tex)
     _shorten_caption_aux_entries(combined_tex=combined_tex)
+    _postprocess_combined_tex(combined_tex=combined_tex, source_manuscript=source_manuscript)
 
 
 def _insert_preamble_into_tex(*, combined_tex: Path, preamble_tex: Path) -> None:
@@ -307,6 +495,10 @@ def main(*, project_root: Path) -> int:
 
 __all__ = [
     "COMBINED_STEM",
+    "_author_block_from_config",
+    "_discover_manuscript_files",
+    "_patch_red_hyperlinks",
+    "_postprocess_combined_tex",
     "main",
     "regenerate_injected_manuscript",
     "render_combined_pdf",

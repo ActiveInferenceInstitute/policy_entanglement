@@ -9,6 +9,8 @@ MANUSCRIPT_NON_BODY_MD: frozenset[str] = frozenset(
         "INDEX.md",
         "SYNTAX.md",
         "preamble.md",
+        # Release-workflow symlink to ``0A_abstract.md``; keep one canonical abstract file.
+        "00_abstract.md",
     }
 )
 

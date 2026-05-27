@@ -802,6 +802,8 @@ def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
     assert cfg["paper"]["title"] == "Title"
     args = _metadata_args(source_manuscript=ms, project_root=tmp_path)
     assert any("Title" in a for a in args)
+    assert not any("normalsize" in a for a in args)
+    assert not any("Sub" in a for a in args)
     tex = _extract_latex_preamble("% line\n\\foo\n")
     assert "\\foo" in tex
     pre = tmp_path / "preamble.tex"
