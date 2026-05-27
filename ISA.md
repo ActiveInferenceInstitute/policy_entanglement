@@ -185,3 +185,4 @@ RedTeam concur, and a certify verdict issued.
 - **Docs sweep @ `85a8224`:** manuscript section arithmetic 29 + 8 + 1 = 38 rendered; audit snapshot §8; signposting (package lists, claim-matrix pointers, CONTRIBUTING layout).
 - **Gates @ `8b41085`:** 1471 collected; 1470 passed / 0 failed / 1 skipped; 95.02% `src/` coverage; 47/47 dashboard invariants; 169-page combined PDF.
 - **Transient audit cleanup:** removed superseded shards `ISA_20260522_workplan_implement.md` and `ISA_20260524_gnn_fifth_track.md` from `docs/_audit/` (outcomes live in shipped code, S08, and this ledger).
+- **Post-v1 thermo polish:** single-sweep `decomposition_invariants_from_points`, interval worst-λ at margin peak, `build_float_real_residual()` API cleanup, publication metadata alias consolidation — gates 1473 passed / 95.02% coverage; see [`docs/_audit/THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md`](docs/_audit/THERMO_NUCLEAR_REVIEW_2026-05-26_v1_closure.md) Applied section.

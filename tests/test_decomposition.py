@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from lean.coupling import entangled_posterior
 from lean.decomposition import (
@@ -15,8 +16,27 @@ from lean.decomposition import (
     sum_marginal_free_energies,
     total_correlation_gain,
 )
+from lean.invariants import (
+    SweepGrid,
+    decomposition_invariants,
+    decomposition_invariants_from_points,
+    decomposition_sweep_points,
+)
 from lean.joint_dist import mean_field_to_joint
-from lean.invariants import SweepGrid, decomposition_invariants, decomposition_sweep_points
+
+
+def test_decomposition_invariants_from_points_rejects_empty() -> None:
+    with pytest.raises(ValueError, match="at least one sweep point"):
+        decomposition_invariants_from_points([])
+
+
+def test_decomposition_invariants_from_points_matches_grid() -> None:
+    grid = SweepGrid(0.0, 2.0, 5)
+    points = decomposition_sweep_points(grid)
+    from_grid = decomposition_invariants(grid)
+    from_points = decomposition_invariants_from_points(points)
+    assert from_grid[0].actual == from_points[0].actual
+    assert len(from_grid) == len(from_points)
 
 
 def test_decomposition_sweep_points_matches_invariants_max() -> None:

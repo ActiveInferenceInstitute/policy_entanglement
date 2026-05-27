@@ -26,7 +26,11 @@ from typing import Any
 import numpy as np
 
 from lean.bernoulli_toy import empirical_mutual_information_montecarlo, ising_mutual_information
-from lean.invariants import SweepGrid, decomposition_invariants, decomposition_sweep_points
+from lean.invariants import (
+    SweepGrid,
+    decomposition_invariants_from_points,
+    decomposition_sweep_points,
+)
 from manuscript.float_real_interval import decomposition_interval_bracket
 from manuscript.variables_analytical import (
     alignment_and_phase_facts,
@@ -78,21 +82,15 @@ def decomposition_certificate_grid() -> SweepGrid:
     )
 
 
-def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]:
+def build_float_real_residual() -> dict[str, float | bool]:
     """Machine-readable Float↔ℝ residual certificate (scaffold, not a proof)."""
-    _ = project_root
     grid = decomposition_certificate_grid()
     points = decomposition_sweep_points(grid)
-    sweep_max = max(point.residual for point in points)
-    decomp = decomposition_invariants(grid)
+    decomp = decomposition_invariants_from_points(points)
     max_residual_actual = next(inv for inv in decomp if inv.name == "decomposition_lhs_eq_rhs_max_residual").actual
     if not isinstance(max_residual_actual, int | float):
         raise TypeError("decomposition_lhs_eq_rhs_max_residual invariant must be scalar")
     max_residual = float(max_residual_actual)
-    if abs(max_residual - sweep_max) > 1e-18:
-        raise RuntimeError(
-            f"decomposition sweep max residual disagrees with decomposition_invariants: {sweep_max} vs {max_residual}"
-        )
 
     lam = float(H.MONTECARLO_MI_LAMBDA)
     n_samples = int(H.MONTECARLO_MI_N)
@@ -124,7 +122,7 @@ def write_float_real_residual(
 ) -> Path:
     """Persist ``float_real_residual.json`` under ``output/reports/``."""
     root = project_root or PROJECT_ROOT
-    payload = build_float_real_residual(root)
+    payload = build_float_real_residual()
     target = output_path or (root / "output" / "reports" / "float_real_residual.json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")

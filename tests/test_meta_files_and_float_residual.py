@@ -28,7 +28,7 @@ def test_parameter_sweep_required_columns_matches_default_utilities() -> None:
 
 
 def test_float_real_residual_artifact_finite_and_consistent(tmp_path: Path) -> None:
-    payload = build_float_real_residual(tmp_path)
+    payload = build_float_real_residual()
     for key, value in payload.items():
         if key.endswith("_within_interval"):
             assert isinstance(value, bool)

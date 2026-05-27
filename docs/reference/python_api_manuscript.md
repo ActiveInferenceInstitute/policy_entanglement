@@ -402,7 +402,7 @@ def decomposition_interval_bracket(
 ```
 
 JSON field ``decomposition_invariant_within_interval`` is a two-source check:
-``invariant_max_residual`` from :func:`lean.invariants.decomposition_invariants`
+``invariant_max_residual`` from :func:`lean.invariants.decomposition_invariants_from_points`
 must lie below the Decimal outward margin upper bound computed from
 :func:`lean.invariants.decomposition_sweep_points`.
 
@@ -417,7 +417,7 @@ Thin facade for the manuscript-variable builder consumed by
 PROJECT_ROOT: Path
 def decomposition_certificate_grid() -> SweepGrid
 def build_manuscript_variables(project_root: Path | None = None) -> dict[str, Any]
-def build_float_real_residual(project_root: Path | None = None) -> dict[str, float | bool]
+def build_float_real_residual() -> dict[str, float | bool]
 def write_float_real_residual(
     output_path: Path | None = None,
     *,
@@ -487,13 +487,6 @@ CANONICAL_ZENODO_RECORD: str
 CANONICAL_DOI_URL: str
 CANONICAL_SOURCE_REPOSITORY: str
 WRONG_SOURCE_REPOSITORY: str
-LEGACY_PUBLICATION_DOI: str  # deprecated Round-11 guard name
-LEGACY_ZENODO_RECORD: str
-LEGACY_SOURCE_REPOSITORY: str
-# Deprecated module-level aliases (import only; omitted from __all__)
-UNRESOLVED_PUBLICATION_DOI: str
-UNRESOLVED_ZENODO_RECORD: str
-UNRESOLVED_SOURCE_REPOSITORY: str
 DOI_REQUIRED_PATHS: tuple[str, ...]
 DOI_PENDING_PHRASES: tuple[str, ...]
 DEFAULT_PUBLICATION_METADATA_PATHS: tuple[str, ...]

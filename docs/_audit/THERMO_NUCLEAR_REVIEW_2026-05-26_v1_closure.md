@@ -52,6 +52,20 @@ None for v1 ship.
 
 ---
 
+## Applied (post-v1 thermo polish)
+
+| ID | Status | Change |
+| --- | --- | --- |
+| F2 | **Closed** | `decomposition_invariants_from_points`; single sweep in `build_float_real_residual` |
+| F3 | **Closed** | `decomposition_interval_worst_lambda` tracks margin-widened interval peak |
+| F4 | **Closed** | Removed unused `project_root` from `build_float_real_residual()` |
+| F5 | **Closed** | Removed `LEGACY_*` / `UNRESOLVED_*` aliases; `CANONICAL_*` only in `__all__` |
+| Test | **Closed** | `test_decomposition_interval_bracket_rejects_inflated_invariant` |
+
+**Re-verdict:** APPROVE after polish. `make readiness` exit 0; `validate_pdf.py` pass; 1473 passed / 1 skipped; 95.02% coverage; combined PDF under `output/pdf/`.
+
+---
+
 ## Related
 
 - Prior round review: [`THERMO_NUCLEAR_REVIEW_2026-05-25.md`](THERMO_NUCLEAR_REVIEW_2026-05-25.md)

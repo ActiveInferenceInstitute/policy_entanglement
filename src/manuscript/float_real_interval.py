@@ -32,21 +32,22 @@ def decomposition_interval_bracket(
     """Bracket certificate for ``decomposition_lhs_eq_rhs_max_residual``.
 
     ``invariant_max_residual`` must come from the invariants path (e.g.
-    :func:`lean.invariants.decomposition_invariants`) so
+    :func:`lean.invariants.decomposition_invariants_from_points`) so
     ``decomposition_invariant_within_interval`` is a genuine two-source check.
+
+    ``decomposition_interval_worst_lambda`` is the λ at the peak of the
+    margin-widened Decimal upper bound, not necessarily the peak float residual.
     """
     if not points:
         raise ValueError("decomposition_interval_bracket requires at least one sweep point")
 
     max_interval = Decimal(0)
     worst_lambda = points[0].lam
-    worst_residual = points[0].residual
     for point in points:
         point_upper = _decimal_interval_upper(point.residual, point.lhs, point.rhs_total)
-        if point.residual > worst_residual:
-            worst_residual = point.residual
+        if point_upper > max_interval:
+            max_interval = point_upper
             worst_lambda = point.lam
-        max_interval = max(max_interval, point_upper)
 
     interval_upper = float(max_interval)
     within = float(invariant_max_residual) <= interval_upper + 1e-18

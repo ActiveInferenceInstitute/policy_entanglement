@@ -229,6 +229,9 @@ def all_invariants(grid: SweepGrid, *, utilities=..., optimal_deltas=...,
                    agreement_tol=1e-9,
                    coupling_pays_threshold=0.1) -> list[Invariant]
 def decomposition_invariants(grid: SweepGrid) -> list[Invariant]
+def decomposition_invariants_from_points(
+    points: Sequence[DecompositionSweepPoint],
+) -> list[Invariant]
 def coupling_pays_invariants(grid: SweepGrid,
                              lam_threshold: float = 0.1) -> list[Invariant]
 def affine_log_weight_invariants(

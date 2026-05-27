@@ -151,20 +151,39 @@ def test_decomposition_interval_bracket_rejects_empty_points() -> None:
         decomposition_interval_bracket([], invariant_max_residual=0.0)
 
 
-def test_build_float_real_residual_rejects_sweep_invariant_mismatch(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_decomposition_interval_bracket_rejects_inflated_invariant() -> None:
+    grid = decomposition_certificate_grid()
+    points = decomposition_sweep_points(grid)
+    max_residual = max(point.residual for point in points)
+    bracket = decomposition_interval_bracket(points, invariant_max_residual=max_residual * 10.0 + 1.0)
+    assert bracket["decomposition_invariant_within_interval"] is False
+
+
+def test_decomposition_interval_worst_lambda_at_interval_peak() -> None:
+    from decimal import Decimal, localcontext
+
     from lean.invariants import DecompositionSweepPoint
 
-    monkeypatch.setattr(
-        "manuscript.variables.decomposition_sweep_points",
-        lambda _grid: [DecompositionSweepPoint(lam=0.0, residual=1.0, lhs=0.0, rhs_total=0.0)],
-    )
-    with pytest.raises(RuntimeError, match="disagrees with decomposition_invariants"):
-        build_float_real_residual()
+    def _upper(residual: float, lhs: float, rhs_total: float) -> Decimal:
+        with localcontext() as ctx:
+            ctx.prec = 50
+            base = Decimal(str(residual))
+            scale = max(abs(Decimal(str(lhs))), abs(Decimal(str(rhs_total))), Decimal("1"))
+            margin = scale * Decimal(2) ** -50 + Decimal(2) ** -52
+            return base + margin
+
+    points = [
+        DecompositionSweepPoint(lam=0.0, residual=1.0, lhs=0.0, rhs_total=0.0),
+        DecompositionSweepPoint(lam=1.0, residual=0.5, lhs=100.0, rhs_total=100.0),
+    ]
+    peak_lam = max(points, key=lambda p: _upper(p.residual, p.lhs, p.rhs_total)).lam
+    bracket = decomposition_interval_bracket(points, invariant_max_residual=1.0)
+    assert bracket["decomposition_interval_worst_lambda"] == peak_lam
 
 
 def test_build_and_write_float_real_residual_on_project() -> None:
     project = Path(__file__).resolve().parent.parent
-    payload = build_float_real_residual(project)
+    payload = build_float_real_residual()
     assert payload["decomposition_invariant_within_interval"] is True
     assert payload["decomposition_lhs_eq_rhs_max_residual"] <= float(payload["decomposition_interval_upper"]) + 1e-18
     out = write_float_real_residual(project_root=project)
@@ -174,7 +193,7 @@ def test_build_and_write_float_real_residual_on_project() -> None:
 def test_build_float_real_residual_rejects_non_scalar_invariant(monkeypatch: pytest.MonkeyPatch) -> None:
     from reporting.interactive_dashboard import Invariant
 
-    def _bad_decomposition(_grid: object) -> list[Invariant]:
+    def _bad_decomposition(_points: object) -> list[Invariant]:
         return [
             Invariant(
                 name="decomposition_lhs_eq_rhs_max_residual",
@@ -186,7 +205,7 @@ def test_build_float_real_residual_rejects_non_scalar_invariant(monkeypatch: pyt
             )
         ]
 
-    monkeypatch.setattr("manuscript.variables.decomposition_invariants", _bad_decomposition)
+    monkeypatch.setattr("manuscript.variables.decomposition_invariants_from_points", _bad_decomposition)
     with pytest.raises(TypeError, match="scalar"):
         build_float_real_residual()
 

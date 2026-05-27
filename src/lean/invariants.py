@@ -325,17 +325,12 @@ def decomposition_sweep_points(grid: SweepGrid) -> list[DecompositionSweepPoint]
     return points
 
 
-def decomposition_invariants(grid: SweepGrid) -> list[Invariant]:
-    """Theorem 5.1 numerical witness: ``F[q_λ]`` (Gibbs LHS) equals the
-    sum of the four RHS bookkeeping terms produced by
-    :func:`entanglement_decomposition_rhs` to floating tolerance.
-
-    The K=2 Ising toy at zero per-stream EFE makes this exact (the
-    ``coupling_prior_term`` and ``coupling_cost_term`` are non-trivial,
-    ``sum_marginal_free_energies`` carries the marginal split, and
-    ``multi_information_term`` carries ``I(q_λ)``).
-    """
-    points = decomposition_sweep_points(grid)
+def decomposition_invariants_from_points(
+    points: Sequence[DecompositionSweepPoint],
+) -> list[Invariant]:
+    """Theorem 5.1 numerical witness from a precomputed decomposition sweep."""
+    if not points:
+        raise ValueError("decomposition_invariants_from_points requires at least one sweep point")
     residuals = [point.residual for point in points]
     lhs = [point.lhs for point in points]
     totals = [point.rhs_total for point in points]
@@ -366,6 +361,19 @@ def decomposition_invariants(grid: SweepGrid) -> list[Invariant]:
             description="LHS F[q_λ] is finite at every grid point",
         ),
     ]
+
+
+def decomposition_invariants(grid: SweepGrid) -> list[Invariant]:
+    """Theorem 5.1 numerical witness: ``F[q_λ]`` (Gibbs LHS) equals the
+    sum of the four RHS bookkeeping terms produced by
+    :func:`entanglement_decomposition_rhs` to floating tolerance.
+
+    The K=2 Ising toy at zero per-stream EFE makes this exact (the
+    ``coupling_prior_term`` and ``coupling_cost_term`` are non-trivial,
+    ``sum_marginal_free_energies`` carries the marginal split, and
+    ``multi_information_term`` carries ``I(q_λ)``).
+    """
+    return decomposition_invariants_from_points(decomposition_sweep_points(grid))
 
 
 def coupling_pays_invariants(
@@ -500,6 +508,7 @@ __all__ = [
     "all_invariants",
     "coupling_pays_invariants",
     "decomposition_invariants",
+    "decomposition_invariants_from_points",
     "decomposition_sweep_points",
     "free_energy_invariants",
     "ising_invariants",
