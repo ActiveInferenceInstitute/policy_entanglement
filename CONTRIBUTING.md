@@ -1,8 +1,8 @@
 # Contributing to `actinf_policy_entanglement_lean`
 
-> **Public repository:** <https://github.com/docxology/policy_entanglement>  
-> Clone with `git clone https://github.com/docxology/policy_entanglement.git`  
-> Discussions: <https://github.com/docxology/policy_entanglement/discussions>
+> **Public repository:** <https://github.com/ActiveInferenceInstitute/policy_entanglement>  
+> Clone with `git clone https://github.com/ActiveInferenceInstitute/policy_entanglement.git`  
+> Discussions: <https://github.com/ActiveInferenceInstitute/policy_entanglement/discussions>
 
 Welcome. This guide distills the rules in [`AGENTS.md`](AGENTS.md) into a
 concrete onboarding flow for contributors. Read it once, bookmark

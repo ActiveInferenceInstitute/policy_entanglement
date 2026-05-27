@@ -8,8 +8,8 @@ Parent: [`../AGENTS.md`](../AGENTS.md) · API: [`../../docs/reference/python_api
 
 ## Publication
 
-- DOI: https://doi.org/10.5281/zenodo.20301239
-- Source: https://github.com/docxology/policy_entanglement
+- DOI: https://doi.org/10.5281/zenodo.20418905
+- Source: https://github.com/ActiveInferenceInstitute/policy_entanglement
 - Claim ledger: [`../../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
 
 ## Module map

@@ -7,6 +7,7 @@ The manuscript is organized into six parts (Introduction, Theory, Formal Verific
 | File | Title | Subject |
 |---|---|---|
 | [`preamble.md`](preamble.md) | Preamble | LaTeX preamble + author front-matter |
+| [`00_abstract.md`](00_abstract.md) | Abstract | _(part divider — unnumbered)_ |
 | [`0A_abstract.md`](0A_abstract.md) | Abstract | _(part divider — unnumbered)_ |
 | [`1A_part1_introduction.md`](1A_part1_introduction.md) | Part I — Introduction | _(part divider — unnumbered)_ |
 | [`1B_motivation.md`](1B_motivation.md) | §1 Motivation and Position: Why Multi-Stream Active Inference Needs Parametric Coupling | Problem statement, six independent reasons, position relative to alternatives |

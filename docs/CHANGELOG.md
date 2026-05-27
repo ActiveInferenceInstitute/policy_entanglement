@@ -11,7 +11,20 @@ those counts moved between rounds.
 
 ---
 
-## Maintenance — 2026-05-27 (post-v1 thermo polish @ 86b9557)
+## Release — v1.0.0 (2026-05-27)
+
+- Canonical public source repository:
+  `https://github.com/ActiveInferenceInstitute/policy_entanglement` (replacing
+  private staging repo `docxology/policy_entanglement`).
+- Production Zenodo deposit published:
+  [`10.5281/zenodo.20418905`](https://doi.org/10.5281/zenodo.20418905)
+  (first registered v1.0.0 archive).
+- `publication_metadata.py`, `CITATION.cff`, manuscript abstract/introduction,
+  and hub AGENTS/README surfaces updated for cross-linked GitHub + Zenodo citation.
+- Added `manuscript/00_abstract.md` symlink → `0A_abstract.md` for template
+  release-workflow compatibility.
+
+---
 
 - `decomposition_invariants_from_points`; single sweep in `build_float_real_residual`.
 - Interval worst-λ tracks margin-widened upper peak.

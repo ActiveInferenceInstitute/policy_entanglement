@@ -1,6 +1,6 @@
 # AGENTS.md — `src/`
 
-**Publication:** DOI https://doi.org/10.5281/zenodo.20301239 · source https://github.com/docxology/policy_entanglement · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+**Publication:** DOI https://doi.org/10.5281/zenodo.20418905 · source https://github.com/ActiveInferenceInstitute/policy_entanglement · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
 
 ## Layout
 

@@ -215,10 +215,12 @@ compiler. The *package-version threat* is dependency drift:
 import/API) and Lean [[VAR:lean_toolchain_version]] are part of the claim surface, and
 release readiness depends on regenerating the sidecars, PNG metadata,
 rendered manuscript, PDF, and regression reports under those pins. The
-    *publication-metadata threat* is metadata drift: until the public
-    Zenodo DOI and public source archive resolve, `manuscript/config.yaml`,
-    `CITATION.cff`, the manuscript citation entry, and rendered PDF front
-    matter must agree that archival metadata is pending. The *interpretive threat*
+    *publication-metadata threat* is metadata drift: the public
+    Zenodo DOI and public source archive at
+    `https://github.com/ActiveInferenceInstitute/policy_entanglement` must
+    stay aligned across `manuscript/config.yaml`, `CITATION.cff`, the
+    manuscript citation entry, and rendered PDF front matter. The
+    *interpretive threat*
 is overextension: biological,
 clinical, and alignment language is claim-strength `hypothesis` unless
 the text points to a formal row, generated artifact, primary citation,
@@ -265,8 +267,8 @@ The verified $\mathbb{R}$ formal core and the four-track empirical artifact leav
 
 - **Community contribution and archival metadata.** The working citation
   entry [@friedman-2026-actinf-policy-entanglement] is the current
-  citation target while the public Zenodo DOI and public source archive
-  remain pending; the open questions of [[SECREF:open_questions]] each
-  admit independent contribution.
+  citation target; the public Zenodo DOI and source repository are recorded
+  in `manuscript/config.yaml` and `CITATION.cff`. The open questions of
+  [[SECREF:open_questions]] each admit independent contribution.
 
 ---

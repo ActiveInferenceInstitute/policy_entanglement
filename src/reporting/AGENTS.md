@@ -9,8 +9,8 @@ Parent: [`../AGENTS.md`](../AGENTS.md)
 
 ## Publication
 
-- DOI: https://doi.org/10.5281/zenodo.20301239
-- Source: https://github.com/docxology/policy_entanglement
+- DOI: https://doi.org/10.5281/zenodo.20418905
+- Source: https://github.com/ActiveInferenceInstitute/policy_entanglement
 
 ## Module map
 

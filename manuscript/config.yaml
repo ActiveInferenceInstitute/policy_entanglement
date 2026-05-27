@@ -16,10 +16,10 @@ authors:
     corresponding: true
 
 publication:
-  doi: "10.5281/zenodo.20301239"
+  doi: "10.5281/zenodo.20418905"
   journal: "Active Inference Journal"
   year: "2026"
-  repository_url: "https://github.com/docxology/policy_entanglement"
+  repository_url: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
   repository_label: "Policy Entanglement source repository"
 
 keywords:

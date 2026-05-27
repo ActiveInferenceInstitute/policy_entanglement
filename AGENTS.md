@@ -1,7 +1,7 @@
 # AGENTS.md — `actinf_policy_entanglement_lean`
 
-**Citation metadata:** DOI [`10.5281/zenodo.20301239`](https://doi.org/10.5281/zenodo.20301239) · source repository
-[`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement)
+**Citation metadata:** DOI [`10.5281/zenodo.20418905`](https://doi.org/10.5281/zenodo.20418905) · source repository
+[`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement)
 · cite via [`CITATION.cff`](CITATION.cff) and [`manuscript/config.yaml`](manuscript/config.yaml).
 
 This is the agent / contributor onboarding guide for the

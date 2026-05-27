@@ -1,6 +1,6 @@
 # AGENTS.md — `docs/`
 
-**Publication:** DOI https://doi.org/10.5281/zenodo.20301239 · source https://github.com/docxology/policy_entanglement · claim matrix [`_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv) · cross-track source [`../manuscript/refs/audit_tracks.yaml`](../manuscript/refs/audit_tracks.yaml) · generator [`../scripts/generate_audit_matrix.py`](../scripts/generate_audit_matrix.py) (`--write` / `--check`)
+**Publication:** DOI https://doi.org/10.5281/zenodo.20418905 · source https://github.com/ActiveInferenceInstitute/policy_entanglement · claim matrix [`_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv) · cross-track source [`../manuscript/refs/audit_tracks.yaml`](../manuscript/refs/audit_tracks.yaml) · generator [`../scripts/generate_audit_matrix.py`](../scripts/generate_audit_matrix.py) (`--write` / `--check`)
 
 ## Purpose
 

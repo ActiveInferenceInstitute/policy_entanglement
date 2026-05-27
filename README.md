@@ -1,7 +1,7 @@
 # Policy Entanglement in Active Inference
 
-> **Citation metadata:** DOI [`10.5281/zenodo.20301239`](https://doi.org/10.5281/zenodo.20301239) · source repository
-> [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement)
+> **Citation metadata:** DOI [`10.5281/zenodo.20418905`](https://doi.org/10.5281/zenodo.20418905) · source repository
+> [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement)
 > · cite via [`CITATION.cff`](CITATION.cff)
 
 A research project that develops a **tunable mean-field deformation
@@ -367,6 +367,6 @@ Lean-Formalization Treatments.* Active Inference Institute (working
 manuscript).
 
 > **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) carries DOI
-> [`10.5281/zenodo.20301239`](https://doi.org/10.5281/zenodo.20301239). Source code and
+> [`10.5281/zenodo.20418905`](https://doi.org/10.5281/zenodo.20418905). Source code and
 > reproducibility artifacts live at
-> [`https://github.com/docxology/policy_entanglement`](https://github.com/docxology/policy_entanglement).
+> [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement).
