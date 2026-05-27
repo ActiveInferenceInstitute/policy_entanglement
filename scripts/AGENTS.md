@@ -1,6 +1,6 @@
 # AGENTS.md — `scripts/`
 
-**Publication:** DOI https://doi.org/10.5281/zenodo.20419536 · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
+**Publication:** DOI https://doi.org/10.5281/zenodo.20418904 · claim matrix [`../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv)
 
 ## Constitution (thin-orchestrator rules)
 

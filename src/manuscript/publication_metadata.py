@@ -5,8 +5,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-CANONICAL_PUBLICATION_DOI = "10.5281/zenodo.20419536"
-CANONICAL_ZENODO_RECORD = "https://zenodo.org/records/20419536"
+CANONICAL_PUBLICATION_DOI = "10.5281/zenodo.20418904"
+CANONICAL_ZENODO_RECORD = "https://zenodo.org/records/20418904"
 CANONICAL_DOI_URL = f"https://doi.org/{CANONICAL_PUBLICATION_DOI}"
 CANONICAL_SOURCE_REPOSITORY = "https://github.com/ActiveInferenceInstitute/policy_entanglement"
 WRONG_SOURCE_REPOSITORY = "https://github.com/docxology/policy_entanglement"
