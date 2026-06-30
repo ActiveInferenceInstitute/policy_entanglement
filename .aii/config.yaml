@@ -1,0 +1,50 @@
+# AII sidecar — InstituteOS metadata. Schema: instituteos.platform.aii_sidecar
+meta:
+  updated: '2026-06-30'
+repo:
+  name: policy_entanglement
+  slug: policy-entanglement
+  full_name: ActiveInferenceInstitute/policy_entanglement
+  description: Policy Entanglement in Active Inference v1.0.0
+institute:
+  category: research-software
+  steward: Active Inference Institute
+ecosystem:
+  links:
+    github: https://github.com/ActiveInferenceInstitute/policy_entanglement
+    website: https://www.activeinference.org
+artifacts:
+- path: README.md
+  kind: doc
+  description: Repository overview.
+- path: src
+  kind: code
+  description: Source tree.
+- path: pyproject.toml
+  kind: code
+  description: Python package config.
+- path: LICENSE
+  kind: doc
+  description: License.
+provenance:
+  license: MIT
+  citation:
+    doi: 10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904
+instituteos:
+  tags:
+  - policy
+  - entanglement
+  - inference
+  - python
+capabilities:
+- python-package
+- tested
+- documentation
+- dataset
+tasks:
+  test:
+    cmd: python -m pytest
+    description: Run the test suite.
+  make:
+    cmd: make
+    description: Default make target.
