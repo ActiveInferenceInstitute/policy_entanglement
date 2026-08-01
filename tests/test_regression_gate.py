@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -204,6 +206,105 @@ def test_regression_gate_fails_on_test_regression(tmp_path: Path, monkeypatch: p
 
 def test_count_invariants_returns_none_for_missing_file(tmp_path: Path) -> None:
     assert rg._count_invariants(tmp_path / "missing.txt") is None
+
+
+def test_run_captured_bounded_caps_output_and_honors_timeout(tmp_path: Path) -> None:
+    """The bounded subprocess runner must (a) cap retained output to the tail
+    and (b) surface the child's exit code, without ballooning memory on a
+    chatty child (RedTeam C7, 2026-08-01)."""
+    import gates.regression_pytest as rp
+
+    sys_exe = sys.executable
+    # Emit far more than the 64-char cap; the runner keeps only the tail.
+    proc, combined = rp.run_captured_bounded(
+        [sys_exe, "-c", "print('x' * 5000)"],
+        cwd=tmp_path,
+        max_chars=64,
+        timeout=30.0,
+    )
+    assert proc.returncode == 0
+    assert len(combined) <= 64
+    assert "xxxx" in combined  # we kept the tail, not the head
+
+    # A non-zero exit is surfaced.
+    proc2, _ = rp.run_captured_bounded(
+        [sys_exe, "-c", "import sys; sys.exit(3)"],
+        cwd=tmp_path,
+        timeout=30.0,
+    )
+    assert proc2.returncode == 3
+
+    # A genuinely hung child is killed by the timeout.
+    with pytest.raises(subprocess.TimeoutExpired):
+        rp.run_captured_bounded(
+            [sys_exe, "-c", "import time; time.sleep(60)"],
+            cwd=tmp_path,
+            timeout=0.5,
+        )
+
+
+def test_invariants_stale_rev_guards_against_stale_report(tmp_path: Path) -> None:
+    """A fresh report (embedded rev == HEAD) is not stale; a stale report
+    (embedded rev != HEAD) must be flagged so the gate cannot certify it
+    (RedTeam C7, 2026-08-01)."""
+    inv = tmp_path / "dashboard_invariants.txt"
+    head = rg._current_short_head(PROJECT)
+    assert head is not None  # this review's repo is a live git checkout
+
+    # Fresh: embedded rev matches current HEAD.
+    inv.write_text(f"git rev:      {head}\nsummary:      3/3 passed, 0 failed\n", encoding="utf-8")
+    assert rg._invariants_stale_rev(inv, PROJECT) is None
+
+    # Stale: embedded rev differs from HEAD.
+    inv.write_text("git rev:      deadbeef\nsummary:      3/3 passed, 0 failed\n", encoding="utf-8")
+    stale = rg._invariants_stale_rev(inv, PROJECT)
+    assert stale == "deadbeef"
+
+    # No provenance marker -> not bound (left to the count floor).
+    inv.write_text("summary:      3/3 passed, 0 failed\n", encoding="utf-8")
+    assert rg._invariants_stale_rev(inv, PROJECT) is None
+
+
+def test_regression_gate_fails_on_stale_invariant_report(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The gate must fail-closed when the invariants report carries a stale git
+    rev (a stored PASSING can no longer certify a changed tree)."""
+    reports = tmp_path / "output" / "reports"
+    reports.mkdir(parents=True)
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(
+        json.dumps(
+            {
+                "test_count_min": 1,
+                "test_failed_max": 0,
+                "coverage_percent_min": 80.0,
+                "invariant_count_min": 1,
+                "lean_lake_jobs_min": 0,
+                "lean_sorry_max": 0,
+                "lean_axiom_max": 0,
+                "lean_unsafe_max": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (reports / "dashboard_invariants.txt").write_text(
+        "git rev:      deadbeef\nsummary:      5/5 passed, 0 failed\n",
+        encoding="utf-8",
+    )
+    # The stale-rev check shells to `git`; pin HEAD so the embedded `deadbeef`
+    # is seen as stale and the rest of the gate is deterministic.  The helper
+    # lives in gates.regression_pytest, so patch it there (the `rg.` re-export
+    # alone does not affect the helper-internal call).
+    monkeypatch.setattr(rg, "_write_fresh_test_results", lambda **_: None)
+    monkeypatch.setattr(rg, "_lean_budget_snapshot", lambda **_: None)
+    import gates.regression_pytest as _rp
+
+    monkeypatch.setattr(_rp, "current_short_head", lambda _root: "currenthead")
+    rc = rg.gate(
+        project_root=tmp_path,
+        scripts_dir=PROJECT / "scripts",
+        baseline_path=baseline,
+    )
+    assert rc == 1
 
 
 def test_regression_gate_fails_closed_on_missing_invariant_report(

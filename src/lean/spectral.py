@@ -40,6 +40,15 @@ from numpy.typing import NDArray
 
 ArrayF = NDArray[np.float64]
 
+# Default singular-value truncation threshold for Schmidt-rank and Schmidt
+# decomposition.  Aligned with the documented recommendation in src/AGENTS.md
+# ("Schmidt rank: 1e-9 works for most cases; 1e-12 is too tight for the Ising
+# posterior where the small singular value is ~1e-10").  Every production
+# caller passes an explicit atol anyway (SPECTRAL_RANK_ATOL); this default
+# keeps the library's own behavior consistent with that guidance (RedTeam C7,
+# 2026-08-01).
+SCHMIDT_RANK_DEFAULT_ATOL: float = 1e-9
+
 
 @dataclass(frozen=True)
 class Archetype:
@@ -55,7 +64,7 @@ class Archetype:
     v: ArrayF
 
 
-def schmidt_rank(q: ArrayF, atol: float = 1e-12) -> int:
+def schmidt_rank(q: ArrayF, atol: float = SCHMIDT_RANK_DEFAULT_ATOL) -> int:
     """Schmidt rank of a bipartite (K=2) joint policy posterior.
 
     Mirrors ``Bipartite.schmidtRank``.  Computes ``# {s : s > atol}``.
@@ -67,7 +76,7 @@ def schmidt_rank(q: ArrayF, atol: float = 1e-12) -> int:
     return int(np.sum(s > atol))
 
 
-def schmidt_decomposition(q: ArrayF, atol: float = 1e-12) -> list[Archetype]:
+def schmidt_decomposition(q: ArrayF, atol: float = SCHMIDT_RANK_DEFAULT_ATOL) -> list[Archetype]:
     """Full Schmidt decomposition of a K=2 joint as a list of
     :class:`Archetype` modes, in descending weight order.
     """

@@ -152,6 +152,20 @@ def test_half_saturation_all_above_target_returns_first() -> None:
     assert lam_h == pytest.approx(1.0, abs=1e-9)
 
 
+def test_half_saturation_interpolated_length_mismatch_raises() -> None:
+    """The interpolated half-saturation helper indexes lams[j]/tcs[j] directly,
+    so a length mismatch must fail loudly rather than mis-pair values
+    (RedTeam C7, 2026-08-01)."""
+    with pytest.raises(ValueError, match="equal length"):
+        _half_saturation([0.0, 1.0, 2.0], [0.0, 0.5])
+
+
+def test_half_saturation_interpolated_single_point_raises() -> None:
+    """Interpolation needs at least two sweep points."""
+    with pytest.raises(ValueError, match="at least 2"):
+        _half_saturation([0.0], [0.0])
+
+
 # ---------------------------------------------------------------------------
 # pymdp_summary_statistics
 # ---------------------------------------------------------------------------
@@ -176,6 +190,15 @@ def test_summary_statistics_minimal_two_bundles() -> None:
 def test_summary_statistics_requires_two_bundles() -> None:
     with pytest.raises(ValueError, match="at least 2"):
         pymdp_summary_statistics([_make_bundle(0.0)])
+
+
+def test_summary_statistics_rejects_unsorted_lambda_sweep() -> None:
+    """Field semantics (min/max, *_at_lambda_max) require an ascending sweep;
+    an unsorted or reversed caller sweep must fail loudly rather than
+    mislabel manuscript variables (RedTeam C7, 2026-08-01)."""
+    descending = [_make_bundle(lam=1.0, tc=0.2), _make_bundle(lam=0.0, tc=0.0)]
+    with pytest.raises(ValueError, match="sorted ascending by lam"):
+        pymdp_summary_statistics(descending)
 
 
 def test_summary_statistics_aligned_mass_at_lambda_max() -> None:

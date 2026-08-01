@@ -44,7 +44,7 @@ flowchart LR
 2. **Upload** — `publish_project_release.py --production --new-version` (from the template monorepo):
    ```bash
    cp output/pdf/actinf_policy_entanglement_lean_combined.pdf \
-      ../template/output/actinf_policy_entanglement_lean/pdf/
+      ../template/output/pdf/actinf_policy_entanglement_lean_combined.pdf
    uv run python scripts/publish_project_release.py \
      --project actinf_policy_entanglement_lean \
      --tag v1.0.0 \

@@ -35,7 +35,7 @@ def validate_variables() -> int:
         report_fail(f"missing: {path}")
         return 1
     try:
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         report_fail(f"invalid JSON: {exc}")
         return 1

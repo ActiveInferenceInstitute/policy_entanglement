@@ -39,6 +39,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import NamedTuple, TypedDict, cast
 
+from gates.regression_pytest import run_captured_bounded
+
+# Generous hang bound for a single pipeline producer script; only catches a
+# genuinely stuck child (RedTeam C7, 2026-08-01).
+_RUN_ALL_SCRIPT_TIMEOUT_SECONDS = 7200
+
 # Round-5 P3-2: SHA-256 only for files at or below this size; larger
 # artifacts (combined PDFs, intermediate TeX builds) get a size-only
 # entry to keep the manifest write cheap.
@@ -158,19 +164,18 @@ def _spawn(
     env = {**os.environ, "MPLBACKEND": "Agg"}
     started = time.perf_counter()
     if capture:
-        proc = subprocess.run(
+        proc, combined = run_captured_bounded(
             cmd,
-            cwd=str(project_root),
+            cwd=project_root,
             env=env,
-            capture_output=True,
-            text=True,
+            timeout=_RUN_ALL_SCRIPT_TIMEOUT_SECONDS,
         )
         return StageResult(
             script=script,
             returncode=proc.returncode,
             duration_s=time.perf_counter() - started,
-            stdout=proc.stdout,
-            stderr=proc.stderr,
+            stdout=combined,
+            stderr="",
         )
     proc_raw = subprocess.run(cmd, cwd=str(project_root), env=env)
     return StageResult(
@@ -259,8 +264,8 @@ def _write_manifest(*, project_root: Path, run_summary: dict[str, object]) -> Pa
     lines.append("## Artifacts")
     lines.append("")
     lines.append(
-        "*Round-5 P3-2 addition*: SHA-256 columns enable a "
-        "*re-run-and-bit-match* determinism audit.  Files larger than "
+        "*Round-5 P3-2 addition*: SHA-256 columns enable a content audit of "
+        "generated artifacts.  Files larger than "
         f"{_SHA256_MAX_BYTES // (1024 * 1024)} MB list size only "
         "(checksumming them would dominate the manifest write)."
     )

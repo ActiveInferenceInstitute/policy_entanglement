@@ -5,12 +5,21 @@ from __future__ import annotations
 import html as _html
 import math
 import subprocess
+import urllib.error
+import urllib.request
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
+
+# Generous but finite bounds for the best-effort Plotly vendoring fetch
+# (RedTeam C7, 2026-08-01).  If the pinned JS cannot be fetched the renderer
+# falls back to the CDN <script src> tag with a documented note.
+_PLOTLY_FETCH_TIMEOUT_SECONDS = 30.0
+_PLOTLY_FETCH_RETRIES = 2
+_PLOTLY_MAX_BYTES = 16 * 1024 * 1024  # upstream min.js is ~1–3 MB; cap defensively
 
 _DASHBOARD_CSS = """
 :root{
@@ -290,6 +299,84 @@ def _to_jsonable(obj: Any) -> Any:
     return repr(obj)
 
 
+_PLOTLY_CACHE: bytes | None = None
+_PLOTLY_CACHE_SET = False
+
+
+def _plotly_fetch() -> bytes | None:
+    """Best-effort download of the pinned Plotly JS (with retry + timeout),
+    cached once per process.
+
+    Returns the raw JS bytes, or ``None`` if every attempt fails / is
+    malformed (so the caller falls back to the CDN tag).  Never raises.
+    """
+    global _PLOTLY_CACHE, _PLOTLY_CACHE_SET
+    if _PLOTLY_CACHE_SET:
+        return _PLOTLY_CACHE
+    import time as _time
+
+    payload: bytes | None = None
+    for attempt in range(_PLOTLY_FETCH_RETRIES):
+        try:
+            with urllib.request.urlopen(  # noqa: S310 - pinned https CDN
+                PLOTLY_CDN, timeout=_PLOTLY_FETCH_TIMEOUT_SECONDS
+            ) as resp:
+                data = resp.read(_PLOTLY_MAX_BYTES + 1)
+            payload = None if len(data) > _PLOTLY_MAX_BYTES or data[:1] == b"<" else data
+            if payload is not None:
+                break
+        except (OSError, ValueError, urllib.error.URLError):
+            if attempt + 1 >= _PLOTLY_FETCH_RETRIES:
+                payload = None
+            else:
+                _time.sleep(1.0)
+                continue
+        break
+    _PLOTLY_CACHE = payload
+    _PLOTLY_CACHE_SET = True
+    return payload
+
+
+def vendored_plotly_js() -> bytes | None:
+    """Return the pinned Plotly payload for an offline-capable dashboard.
+
+    Opt-in: fetching happens only when ``REPORTING_VENDOR_PLOTLY`` is set (a
+    truthy value), so default builds and tests stay deterministic and
+    network-free.  When disabled (or the fetch fails) this returns ``None``
+    and the page renders the documented CDN fallback instead.  Exposed so the
+    dashboard writer can fetch once and pass the result into
+    ``render_interactive_dashboard_html``.
+    """
+    import os as _os
+
+    if not _os.environ.get("REPORTING_VENDOR_PLOTLY"):
+        return None
+    return _plotly_fetch()
+
+
+def _plotly_script_tag(payload: bytes | None) -> str:
+    """Build a Plotly <script> tag from an already-fetched payload.
+
+    A non-None payload is inlined for a self-contained, offline-capable
+    dashboard; ``None`` (fetch failed / not attempted) falls back to a CDN
+    ``<script src>`` tag with a documented note.  This is **pure** — the
+    renderer never performs network I/O, so tests stay deterministic and the
+    build-time fetch is the single caller's responsibility (RedTeam C7,
+    2026-08-01).
+    """
+    if payload is None:
+        return (
+            f"<!-- NOTE: plotly JS not vendored; this dashboard needs network "
+            f"access to {PLOTLY_CDN} -->\n"
+            f'<script src="{PLOTLY_CDN}"></script>'
+        )
+    try:
+        js_text = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return f'<script src="{PLOTLY_CDN}"></script>'
+    return f"<script>{js_text}</script>"
+
+
 def render_interactive_dashboard_html(
     *,
     title: str,
@@ -300,8 +387,14 @@ def render_interactive_dashboard_html(
     control_count: int,
     invariant_count: int,
     bundle_json: str,
+    plotly_js: bytes | None = None,
 ) -> str:
-    """Render the self-contained interactive dashboard HTML page (standalone)."""
+    """Render the self-contained interactive dashboard HTML page (standalone).
+
+    ``plotly_js`` may carry a pre-fetched vendored Plotly payload; when None
+    the page inlines nothing and falls back to the CDN tag (with a note).
+    The renderer itself never performs network I/O — the caller fetches.
+    """
     title_esc = _html.escape(title)
     subtitle_esc = _html.escape(subtitle)
     project = _html.escape(project_name) or "(unknown)"
@@ -309,13 +402,14 @@ def render_interactive_dashboard_html(
     rev = _html.escape(_git_rev(repo_root))
     dirty = " (dirty)" if _git_dirty(repo_root) else ""
     js = _DASHBOARD_JS_TEMPLATE.replace("__BUNDLE__", bundle_json)
+    plotly_tag = _plotly_script_tag(plotly_js)
     return f"""<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>{title_esc}</title>
 <style>{_DASHBOARD_CSS}</style>
-<script src="{PLOTLY_CDN}"></script>
+{plotly_tag}
 </head><body>
 <h1>{title_esc}</h1>
 {f'<p class="subtitle">{subtitle_esc}</p>' if subtitle else ""}

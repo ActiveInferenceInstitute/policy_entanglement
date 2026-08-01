@@ -80,7 +80,7 @@ def validate_run_log() -> int:
     fail = 0
     n_records = n_ok = n_main_start = n_main_end = 0
     sections_seen: set[str] = set()
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         try:

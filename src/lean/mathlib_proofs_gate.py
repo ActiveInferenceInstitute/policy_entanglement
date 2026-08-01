@@ -12,6 +12,10 @@ from lean._lake_lock import mathlib_proofs_lock
 
 ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
 
+# Finite bound on the network `lake exe cache get` hydration step so a
+# stalled download cannot hang the whole pipeline (RedTeam C7, 2026-08-01).
+_MATHLIB_CACHE_TIMEOUT_SECONDS = 1800
+
 KEYSTONE_THEOREMS = (
     "streamMarginal_productDist",
     "logDiv_prod_separates",
@@ -103,15 +107,30 @@ def _hydrate_mathlib_cache(mathlib_dir: Path) -> None:
     from source. The cache step is not a substitute for the build or axiom
     audit; it only provisions dependencies so the fail-closed gate can run in
     the normal project-test path.
+
+    The download runs under a finite timeout (RedTeam C7, 2026-08-01): a
+    stalled `cache get` must not hang the whole pipeline indefinitely.  On
+    timeout (or any non-zero exit) control falls through to the existing
+    `lake build` fallback below, so this can never block a legitimate build —
+    it only bounds the network step.
     """
     print(">>> lake exe cache get (hydrate Mathlib build cache)")
-    proc = subprocess.run(
-        ["lake", "exe", "cache", "get"],
-        cwd=str(mathlib_dir),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        proc = subprocess.run(
+            ["lake", "exe", "cache", "get"],
+            cwd=str(mathlib_dir),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=_MATHLIB_CACHE_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        print(
+            f"!!! Mathlib cache hydration exceeded {_MATHLIB_CACHE_TIMEOUT_SECONDS}s "
+            "and was terminated; falling back to lake build.",
+            file=sys.stderr,
+        )
+        return
     if proc.returncode == 0:
         print("OK  Mathlib cache hydrated.")
         return

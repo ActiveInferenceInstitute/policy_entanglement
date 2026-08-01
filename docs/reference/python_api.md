@@ -109,7 +109,18 @@ pipeline. `PLOTLY_CDN` pins the Plotly CDN URL embedded in the HTML.
 When the parent template is on ``PYTHONPATH``, HTML assembly delegates to
 ``infrastructure.reporting._interactive_html.render_interactive_dashboard_html``;
 otherwise ``_interactive_dashboard_fallback.render_interactive_dashboard_html``
-supplies the same contract.
+supplies the same contract (it accepts an optional ``plotly_js`` payload so a
+caller can inline a vendored copy for an offline-capable page; when absent it
+emits the documented CDN fallback).
+
+```python
+def render_interactive_dashboard_html(*, title: str, subtitle: str, project_name: str, repo_root: Path | None, panel_count: int, control_count: int, invariant_count: int, bundle_json: str, plotly_js: bytes | None = None) -> str
+def vendored_plotly_js() -> bytes | None
+```
+
+`vendored_plotly_js` returns an opt-in vendored Plotly payload for
+``plotly_js``; it fetches only when the `REPORTING_VENDOR_PLOTLY` env var is
+set, returning ``None`` (CDN fallback) otherwise.
 
 ### `dashboard_types/dashboard.py`
 
@@ -192,7 +203,11 @@ def critical_module_coverage_issues(path: Path, thresholds: dict[str, float] | N
 def clear_bytecode_cache(project_root: Path) -> int
 def write_fresh_test_results(*, project_root: Path, test_results_path: Path, pytest_log_path: Path, coverage_json_path: Path) -> dict[str, Any] | None
 def count_invariants(invariants_path: Path) -> tuple[int, int] | None
+def embedded_git_rev(invariants_path: Path) -> str | None
+def current_short_head(project_root: Path) -> str | None
+def invariants_stale_rev(invariants_path: Path, project_root: Path) -> str | None
 def lean_budget_snapshot(*, project_root: Path, scripts_dir: Path) -> dict[str, int] | None
+def run_captured_bounded(cmd: list[str], *, cwd: Path, env: dict[str, str] | None = None, timeout: float, max_chars: int) -> tuple[subprocess.CompletedProcess[Any], str]
 ```
 
 ## Conventions

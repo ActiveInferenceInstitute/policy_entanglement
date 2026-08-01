@@ -23,6 +23,10 @@ from manuscript.meta_files import MANUSCRIPT_NON_BODY_MD
 
 COMBINED_STEM = "_combined_manuscript"
 
+# Generous bound on pandoc / bibtex / xelatex PDF subprocesses so a hung
+# toolchain cannot stall run_all indefinitely (RedTeam C7, 2026-08-01).
+_PDF_SUBPROCESS_TIMEOUT_SECONDS = 3600
+
 _LATEX_ESCAPE_REPLACEMENTS = {
     "\\": r"\textbackslash{}",
     "&": r"\&",
@@ -216,9 +220,7 @@ def _author_block_from_config(config: Mapping[str, Any]) -> str:
         extras.append(f"License: {_latex_text(license_name)}")
     if repository_url:
         label = _latex_text(repository_label or repository_url)
-        extras.append(
-            f"\\href{{{_latex_href_url(repository_url)}}}{{{label}}}"
-        )
+        extras.append(f"\\href{{{_latex_href_url(repository_url)}}}{{{label}}}")
     if extras:
         author_str += " \\\\ " + " \\\\ ".join(f"\\footnotesize{{{item}}}" for item in extras)
     return author_str
@@ -315,9 +317,9 @@ def _postprocess_combined_tex(*, combined_tex: Path, source_manuscript: Path) ->
     paper = _as_mapping(config.get("paper"))
     date = str(paper.get("date") or "")
     if not date:
-        text, subs = re.subn(r"\\date\{\s*\}", r"\\date{\\today}", text, count=1)
-        if subs == 0:
-            pass
+        # If no \date{} placeholder is present the default (\today) already
+        # applies, so there is nothing to inject.
+        text, _subs = re.subn(r"\\date\{\s*\}", r"\\date{\\today}", text, count=1)
 
     title_body = _title_page_body_from_config(config)
     text = text.replace("\\maketitle", title_body, 1)
@@ -331,6 +333,7 @@ def _run(cmd: Sequence[str], *, cwd: Path, stdout_path: Path | None = None) -> N
         capture_output=True,
         check=False,
         text=True,
+        timeout=_PDF_SUBPROCESS_TIMEOUT_SECONDS,
     )
     output = proc.stdout + proc.stderr
     if stdout_path is not None:
@@ -348,6 +351,7 @@ def _run_bibtex(*, pdf_dir: Path) -> None:
         capture_output=True,
         check=False,
         text=True,
+        timeout=_PDF_SUBPROCESS_TIMEOUT_SECONDS,
     )
     (pdf_dir / "_bibtex_stdout.log").write_text(proc.stdout + proc.stderr, encoding="utf-8")
     bbl_path = pdf_dir / f"{COMBINED_STEM}.bbl"

@@ -62,6 +62,8 @@ def kl_divergence(q: ArrayF, p: ArrayF) -> float:
         q_shape = getattr(q, "shape", qa.shape)
         p_shape = getattr(p, "shape", pa.shape)
         raise ValueError(f"kl_divergence shape mismatch: q={q_shape}, p={p_shape}")
+    if np.any(pa < 0.0):
+        raise ValueError("kl_divergence: `p` (reference) must be non-negative")
     mask_q = qa > 0.0
     # Absolute-continuity check: p=0 where q>0 → +inf.
     if np.any(pa[mask_q] <= 0.0):

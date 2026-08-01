@@ -485,6 +485,8 @@ Publication canon checks (canonical repository URL and DOI state).
 CANONICAL_PUBLICATION_DOI: str
 CANONICAL_ZENODO_RECORD: str
 CANONICAL_DOI_URL: str
+CANONICAL_VERSION_DOI: str
+CANONICAL_VERSION_RECORD: str
 CANONICAL_SOURCE_REPOSITORY: str
 WRONG_SOURCE_REPOSITORY: str
 DOI_REQUIRED_PATHS: tuple[str, ...]
@@ -602,6 +604,7 @@ def registry_count_gates() -> dict[str, tuple[float, float]]
 
 ```python
 def check_png(path: Path, *, optional: bool = False) -> int
+def check_png_git_revision(info: dict[str, str], path: Path) -> int
 def check_png_semantic_metadata(path: Path, info: dict[str, str]) -> int
 ```
 

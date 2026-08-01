@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import math
+import re
+import subprocess
 from pathlib import Path
 
 from manuscript.output_gates._reporting import fail as report_fail
@@ -22,6 +24,8 @@ from manuscript.output_gates.constants import (
     VALID_UNCERTAINTY_SEMANTICS,
 )
 from manuscript.stale_patterns import STALE_FIGURE_REFERENCE_PATTERNS
+
+_GIT_SHORT_REV_RE = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 def _finite(value: str | float) -> float:
@@ -196,6 +200,52 @@ def check_png_semantic_metadata(path: Path, info: dict[str, str]) -> int:
     return failures
 
 
+def _current_short_head() -> str | None:
+    """Return ``git rev-parse --short HEAD`` at the project root, or ``None``
+    if git / the repo is unavailable (figures then carry no reliable bound)."""
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10.0,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    rev = proc.stdout.strip()
+    return rev if proc.returncode == 0 and _GIT_SHORT_REV_RE.match(rev) else None
+
+
+def check_png_git_revision(info: dict[str, str], path: Path) -> int:
+    """Cross-check the PNG's embedded ``project.git_revision`` against HEAD.
+
+    A figure carries provenance to be *enforced*, not just stored: if the
+    embedded revision is absent we cannot bind (skip, leaving structural
+    validation to decide); if it is a stale rev differing from HEAD, the figure
+    is from an older commit and must be regenerated before it certifies
+    (RedTeam C7, 2026-08-01).
+    """
+    embedded_raw = info.get("project.git_revision", "")
+    embedded = embedded_raw.strip()
+    if not embedded or embedded == "unknown":
+        return 0  # no bound provenance; nothing to enforce
+    if not _GIT_SHORT_REV_RE.match(embedded):
+        report_fail(f"{path.name}: project.git_revision {embedded!r} is not a git short rev")
+        return 1
+    head = _current_short_head()
+    if head is None:
+        return 0  # can't resolve HEAD here; skip rather than false-fail
+    if embedded != head:
+        report_fail(
+            f"{path.name}: embedded project.git_revision {embedded!r} != current HEAD {head!r}; "
+            "regenerate the figure before certifying it"
+        )
+        return 1
+    return 0
+
+
 def check_png(path: Path, *, optional: bool = False) -> int:
     if not path.exists():
         if optional:
@@ -233,6 +283,9 @@ def check_png(path: Path, *, optional: bool = False) -> int:
         metadata_fail = check_png_semantic_metadata(path, info)
         if metadata_fail:
             return metadata_fail
+        rev_fail = check_png_git_revision(info, path)
+        if rev_fail:
+            return rev_fail
         # Nonblank pixel-variance smoke test.
         extrema = img.convert("L").getextrema()
         if extrema[0] == extrema[1]:

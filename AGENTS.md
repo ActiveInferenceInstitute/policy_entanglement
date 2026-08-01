@@ -49,7 +49,7 @@ for the witness-payload-discharge plan.
 | Layer | Count |
 |---|---|
 | Lean submodules in [`lean/ActinfPolicyEntanglement/`](lean/ActinfPolicyEntanglement/) | Source-derived by `scripts/manuscript_variables.py`; see `output/data/manuscript_variables.json` |
-| Lake jobs green | Live summary from `scripts/build_lean.py` and `output/reports/release_readiness.json` |
+| Lake jobs green | `22 / 22` for the current 17-submodule topology; the boundary `lake build` (via `scripts/build_lean.py`) and the regression gate's lake-job floor are the live checks — the manuscript table value is a pinned constant indexed to the topology, listed so onboarding reflects the current build |
 | Hygiene budget | Guarded by `scripts/build_lean.py`: zero `sorry`, zero `axiom`, zero `unsafe`/`partial`/`noncomputable`, zero boundary `Mathlib` imports |
 | Lean declarations and theorem-row counts | Source-derived from Lean files and `manuscript/refs/labels.yaml`; live roll-up in `output/data/manuscript_variables.json` and `docs/reference/_theorem_map.md` |
 | Pipeline scripts (`scripts/run_all.py`) | Canonical default list lives in `scripts/run_all.py`; release runs may add `--with-pdf` and `--with-mathlib` subgates |

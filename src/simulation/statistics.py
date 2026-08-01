@@ -107,6 +107,15 @@ def pymdp_summary_statistics(
     if len(bundles) < 2:
         raise ValueError("need at least 2 bundles for summary statistics")
 
+    # Field semantics (lambda_min/max, *_at_lambda_max, kl_to_lambda_zero_*)
+    # assume the sweep is ordered ascending by lambda.  Guard against an
+    # unsorted / reversed caller sweep instead of silently mislabelling the
+    # manuscript variables (RedTeam C7, 2026-08-01).
+    lams_raw = np.array([b.lam for b in bundles], dtype=np.float64)
+    if np.any(np.diff(lams_raw) < 0.0):
+        raise ValueError("bundles must be sorted ascending by lam for summary statistics")
+    bundles = list(bundles)
+
     lams = np.array([b.lam for b in bundles], dtype=np.float64)
     tcs = np.array([b.total_correlation for b in bundles], dtype=np.float64)
     vfe = np.array([b.vfe_total for b in bundles], dtype=np.float64)

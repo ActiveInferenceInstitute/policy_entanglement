@@ -67,6 +67,15 @@ def test_kl_divergence_skips_zero_q_entries():
     assert abs(kl_divergence(q, p) - expected) < 1e-12
 
 
+def test_kl_divergence_negative_reference_raises():
+    """A negative entry in the reference `p` is invalid input; reject it
+    loudly rather than returning a garbage finite KL (RedTeam C7, 2026-08-01)."""
+    q = np.array([0.5, 0.5])
+    p = np.array([0.5, -0.5])
+    with pytest.raises(ValueError, match="non-negative"):
+        kl_divergence(q, p)
+
+
 def test_total_correlation_zero_for_mean_field():
     m = (np.array([0.6, 0.4]), np.array([0.3, 0.7]))
     q = mean_field_to_joint(m)

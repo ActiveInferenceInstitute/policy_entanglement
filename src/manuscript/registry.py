@@ -145,7 +145,7 @@ def _seq(value) -> tuple[str, ...]:
 
 
 def load_labels(path: Path) -> LabelsRegistry:
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     figures: dict[str, Figure] = {}
     for n, (label, payload) in enumerate((data.get("figures") or {}).items(), start=1):
         figures[label] = Figure(
@@ -204,7 +204,7 @@ def load_labels(path: Path) -> LabelsRegistry:
 
 
 def load_citations(path: Path) -> CitationRegistry:
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     topic_order = tuple(data.pop("topic_order", []) or [])
     topic_titles = dict(data.pop("topic_titles", {}) or {})
     entries: dict[str, Citation] = {}

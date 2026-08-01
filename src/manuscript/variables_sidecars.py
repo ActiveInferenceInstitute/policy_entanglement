@@ -23,7 +23,7 @@ def scalar_json_sidecar(path: Path, sentinel_key: str) -> dict[str, object]:
     if not path.exists():
         return {sentinel_key: "not-run"}
     try:
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {sentinel_key: "invalid-json"}
     if not isinstance(data, dict):
@@ -45,7 +45,7 @@ def numeric_only_json_sidecar(path: Path, sentinel_key: str) -> dict[str, object
     if not path.exists():
         return {sentinel_key: "not-run"}
     try:
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {sentinel_key: "invalid-json"}
     if not isinstance(data, dict):
@@ -137,7 +137,7 @@ def gnn_facts(project_root: Path) -> dict[str, object]:
     if not path.exists():
         return {"gnn": "not-run"}
     try:
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {"gnn": "invalid-json"}
     if not isinstance(data, dict):

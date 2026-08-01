@@ -15,6 +15,9 @@ try:
     )
 
     USE_INFRA_HTML = True
+
+    def vendored_plotly_js() -> bytes | None:  # infra path: no vendoring here
+        return None
 except ImportError:  # standalone checkout without template on PYTHONPATH
     from reporting._interactive_dashboard_fallback import (
         PLOTLY_CDN,
@@ -23,6 +26,7 @@ except ImportError:  # standalone checkout without template on PYTHONPATH
         _to_jsonable,
         _utc_now,
         render_interactive_dashboard_html,
+        vendored_plotly_js,
     )
 
     USE_INFRA_HTML = False
@@ -35,4 +39,5 @@ __all__ = [
     "_to_jsonable",
     "_utc_now",
     "render_interactive_dashboard_html",
+    "vendored_plotly_js",
 ]

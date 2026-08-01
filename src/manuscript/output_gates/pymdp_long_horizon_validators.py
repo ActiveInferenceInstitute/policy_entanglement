@@ -53,7 +53,7 @@ def validate_long_horizon() -> int:
                 fail += 1
     summary_path = OUTPUT_DIR / "data" / "long_horizon_summary.json"
     if summary_path.exists():
-        summary = json.loads(summary_path.read_text())
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
         diff = float(summary.get("long_horizon_tc_recomputed_max_abs_diff", float("inf")))
         if diff > 1e-9:
             report_fail(f"long-horizon recomputed TC max abs diff {diff} > 1e-9")
@@ -135,7 +135,7 @@ def validate_long_horizon_replicates() -> int:
         report_fail("missing long_horizon_replicates_summary.json")
         fail += 1
     else:
-        summary = json.loads(summary_path.read_text())
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
         if int(float(summary.get("long_horizon_replicate_seed_count", -1))) != len(expected_seeds):
             report_fail("long-horizon replicate summary seed count does not match hyperparameters")
             fail += 1

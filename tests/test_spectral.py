@@ -35,6 +35,15 @@ def test_schmidt_rank_requires_K2():
         schmidt_rank(q)
 
 
+def test_schmidt_rank_default_atol_matches_documented_guidance():
+    """The default Schmidt truncation threshold must agree with the documented
+    recommendation (1e-9) so a near-mean-field joint (small singular value
+    ~1e-10) is graded rank 1 rather than rank 2 (RedTeam C7, 2026-08-01)."""
+    from lean.spectral import SCHMIDT_RANK_DEFAULT_ATOL
+
+    assert pytest.approx(1e-9) == SCHMIDT_RANK_DEFAULT_ATOL
+
+
 def test_schmidt_decomposition_returns_archetype_modes():
     q = np.array([[0.3, 0.1], [0.2, 0.4]])
     modes = schmidt_decomposition(q)

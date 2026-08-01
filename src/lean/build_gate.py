@@ -19,10 +19,15 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 import sys
 import time
 from pathlib import Path
+
+from gates.regression_pytest import run_captured_bounded
+
+# Generous hang bound for `lake build` inside the boundary fragment; only
+# catches a genuinely stuck toolchain (RedTeam C7, 2026-08-01).
+_LOCAL_BUILD_TIMEOUT_SECONDS = 7200
 
 # Regex helpers used by the source-file scanners.
 _SORRY_RE = re.compile(r"(?<!\w)sorry(?!\w)")
@@ -92,7 +97,7 @@ def count_sorries(lean_dir: Path, *, exclude_subtree: Path) -> list[tuple[Path, 
     hits: list[tuple[Path, int, str]] = []
     for f in _lean_files(lean_dir, exclude_subtree=exclude_subtree):
         in_doc = False
-        for lineno, raw in enumerate(f.read_text().splitlines(), start=1):
+        for lineno, raw in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1):
             if "/-" in raw and not in_doc:
                 in_doc = True
             if "-/" in raw and in_doc:
@@ -111,7 +116,7 @@ def count_axioms(lean_dir: Path, *, exclude_subtree: Path) -> list[tuple[Path, i
     """Find every ``axiom`` declaration in the boundary fragment."""
     hits: list[tuple[Path, int, str]] = []
     for f in _lean_files(lean_dir, exclude_subtree=exclude_subtree):
-        for lineno, raw in enumerate(f.read_text().splitlines(), start=1):
+        for lineno, raw in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1):
             if _AXIOM_RE.match(raw):
                 hits.append((f, lineno, raw.strip()))
     return hits
@@ -121,7 +126,7 @@ def count_disallowed(lean_dir: Path, *, exclude_subtree: Path) -> list[tuple[Pat
     """Flag any ``unsafe``/``partial``/``noncomputable`` definitions."""
     hits: list[tuple[Path, int, str]] = []
     for f in _lean_files(lean_dir, exclude_subtree=exclude_subtree):
-        for lineno, raw in enumerate(f.read_text().splitlines(), start=1):
+        for lineno, raw in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1):
             if _DISALLOWED_RE.match(raw):
                 hits.append((f, lineno, raw.strip()))
     return hits
@@ -144,7 +149,7 @@ def count_mathlib_imports(
             files.extend(sorted(root.rglob("*.lean")))
     files.extend(path for path in root_files if path.exists())
     for f in files:
-        for lineno, raw in enumerate(f.read_text().splitlines(), start=1):
+        for lineno, raw in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1):
             if _MATHLIB_IMPORT_RE.match(raw):
                 hits.append((f, lineno, raw.strip()))
     return hits
@@ -180,14 +185,13 @@ def main(
     infra_log_path = project_root / "output" / "logs" / "infrastructure.jsonl"
 
     print(">>> lake build (lean/ boundary fragment)")
-    proc = subprocess.run(
+    proc, bounded_stderr = run_captured_bounded(
         ["lake", "build"],
-        cwd=str(lean_dir),
-        stderr=subprocess.PIPE,
-        text=True,
+        cwd=lean_dir,
+        timeout=_LOCAL_BUILD_TIMEOUT_SECONDS,
     )
     rc = proc.returncode
-    stderr_text = proc.stderr or ""
+    stderr_text = bounded_stderr
     if stderr_text.strip():
         sys.stderr.write(stderr_text)
     warning_rows = scrape_lake_warnings(stderr_text)

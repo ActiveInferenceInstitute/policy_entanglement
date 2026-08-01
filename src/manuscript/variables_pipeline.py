@@ -66,6 +66,12 @@ def lean_facts(project_root: Path) -> dict[str, int]:
     lean_scaffolding_theorem_count = 20
     lean_framework_theorem_count = lean_theorem_count - lean_scaffolding_theorem_count
     lean_total_declarations = lean_def_count + lean_theorem_count + lean_structure_count
+    # "22/22 lake jobs" is a PINNED constant indexed to the current 17-submodule
+    # topology, NOT a live tool read: build_gate.py reports hygiene only and does
+    # not parse a job count from `lake build`.  The live drift check is the
+    # regression gate's lake-job floor (gates/regression_pytest.lean_budget_snapshot).
+    # If the submodule topology changes, update this constant to match.
+    lean_lake_jobs_total = 22
     return {
         "lean_submodule_count": lean_submodule_count,
         "lean_def_count": lean_def_count,
@@ -74,7 +80,7 @@ def lean_facts(project_root: Path) -> dict[str, int]:
         "lean_scaffolding_theorem_count": lean_scaffolding_theorem_count,
         "lean_structure_count": lean_structure_count,
         "lean_total_declarations": lean_total_declarations,
-        "lean_lake_jobs_total": 22,
+        "lean_lake_jobs_total": lean_lake_jobs_total,
     }
 
 

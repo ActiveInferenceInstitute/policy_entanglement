@@ -188,7 +188,7 @@ def validate_marginal_null_control() -> int:
         report_fail("missing marginal_null_control_summary.json")
         fail += 1
     else:
-        summary = json.loads(summary_path.read_text())
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
         null_tc_max = finite(summary.get("robustness_null_control_max_tc", "nan"))
         if null_tc_max > zero_tol:
             report_fail(f"marginal null-control summary max TC {null_tc_max} > {zero_tol}")

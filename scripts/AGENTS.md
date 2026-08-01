@@ -33,11 +33,13 @@
    ```python
    import os, sys
    from pathlib import Path
+
    os.environ.setdefault("MPLBACKEND", "Agg")
    THIS_DIR = Path(__file__).resolve().parent
    PROJECT_ROOT = THIS_DIR.parent
    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
    from _bootstrap import ensure_project_paths  # noqa: E402
+
    ensure_project_paths(project_root=PROJECT_ROOT)
    ```
    All analysis scripts use this bootstrap.  Exceptions: `build_lean.py`,

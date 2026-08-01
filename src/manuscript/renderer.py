@@ -366,7 +366,7 @@ def render_all(
     output_dir.mkdir(parents=True, exist_ok=True)
     variables: dict[str, Any] = {}
     if variables_path.exists():
-        variables = json.loads(variables_path.read_text())
+        variables = json.loads(variables_path.read_text(encoding="utf-8"))
 
     lean_snippets: dict[tuple[str, str], LeanSnippet] | None = None
     if lean_dir is not None and lean_dir.is_dir():
@@ -389,7 +389,7 @@ def render_all(
     for src in sorted(manuscript_dir.glob("*.md")):
         if src.name in skip_names:
             continue
-        text = src.read_text()
+        text = src.read_text(encoding="utf-8")
         result = render_section(
             text,
             registry=registry,

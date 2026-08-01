@@ -34,6 +34,7 @@ from simulation.builders import make_ising_ensemble
 from simulation.inference import (
     DecompositionWitness,
     FreeEnergyBundle,
+    _variational_free_energy_from_parts,
     coupling_energy,
     decomposition_witness_curve,
     expected_free_energy_under_posterior,
@@ -41,10 +42,37 @@ from simulation.inference import (
     free_energy_curve,
     variational_free_energy,
 )
+from simulation.specs import CoupledEnsembleSpec, StreamSpec
 
 
 def _spec(K: int = 2):
     return make_ising_ensemble(num_streams=K, gamma=1.0, coupling_amplitude=1.0)
+
+
+def test_variational_free_energy_rejects_nonmatching_state_control_dims() -> None:
+    """Per-stream VFE uses the state prior D as the policy prior, which only
+    makes sense when num_states == num_controls; a mismatched stream must fail
+    fast rather than produce a confusing broadcast error (RedTeam C7,
+    2026-08-01)."""
+    a = np.full((3, 2), 1 / 3)  # (num_obs=3, num_states=2)
+    b = np.full((2, 2, 3), 1 / 2)  # (num_states=2, num_states=2, num_controls=3)
+    c = np.full(3, 0.0)
+    d = np.array([0.5, 0.5])
+    stream = StreamSpec(A=a, B=b, C=c, D=d, name="mismatched")
+    # coupling_j / coupling_kc must span the (policy_count,) dims of the single
+    # mismatched stream (3 controls).
+    bad = CoupledEnsembleSpec(
+        streams=(stream,),
+        coupling_j=np.zeros((3,)),
+        coupling_kc=np.zeros((3,)),
+        gamma=1.0,
+    )
+    with pytest.raises(ValueError, match="num_states == num_controls"):
+        _variational_free_energy_from_parts(
+            bad,
+            margs=[np.array([1 / 3, 1 / 3, 1 / 3])],
+            G_per_stream=[np.zeros(3)],
+        )
 
 
 def test_variational_free_energy_returns_per_stream_array() -> None:

@@ -65,7 +65,7 @@ def validate_manuscript_tree(
     top_level = collect_top_level_sections(manuscript_dir)
     subsections = collect_section_subheadings(manuscript_dir)
     for path in paths:
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         # Headings — accept the first non-blank line that is not a
         # Pandoc raw block (```{=latex}…```, ~~~{=latex}~~~ or HTML
         # equivalents) or a

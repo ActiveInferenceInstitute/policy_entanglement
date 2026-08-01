@@ -38,7 +38,7 @@ def _scan_module(module_path: Path) -> dict[str, LeanSnippet]:
     Resolves nested `namespace ... end` blocks so a declaration inside
     `namespace Bipartite` shows up as `Bipartite.<name>`.
     """
-    text = module_path.read_text()
+    text = module_path.read_text(encoding="utf-8")
     lines = text.splitlines()
     namespace_stack: list[str] = []
     snippets: dict[str, LeanSnippet] = {}

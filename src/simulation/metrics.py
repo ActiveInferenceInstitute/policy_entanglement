@@ -63,6 +63,12 @@ def half_saturation_interpolated(
 
     lams_a = np.asarray(lams, dtype=np.float64)
     tcs_a = np.asarray(tcs, dtype=np.float64)
+    if lams_a.size != tcs_a.size:
+        raise ValueError(
+            f"half_saturation_interpolated: lams and tcs must have equal length (got {lams_a.size} vs {tcs_a.size})"
+        )
+    if lams_a.size < 2:
+        raise ValueError("half_saturation_interpolated: need at least 2 sweep points")
     tc_max = float(tcs_a.max())
     if tc_max <= 0.0:
         return 0.0, 0.0

@@ -162,6 +162,22 @@ def _variational_free_energy_from_parts(
     out = np.zeros(spec.num_streams(), dtype=np.float64)
     for k, (m, G_k) in enumerate(zip(margs, G_per_stream, strict=True)):
         s = spec.streams[k]
+        # The per-stream VFE uses `s.D` (the state prior) as the policy prior
+        # `E_k`.  This is only valid when the policy space and state space have
+        # the same cardinality (num_states == num_controls) AND D is uniform,
+        # which holds for every production builder (make_bernoulli_stream /
+        # make_ising_ensemble use prior_bias=0.5 with 2-state/2-action
+        # streams).  Guard the shape so a mis-sized stream fails fast with a
+        # clear message instead of a confusing broadcast error (RedTeam C7,
+        # 2026-08-01).
+        if s.num_controls() != s.num_states():
+            raise ValueError(
+                f"stream {k} ({s.name!r}): per-stream VFE uses the state prior "
+                f"D as the policy prior, which requires num_states == num_controls "
+                f"(got states={s.num_states()}, controls={s.num_controls()}). "
+                "Provide a stream with equal state/control dims (and uniform D) "
+                "or compute the policy prior explicitly."
+            )
         log_E = np.log(np.where(s.D > 0.0, s.D, 1e-300))
         log_q = np.log(np.where(m > 0.0, m, 1e-300))
         out[k] = float((m * log_q).sum() - (m * log_E).sum() + spec.gamma * float((m * G_k).sum()))

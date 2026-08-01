@@ -23,6 +23,7 @@ from reporting._interactive_dashboard_compat import (
     _to_jsonable,
     _utc_now,
     render_interactive_dashboard_html,
+    vendored_plotly_js,
 )
 
 __all__ = [
@@ -313,6 +314,7 @@ class InteractiveDashboard:
                 control_count=len(self.controls),
                 invariant_count=len(self.invariants),
                 bundle_json=bundle_json,
+                plotly_js=vendored_plotly_js(),
             ),
             encoding="utf-8",
         )

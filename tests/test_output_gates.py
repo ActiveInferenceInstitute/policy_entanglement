@@ -95,6 +95,26 @@ def test_check_png_missing_and_blank_and_bad_header(tmp_path: Path) -> None:
     assert png_validation.check_png(not_png) == 1
 
 
+def test_check_png_git_revision_binds_figure_to_head(tmp_path: Path) -> None:
+    """A figure's embedded project.git_revision is provenance to be enforced:
+    a stale rev differing from HEAD must fail, a matching/absent/unknown rev
+    must not (RedTeam C7, 2026-08-01)."""
+    path = tmp_path / "fig.png"
+    head = png_validation._current_short_head()
+    assert head is not None  # this review's repo is a live git checkout
+
+    # Matching HEAD -> OK.
+    assert png_validation.check_png_git_revision({"project.git_revision": head}, path) == 0
+    # Absent / unknown -> not bound (structural validation owns that path).
+    assert png_validation.check_png_git_revision({}, path) == 0
+    assert png_validation.check_png_git_revision({"project.git_revision": "unknown"}, path) == 0
+    # Non-rev garbage -> fail (tampered/truncated provenance).
+    assert png_validation.check_png_git_revision({"project.git_revision": "not-a-rev"}, path) == 1
+    # Stale but plausible rev -> fail.
+    stale = "deadbeef" if head != "deadbeef" else "c0ffee0"
+    assert png_validation.check_png_git_revision({"project.git_revision": stale}, path) == 1
+
+
 def test_check_png_semantic_metadata_rejects_stale_theorem(tmp_path: Path) -> None:
     path = tmp_path / "meta.png"
     stale_label = f"Theorem {6}.{4}"

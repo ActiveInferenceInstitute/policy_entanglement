@@ -124,6 +124,144 @@ def test_interactive_dashboard_fallback_render_path(tmp_path: Path) -> None:
     assert "controls-root" in html
 
 
+def test_interactive_dashboard_fallback_vendors_plotly_when_provided(tmp_path: Path) -> None:
+    """A vendored payload is inlined for an offline-capable page; None falls
+    back to the CDN tag.  The renderer never performs network I/O
+    (RedTeam C7, 2026-08-01)."""
+    from reporting._interactive_dashboard_fallback import (
+        _plotly_script_tag,
+        render_interactive_dashboard_html,
+    )
+
+    # Isolated unit check: pure tag builder.
+    assert "cdn.plot.ly" in _plotly_script_tag(None)
+    inline = _plotly_script_tag(b"window.Plotly = {};")
+    assert "cdn.plot.ly" not in inline
+    assert "window.Plotly" in inline
+
+    render_kwargs: dict[str, object] = {
+        "title": "V",
+        "subtitle": "",
+        "project_name": "actinf",
+        "repo_root": tmp_path,
+        "panel_count": 0,
+        "control_count": 0,
+        "invariant_count": 0,
+        "bundle_json": "{}",
+    }
+    # Render with a vendored payload -> no CDN reference, no external <script src>.
+    html = render_interactive_dashboard_html(**render_kwargs, plotly_js=b"window.Plotly = {};")  # type: ignore[arg-type]
+    assert "cdn.plot.ly" not in html
+    assert "window.Plotly" in html
+
+    # Render without a payload -> documented CDN fallback remains.
+    html_cdn = render_interactive_dashboard_html(**render_kwargs)  # type: ignore[arg-type]
+    assert "cdn.plot.ly" in html_cdn
+
+
+class _FakeUrl:
+    def __init__(self, payload: bytes) -> None:
+        self._payload = payload
+
+    def __enter__(self) -> _FakeUrl:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+    def read(self, _n: int = -1) -> bytes:
+        return self._payload
+
+
+class _FakeRaisingUrl:
+    def __enter__(self) -> _FakeRaisingUrl:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+    def read(self, _n: int = -1) -> bytes:
+        raise OSError("network down")
+
+
+def test_plotly_vendored_fetch_deterministic_branches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The opt-in vendoring fetch must cover success, HTML-page, oversize,
+    and failure branches deterministically without real network I/O."""
+    from reporting import _interactive_dashboard_fallback as fb
+
+    monkeypatch.setenv("REPORTING_VENDOR_PLOTLY", "1")
+
+    # Success: payload inlined.
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(fb.urllib.request, "urlopen", lambda _url, timeout=None: _FakeUrl(b"window.Plotly={};"))
+    assert fb.vendored_plotly_js() == b"window.Plotly={};"
+
+    # Oversize payload -> None (CDN fallback).
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(
+        fb.urllib.request, "urlopen", lambda _url, timeout=None: _FakeUrl(b"x" * (fb._PLOTLY_MAX_BYTES + 1))
+    )
+    assert fb.vendored_plotly_js() is None
+
+    # HTML error page -> None.
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(fb.urllib.request, "urlopen", lambda _url, timeout=None: _FakeUrl(b"<html>oops</html>"))
+    assert fb.vendored_plotly_js() is None
+
+    # Network failure (raises on read) -> None.
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(fb.urllib.request, "urlopen", lambda _url, timeout=None: _FakeRaisingUrl())
+    assert fb.vendored_plotly_js() is None
+
+    # urlopen itself raising URLError (connect failure) -> None.
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(
+        fb.urllib.request,
+        "urlopen",
+        lambda _url, timeout=None: (_ for _ in ()).throw(OSError("connect")),
+    )
+    assert fb.vendored_plotly_js() is None
+
+    # Retry-success: first attempt fails, second succeeds.
+    attempts: list[int] = []
+
+    def _flaky_urlopen(_url: str, timeout: float | None = None) -> object:
+        attempts.append(1)
+        if len(attempts) == 1:
+            return (_ for _ in ()).throw(OSError("transient"))
+        return _FakeUrl(b"window.Plotly={};")
+
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    monkeypatch.setattr(fb.urllib.request, "urlopen", _flaky_urlopen)
+    assert fb.vendored_plotly_js() == b"window.Plotly={};"
+    assert len(attempts) >= 2
+
+    # Cache-hit path: once the cache flag is set, later calls return the cached
+    # payload without touching the network again.
+    urlopen_calls: list[int] = []
+    monkeypatch.setattr(
+        fb.urllib.request,
+        "urlopen",
+        lambda _url, timeout=None: urlopen_calls.append(1) or _FakeUrl(b"window.Plotly={};"),
+    )
+    fb._PLOTLY_CACHE_SET = False
+    fb._PLOTLY_CACHE = b"window.Plotly={};"
+    assert fb.vendored_plotly_js() == b"window.Plotly={};"  # cache now set
+    n_after_first = len(urlopen_calls)
+    assert fb.vendored_plotly_js() == b"window.Plotly={};"
+    assert len(urlopen_calls) == n_after_first  # hit the cache, no new urlopen
+
+    # Non-UTF-8 payload -> CDN fallback tag (UnicodeDecodeError branch).
+    bad = b"\xff\xfe\x00invalid"
+    tag = fb._plotly_script_tag(bad)
+    assert "cdn.plot.ly" in tag
+
+    # Opt-in disabled -> None without touching the network.
+    monkeypatch.setenv("REPORTING_VENDOR_PLOTLY", "")
+    monkeypatch.setattr(fb, "_PLOTLY_CACHE_SET", False)
+    assert fb.vendored_plotly_js() is None
+
+
 def test_dashboard_types_main_success_and_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     html = tmp_path / "d.html"
     js = tmp_path / "d.json"

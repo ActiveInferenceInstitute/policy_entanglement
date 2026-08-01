@@ -94,7 +94,7 @@ def precompute_equation_numbers(
         if section_num is None:
             # Unregistered file (e.g., preamble.md) — skip numbering.
             continue
-        text = src.read_text()
+        text = src.read_text(encoding="utf-8")
         k = 0
         for _pos, kind, label in _equation_events(text):
             k += 1

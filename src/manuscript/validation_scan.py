@@ -55,7 +55,7 @@ def collect_section_subheadings(manuscript_dir: Path) -> dict[int, set[int]]:
     try:
         import yaml
 
-        data = yaml.safe_load(refs_file.read_text()) or {}
+        data = yaml.safe_load(refs_file.read_text(encoding="utf-8")) or {}
     except (OSError, ImportError):
         return out
     sub_re = re.compile(r"^(\d+)\.(\d+)$")
@@ -85,7 +85,7 @@ def collect_top_level_sections(manuscript_dir: Path) -> set[int]:
     try:
         import yaml
 
-        data = yaml.safe_load(refs_file.read_text()) or {}
+        data = yaml.safe_load(refs_file.read_text(encoding="utf-8")) or {}
     except (OSError, ImportError):
         return out
     top_re = re.compile(r"^(\d+)$")

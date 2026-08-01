@@ -44,6 +44,12 @@ from gates.regression_pytest import (
     critical_module_coverage_issues as _critical_module_coverage_issues,
 )
 from gates.regression_pytest import (
+    current_short_head as _current_short_head,
+)
+from gates.regression_pytest import (
+    invariants_stale_rev as _invariants_stale_rev,
+)
+from gates.regression_pytest import (
     lean_budget_snapshot as _lean_budget_snapshot,
 )
 from gates.regression_pytest import (
@@ -75,7 +81,12 @@ def gate(
     drift_cov = float(tol.get("coverage_drop_pct_max", 1.0))
 
     if os.environ.get("REGRESSION_GATE_USE_EXISTING_TEST_REPORT") == "1":
-        _info("using existing test_results.json by explicit environment override")
+        _info(
+            "WARNING: using existing test_results.json via "
+            "REGRESSION_GATE_USE_EXISTING_TEST_REPORT=1 — the gate will certify "
+            "the stored report WITHOUT running a fresh pytest/coverage snapshot. "
+            "Verify the report's generated_at is current before trusting this result."
+        )
         test_results = _load_test_results(test_results_path)
     else:
         test_results = _write_fresh_test_results(
@@ -155,6 +166,15 @@ def gate(
             fail += 1
         else:
             _ok(f"invariants {cur_inv_passed}/{cur_inv_total} ≥ floor {inv_floor}")
+        # Stale-positive certification guard (RedTeam C7, 2026-08-01): the
+        # invariants file embeds a `git rev:` provenance line.  If that line is
+        # present AND disagrees with the current HEAD, the stored report is
+        # stale and must not certify PASSING.  Absent provenance (hand-authored
+        # fixtures / minimal test files) is left to the count floor above.
+        stale_rev = _invariants_stale_rev(invariants_path, project_root)
+        if stale_rev is not None:
+            _fail(f"invariants file is stale: embedded git rev {stale_rev!r} != current HEAD")
+            fail += 1
 
     lean = _lean_budget_snapshot(project_root=project_root, scripts_dir=scripts_dir)
     if lean is None:
@@ -206,8 +226,10 @@ __all__ = [
     "_coverage_fail_under",
     "_coverage_percent_from_json",
     "_critical_module_coverage_issues",
+    "_current_short_head",
     "_fail",
     "_info",
+    "_invariants_stale_rev",
     "_lean_budget_snapshot",
     "_load_baseline",
     "_load_test_results",

@@ -114,11 +114,11 @@ from lean.free_energy import total_correlation
 from lean.spectral import schmidt_rank
 
 mf = [np.array([0.5, 0.5]), np.array([0.5, 0.5])]
-J  = np.array([[0.5, -0.5], [-0.5, 0.5]])      # Ising coupling
+J = np.array([[0.5, -0.5], [-0.5, 0.5]])  # Ising coupling
 Kc = np.zeros((2, 2))
-G  = [np.zeros(2), np.zeros(2)]
+G = [np.zeros(2), np.zeros(2)]
 
 q = entangled_posterior(mf, G, J, Kc, gamma=0.0, lam=2.0)
-print("total correlation:", total_correlation(q))   # > 0
-print("schmidt rank:    ", schmidt_rank(q))         # 2
+print("total correlation:", total_correlation(q))  # > 0
+print("schmidt rank:    ", schmidt_rank(q))  # 2
 ```

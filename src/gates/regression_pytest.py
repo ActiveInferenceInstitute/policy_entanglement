@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,48 @@ CRITICAL_COVERAGE_MODULES: dict[str, float] = {
     "src/simulation/parameter_sweep.py": 95.0,
     "src/visualizations/btai_plots.py": 90.0,
 }
+
+# Generous hang bound for the local `pytest` snapshot the gate spawns.  Only
+# catches a genuinely stuck child (RedTeam C7, 2026-08-01); a real suite run
+# finishes far below this.
+_GATE_PYTEST_TIMEOUT_SECONDS = 7200
+
+# Cap on captured child text retained in memory (regression_pytest / run_all /
+# build_gate).  Output is streamed to a temp file during the run and only the
+# final tail is kept, so a chatty child cannot balloon the parent's RSS.
+_MAX_CAPTURED_CHARS = 2_000_000
+
+
+def run_captured_bounded(
+    cmd: list[str],
+    *,
+    cwd: Path,
+    env: dict[str, str] | None = None,
+    timeout: float = _GATE_PYTEST_TIMEOUT_SECONDS,
+    max_chars: int = _MAX_CAPTURED_CHARS,
+) -> tuple[subprocess.CompletedProcess[Any], str]:
+    """Run a subprocess, streaming stdout/stderr to a temp file (bounded memory)
+    and returning ``(proc, combined_tail)`` where ``combined_tail`` holds at most
+    ``max_chars`` of combined output."""
+    with tempfile.TemporaryDirectory(prefix="regression_gate_capture_") as td:
+        out_path = Path(td) / "stdout.txt"
+        err_path = Path(td) / "stderr.txt"
+        with out_path.open("wb") as outf, err_path.open("wb") as errf:
+            proc = subprocess.run(
+                list(cmd),
+                cwd=str(cwd),
+                env=env,
+                stdout=outf,
+                stderr=errf,
+                timeout=timeout,
+            )
+        stdout = out_path.read_text(encoding="utf-8", errors="replace")
+        stderr = err_path.read_text(encoding="utf-8", errors="replace")
+    combined = stdout if not stdout else f"{stdout}\n{stderr}"
+    if len(combined) > max_chars:
+        combined = combined[-max_chars:]
+    return proc, combined
+
 
 _PYTEST_KINDS = {
     "passed",
@@ -160,14 +203,12 @@ def write_fresh_test_results(
         "PYTHONDONTWRITEBYTECODE": "1",
     }
     _info("running fresh pytest + coverage snapshot for regression gate")
-    proc = subprocess.run(
+    proc, combined_output = run_captured_bounded(
         cmd,
-        cwd=str(project_root),
+        cwd=project_root,
         env=env,
-        capture_output=True,
-        text=True,
+        timeout=_GATE_PYTEST_TIMEOUT_SECONDS,
     )
-    combined_output = (proc.stdout or "") + ("\n" if proc.stdout and proc.stderr else "") + (proc.stderr or "")
     pytest_log_path.write_text(combined_output, encoding="utf-8")
 
     counts = parse_pytest_counts(combined_output)
@@ -220,12 +261,63 @@ def count_invariants(invariants_path: Path) -> tuple[int, int] | None:
     return int(m.group(1)), int(m.group(2))
 
 
+def embedded_git_rev(invariants_path: Path) -> str | None:
+    """Return the `git rev:` provenance line embedded in an invariants report.
+
+    Returns ``None`` when the file is missing or carries no provenance line
+    (e.g. hand-authored fixtures) — callers treat an absent marker as "no
+    provenance to bind against".
+    """
+    if not invariants_path.exists():
+        return None
+    txt = invariants_path.read_text(encoding="utf-8")
+    m = re.search(r"(?m)^git rev:\s*(\S+)\s*$", txt)
+    return m.group(1) if m else None
+
+
+def current_short_head(project_root: Path) -> str | None:
+    """Return ``git rev-parse --short HEAD`` for ``project_root``, or ``None``
+    if git / the repo is unavailable."""
+    cmd = ["git", "rev-parse", "--short", "HEAD"]
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(project_root),
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10.0,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    rev = proc.stdout.strip()
+    return rev if proc.returncode == 0 and rev else None
+
+
+def invariants_stale_rev(invariants_path: Path, project_root: Path) -> str | None:
+    """Return the embedded rev when the invariants report is stale vs HEAD.
+
+    ``None`` means: not stale (embedded rev matches HEAD) OR no provenance to
+    bind against (no embedded rev / no git available).  A non-None return is a
+    stale report that must not be certified.
+    """
+    embedded = embedded_git_rev(invariants_path)
+    head = current_short_head(project_root)
+    if embedded is None or head is None:
+        return None
+    return embedded if embedded != head else None
+
+
 def lean_budget_snapshot(*, project_root: Path, scripts_dir: Path) -> dict[str, int] | None:
     cmd = [sys.executable, str(scripts_dir / "build_lean.py")]
-    proc = subprocess.run(cmd, cwd=str(project_root), capture_output=True, text=True)
+    proc, combined = run_captured_bounded(
+        cmd,
+        cwd=project_root,
+        timeout=_GATE_PYTEST_TIMEOUT_SECONDS,
+    )
     if proc.returncode != 0:
         return None
-    summary = proc.stdout + "\n" + proc.stderr
+    summary = combined
     m_lake = re.search(r"\((\d+)\s+jobs?\)", summary) or re.search(r"(\d+)\s+lake\s+jobs?", summary)
     m_sorry = re.search(r"(\d+)\s+sorr", summary)
     m_axiom = re.search(r"(\d+)\s+axiom", summary)

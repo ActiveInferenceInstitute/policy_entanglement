@@ -208,7 +208,7 @@ def main(
     registry = load_registry(args.manuscript_dir / "refs")
     variables: dict[str, object] = {}
     if args.variables.exists():
-        variables = json.loads(args.variables.read_text())
+        variables = json.loads(args.variables.read_text(encoding="utf-8"))
 
     provenance = variable_provenance_summary(
         variables,
