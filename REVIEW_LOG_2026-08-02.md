@@ -24,7 +24,7 @@ disposable and were not edited.
 
 ## Findings and implementation record
 
-### Minor (6)
+### Minor (7)
 
 - `.aii/config.yaml`: citation DOI value contained leaked Markdown-link syntax;
   corrected to a plain scalar (`62cf243`).
