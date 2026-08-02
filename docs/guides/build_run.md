@@ -1,5 +1,10 @@
 # Build / Run
 
+> Paths below use the `docxology/template` monorepo layout
+> (`projects/actinf_policy_entanglement_lean/`); from a standalone
+> clone of this repository, run the same commands from the repository
+> root instead.
+
 ## Lean
 
 ```bash

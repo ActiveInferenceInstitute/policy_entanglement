@@ -13,7 +13,8 @@ Practical recipes for working with the project.
 | [`styleguide/prose.md`](styleguide/prose.md) | §6 American English + evidence-first prose contract |
 | [`build_run.md`](build_run.md) | Full pipeline: `uv sync`, `lake build`, `pytest`, figure generation, manuscript injection |
 | [`quickstart_recipes.md`](quickstart_recipes.md) | Copy-paste recipes for every common task |
-| [`testing.md`](testing.md) | No-mocks policy, coverage targets (60 % infra / 90 % project), invariants checked |
+| [`testing.md`](testing.md) | No-mocks policy, the 95% `src/` coverage gate, and invariants checked |
+| [`zenodo-doi-strategy.md`](zenodo-doi-strategy.md) | Zenodo concept/version DOI chain: how the citation DOI, version DOI, and deposit records relate and how to publish |
 
 Latest generated audit counts are checked by the build and pipeline gates,
 not hand-maintained here:

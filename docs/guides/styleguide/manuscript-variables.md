@@ -65,7 +65,7 @@ Rendered output is allowed to contain the resolved display labels.
 The validator
 [`scripts/validate_manuscript.py`](../../../scripts/validate_manuscript.py)
 calls
-[`manuscript.validation.find_hardcoded_numeric_literals`](../../reference/python_api.md#validationpy)
+[`manuscript.validation.find_hardcoded_numeric_literals`](../../reference/python_api_manuscript.md#validationpy-facade)
 on every manuscript section and
 `find_hardcoded_rendered_source_literals` on headings plus the
 rendered fields in `manuscript/refs/labels.yaml`.  The numeric gate

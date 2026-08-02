@@ -5,8 +5,8 @@ organized into four topic subdirectories so a reader can find any
 concept in two clicks.
 
 > **Citation metadata:** DOI [`10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904); source repository URL
-> is set in [`manuscript/config.yaml`](../manuscript/config.yaml) and the abstract
-> · cite via [`CITATION.cff`](../CITATION.cff)
+> is set in [`manuscript/config.yaml`](../manuscript/config.yaml); the abstract is in the
+> manuscript, and citation metadata lives in [`CITATION.cff`](../CITATION.cff).
 
 > **Latest generated audit:** live counts come from generated reports,
 > not this prose. Read `output/reports/release_readiness.json` for
@@ -30,6 +30,7 @@ concept in two clicks.
 ## Cross-cutting top-level pages
 
 * [`CHANGELOG.md`](CHANGELOG.md) — per-round revision history (rounds 1, 2, 3).
+* [`RELEASE_v1.0.0.md`](RELEASE_v1.0.0.md) — v1.0.0 release receipt: canonical identifiers (GitHub, Zenodo concept/version DOIs, deposit PDF hash) and completed release steps.
 * [`FAQ.md`](FAQ.md) — answers to the 15 most likely newcomer questions.
 * [`READING_ORDER.md`](READING_ORDER.md) — curated reading paths by reader persona (active-inference researcher, Lean formalizer, Python engineer, reviewer, newcomer).
 * [`glossary.md`](glossary.md) — project-jargon glossary (boundary fragment, witness-form, four-track contract, …); complements the mathematical glossary under [`reference/math_reference.md`](reference/math_reference.md) and the canonical symbol-and-sign glossary [`manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md).

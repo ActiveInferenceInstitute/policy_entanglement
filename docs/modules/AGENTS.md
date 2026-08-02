@@ -25,6 +25,7 @@ under [`../../manuscript/`](../../manuscript/).
 | `spectral_structure.md` | `Spectral.lean` | `spectral.py` | `2G_spectral.md` |
 | `spectral_witnesses.md` | `SpectralWitnesses.lean` | (realized in `spectral.py`; multi-K experiments in `scripts/simulate_multi_k.py`) | `2G_spectral.md` §8.1 (`prop_7_2`), §8.3 (`thm_7_3`) — witness-form rows |
 | `connections_witnesses.md` | `ConnectionsWitnesses.lean` | (realized in `decomposition.py`, `simulation/inference.py`; long-horizon in `scripts/simulate_long_horizon.py`) | `5B_connections_aif.md` §17.2 (`thm_11_1`), §17.3 (`prop_11_2`) — witness-form rows |
+| `float_real_residual_witness.md` | `FloatRealResidualWitness.lean` | (roadmap row — residual fields sourced from `output/reports/float_real_residual.json`; residual tracking in `tests/test_meta_files_and_float_residual.py`) | `3B_lean_formalization.md` — Float↔ℝ residual scaffold, roadmap row |
 
 ## Authoring rules
 

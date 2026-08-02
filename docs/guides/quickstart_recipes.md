@@ -1,7 +1,9 @@
 # Quickstart recipes
 
 Copy-paste recipes for the most common tasks in this project.  All
-commands assume the project's working directory is
+commands assume the project root (the directory that contains
+`lean/`, `src/`, and `scripts/`) is the working directory; inside the
+`docxology/template` monorepo that is
 `projects/actinf_policy_entanglement_lean/`.
 
 ## Compile the Lean boundary fragment
@@ -16,7 +18,7 @@ Expected output: `Build completed successfully (22 jobs).`
 Basic, BernoulliToy, Constructive, Convexity, Coupling,
 Decomposition, FreeEnergy, Geometry, Heterogeneous, JointDist,
 MarkovBlanket, Monotonicity, Scalar, Spectral,
-SpectralWitnesses, ConnectionsWitnesses —
+SpectralWitnesses, ConnectionsWitnesses, FloatRealResidualWitness —
 the `ActinfPolicyEntanglement` root, the
 `FepSketches.PolicyEntanglementBoundary` re-export, the `FepSketches`
 root, and two Lake-internal targets.)
@@ -35,7 +37,7 @@ section 7 for the live per-suite breakdown and
 the authoritative pass / coverage tally.
 
 [^test-count]: Value at the time of writing.  Live query:
-    `cd projects/actinf_policy_entanglement_lean && uv run pytest --co -q | tail -1`.
+    `uv run pytest --co -q | tail -1`.
 
 ## Render the manuscript PDF
 
@@ -46,12 +48,12 @@ uv run python scripts/build_pdf.py
 uv run python scripts/validate_pdf.py
 ```
 
-Outputs: `projects/actinf_policy_entanglement_lean/output/pdf/actinf_policy_entanglement_lean_combined.pdf`,
+Outputs: `output/pdf/actinf_policy_entanglement_lean_combined.pdf`,
 plus the per-section slide PDFs and HTML files (one per section file
 under `manuscript/`; current count is **21 numbered body sections**
 (`1B`, `1C`, `2B`–`2J`, `3B`, `4B`–`4E`, `5B`–`5D`, `6B`, `6C`) plus
 6 part dividers (`1A_`, `2A_`, …, `6A_`), `0A_abstract.md`,
-`99_bibliography.md`, and 7 supplementary appendices `S01_…`–`S07_…`).
+`99_bibliography.md`, and 8 supplementary appendices `S01_…`–`S08_…`).
 
 ## Run every analysis script in one shot
 
@@ -63,9 +65,8 @@ This runs all analysis / validation scripts in canonical order —
 `build_lean.py`, `generate_figures.py`, `dump_archetypes.py`,
 `parameter_sweep.py`, `simulate_pymdp.py`,
 `simulate_multi_k.py` (round 3), `simulate_long_horizon.py` (round 3),
-`simulate_revertibility.py` (round 3), `simulate_robustness.py`,
-`simulate_btai.py`, `simulate_adversarial.py`,
-`manuscript_variables.py`, `build_dashboard.py`,
+`simulate_revertibility.py` (round 3), `simulate_robustness.py`, `simulate_btai.py`, `simulate_adversarial.py`,
+`simulate_gnn.py`, `manuscript_variables.py`, `build_dashboard.py`,
 `generate_index.py`, `generate_theorem_map.py`,
 `inject_manuscript_variables.py`, `validate_outputs.py`, and
 `validate_manuscript.py`, then `regression_gate.py` — as a CI-style

@@ -35,6 +35,10 @@ uv run pytest --co -q | tail -1                    # collected count
 uv run pytest tests/ --cov=src -q | tail -3        # coverage line
 ```
 
+(`projects/actinf_policy_entanglement_lean` is the template-monorepo
+path; from a standalone clone, run the same commands from the
+repository root.)
+
 The nine `src/` packages (`lean/`, `simulation/`, `gnn/`,
 `visualizations/`, `manuscript/`, `reporting/`, `gates/`,
 `orchestration/`, `dashboard_types/`) are exercised by the test suite. Prefer **direct library imports**
