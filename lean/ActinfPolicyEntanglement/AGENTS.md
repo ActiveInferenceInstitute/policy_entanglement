@@ -3,7 +3,7 @@
 ## Identity & Scope
 
 Lean 4 boundary fragment for the Policy Entanglement project.
-**Sixteen** submodules under `lean/ActinfPolicyEntanglement/` plus the
+**Seventeen** submodules under `lean/ActinfPolicyEntanglement/` plus the
 `ActinfPolicyEntanglement.lean` root, building on **stock Lean 4
 v4.29.0** with **no Mathlib dependency**, **no `sorry`**, **no
 `axiom`**, and **no `unsafe` / `partial` / `noncomputable`**. Phase 0
@@ -44,6 +44,7 @@ core.
 | `MarkovBlanket.lean` | 2 | `MarkovBlanketSeparationWitness`; witness-form Prop 19.3 (separation as `1 − I/H`). |
 | `SpectralWitnesses.lean` | 3 | `UpperSemicontinuousRankWitness`, `SparsityRankEnvelope`; witness-form Prop 8.2 + Thm 8.3. |
 | `ConnectionsWitnesses.lean` | 3 | `HierarchicalConcentrationWitness`, `SophisticatedInferenceEmbedding`; witness-form Thm 17.1 + Prop 17.2. |
+| `FloatRealResidualWitness.lean` | — | `FloatRealResidualWitness` boundary scaffold (roadmap row): caller-supplied Float↔ℝ residual bounds, re-published without claiming IEEE-754/interval proof. |
 
 Live aggregate (verified by the comment-stripped declaration scan in
 `scripts/manuscript_variables.py`):

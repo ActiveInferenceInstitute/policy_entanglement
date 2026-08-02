@@ -52,6 +52,7 @@ lean/
 | [`MarkovBlanket`](ActinfPolicyEntanglement/MarkovBlanket.lean) | **Round 2.** `MarkovBlanketSeparationWitness`; witness-form Proposition 19.3 (Markov-blanket separation as `1 − I/H`). |
 | [`SpectralWitnesses`](ActinfPolicyEntanglement/SpectralWitnesses.lean) | **Round 3.** `UpperSemicontinuousRankWitness`, `SparsityRankEnvelope`; witness-form Propositions 8.2 (Schmidt-rank upper-semicontinuity) and Theorem 8.3 (sparsity-rank tradeoff). |
 | [`ConnectionsWitnesses`](ActinfPolicyEntanglement/ConnectionsWitnesses.lean) | **Round 3.** `HierarchicalConcentrationWitness`, `SophisticatedInferenceEmbedding`; witness-form Theorem 17.1 (hierarchical AIF as λ → ∞) and Proposition 17.2 (sophisticated-inference embedding). |
+| [`FloatRealResidualWitness`](ActinfPolicyEntanglement/FloatRealResidualWitness.lean) | Float↔ℝ residual scaffold (roadmap row): `FloatRealResidualWitness` structure + `floatRealResidual_witness`; records caller-supplied residual bounds without claiming a Flocq-style IEEE-754 proof. |
 
 ## Status categories
 
