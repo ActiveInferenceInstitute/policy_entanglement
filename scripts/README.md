@@ -22,14 +22,18 @@ Scripts must not implement algorithms.  See
 | [`manuscript_variables.py`](manuscript_variables.py) | Computes every in-text variable substitution + mirrors `simulation.hyperparameters` | `../output/data/manuscript_variables.json` |
 | [`dump_archetypes.py`](dump_archetypes.py) | Dumps K=2 Schmidt archetypes at a λ-sweep | `../output/data/ising_archetypes.csv` |
 | [`parameter_sweep.py`](parameter_sweep.py) | Closed-form sweep (MI, FE, rank, entropy, phase) on the configured hyperparameter grid | `../output/data/parameter_sweep.csv` |
+| [`check_concordance.py`](check_concordance.py) | Report-only four-track concordance check: every registry `status` row's `lean_name` exists in Lean source, and S06 Python identifiers resolve | report to stdout (exit 0 by design — non-blocking) |
 | [`simulate_pymdp.py`](simulate_pymdp.py) | pymdp 1.0.1 POMDP run: λ-sweep + rollout + free-energy bundle | pymdp PNGs (`pymdp_*`) + `pymdp_lambda_sweep.csv` + `pymdp_free_energy_bundle.csv` |
 | [`simulate_multi_k.py`](simulate_multi_k.py) | Configured multi-stream ensemble experiments — per-K λ-sweep, TT-rank profile, aligned-mass | one `pymdp_K*_sweep.csv` per configured K + `multi_k_*` PNGs + `multi_k_summary.json` |
 | [`simulate_long_horizon.py`](simulate_long_horizon.py) | Configured long-horizon coupled rollout (habit-accumulation witness) | `pymdp_long_horizon.csv` + `long_horizon_*` PNGs + `long_horizon_summary.json` |
 | [`simulate_revertibility.py`](simulate_revertibility.py) | m-projection back-to-mean-field witness (Prop 7.3 / Theorem 5.1 identity) | `pymdp_revertibility.csv` + `revertibility_witness.png` + `revertibility_summary.json` |
 | [`simulate_robustness.py`](simulate_robustness.py) | Robustness, ablation, and long-horizon replicate sidecars | one-axis, two-axis, ablation, replicate, seed-diagnostic, and threshold-sensitivity CSV/PNG/JSON sidecars |
+| [`simulate_gnn.py`](simulate_gnn.py) | GNN fifth-track round-trip and Lean typed-contract emitter | GNN sidecar JSON and generated Lean contract |
 | [`simulate_btai.py`](simulate_btai.py) | Shipped BTAI baseline worked run over the registered MCTS budget grid | `btai_baseline.json` + `btai_baseline.png` |
 | [`simulate_adversarial.py`](simulate_adversarial.py) | Shipped adversarial-perturbation sweep over the registered $(\varepsilon,\lambda)$ grid | `adversarial_sweep.json` + `adversarial_sweep.png` |
 | [`build_dashboard.py`](build_dashboard.py) | Interactive multi-view Plotly dashboard + plaintext invariants + JSON payload | `../output/web/dashboard.html`, `../output/reports/dashboard_*.txt`, `../output/data/dashboard_payload.json` |
+| [`generate_audit_matrix.py`](generate_audit_matrix.py) | Regenerate the pymdp / Lean / manuscript claim audit matrix CSV | `../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv` (via `--write`) |
+| [`gnn_to_pymdp.py`](gnn_to_pymdp.py) | GNN → pymdp structural-config generator from `.gnn` declarations (S08 deliverable) | JSON config on stdout |
 | [`generate_index.py`](generate_index.py) | Regenerate `manuscript/INDEX.md` from the registry | `manuscript/INDEX.md` |
 | [`generate_theorem_map.py`](generate_theorem_map.py) | Auto-generate the per-theorem four-track wiring table | `../docs/reference/_theorem_map.md` |
 | [`inject_manuscript_variables.py`](inject_manuscript_variables.py) | Resolve every `[[…]]` token, auto-number every `$$..$$` block | rendered files in `../output/manuscript/` |
