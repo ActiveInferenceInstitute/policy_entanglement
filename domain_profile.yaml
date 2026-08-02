@@ -29,6 +29,9 @@ review_gates:
   - publication_readiness
 optional_validation_gates:
   - publication_readiness  # scripts/readiness_report.py; PDF path only
+# Post-pipeline artifact expectations: created by scripts/run_all.py
+# (plus the --with-pdf release gate for the combined PDF); not present
+# in a fresh checkout.
 artifact_expectations:
   - output/data/manuscript_variables.json
   - output/data/parameter_sweep.csv

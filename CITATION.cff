@@ -28,6 +28,8 @@ abstract: >
 type: software
 license: MIT
 doi: 10.5281/zenodo.20418904
+version: "1.0"
+date-released: "2026-05-27"
 repository-code: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
 
 authors:
