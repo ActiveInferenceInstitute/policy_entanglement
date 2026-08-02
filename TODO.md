@@ -200,6 +200,78 @@ Major finding followed by how it was closed.
 **None.** All validated Major findings from the deepest review are implemented (see the
 completion-pass section above). No Major remains deferred.
 
+## DOCS-DEEP pass — 2026-08-02
+
+This pass reviewed the repository documentation system (root docs, `docs/`,
+`manuscript/`, Lean/source-adjacent READMEs and AGENTS files, scripts and
+tests docs, citation/license metadata, and repository-local links) and
+implemented every validated finding. Severity definitions: **Minor** = typo,
+broken metadata/link, or formatting drift; **Medium** = stale section,
+incomplete inventory, or missing guide; **Major** = large documentation-system
+failure or cross-cutting contradiction.
+
+### Minor
+
+- **[x] `.aii/config.yaml` — malformed citation DOI scalar.** Corrected the leaked
+  Markdown-link suffix so the sidecar stores the plain DOI (`62cf243`).
+- **[x] `CITATION.cff` — missing version/date-released; title drift.** Added
+  `version: "1.0"` + `date-released: "2026-05-27"` (matches `manuscript/config.yaml`
+  and the Zenodo v1.0.0 deposit) (`62cf243`); README Citation block now uses the
+  canonical CFF/config title (`5b50f5c`).
+- **[x] `docs/README.md` — incomplete citation-metadata sentence + orphaned
+  release doc.** Repaired the sentence; linked the orphaned
+  `docs/RELEASE_v1.0.0.md` from the cross-cutting list (`793e49b`).
+- **[x] `docs/guides/README.md` — obsolete coverage targets + missing index row.**
+  Replaced 60%/90% wording with the 95% `src/` gate; added the missing
+  `zenodo-doi-strategy.md` row (`793e49b`).
+- **[x] `docs/guides/styleguide/manuscript-variables.md` — broken anchor.**
+  Repointed `#validationpy` (nonexistent in `python_api.md`) to the validation
+  facade section in `python_api_manuscript.md` (`793e49b`).
+- **[x] `manuscript/refs/README.md` — dangling generated-output path.** Clarified
+  that `output/manuscript/` exists only after the render pipeline (`cc4e5fd`).
+
+### Medium
+
+- **[x] Root `AGENTS.md` — module inventory omits `FloatRealResidualWitness`.**
+  Added the 17th submodule to the layout list; Gate 2 now documents that the 95%
+  coverage floor is defined for the core environment, with the sim-group
+  aggregate (~94.8%) as the documented rotating-project exception (`5b50f5c`).
+- **[x] `CONTRIBUTING.md` — coverage-gate contradiction for sim-enabled setups.**
+  Added the same core-environment note to the TL;DR so the recommended
+  `--group sim --group viz` setup no longer contradicts the stated gate (`5b50f5c`).
+- **[x] `scripts/README.md` — incomplete script roster.** Added
+  `check_concordance.py`, `generate_audit_matrix.py`, `gnn_to_pymdp.py`, and
+  `simulate_gnn.py` with docstring-verified descriptions (`7790ac9`).
+- **[x] `lean/README.md` + `lean/ActinfPolicyEntanglement/AGENTS.md` — 16/17
+  submodule mismatch.** Added the missing `FloatRealResidualWitness` index row
+  and map row; corrected the count to seventeen (`89f5a8b`).
+- **[x] `docs/guides/quickstart_recipes.md` — three stale claims.** Completed the
+  17-module job list, corrected the supplement count to S01–S08, added
+  `simulate_gnn.py` to the `run_all.py` roster, and defaulted the working-dir /
+  PDF-path guidance to the standalone repo root (`793e49b`).
+- **[x] `docs/guides/build_run.md` + `testing.md` — template-path convention
+  unstated.** Added a standalone-clone note so readers run commands from the
+  repo root (`793e49b`).
+- **[x] `docs/modules/` — missing page for the 17th module.** Added
+  `float_real_residual_witness.md` (roadmap-row Float↔ℝ residual scaffold,
+  Lean snippet verified against source, JSON field mapping verified against
+  `src/manuscript/variables.py`) and registered it in both module indexes (`793e49b`).
+
+### Major
+
+- **[x] No major defect identified.** The docs index, guides, module pages,
+  references, API pages, and manuscript index are present and linked; no large
+  restructure was justified. (Closed by review, no implementation required.)
+  One owner-level item is noted rather than closed: the dual-license split
+  (MIT code + CC-BY-4.0 manuscript prose) is declared consistently across
+  README, CITATION.cff, and `manuscript/config.yaml`, but a separate
+  CC-BY-4.0 license text file would need an ownership decision outside a
+  docs pass.
+
+### Open / deferred
+
+None from the 2026-08-02 DOCS-DEEP pass (see the license-text note above).
+
 ---
 
 ## Notes
