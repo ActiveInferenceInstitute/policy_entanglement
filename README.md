@@ -353,18 +353,18 @@ the curated paths in [`docs/READING_ORDER.md`](docs/READING_ORDER.md):
 
 ## License
 
-The manuscript is released under **CC-BY-4.0**.  Code follows the
+The manuscript is released under **CC-BY-4.0** (declared in
+[`manuscript/config.yaml`](manuscript/config.yaml)).  Code follows the
 MIT-style license inherited from the parent
 [`docxology/template`](https://github.com/docxology/template)
-repository.
+repository; the repository `LICENSE` file carries that MIT text.
 
 ## Citation
 
 Friedman, D. A. (2026). *Policy Entanglement in Active Inference: A
-Tunable Mean-Field Deformation Framework for Multi-Stream Policy
-Ensembles, with Information-Geometric, Spectral, and
-Lean-Formalization Treatments.* Active Inference Institute (working
-manuscript).
+Coupling-Parameter Deformation Framework for Multi-Stream Policy
+Posterior Distributions, Machine-Checked and Simulated with a Typed
+Float Boundary.* Active Inference Institute (working manuscript).
 
 > **Note.** [`manuscript/config.yaml`](manuscript/config.yaml) carries DOI
 > [`10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904). Source code and

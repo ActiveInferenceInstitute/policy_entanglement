@@ -29,6 +29,15 @@ uv run python scripts/run_all.py
 
 If all four steps exit 0 you are ready to contribute.
 
+> **Coverage gate note.** The ≥95% `src/` floor is defined for the
+> reproducible core environment (`uv sync` with no extras). With the
+> optional pymdp `sim` group installed, the pymdp-gated simulation
+> surface becomes reachable-but-thinly-covered and the aggregate
+> measures ~94.8% — a documented rotating-project exception
+> (`pyproject.toml` → `[tool.coverage]`), not a regression. For the
+> gate run, use the core environment; install `--group sim --group viz`
+> when you need to exercise the pymdp surface locally.
+
 ## Project layout
 
 | Directory | Purpose | Edit when |
