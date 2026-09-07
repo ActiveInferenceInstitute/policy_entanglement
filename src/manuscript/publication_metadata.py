@@ -18,16 +18,16 @@ DEFAULT_PUBLICATION_METADATA_PATHS = (
     "docs/README.md",
     "AGENTS.md",
     "CITATION.cff",
-    "manuscript/config.yaml",
-    "manuscript/refs/citations.yaml",
-    "manuscript/1A_part1_introduction.md",
-    "manuscript/6C_discussion_and_outlook.md",
+    "docs/manuscript/config.yaml",
+    "docs/manuscript/refs/citations.yaml",
+    "docs/manuscript/1A_part1_introduction.md",
+    "docs/manuscript/6C_discussion_and_outlook.md",
 )
 
 DEFAULT_PUBLICATION_REPOSITORY_PATHS = (
     *DEFAULT_PUBLICATION_METADATA_PATHS,
     "CONTRIBUTING.md",
-    "manuscript/0A_abstract.md",
+    "docs/manuscript/0A_abstract.md",
 )
 
 DEFAULT_PUBLICATION_BANNER_PATHS = (
@@ -41,7 +41,7 @@ DOI_REQUIRED_PATHS = (
     "AGENTS.md",
     "docs/README.md",
     "CITATION.cff",
-    "manuscript/config.yaml",
+    "docs/manuscript/config.yaml",
 )
 
 DOI_PENDING_PHRASES = (
@@ -57,25 +57,25 @@ DOI_PENDING_PHRASES = (
 
 
 def _repository_url_from_config(project_root: Path) -> str:
-    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    config_text = (project_root / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     match = re.search(r'(?m)^\s*repository_url:\s*"([^"]*)"\s*$', config_text)
     return match.group(1) if match else ""
 
 
 def _doi_from_config(project_root: Path) -> str:
-    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    config_text = (project_root / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     match = re.search(r'(?m)^\s*doi:\s*"([^"]*)"\s*$', config_text)
     return match.group(1) if match else ""
 
 
 def _version_doi_from_config(project_root: Path) -> str:
-    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    config_text = (project_root / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     match = re.search(r'(?m)^\s*version_doi:\s*"([^"]*)"\s*$', config_text)
     return match.group(1) if match else ""
 
 
 def _version_record_from_config(project_root: Path) -> str:
-    config_text = (project_root / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    config_text = (project_root / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     match = re.search(r'(?m)^\s*version_record:\s*"([^"]*)"\s*$', config_text)
     return match.group(1) if match else ""
 
@@ -88,7 +88,7 @@ def publication_metadata_issues(
     banner_paths: tuple[str, ...] = DEFAULT_PUBLICATION_BANNER_PATHS,
 ) -> list[str]:
     """Reject contradictory public DOI / source-repository states."""
-    config_path = project_root / "manuscript" / "config.yaml"
+    config_path = project_root / "docs" / "manuscript" / "config.yaml"
     if not config_path.exists():
         return []
     config_text = config_path.read_text(encoding="utf-8")
@@ -118,20 +118,20 @@ def publication_metadata_issues(
                 issues.append(f"{path.relative_to(project_root)}: uses public Publication banner while DOI is pending")
     else:
         if configured_doi != CANONICAL_PUBLICATION_DOI:
-            issues.append(f"manuscript/config.yaml: doi {configured_doi!r} != canonical {CANONICAL_PUBLICATION_DOI!r}")
+            issues.append(f"docs/manuscript/config.yaml: doi {configured_doi!r} != canonical {CANONICAL_PUBLICATION_DOI!r}")
         configured_version_doi = _version_doi_from_config(project_root)
         configured_version_record = _version_record_from_config(project_root)
         if not configured_version_doi:
-            issues.append("manuscript/config.yaml: missing publication.version_doi (latest Zenodo deposit)")
+            issues.append("docs/manuscript/config.yaml: missing publication.version_doi (latest Zenodo deposit)")
         elif configured_version_doi != CANONICAL_VERSION_DOI:
             issues.append(
-                f"manuscript/config.yaml: version_doi {configured_version_doi!r} != canonical {CANONICAL_VERSION_DOI!r}"
+                f"docs/manuscript/config.yaml: version_doi {configured_version_doi!r} != canonical {CANONICAL_VERSION_DOI!r}"
             )
         if not configured_version_record:
-            issues.append("manuscript/config.yaml: missing publication.version_record (latest Zenodo record URL)")
+            issues.append("docs/manuscript/config.yaml: missing publication.version_record (latest Zenodo record URL)")
         elif configured_version_record != CANONICAL_VERSION_RECORD:
             issues.append(
-                "manuscript/config.yaml: version_record "
+                "docs/manuscript/config.yaml: version_record "
                 f"{configured_version_record!r} != canonical {CANONICAL_VERSION_RECORD!r}"
             )
         combined = "\n".join(path.read_text(encoding="utf-8") for path in metadata_files if path.exists())
@@ -159,7 +159,7 @@ def publication_metadata_issues(
         configured_url = _repository_url_from_config(project_root)
         if configured_url != CANONICAL_SOURCE_REPOSITORY:
             issues.append(
-                f"manuscript/config.yaml: repository_url {configured_url!r} != canonical {CANONICAL_SOURCE_REPOSITORY!r}"
+                f"docs/manuscript/config.yaml: repository_url {configured_url!r} != canonical {CANONICAL_SOURCE_REPOSITORY!r}"
             )
         for path in repository_files:
             if not path.exists():

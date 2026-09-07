@@ -45,6 +45,8 @@ from typing import cast
 
 import numpy as np
 
+from lean.free_energy import kl_divergence
+
 from .hyperparameters import (
     ADVERSARIAL_DEFAULT_SEED,
     ADVERSARIAL_EPSILON_GRID,
@@ -118,15 +120,6 @@ def analytical_lipschitz_bound(
     """
     variance = variance_under_q(q_lambda, coupling)
     return float(lambda_value) * float(epsilon) * float(np.sqrt(max(variance, 0.0)))
-
-
-def kl_divergence(p: np.ndarray, q: np.ndarray) -> float:
-    """KL(p || q); both arrays sum to 1 and are non-negative."""
-    if p.shape != q.shape:
-        raise ValueError(f"shapes differ: p={p.shape} q={q.shape}")
-    p_clipped = np.clip(p, 1e-300, 1.0)
-    q_clipped = np.clip(q, 1e-300, 1.0)
-    return float(np.sum(p * (np.log(p_clipped) - np.log(q_clipped))))
 
 
 def rank_one_adversary(q_lambda: np.ndarray, coupling: np.ndarray, epsilon: float) -> np.ndarray:

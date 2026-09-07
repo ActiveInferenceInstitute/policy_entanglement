@@ -20,7 +20,11 @@ def test_mathlibproofs_optional_slice_files_and_kernels_are_present() -> None:
     assert (root / "lean-toolchain").is_file()
     source = root / "MathlibProofs.lean"
     assert source.is_file()
-    text = source.read_text(encoding="utf-8")
+    text = "\n".join(
+        p.read_text(encoding="utf-8")
+        for p in sorted(root.rglob("*.lean"))
+        if ".lake" not in p.parts
+    )
     assert "import Mathlib" in text
     assert "def proofSliceVersion : Nat := 3" in text
     assert "theorem vecMulVec_rank_le_one" in text

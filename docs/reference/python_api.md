@@ -37,7 +37,7 @@ page is self-contained and easy to grep:
   `geodesic.py`, `log_weight.py`, `free_energy_plots.py`,
   `pymdp_extras.py`, `metadata.py`, `multi_k_plots.py`,
   `robustness_plots.py`, `annotations.py`, `analytical_figures.py`.
-* **`manuscript/`** — `registry.py`, `tokens.py`, `renderer.py`,
+* **`docs/manuscript/`** — `registry.py`, `tokens.py`, `renderer.py`,
   `bibliography.py`, `lean_extract.py`, `equation_numbering.py`,
   `validation.py`, `variable_ranges.py`, `status.py`, `pdf_validation.py`, `variables.py`,
   `output_gates/`.
@@ -79,7 +79,7 @@ Pure I/O + plotting; no numerical work. Every figure carries
 reproducibility metadata (source script + function, hyperparameter
 snapshot, git revision, ISO timestamp) via `metadata.py`.
 
-## Subpackage `manuscript/`
+## Subpackage `docs/manuscript/`
 
 → Full reference: [`python_api_manuscript.md`](python_api_manuscript.md).
 
@@ -127,9 +127,43 @@ def write_dashboard(args: argparse.Namespace) -> dict[str, Path]
 ```
 
 > Release-readiness orchestration lives in
-> [`manuscript/readiness.py`](python_api_manuscript.md#readinesspy)
+> [`docs/manuscript/readiness.py`](python_api_manuscript.md#readinesspy)
 > (consumed by `scripts/readiness_report.py`); the `reporting/`
 > subpackage covers only the standalone dashboard helpers above.
+
+### `dashboard_types/payload.py`
+
+Typed payload dataclass shared by the dashboard builder and the JSON
+emitter.
+
+```python
+@dataclass
+class DashboardPayload: ...
+```
+
+### `dashboard_types/panel_builders.py`
+
+Per-panel builder functions composing the six dashboard views from
+sweep / invariant series.
+
+```python
+def mi_curves_panel(...) -> Panel
+def joint_heatmap_panel(...) -> Panel
+def entropy_decomp_panel(...) -> Panel
+def fe_curves_panel(...) -> Panel
+def phase_panel(...) -> Panel
+def schmidt_panel(...) -> Panel
+```
+
+### `dashboard_types/plotly_traces.py`
+
+Shared Plotly trace/layout primitives used by the panel builders.
+
+```python
+def scatter_line(...) -> go.Scatter
+def scatter_markers(...) -> go.Scatter
+def axis_layout(...) -> dict[str, Any]
+```
 
 ### `orchestration/run_all.py`
 
@@ -151,8 +185,88 @@ pass audited by `scripts/validate_pdf.py`.
 
 ```python
 COMBINED_STEM: str
+def inject_rendered_manuscript(*, project_root: Path) -> int
 def regenerate_injected_manuscript(*, project_root: Path) -> int
 def render_combined_pdf(*, project_root: Path) -> int
+```
+
+### `orchestration/pdf_config.py`
+
+Typed `ManuscriptConfig` loaded from `docs/manuscript/config.yaml`,
+providing Pandoc metadata arguments and the LaTeX author block.
+
+```python
+@dataclass
+class ManuscriptConfig: ...
+    def pandoc_metadata_args(self, *, project_root: Path) -> list[str]
+    def author_block(self) -> str
+def latex_text(value: str) -> str
+def latex_href_url(value: str) -> str
+```
+
+### `orchestration/pdf_compile.py`
+
+Pandoc/XeLaTeX compile helpers used by `render_combined_pdf`.
+
+```python
+def run_command(cmd: Sequence[str], *, cwd: Path, stdout_path: Path | None = None) -> None
+def run_bibtex(*, pdf_dir: Path) -> None
+def insert_preamble_into_tex(*, combined_tex: Path, preamble_tex: Path) -> None
+def shorten_caption_aux_entries(*, combined_tex: Path) -> None
+def pandoc_to_tex(*, combined_md: Path, combined_tex: Path, pdf_dir: Path,
+                  preamble_tex: Path, config: ManuscriptConfig, project_root: Path) -> None
+def latex_to_pdf(*, combined_tex: Path, pdf_dir: Path, pdf_path: Path,
+                 xelatex_stdout: Path) -> Path
+```
+
+### `orchestration/pdf_tex_patch.py`
+
+Combined-TeX post-processing: red-hyperlink patching aligned with the
+template renderer and preamble insertion / artifact cleanup.
+
+```python
+def patch_red_hyperlinks(...) -> None
+def postprocess_combined_tex(*, combined_tex: Path, config: ManuscriptConfig) -> None
+```
+
+### `orchestration/stages.py`
+
+Pipeline stage graph and resolution (`SCRIPTS`, `PDF_SCRIPTS`,
+`MATHLIB_PROOF_SCRIPTS`, `PARALLEL_STAGE_STEMS`).
+
+```python
+@dataclass(frozen=True)
+class StageFlags: ...
+def stage_stem(script: str) -> str
+def included(stem: str, flags: StageFlags) -> bool
+def resolve_stages(flags: StageFlags, scripts: list[tuple[str, str]] | None = None) -> list[tuple[str, str]]
+```
+
+### `orchestration/executor.py`
+
+Stage execution (serial + parallel batches) and manifest summaries.
+
+```python
+class StageResult(NamedTuple): ...
+@dataclass
+class ExecutionOutcome: ...
+def spawn(script: str, *, capture: bool, scripts_dir: Path, project_root: Path) -> StageResult
+def run_serial(script: str, *, scripts_dir: Path, project_root: Path) -> int
+def run_parallel_batch(scripts: list[str], *, max_workers: int, scripts_dir: Path, project_root: Path) -> list[StageResult]
+def execute_pipeline(*, flags: StageFlags, project_root: Path, scripts_dir: Path,
+                     parallel: bool, max_workers: int,
+                     write_pre_regression_manifest: bool,
+                     scripts: list[tuple[str, str]] | None = None,
+                     parallel_stems: frozenset[str] | None = None) -> ExecutionOutcome
+```
+
+### `orchestration/manifest.py`
+
+`output/MANIFEST.md` writer (stage timings, hashes, skipped large files).
+
+```python
+class StageSummary(TypedDict): ...
+def write_manifest(*, project_root: Path, run_summary: dict[str, Any]) -> Path
 ```
 
 ### `gates/regression_gate.py`

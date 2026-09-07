@@ -58,13 +58,14 @@ from visualizations.free_energy_plots import (
 )
 from visualizations.joint_plots import plot_joint_heatmap_with_marginals
 from visualizations.metadata import figure_metadata
+from visualizations.pymdp_context import PymdpFigureContext
 from visualizations.pymdp_extras import (
     plot_action_entropy_curve,
     plot_kl_to_lambda_zero,
     plot_marginal_entropy_per_stream,
     plot_pymdp_summary_panel,
 )
-from visualizations.setup import PUBLICATION_STYLE, ensure_outdir, palette_color
+from visualizations.setup import PUBLICATION_STYLE, palette_color
 from visualizations.trajectory_plots import plot_rollout_marginals
 
 #: Type alias for the per-figure metadata factory: ``(source_function, **extra) → dict``.
@@ -82,14 +83,25 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_SCRIPT = "scripts/simulate_pymdp.py"
 
 #: Default sink for every figure PNG emitted by this module.
-FIG_DIR: Path = ensure_outdir(PROJECT_ROOT / "output" / "figures")
+FIG_DIR: Path = PROJECT_ROOT / "output" / "figures"
 
 #: Default sink for every long-form simulation artefact (CSV, JSON).
-SIM_DIR: Path = ensure_outdir(PROJECT_ROOT / "output" / "simulations")
+SIM_DIR: Path = PROJECT_ROOT / "output" / "simulations"
 
 #: Shared structured logger used for ``[run_logger]`` events around every
 #: figure. Reused across calls inside a single process.
 LOGGER: RunLogger = default_logger(PROJECT_ROOT)
+
+
+def _active_context() -> PymdpFigureContext:
+    """Resolve sinks from module globals so tests can monkeypatch them."""
+    return PymdpFigureContext(
+        project_root=PROJECT_ROOT,
+        fig_dir=FIG_DIR,
+        sim_dir=SIM_DIR,
+        logger=LOGGER,
+        source_script=SOURCE_SCRIPT,
+    )
 
 
 def hyperparam_snapshot() -> dict[str, object]:
@@ -434,11 +446,14 @@ def figure_pymdp_lambda_sweep() -> tuple[Path, Path]:
     from this module's namespace at every call so tests (or callers) that
     monkeypatch those names see the override on the next invocation.
     """
+    ctx = _active_context()
+    ctx.fig_dir.mkdir(parents=True, exist_ok=True)
+    ctx.sim_dir.mkdir(parents=True, exist_ok=True)
     return _figure_pymdp_lambda_sweep_impl(
-        fig_dir=FIG_DIR,
-        sim_dir=SIM_DIR,
-        logger=LOGGER,
-        metadata_factory=_md,
+        fig_dir=ctx.fig_dir,
+        sim_dir=ctx.sim_dir,
+        logger=ctx.logger,
+        metadata_factory=ctx.metadata_factory(),
     )
 
 
@@ -448,10 +463,12 @@ def figure_pymdp_rollout() -> Path:
     Reads :data:`FIG_DIR`, :data:`LOGGER`, and :func:`_md` from this
     module's namespace at every call.
     """
+    ctx = _active_context()
+    ctx.fig_dir.mkdir(parents=True, exist_ok=True)
     return _figure_pymdp_rollout_impl(
-        fig_dir=FIG_DIR,
-        logger=LOGGER,
-        metadata_factory=_md,
+        fig_dir=ctx.fig_dir,
+        logger=ctx.logger,
+        metadata_factory=ctx.metadata_factory(),
     )
 
 
@@ -461,11 +478,14 @@ def figure_pymdp_free_energies() -> tuple[Path, ...]:
     Reads :data:`FIG_DIR`, :data:`SIM_DIR`, :data:`LOGGER`, and :func:`_md`
     from this module's namespace at every call.
     """
+    ctx = _active_context()
+    ctx.fig_dir.mkdir(parents=True, exist_ok=True)
+    ctx.sim_dir.mkdir(parents=True, exist_ok=True)
     return _figure_pymdp_free_energies_impl(
-        fig_dir=FIG_DIR,
-        sim_dir=SIM_DIR,
-        logger=LOGGER,
-        metadata_factory=_md,
+        fig_dir=ctx.fig_dir,
+        sim_dir=ctx.sim_dir,
+        logger=ctx.logger,
+        metadata_factory=ctx.metadata_factory(),
     )
 
 
@@ -473,6 +493,7 @@ __all__ = [
     "FIG_DIR",
     "LOGGER",
     "MetadataFactory",
+    "PymdpFigureContext",
     "PROJECT_ROOT",
     "SIM_DIR",
     "SOURCE_SCRIPT",

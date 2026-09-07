@@ -47,17 +47,17 @@ uv run pytest tests/test_bernoulli_toy.py::test_empirical_mi_matches_closed_form
 | [`test_visualizations.py`](test_visualizations.py) | `visualizations/*.py` |
 | [`test_free_energy_plots.py`](test_free_energy_plots.py) | `visualizations/free_energy_plots.py` |
 | [`test_figure_scripts.py`](test_figure_scripts.py) | `scripts/generate_figures.py`, `scripts/simulate_pymdp.py` (smoke) |
-| [`test_manuscript_registry.py`](test_manuscript_registry.py) | `manuscript/registry.py` |
-| [`test_manuscript_renderer.py`](test_manuscript_renderer.py) | `manuscript/renderer.py` (every section file × every token kind) |
-| [`test_manuscript_validation.py`](test_manuscript_validation.py) | `manuscript/validation.py` (hyperlinks, figure files, hardcoded-literal detector, malformed-YAML edge cases) |
-| [`test_manuscript_section_theorem_refs.py`](test_manuscript_section_theorem_refs.py) | `manuscript/validation.py` cross-references to Lean theorems |
+| [`test_manuscript_registry.py`](test_manuscript_registry.py) | `docs/manuscript/registry.py` |
+| [`test_manuscript_renderer.py`](test_manuscript_renderer.py) | `docs/manuscript/renderer.py` (every section file × every token kind) |
+| [`test_manuscript_validation.py`](test_manuscript_validation.py) | `docs/manuscript/validation.py` (hyperlinks, figure files, hardcoded-literal detector, malformed-YAML edge cases) |
+| [`test_manuscript_section_theorem_refs.py`](test_manuscript_section_theorem_refs.py) | `docs/manuscript/validation.py` cross-references to Lean theorems |
 | [`test_manuscript_lean_extraction.py`](test_manuscript_lean_extraction.py) | manuscript ↔ Lean module extraction parity |
 | [`test_manuscript_variables_pipeline.py`](test_manuscript_variables_pipeline.py) | `output/data/manuscript_variables.json` shape + range gates |
-| [`test_equation_numbering.py`](test_equation_numbering.py) | `manuscript/equation_numbering.py` (per-section auto-numbering, retag, count parity) |
+| [`test_equation_numbering.py`](test_equation_numbering.py) | `docs/manuscript/equation_numbering.py` (per-section auto-numbering, retag, count parity) |
 | [`test_american_english.py`](test_american_english.py) | prose-style docs / manuscript sources (American English gate outside code spans) |
 | [`test_generate_index.py`](test_generate_index.py) | `scripts/generate_index.py` |
 | [`test_logging_utils.py`](test_logging_utils.py) | `simulation/logging_utils.py` (JSONL run logger, runtime, status, schema) |
-| [`test_notation_glossary.py`](test_notation_glossary.py) | `manuscript/S06_notation_and_concordance.md` ↔ preamble macros + Python idents + Lean abbrevs (drift gate) |
+| [`test_notation_glossary.py`](test_notation_glossary.py) | `docs/manuscript/S06_notation_and_concordance.md` ↔ preamble macros + Python idents + Lean abbrevs (drift gate) |
 | [`test_pymdp_extras.py`](test_pymdp_extras.py) | `simulation/statistics.py` + `visualizations/{pymdp_extras,metadata}.py` + the no-hardcoded-numeric-literal detector |
 | [`test_python_api_coverage.py`](test_python_api_coverage.py) | `docs/reference/python_api.md` ↔ every public `src/` identifier (documentation drift gate) |
 | [`test_veridicality.py`](test_veridicality.py) | end-to-end audit chain: prose `[[VAR:...]]` ↔ JSON ↔ JSONL log ↔ Lean source |

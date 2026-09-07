@@ -13,9 +13,11 @@ and [`scripts/build_dashboard.py`](../../scripts/build_dashboard.py).
 | [`types.py`](types.py) | `Panel`, `Control`, `Invariant` datatypes and `evaluate()` dispatch |
 | [`paths.py`](paths.py) | Project root and `output/` path constants |
 | [`cli.py`](cli.py) | `parse_dashboard_args` |
-| [`payload.py`](payload.py) | `build_dashboard_payload` — numerical sweep over Lean mirrors |
-| [`panels.py`](panels.py) | `build_dashboard`, `write_dashboard`, CLI `main` |
-| [`dashboard.py`](dashboard.py) | Backward-compatible re-export facade |
+| [`payload.py`](payload.py) | `DashboardPayload`, `build_dashboard_payload` — numerical sweep over Lean mirrors |
+| [`panel_builders.py`](panel_builders.py) | One pure builder per Plotly panel |
+| [`plotly_traces.py`](plotly_traces.py) | Shared Plotly trace/layout helpers |
+| [`panels.py`](panels.py) | `build_dashboard` orchestrator (assembles panel builders) |
+| [`dashboard.py`](dashboard.py) | `write_dashboard`, CLI `main`, backward-compatible facade |
 
 ## Conventions
 

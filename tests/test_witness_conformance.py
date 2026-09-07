@@ -33,7 +33,7 @@ import pytest
 import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
-LABELS = PROJECT / "manuscript" / "refs" / "labels.yaml"
+LABELS = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
 _SRC = str(PROJECT / "src")
 if _SRC not in sys.path:
     sys.path.insert(0, _SRC)

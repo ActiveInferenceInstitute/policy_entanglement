@@ -11,13 +11,13 @@ import math
 import numpy as np
 import pytest
 
+from lean.joint_dist import joint_marginals
 from simulation.btai_baseline import (
     BTAIScenario,
     BTAITreeNode,
     _enumerate_joint_actions,
     default_btai_scenarios,
     default_mcts_budgets,
-    joint_marginals,
     kl_against_reference,
     run_btai_scenario,
     sample_complexity_exponent,
@@ -61,10 +61,10 @@ def test_joint_marginals_match_axis_sums() -> None:
     np.testing.assert_allclose(m2, [0.4, 0.6])
 
 
-def test_joint_marginals_rejects_non_2d() -> None:
-    """K != 2 inputs must raise."""
-    with pytest.raises(ValueError):
-        joint_marginals(np.array([0.5, 0.5]))
+def test_joint_marginals_returns_one_per_stream() -> None:
+    """Marginal list length matches joint rank."""
+    joint = np.array([[[0.125] * 8]]).reshape(2, 2, 2)
+    assert len(joint_marginals(joint)) == 3
 
 
 def test_total_correlation_zero_when_independent() -> None:

@@ -167,7 +167,7 @@ identity collapses to `vfe_total == Σ F[q^k]`).
 | `pymdp_entropy_decomposition` | $H(q)$ vs $\sum H(q^k)$ + gap | 21 | bundle |
 | `pymdp_action_distribution` | $q_\lambda(\pi)$ heatmap | 21 × 4 | bundle |
 
-Every figure's caption in `manuscript/refs/labels.yaml` names the
+Every figure's caption in `docs/manuscript/refs/labels.yaml` names the
 exact function path + grid hyperparameter, so a reader can navigate
 caption → code → test in one step.
 

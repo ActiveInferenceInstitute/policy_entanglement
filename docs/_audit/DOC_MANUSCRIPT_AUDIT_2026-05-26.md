@@ -20,7 +20,7 @@
 | Doc-drift pytest bundle (Phase 1C) | **PASS** | 31/31 |
 | Claim-contract pytest bundle (HOW_TO_VERIFY §4) | **PASS** | 78/78 |
 | `generate_theorem_map.py --check` | **PASS** | `_theorem_map.md` current |
-| `generate_index.py --check` | **PASS** | `manuscript/INDEX.md` current |
+| `generate_index.py --check` | **PASS** | `docs/manuscript/INDEX.md` current |
 | `scripts/validate_pdf.py` | **PASS** | 169 pages, margin contract OK |
 
 ### Live metrics (authoritative JSON)
@@ -72,7 +72,7 @@ Source: `output/reports/release_readiness.json`, `output/reports/test_results.js
 
 | Surface | Finding | Severity |
 | --- | --- | --- |
-| Publication URL | `manuscript/config.yaml`, README, AGENTS, abstract, CONTRIBUTING all use `https://github.com/docxology/policy_entanglement` | OK |
+| Publication URL | `docs/manuscript/config.yaml`, README, AGENTS, abstract, CONTRIBUTING all use `https://github.com/docxology/policy_entanglement` | OK |
 | `publication.doi` | Live: `10.5281/zenodo.20301239`; inverted gates forbid pending-DOI prose on current-facing paths | OK (superseded §7) |
 | ActiveInferenceInstitute URLs | Present only as **upstream** citations (`fep_lean`, `GeneralizedNotationNotation`) in lean docs, citations.yaml, S05, FAQ — not mistaken for this repo's canonical URL | OK |
 | `docs/reference/lean_reference.md` vs `labels.yaml` | Automated theorem-map and veridical-status tests enforce alignment; manual spot-check of decomposition row matches MathlibProofs + boundary split | OK |
@@ -204,8 +204,8 @@ Re-run gates: `make readiness`, doc-drift bundle, HOW_TO_VERIFY §4 claim-contra
 | Coverage (`src/`) | 95.02% |
 | Regression invariants | 47/47 |
 | Combined PDF pages | 169 |
-| DOI | `10.5281/zenodo.20301239` (live in `manuscript/config.yaml`) |
-| Audit matrix | 28 rows (`manuscript/refs/audit_tracks.yaml` + theorem registry) |
+| DOI | `10.5281/zenodo.20301239` (live in `docs/manuscript/config.yaml`) |
+| Audit matrix | 28 rows (`docs/manuscript/refs/audit_tracks.yaml` + theorem registry) |
 | Float interval JSON field | `decomposition_invariant_within_interval` |
 | Rendered manuscript markdown | 38 |
 

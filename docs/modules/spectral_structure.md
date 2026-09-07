@@ -1,7 +1,7 @@
 # Spectral and tensor-network structure
 
 Manuscript section:
-[`../manuscript/2G_spectral.md`](../../manuscript/2G_spectral.md).
+[`../manuscript/2G_spectral.md`](../manuscript/2G_spectral.md).
 
 ## Bipartite (K = 2)
 

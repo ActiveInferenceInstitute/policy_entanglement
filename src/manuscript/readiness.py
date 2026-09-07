@@ -175,7 +175,7 @@ def write_release_readiness(project_root: Path) -> Path:
             "",
             "| Slice | Path families | Review intent |",
             "|---|---|---|",
-            "| Manuscript and docs | `manuscript/`, `docs/`, `README.md`, `AGENTS.md` | Prose, citation, injection, and reader-map review. |",
+            "| Manuscript and docs | `docs/manuscript/`, `docs/`, `README.md`, `AGENTS.md` | Prose, citation, injection, and reader-map review. |",
             "| Lean boundary | `lean/ActinfPolicyEntanglement/`, `lean/FepSketches/` | Boundary hygiene and theorem/witness coherence. |",
             "| MathlibProofs analytic layer | `lean/MathlibProofs/` | Separate release-path package for the headline real-valued decomposition and future row-specific witness payloads. |",
             "| Simulation and visualization | `src/simulation/`, `src/visualizations/`, `scripts/simulate_*`, figure scripts | Numerical methods, metadata, and generated artifact provenance. |",

@@ -1,7 +1,7 @@
 # JointDist — distributions on the policy space
 
 Manuscript section:
-[`../manuscript/2B_setup.md`](../../manuscript/2B_setup.md)
+[`../manuscript/2B_setup.md`](../manuscript/2B_setup.md)
 (§3.2 multi-stream extension, §3.3 mean-field baseline).
 
 Lean source:

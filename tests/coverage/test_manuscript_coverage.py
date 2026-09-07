@@ -47,7 +47,7 @@ from manuscript.validation import (
 )
 from tests.output_gates_helpers import patch_output_dir
 
-MANUSCRIPT = Path(__file__).resolve().parent.parent.parent / "manuscript"
+MANUSCRIPT = Path(__file__).resolve().parent.parent.parent / "docs" / "manuscript"
 
 
 def _fig(caption: str, uncertainty: str = "") -> Figure:
@@ -269,7 +269,7 @@ def test_validate_preamble_margins_missing_file_reports_issue() -> None:
 def test_collect_section_subheadings_unreadable_refs_returns_empty(tmp_path: Path) -> None:
     """Lines 107-108: ``refs/labels.yaml`` exists but is a directory, so
     ``read_text`` raises OSError -> ``except (OSError, ImportError)``."""
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     (ms / "refs").mkdir(parents=True)
     (ms / "refs" / "labels.yaml").mkdir()
     assert collect_section_subheadings(ms) == {}
@@ -277,7 +277,7 @@ def test_collect_section_subheadings_unreadable_refs_returns_empty(tmp_path: Pat
 
 def test_collect_top_level_sections_unreadable_refs_returns_empty(tmp_path: Path) -> None:
     """Lines 137-138: same OSError path for the top-level collector."""
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     (ms / "refs").mkdir(parents=True)
     (ms / "refs" / "labels.yaml").mkdir()
     assert collect_top_level_sections(ms) == set()
@@ -286,7 +286,7 @@ def test_collect_top_level_sections_unreadable_refs_returns_empty(tmp_path: Path
 def test_collect_top_level_sections_parses_section_numbers(tmp_path: Path) -> None:
     """Line 142+: the section loop body runs and returns the top-level
     numbers (entries with a parent are excluded)."""
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     (ms / "refs").mkdir(parents=True)
     (ms / "refs" / "labels.yaml").write_text(
         "sections:\n"
@@ -301,7 +301,7 @@ def test_collect_top_level_sections_parses_section_numbers(tmp_path: Path) -> No
 
 def test_collect_section_subheadings_parses_subsections(tmp_path: Path) -> None:
     """Counterpart that exercises the subsection regex match branch."""
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     (ms / "refs").mkdir(parents=True)
     (ms / "refs" / "labels.yaml").write_text(
         "sections:\n"
@@ -316,8 +316,8 @@ def test_collect_section_subheadings_parses_subsections(tmp_path: Path) -> None:
 def test_validate_manuscript_tree_theorem_without_companion_is_skipped(tmp_path: Path) -> None:
     """Line 536: a real ``lean_dir`` is supplied and a theorem WITHOUT a
     Lean companion is skipped by ``if not theorem.has_lean_companion``."""
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_section.md").write_text("# Section\n\nClean body prose.\n", encoding="utf-8")
     lean_dir = tmp_path / "lean"
     lean_dir.mkdir()
@@ -340,8 +340,8 @@ def test_validate_manuscript_tree_theorem_without_companion_is_skipped(tmp_path:
 def test_validate_manuscript_tree_hardcoded_heading_literal_recorded(tmp_path: Path) -> None:
     """Line 608: a section heading that hand-writes ``Theorem 5.1`` is
     flagged into ``hardcoded_rendered_source_fields``."""
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_section.md").write_text("# Section\n\n## Proof of Theorem 5.1\n\nBody.\n", encoding="utf-8")
     registry = _refs(ms, "sections:\n  s1:\n    number: '1'\n    title: S\n    file: 01_section.md\n")
     report = validate_manuscript_tree(manuscript_dir=ms, registry=registry, variables={})
@@ -352,8 +352,8 @@ def test_validate_manuscript_tree_hardcoded_heading_literal_recorded(tmp_path: P
 def test_validate_manuscript_tree_token_in_code_fence_recorded(tmp_path: Path) -> None:
     """Line 643: a forbidden cross-reference token inside a fenced code
     block is captured into ``tokens_in_code_fences``."""
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_section.md").write_text(
         "# Section\n\n```\nsome code with [[EQ:euler]] inside\n```\n",
         encoding="utf-8",
@@ -367,8 +367,8 @@ def test_validate_manuscript_tree_token_in_code_fence_recorded(tmp_path: Path) -
 def test_validate_manuscript_tree_strict_registry_source_field_recorded(tmp_path: Path) -> None:
     """Line 654: a registry figure caption that hand-writes a display
     label is merged into ``hardcoded_rendered_source_fields``."""
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_section.md").write_text("# Section\n\nClean prose.\n", encoding="utf-8")
     fig = Figure(
         label="bad",
@@ -458,8 +458,8 @@ def test_render_all_parent_chain_and_theorem_anchor_injection(tmp_path: Path) ->
     """
     from manuscript.renderer import render_all
 
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_intro.md").write_text("# Introduction\n\nWe rely on [[THMREF:cor_x]] later.\n", encoding="utf-8")
     refs = ms / "refs"
     refs.mkdir()
@@ -689,8 +689,8 @@ def test_validate_figure_files_external_link_ignored(tmp_path) -> None:
 
 def test_validate_manuscript_tree_raw_block_triggers_in_raw(tmp_path) -> None:
     # lines 437+443: in_raw toggling — file starts with a code block before heading
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("```python\ncode_line\n```\n# Section Title\n\nBody text.\n")
     # Provide a minimal labels.yaml so section_paths finds the file
     refs_dir = ms_dir / "refs"
@@ -713,8 +713,8 @@ def test_validate_manuscript_tree_raw_block_triggers_in_raw(tmp_path) -> None:
 
 def test_validate_manuscript_tree_broken_link_captured(tmp_path) -> None:
     # line 456: bad_links branch — relative link to nonexistent file
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("# Section\n\n[broken link](nonexistent_doc.md)\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -733,8 +733,8 @@ def test_validate_manuscript_tree_broken_link_captured(tmp_path) -> None:
 
 def test_validate_manuscript_tree_missing_figure_captured(tmp_path) -> None:
     # line 460: missing_figure_files branch
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("# Section\n\n![Figure](figures/ghost.png)\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -753,8 +753,8 @@ def test_validate_manuscript_tree_missing_figure_captured(tmp_path) -> None:
 
 def test_validate_manuscript_tree_empty_caption_captured(tmp_path) -> None:
     # lines 463-464: empty alt-text caption
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     fig_dir = ms_dir / "figures"
     fig_dir.mkdir()
     (fig_dir / "real.png").write_bytes(b"\x89PNG")
@@ -776,8 +776,8 @@ def test_validate_manuscript_tree_empty_caption_captured(tmp_path) -> None:
 
 def test_validate_manuscript_tree_hardcoded_numeric_literal(tmp_path) -> None:
     # line 480: hardcoded_numeric_literals branch
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("# Section\n\nWe used a 121-point grid in the sweep.\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -796,8 +796,8 @@ def test_validate_manuscript_tree_hardcoded_numeric_literal(tmp_path) -> None:
 
 def test_validate_manuscript_tree_variable_ranges_branch(tmp_path) -> None:
     # line 483: variable_ranges branch with out-of-range variable
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("# Section\n\nBody.\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -831,8 +831,8 @@ def test_plot_coupling_graph_k2_high_threshold_no_edges(tmp_path) -> None:
 
 def test_validate_manuscript_tree_yaml_front_matter_skip(tmp_path) -> None:
     # line 437: `continue` inside `if stripped.startswith("---"):` branch
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("---\ntitle: Test\n---\n# Real Heading\n\nBody.\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -854,8 +854,8 @@ def test_validate_manuscript_tree_yaml_front_matter_skip(tmp_path) -> None:
 
 def test_validate_manuscript_tree_no_heading_loop_exhaustion(tmp_path) -> None:
     # line 432→447: the for loop exhausts all lines without finding a heading
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     # File with only a code block — no real heading after it
     (ms_dir / "01_section.md").write_text("```python\ncode_only\n```\n")
     refs_dir = ms_dir / "refs"
@@ -878,8 +878,8 @@ def test_collect_section_subheadings_nondict_entry_line103(tmp_path) -> None:
     # line 103: non-dict entry in sections is skipped by collect_section_subheadings
     from manuscript.validation import collect_section_subheadings
 
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
     # "bad_entry" maps to a scalar string, not a dict
@@ -921,8 +921,8 @@ def test_validate_lean_wiring_missing_snippet_line405(tmp_path) -> None:
 
 def test_validate_manuscript_tree_lean_dir_none_branch(tmp_path) -> None:
     # line 488: lean_dir is not None branch (triggers validate_lean_wiring call)
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     (ms_dir / "01_section.md").write_text("# Section\n\nBody.\n")
     refs_dir = ms_dir / "refs"
     refs_dir.mkdir()
@@ -943,8 +943,8 @@ def test_validate_manuscript_tree_lean_dir_none_branch(tmp_path) -> None:
 
 def test_validate_manuscript_tree_bad_section_ref(tmp_path) -> None:
     # line 472: bad_section_refs branch — §99 not in any known section
-    ms_dir = tmp_path / "manuscript"
-    ms_dir.mkdir()
+    ms_dir = tmp_path / "docs" / "manuscript"
+    ms_dir.mkdir(parents=True)
     # §88 is not in top_level (only §1 is present) and is not 99 (bibliography)
     (ms_dir / "01_section.md").write_text("# Section\n\nSee §88 for another discussion.\n")
     refs_dir = ms_dir / "refs"
@@ -1015,10 +1015,10 @@ def test_pymdp_validate_sweep_too_few_rows(tmp_path: Path, monkeypatch: pytest.M
 
 
 def test_validation_cli_main_on_minimal_manuscript(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     refs = ms / "refs"
     refs.mkdir(parents=True)
-    shutil.copytree(PROJECT / "manuscript" / "refs", refs, dirs_exist_ok=True)
+    shutil.copytree(PROJECT / "docs" / "manuscript" / "refs", refs, dirs_exist_ok=True)
     (ms / "01_intro.md").write_text("# Introduction\n\nClean prose.\n", encoding="utf-8")
     (tmp_path / "output" / "data").mkdir(parents=True)
     (tmp_path / "output" / "data" / "manuscript_variables.json").write_text("{}\n", encoding="utf-8")

@@ -24,7 +24,7 @@ import pytest
 from manuscript.meta_files import MANUSCRIPT_NON_BODY_MD
 
 PROJECT = Path(__file__).resolve().parent.parent
-MANUSCRIPT = PROJECT / "manuscript"
+MANUSCRIPT = PROJECT / "docs" / "manuscript"
 JSON_PATH = PROJECT / "output" / "data" / "manuscript_variables.json"
 
 CONTROLLED_CATEGORICAL_VARIABLES = {
@@ -252,7 +252,7 @@ def test_log_records_lambda_zero_baseline(log_records: list[dict]) -> None:
 
 
 def test_every_registered_lean_companion_resolves() -> None:
-    """Every theorem in `manuscript/refs/labels.yaml` with both
+    """Every theorem in `docs/manuscript/refs/labels.yaml` with both
     `lean_module` and `lean_name` must point to an actual Lean
     source location reachable by the snippet extractor.
     """

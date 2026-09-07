@@ -1,6 +1,6 @@
 # Per-theorem four-track wiring (auto-generated)
 
-**Do not hand-edit.** This file is auto-generated from [`../../manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml) by [`../../scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). Regenerate with:
+**Do not hand-edit.** This file is auto-generated from [`../../docs/manuscript/refs/labels.yaml`](../../docs/manuscript/refs/labels.yaml) by [`../../scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). Regenerate with:
 
 ```bash
 uv run python scripts/generate_theorem_map.py

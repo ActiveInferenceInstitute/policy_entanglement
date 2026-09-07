@@ -32,7 +32,7 @@ requires `networkx`.
 
 As of the latest generated audit, the registry figure count is reported
 by `output/reports/release_readiness.json` and can be cross-checked from
-`len(manuscript/refs/labels.yaml::figures)`.
+`len(docs/manuscript/refs/labels.yaml::figures)`.
 See [`../guides/build_run.md`](../guides/build_run.md#figure-count-scoping)
 for the authoritative scoping table that splits the figures across the
 producing scripts.
@@ -50,7 +50,7 @@ producing scripts.
 | `scripts/simulate_btai.py` | 1 | shipped BTAI baseline panel |
 | `scripts/simulate_adversarial.py` | 1 | shipped adversarial-perturbation panel |
 | `scripts/simulate_gnn.py` | 1 diagnostic | `gnn_bernoulli_roundtrip.png`; validated output, not a numbered manuscript figure |
-| `manuscript/refs/labels.yaml::figures` (registry total) | 46 | paper-facing registered figure union; excludes the non-registry GNN diagnostic PNG |
+| `docs/manuscript/refs/labels.yaml::figures` (registry total) | 46 | paper-facing registered figure union; excludes the non-registry GNN diagnostic PNG |
 
 ### `scripts/generate_figures.py` (headline analytical) produces:
 
@@ -119,7 +119,7 @@ summaries, and collection summaries (scatter / mesh offsets, arrays,
 and marker sizes when present) without embedding the full plotted
 arrays.
 The sibling `project.uncertainty_semantics` field mirrors the
-`uncertainty:` class registered in `manuscript/refs/labels.yaml`, so a
+`uncertainty:` class registered in `docs/manuscript/refs/labels.yaml`, so a
 reader can distinguish deterministic grids from canonical fixed-seed
 trajectories, replicate envelopes, confidence intervals, and analytical
 schematics without inferring stochastic status from the plot alone.

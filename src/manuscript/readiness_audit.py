@@ -89,7 +89,7 @@ def git_status_lines(project_root: Path) -> list[str]:
 
 
 def theorem_status_counts(project_root: Path) -> dict[str, int]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
+    labels_path = project_root / "docs" / "manuscript" / "refs" / "labels.yaml"
     labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
     theorems = labels.get("theorems") or {}
     counts = {"proved": 0, "witness": 0, "boundary": 0, "forwarder": 0, "sketch": 0, "deferred": 0}
@@ -171,7 +171,12 @@ def mathlib_proofs_status(
         "forbidden_token_counts": {token.strip(): 0 for token in FORBIDDEN_MATHLIB_LOCAL_TOKENS},
     }
     if source.exists():
-        text = source.read_text(encoding="utf-8")
+        texts = [
+            p.read_text(encoding="utf-8")
+            for p in sorted(root.rglob("*.lean"))
+            if ".lake" not in p.parts
+        ]
+        text = "\n".join(texts)
         version_match = re.search(r"\bdef\s+proofSliceVersion\s*:\s*Nat\s*:=\s*(\d+)", text)
         theorem_count = len(re.findall(r"^\s*theorem\s+\w+", text, flags=re.MULTILINE))
         token_counts = {token.strip(): text.count(token) for token in FORBIDDEN_MATHLIB_LOCAL_TOKENS}
@@ -195,7 +200,7 @@ def mathlib_proofs_status(
 
 
 def registered_figure_paths(project_root: Path) -> set[str]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
+    labels_path = project_root / "docs" / "manuscript" / "refs" / "labels.yaml"
     labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
     figures = labels.get("figures") or {}
     out: set[str] = set()
@@ -268,7 +273,7 @@ def pdf_artifact_audit(project_root: Path, status) -> dict[str, object]:
         "_combined_manuscript.log": (pdf_dir / "_combined_manuscript.log").exists(),
         "_xelatex_stdout.log": (pdf_dir / "_xelatex_stdout.log").exists(),
     }
-    preamble = project_root / "manuscript" / "preamble.md"
+    preamble = project_root / "docs" / "manuscript" / "preamble.md"
     margins: dict[str, float] = {}
     margin_contract_ok = False
     if preamble.exists():

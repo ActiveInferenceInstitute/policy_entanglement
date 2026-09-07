@@ -45,7 +45,7 @@ For full orientation, start at
 
 ## 2.  Where is the manuscript?
 
-In [`../manuscript/`](../manuscript/) — modular Markdown. The
+In [`../manuscript/`](../docs/manuscript/) — modular Markdown. The
 rendered PDF lives under [`../output/pdf/`](../output/pdf/) after
 running the template render pipeline. Live render counts, figure
 counts, page counts, and file sizes come from
@@ -55,9 +55,9 @@ hand-maintained FAQ prose.
 
 The single source of truth for figures, equations, theorems, and
 section labels is
-[`manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml); for
+[`docs/manuscript/refs/labels.yaml`](../docs/manuscript/refs/labels.yaml); for
 citations,
-[`manuscript/refs/citations.yaml`](../manuscript/refs/citations.yaml).
+[`docs/manuscript/refs/citations.yaml`](../docs/manuscript/refs/citations.yaml).
 
 ---
 
@@ -232,7 +232,7 @@ Each rule has its own detail page under
 * **New citation.**  Recipe in
   [`guides/styleguide/citations.md`](guides/styleguide/citations.md)
   — append the entry to
-  [`../manuscript/refs/citations.yaml`](../manuscript/refs/citations.yaml)
+  [`../manuscript/refs/citations.yaml`](../docs/manuscript/refs/citations.yaml)
   under its `topic`, cite inline with `[@my-key]`.
 
 ---

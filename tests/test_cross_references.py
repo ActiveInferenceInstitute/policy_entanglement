@@ -35,9 +35,9 @@ from simulation.cross_references import (  # noqa: E402
     to_markdown_table,
 )
 
-LABELS_PATH = PROJECT / "manuscript" / "refs" / "labels.yaml"
+LABELS_PATH = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
 LEAN_DIR = PROJECT / "lean" / "ActinfPolicyEntanglement"
-MATHLIB_PROOFS = PROJECT / "lean" / "MathlibProofs" / "MathlibProofs.lean"
+MATHLIB_PROOFS = PROJECT / "lean" / "MathlibProofs"
 
 
 def _entries_with(field_name: str) -> tuple[CrossReference, ...]:
@@ -99,7 +99,7 @@ def test_every_theorem_resolves_in_labels(entry: CrossReference) -> None:
     theorems = _labels().get("theorems", {})
     assert entry.theorem in theorems, (
         f"{entry.function}: theorem '{entry.theorem}' missing from "
-        f"manuscript/refs/labels.yaml::theorems — rename or add the key"
+        f"docs/manuscript/refs/labels.yaml::theorems — rename or add the key"
     )
 
 
@@ -108,7 +108,7 @@ def test_every_equation_resolves_in_labels(entry: CrossReference) -> None:
     """Every registered `equation` is a real registry key."""
     equations = _labels().get("equations", {})
     assert entry.equation in equations, (
-        f"{entry.function}: equation '{entry.equation}' missing from manuscript/refs/labels.yaml::equations"
+        f"{entry.function}: equation '{entry.equation}' missing from docs/manuscript/refs/labels.yaml::equations"
     )
 
 
@@ -117,7 +117,7 @@ def test_every_section_resolves_in_labels(entry: CrossReference) -> None:
     """Every registered `section` is a real registry key."""
     sections = _labels().get("sections", {})
     assert entry.section in sections, (
-        f"{entry.function}: section '{entry.section}' missing from manuscript/refs/labels.yaml::sections"
+        f"{entry.function}: section '{entry.section}' missing from docs/manuscript/refs/labels.yaml::sections"
     )
 
 
@@ -148,7 +148,11 @@ def test_every_lean_declaration_resolves(entry: CrossReference) -> None:
 def test_every_mathlib_proof_resolves(entry: CrossReference) -> None:
     """Every registered MathlibProofs declaration exists."""
     assert MATHLIB_PROOFS.exists(), "MathlibProofs source not present"
-    text = MATHLIB_PROOFS.read_text(encoding="utf-8")
+    text = "\n".join(
+        p.read_text(encoding="utf-8")
+        for p in sorted(MATHLIB_PROOFS.rglob("*.lean"))
+        if ".lake" not in p.parts
+    )
     assert re.search(rf"\b(theorem|lemma|def)\s+{re.escape(entry.mathlib_proof)}\b", text), (
         f"{entry.function}: MathlibProofs declaration '{entry.mathlib_proof}' not found in MathlibProofs.lean"
     )

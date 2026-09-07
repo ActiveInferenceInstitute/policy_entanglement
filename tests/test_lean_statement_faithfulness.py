@@ -42,7 +42,7 @@ import pytest
 import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
-LABELS_YAML = PROJECT / "manuscript" / "refs" / "labels.yaml"
+LABELS_YAML = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
 LEAN_DIR = PROJECT / "lean" / "ActinfPolicyEntanglement"
 
 _RFL_TAIL = re.compile(r":=\s*(Iff\.)?rfl\s*$", re.MULTILINE)

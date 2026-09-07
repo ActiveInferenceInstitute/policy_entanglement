@@ -34,7 +34,7 @@ MATHLIB_READINESS = _tm.MATHLIB_READINESS
 
 def render() -> str:
     """Render the auto-generated theorem-map markdown using the project root."""
-    return _tm.render(PROJECT_ROOT / "manuscript" / "refs")
+    return _tm.render(PROJECT_ROOT / "docs" / "manuscript" / "refs")
 
 
 def main() -> int:

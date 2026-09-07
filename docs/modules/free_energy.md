@@ -3,9 +3,9 @@
 Boundary-form definitions of KL divergence, Shannon entropy, total
 correlation, and variational free energy on a finite policy space.
 Manuscript anchors:
-[`../manuscript/2D_decomposition.md`](../../manuscript/2D_decomposition.md)
+[`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
 (uses these quantities to state Theorem 5.1) and
-[`../manuscript/2F_geometry.md`](../../manuscript/2F_geometry.md)
+[`../manuscript/2F_geometry.md`](../manuscript/2F_geometry.md)
 (re-expresses the total correlation as a Bregman divergence to the
 m-projection — Proposition 7.3).
 
@@ -59,7 +59,7 @@ Three theorems in total.
 identity that registers the total correlation as a KL distance to the
 m-projection.  In the manuscript this is **Proposition 7.3** (label
 `prop_6_3` in
-[`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml),
+[`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml),
 section anchor `geometry.dual_coords`, status `witness`).
 
 Lean signature:
@@ -95,9 +95,9 @@ Dirichlet samples (see
 
 | Track | Resolves to |
 |---|---|
-| Manuscript section | [`§7 Information geometry`](../../manuscript/2F_geometry.md), Prop 7.3; also referenced from [`§5 Entanglement decomposition`](../../manuscript/2D_decomposition.md) (Theorem 5.1 consumes `variationalFreeEnergy`). |
+| Manuscript section | [`§7 Information geometry`](../manuscript/2F_geometry.md), Prop 7.3; also referenced from [`§5 Entanglement decomposition`](../manuscript/2D_decomposition.md) (Theorem 5.1 consumes `variationalFreeEnergy`). |
 | Lean module | [`FreeEnergy.lean`](../../lean/ActinfPolicyEntanglement/FreeEnergy.lean) (9 defs, 3 theorems). |
-| Registry label | `prop_6_3` in [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml) (Prop 7.3, status `witness`, lean name `totalCorrelation_eq_kl_to_mprojection`). |
+| Registry label | `prop_6_3` in [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml) (Prop 7.3, status `witness`, lean name `totalCorrelation_eq_kl_to_mprojection`). |
 | Python mirror | [`lean/free_energy`](../../src/lean/free_energy.py) — `shannon_entropy`, `kl_divergence`, `total_correlation`, `total_correlation_via_kl`, `free_energy`, `marginal_free_energy`, plus joint / marginal entropy helpers. |
 | Test gate | [`test_free_energy.py`](../../tests/test_free_energy.py); pymdp-grounded version exercised by [`test_simulation_free_energy.py`](../../tests/test_simulation_free_energy.py). |
 | Equation tokens | [[EQ:total_correlation]] (declared in registry), consumed by [[EQ:tc_decomp]] (Theorem 5.1). |

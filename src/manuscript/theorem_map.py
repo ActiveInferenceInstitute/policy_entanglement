@@ -1,7 +1,7 @@
 """Per-theorem four-track wiring table — auto-generated body.
 
 Business logic for ``scripts/generate_theorem_map.py``. Reads the
-single source of truth (``manuscript/refs/labels.yaml::theorems``)
+single source of truth (``docs/manuscript/refs/labels.yaml::theorems``)
 and emits the auto-generated companion to ``manuscript_map.md``.
 
 The generated file lists every numbered theorem in the manuscript
@@ -261,7 +261,7 @@ def render(refs_dir: Path) -> str:
     """Render the auto-generated theorem-map markdown.
 
     Args:
-        refs_dir: Path to ``manuscript/refs/`` for registry loading.
+        refs_dir: Path to ``docs/manuscript/refs/`` for registry loading.
     """
     registry = load_registry(refs_dir)
     theorems = registry.labels.theorems
@@ -286,7 +286,7 @@ def render(refs_dir: Path) -> str:
         "# Per-theorem four-track wiring (auto-generated)",
         "",
         "**Do not hand-edit.** This file is auto-generated from "
-        "[`../../manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml) "
+        "[`../../docs/manuscript/refs/labels.yaml`](../../docs/manuscript/refs/labels.yaml) "
         "by [`../../scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). "
         "Regenerate with:",
         "",
@@ -351,7 +351,7 @@ def render(refs_dir: Path) -> str:
 def write(project_root: Path) -> Path:
     """Render and write ``docs/reference/_theorem_map.md``; return path."""
     out_path = project_root / "docs" / "reference" / "_theorem_map.md"
-    refs_dir = project_root / "manuscript" / "refs"
+    refs_dir = project_root / "docs" / "manuscript" / "refs"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render(refs_dir))
     return out_path

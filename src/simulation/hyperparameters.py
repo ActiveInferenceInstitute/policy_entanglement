@@ -128,7 +128,7 @@ def figure_hyperparameter_summary() -> dict[str, object]:
 
     Consumed by `scripts/manuscript_variables.py` to populate the
     `[[VAR:...]]` namespace; the keys are stable and used directly
-    inside `manuscript/*.md`.
+    inside `docs/manuscript/*.md`.
     """
     return {
         # grid sizes

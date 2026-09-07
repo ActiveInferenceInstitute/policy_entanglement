@@ -113,7 +113,7 @@ The **17 boundary modules** are stable. The separate
 it now proves the headline real-valued decomposition, while remaining
 witness-payload discharge claims still require real sorry-free Mathlib
 source and a green separate build. No `deferred` row remains in
-`manuscript/refs/labels.yaml`; MathlibProofs work is purely additive
+`docs/manuscript/refs/labels.yaml`; MathlibProofs work is purely additive
 and never permits Mathlib imports inside this boundary directory. Plan:
 [`MathlibRefinementRoadmap.md`](MathlibRefinementRoadmap.md).
 
@@ -130,4 +130,4 @@ and never permits Mathlib imports inside this boundary directory. Plan:
 | add a spectral USC / tensor-rank witness | `SpectralWitnesses.lean` | `cd lean && lake build` |
 | add a hierarchical / sophisticated-inference witness | `ConnectionsWitnesses.lean` | `cd lean && lake build` |
 | mirror a theorem to Python | `src/lean/<module>.py` + `tests/test_<module>.py` | `uv run pytest tests/test_<module>.py` |
-| register a theorem for the manuscript | `manuscript/refs/labels.yaml` under `theorems:` (set `lean_module` + `lean_name`) | `uv run python scripts/inject_manuscript_variables.py` (the renderer extracts the live source) |
+| register a theorem for the manuscript | `docs/manuscript/refs/labels.yaml` under `theorems:` (set `lean_module` + `lean_name`) | `uv run python scripts/inject_manuscript_variables.py` (the renderer extracts the live source) |

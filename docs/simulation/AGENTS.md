@@ -9,7 +9,7 @@ and the rendering helpers under
 
 | File | Scope |
 |---|---|
-| `pomdp_simulation.md` | The end-to-end pymdp harness: state spaces, ensemble specs, builders, agents, rollout loop, free-energy bundle, and JSONL run logger. Mirrors what `manuscript/4C_pymdp_harness.md` and `4D_pymdp_free_energy.md` describe. |
+| `pomdp_simulation.md` | The end-to-end pymdp harness: state spaces, ensemble specs, builders, agents, rollout loop, free-energy bundle, and JSONL run logger. Mirrors what `docs/manuscript/4C_pymdp_harness.md` and `4D_pymdp_free_energy.md` describe. |
 | `visualizations.md` | The plot helpers under `src/visualizations/`: heatmaps, joint plots, spectral, trajectory, graph, log-weight, free-energy dashboards, pymdp-extra dashboards, and the PNG `tEXt` reproducibility metadata helpers. |
 
 ## Rules
@@ -40,9 +40,9 @@ and the rendering helpers under
   configured multi-K sweep via `scripts/simulate_multi_k.py`.
 - PNG figure count is live in `output/reports/release_readiness.json`
   and `output/figures/`; registered figures live in
-  `manuscript/refs/labels.yaml::figures`.
+  `docs/manuscript/refs/labels.yaml::figures`.
 - JAX runs in float32 by default — the precision boundary is noted
-  inline in `manuscript/4C_pymdp_harness.md` and reflected in the
+  inline in `docs/manuscript/4C_pymdp_harness.md` and reflected in the
   tolerance budget used by `tests/test_simulation_pymdp.py`.
 - Reproducibility metadata: PNGs carry `tEXt`-chunk provenance
   (seed, script, git short SHA) plus automatic figure-statistics
@@ -54,5 +54,5 @@ and the rendering helpers under
 
 - [`../../src/simulation/AGENTS.md`](../../src/simulation/AGENTS.md)
 - [`../../src/visualizations/AGENTS.md`](../../src/visualizations/AGENTS.md)
-- [`../../manuscript/4C_pymdp_harness.md`](../../manuscript/4C_pymdp_harness.md)
-- [`../../manuscript/4D_pymdp_free_energy.md`](../../manuscript/4D_pymdp_free_energy.md)
+- [`../../manuscript/4C_pymdp_harness.md`](../manuscript/4C_pymdp_harness.md)
+- [`../../manuscript/4D_pymdp_free_energy.md`](../manuscript/4D_pymdp_free_energy.md)

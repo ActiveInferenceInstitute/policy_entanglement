@@ -46,7 +46,7 @@ AUDIT_MATRIX_COLUMNS = (
 )
 MIN_AUDIT_MATRIX_ROWS = 28
 AUDIT_MATRIX_THEOREM_LABEL_RE = re.compile(r"^([a-z0-9_]+)\s+\(")
-AUDIT_PATH_PREFIXES = ("output/", "docs/", "manuscript/", "scripts/", "tests/", "lean/")
+AUDIT_PATH_PREFIXES = ("output/", "docs/", "docs/manuscript/", "scripts/", "tests/", "lean/")
 AUDIT_PATH_SUFFIXES = (".csv", ".json", ".md", ".pdf", ".html", ".lean")
 RETIRED_DISCUSSION_LABEL_RE = re.compile(r"\b[wW]ork[- ]?[pP]lan\b")
 RETIRED_DISCUSSION_LABEL_SCAN_ROOTS = (
@@ -54,7 +54,7 @@ RETIRED_DISCUSSION_LABEL_SCAN_ROOTS = (
     PROJECT / "README.md",
     PROJECT / "docs",
     PROJECT / "lean",
-    PROJECT / "manuscript",
+    PROJECT / "docs" / "manuscript",
     PROJECT / "scripts",
     PROJECT / "src",
     PROJECT / "tests",
@@ -76,7 +76,7 @@ PLACEHOLDER_SCAN_ROOTS = (
     PROJECT / "README.md",
     PROJECT / "AGENTS.md",
     PROJECT / "docs",
-    PROJECT / "manuscript",
+    PROJECT / "docs" / "manuscript",
     PROJECT / "output" / "manuscript",
 )
 PLACEHOLDER_ALLOWLIST_ROOTS = (PROJECT / "docs" / "_audit",)
@@ -131,7 +131,7 @@ GNN_STALE_CANDIDATE_RE = re.compile(
 GNN_CURRENT_SCAN_ROOTS = (
     PROJECT / "README.md",
     PROJECT / "docs",
-    PROJECT / "manuscript",
+    PROJECT / "docs" / "manuscript",
 )
 GNN_STALE_ALLOWLIST_ROOTS = (
     PROJECT / "docs" / "_audit",
@@ -166,7 +166,7 @@ def _audit_matrix_issues() -> list[str]:
                     issues.append(f"{row.get('claim_area', '<unknown>')}: missing evidence path {item}")
     if len(rows) < MIN_AUDIT_MATRIX_ROWS:
         issues.append(f"audit matrix has {len(rows)} rows; expected at least {MIN_AUDIT_MATRIX_ROWS}")
-    labels_path = PROJECT / "manuscript" / "refs" / "labels.yaml"
+    labels_path = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
     if labels_path.exists():
         import yaml
 
@@ -195,9 +195,9 @@ def _pymdp_package_api_wording_issues() -> list[str]:
         PROJECT / "docs" / "reference" / "methods_audit.md",
         PROJECT / "src" / "simulation" / "README.md",
         PROJECT / "src" / "simulation" / "AGENTS.md",
-        PROJECT / "manuscript" / "4B_empirical_suite.md",
-        PROJECT / "manuscript" / "4C_pymdp_harness.md",
-        PROJECT / "manuscript" / "6C_discussion_and_outlook.md",
+        PROJECT / "docs" / "manuscript" / "4B_empirical_suite.md",
+        PROJECT / "docs" / "manuscript" / "4C_pymdp_harness.md",
+        PROJECT / "docs" / "manuscript" / "6C_discussion_and_outlook.md",
     ]
     combined = "\n".join(path.read_text(encoding="utf-8") for path in current_files if path.exists())
     issues: list[str] = []
@@ -458,8 +458,8 @@ def test_stale_reference_and_mathlib_claim_guards_on_temporary_tree(tmp_path: Pa
         f"A {stale_mathlib_phrase} will do this.\n",
         encoding="utf-8",
     )
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "paper.md").write_text(
+    (tmp_path / "docs" / "manuscript").mkdir()
+    (tmp_path / "docs" / "manuscript" / "paper.md").write_text(
         "MathlibProofs proves the current theorem result.\n",
         encoding="utf-8",
     )

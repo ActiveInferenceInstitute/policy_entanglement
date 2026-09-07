@@ -26,25 +26,25 @@ You want to understand what the framework *predicts* and how it
 relates to existing active-inference literature, without committing
 to reading code or Lean.
 
-1. [`../manuscript/0A_abstract.md`](../manuscript/0A_abstract.md) —
+1. [`../manuscript/0A_abstract.md`](../docs/manuscript/0A_abstract.md) —
    the one-paragraph summary; what the framework claims.
-2. [`../manuscript/1B_motivation.md`](../manuscript/1B_motivation.md)
+2. [`../manuscript/1B_motivation.md`](../docs/manuscript/1B_motivation.md)
    — why a tunable mean-field deformation is the right object.
-3. [`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
+3. [`../manuscript/2D_decomposition.md`](../docs/manuscript/2D_decomposition.md)
    — the load-bearing decomposition identity, with corollaries.
 4. [`modules/bernoulli_toy.md`](modules/bernoulli_toy.md) — the
    closed-form K = 2 worked example (the simplest case where every
    identity has a clean closed form).
-5. [`../manuscript/2H_heterogeneous.md`](../manuscript/2H_heterogeneous.md)
+5. [`../manuscript/2H_heterogeneous.md`](../docs/manuscript/2H_heterogeneous.md)
    — heterogeneous ensembles and the `O(λ²)` coupling-tax witness,
    where the active-inference connection lands hardest.
-6. [`../manuscript/5B_connections_aif.md`](../manuscript/5B_connections_aif.md)
+6. [`../manuscript/5B_connections_aif.md`](../docs/manuscript/5B_connections_aif.md)
    — the connection to classical AIF, hierarchical AIF
    (round-3 witness), and sophisticated inference (round-3 witness).
-7. [`../manuscript/5D_connections_multi_agent.md`](../manuscript/5D_connections_multi_agent.md)
+7. [`../manuscript/5D_connections_multi_agent.md`](../docs/manuscript/5D_connections_multi_agent.md)
    — Markov-blanket separation (round-2 witness) and
    the multi-agent / CEREBRUM picture.
-8. *(Optional structural bridge)* [`../manuscript/S08_gnn_generalized_notation_extension.md`](../manuscript/S08_gnn_generalized_notation_extension.md)
+8. *(Optional structural bridge)* [`../manuscript/S08_gnn_generalized_notation_extension.md`](../docs/manuscript/S08_gnn_generalized_notation_extension.md)
    — GNN as a shipped fifth structural-and-numerical representation
    (Smékal & Friedman 2023). Read this last; it adds parser /
    round-trip / Lean-emitter coverage without changing the four-track
@@ -179,9 +179,9 @@ gentle on-ramp.
 4. [`reference/architecture.md`](reference/architecture.md) — the
    project sits inside a research template; here is what is generic
    and what is project-specific.
-5. [`../manuscript/0A_abstract.md`](../manuscript/0A_abstract.md) —
+5. [`../manuscript/0A_abstract.md`](../docs/manuscript/0A_abstract.md) —
    what the framework claims.
-6. [`../manuscript/1B_motivation.md`](../manuscript/1B_motivation.md)
+6. [`../manuscript/1B_motivation.md`](../docs/manuscript/1B_motivation.md)
    — why the framework matters.
 7. [`modules/bernoulli_toy.md`](modules/bernoulli_toy.md) — the K=2
    worked example you can hold in your head.

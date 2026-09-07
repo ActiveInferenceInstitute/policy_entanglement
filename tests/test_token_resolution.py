@@ -29,7 +29,7 @@ import pytest
 import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
-MS = PROJECT / "manuscript"
+MS = PROJECT / "docs" / "manuscript"
 LABELS = yaml.safe_load((MS / "refs" / "labels.yaml").read_text())
 
 KNOWN_SECTIONS = set(LABELS.get("sections", {}).keys())
@@ -71,13 +71,13 @@ INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 
 # Files whose body is *about the syntax* — placeholder tokens are OK.
 SYNTAX_DOC_FILES = {
-    "manuscript/AGENTS.md",
-    "manuscript/README.md",
-    "manuscript/INDEX.md",
-    "manuscript/4E_pymdp_validation.md",
-    "manuscript/S05_lean_code_skeleton.md",
-    "manuscript/refs/AGENTS.md",
-    "manuscript/refs/README.md",
+    "docs/manuscript/AGENTS.md",
+    "docs/manuscript/README.md",
+    "docs/manuscript/INDEX.md",
+    "docs/manuscript/4E_pymdp_validation.md",
+    "docs/manuscript/S05_lean_code_skeleton.md",
+    "docs/manuscript/refs/AGENTS.md",
+    "docs/manuscript/refs/README.md",
 }
 
 

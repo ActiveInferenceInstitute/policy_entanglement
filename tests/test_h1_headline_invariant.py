@@ -25,8 +25,8 @@ import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
 VAR_JSON = PROJECT / "output" / "data" / "manuscript_variables.json"
-LABELS_YAML = PROJECT / "manuscript" / "refs" / "labels.yaml"
-MANUSCRIPT_DIR = PROJECT / "manuscript"
+LABELS_YAML = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
+MANUSCRIPT_DIR = PROJECT / "docs" / "manuscript"
 
 _VALID_FAITHFULNESS = {"substantive", "definitional", "statement-restricted"}
 # Full vocab incl. the witness/boundary/forwarder tier (RedTeam Cat-3b).

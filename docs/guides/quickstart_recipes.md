@@ -48,7 +48,7 @@ uv run python scripts/validate_pdf.py
 
 Outputs: `projects/actinf_policy_entanglement_lean/output/pdf/actinf_policy_entanglement_lean_combined.pdf`,
 plus the per-section slide PDFs and HTML files (one per section file
-under `manuscript/`; current count is **21 numbered body sections**
+under `docs/manuscript/`; current count is **21 numbered body sections**
 (`1B`, `1C`, `2B`–`2J`, `3B`, `4B`–`4E`, `5B`–`5D`, `6B`, `6C`) plus
 6 part dividers (`1A_`, `2A_`, …, `6A_`), `0A_abstract.md`,
 `99_bibliography.md`, and 7 supplementary appendices `S01_…`–`S07_…`).
@@ -193,5 +193,5 @@ the hygiene gate is enforced by
    render order (e.g. `04a_new_topic.md`).
 2. Top heading is a single `#` (Pandoc → `\section{}`); subsections
    use `##`.  No hardcoded section numbers in headings.
-3. List the new file in [`../manuscript/README.md`](../../manuscript/README.md).
+3. List the new file in [`../manuscript/README.md`](../manuscript/README.md).
 4. Re-render with `scripts/build_pdf.py` and validate with `scripts/validate_pdf.py`.

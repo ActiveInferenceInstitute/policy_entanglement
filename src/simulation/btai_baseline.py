@@ -47,6 +47,16 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from lean.free_energy import total_correlation as _lean_total_correlation
+
+
+def total_correlation(joint: np.ndarray) -> float:
+    """Total correlation I(q) = sum_k H(q^k) - H(q) for a 2-stream joint."""
+    joint_arr = np.asarray(joint, dtype=np.float64)
+    if joint_arr.ndim != 2:
+        raise ValueError(f"joint must be 2-D for K=2 streams, got ndim={joint_arr.ndim}")
+    return _lean_total_correlation(joint_arr)
+
 if TYPE_CHECKING:
     from .specs import CoupledEnsembleSpec
 
@@ -118,26 +128,6 @@ class BTAITreeNode:
     value_estimate: float = 0.0
     children: dict[tuple[int, ...], BTAITreeNode] = field(default_factory=dict)
     expected_free_energy: float = 0.0
-
-
-def joint_marginals(joint: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Compute per-stream marginals of a joint posterior on two streams."""
-    if joint.ndim != 2:
-        raise ValueError(f"joint must be 2-D for K=2 streams, got ndim={joint.ndim}")
-    return joint.sum(axis=1), joint.sum(axis=0)
-
-
-def total_correlation(joint: np.ndarray) -> float:
-    """Total correlation I(q) = sum_k H(q^k) - H(q) for a 2-stream joint."""
-    if joint.ndim != 2:
-        raise ValueError(f"joint must be 2-D for K=2 streams, got ndim={joint.ndim}")
-    marginal_1, marginal_2 = joint_marginals(joint)
-
-    def shannon_entropy(probabilities: np.ndarray) -> float:
-        clipped = np.clip(probabilities, 1e-300, 1.0)
-        return float(-np.sum(probabilities * np.log(clipped)))
-
-    return shannon_entropy(marginal_1) + shannon_entropy(marginal_2) - shannon_entropy(joint)
 
 
 def ucb_score(parent_visits: int, child: BTAITreeNode, exploration: float) -> float:

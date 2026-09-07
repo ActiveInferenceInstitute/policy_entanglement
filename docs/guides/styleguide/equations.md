@@ -15,12 +15,12 @@ plus the registered-but-not-yet-referenced `closed_form_F`,
 ## Numbering scheme
 
 * Each section's display equations are numbered `S.K`, where `S` is
-  the section's `number` from `manuscript/refs/labels.yaml` and `K`
+  the section's `number` from `docs/manuscript/refs/labels.yaml` and `K`
   is the 1-indexed source-order count of `[[EQ:label]]` tokens *and*
   bare `$$..$$` blocks together.
 * Numbering is computed by
   [`src/manuscript/equation_numbering.py`](../../../src/manuscript/equation_numbering.py)
-  in a single pre-pass over `manuscript/*.md` (deterministic; only
+  in a single pre-pass over `docs/manuscript/*.md` (deterministic; only
   depends on file content + registry).
 * `retag_display_math` rewrites every rendered `$$..$$` block to
   carry the auto-assigned `\tag{S.K}`, overwriting any pre-existing
@@ -32,7 +32,7 @@ plus the registered-but-not-yet-referenced `closed_form_F`,
 
 * **Do** define a top-level / load-bearing equation by writing
   `[[EQ:my_label]]` at its location and adding the LaTeX body to
-  `manuscript/refs/labels.yaml` under `equations:`.
+  `docs/manuscript/refs/labels.yaml` under `equations:`.
 * **Do** reference it elsewhere with `[[EQREF:my_label]]`.
 * **Don't** use `\tag{...}` or `\label{...}` by hand — auto-numbering
   owns those.
@@ -44,14 +44,14 @@ plus the registered-but-not-yet-referenced `closed_form_F`,
 [`tests/test_equation_numbering.py`](../../../tests/test_equation_numbering.py)
 asserts:
 
-* every `[[EQ:label]]` token in `manuscript/*.md` ends up with a
+* every `[[EQ:label]]` token in `docs/manuscript/*.md` ends up with a
   numeric assignment in the precomputed map;
 * every rendered `$$..$$` block carries a `\tag{...}` after render;
 * tags emitted in section §N start with the prefix `N.`.
 
 ## Adding a new equation
 
-1. Add the LaTeX body to `manuscript/refs/labels.yaml`:
+1. Add the LaTeX body to `docs/manuscript/refs/labels.yaml`:
 
    ```yaml
    equations:

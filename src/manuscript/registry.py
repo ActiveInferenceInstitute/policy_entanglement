@@ -1,4 +1,4 @@
-"""Parse `manuscript/refs/{labels,citations}.yaml` into typed records."""
+"""Parse `docs/manuscript/refs/{labels,citations}.yaml` into typed records."""
 
 from __future__ import annotations
 
@@ -232,7 +232,7 @@ def load_citations(path: Path) -> CitationRegistry:
 
 
 def load_registry(refs_dir: Path) -> Registry:
-    """Load both registries from `manuscript/refs/`."""
+    """Load both registries from `docs/manuscript/refs/`."""
     return Registry(
         labels=load_labels(refs_dir / "labels.yaml"),
         citations=load_citations(refs_dir / "citations.yaml"),

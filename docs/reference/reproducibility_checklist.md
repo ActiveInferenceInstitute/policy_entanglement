@@ -93,7 +93,7 @@ Before release, inspect:
 | Symptom | First check |
 |---|---|
 | A number in prose looks stale | `output/data/manuscript_variables.json`, then `scripts/manuscript_variables.py`. |
-| A theorem number looks stale | `manuscript/refs/labels.yaml`, then `scripts/generate_theorem_map.py`. |
+| A theorem number looks stale | `docs/manuscript/refs/labels.yaml`, then `scripts/generate_theorem_map.py`. |
 | A figure caption disagrees with plotted data | PNG `project.hyperparameters`, `project.uncertainty_semantics`, and `project.figure_statistics` metadata. |
 | The PDF shows `?`, `$`, or raw token syntax | `scripts/validate_pdf.py` output and `output/pdf/_combined_manuscript.log`. |
 | A readiness count changed | Regenerate with `make readiness`; do not hand-edit generated status text. |

@@ -9,7 +9,7 @@ symbols.
 
 For the *mathematical* glossary (PMFs, KL, TC, free energies, geometry
 objects, sign conventions), see
-[`manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md)
+[`docs/manuscript/S06_notation_and_concordance.md`](../docs/manuscript/S06_notation_and_concordance.md)
 (canonical) and
 [`reference/math_reference.md`](reference/math_reference.md) (cross-track).
 
@@ -95,7 +95,7 @@ objects, sign conventions), see
   and are mirrored to JSON for the manuscript variable bundle.  See
   [`guides/styleguide/hyperparameters.md`](guides/styleguide/hyperparameters.md).
 
-- **Injection token.**  A `[[…]]` placeholder in `manuscript/*.md` that
+- **Injection token.**  A `[[…]]` placeholder in `docs/manuscript/*.md` that
   the renderer resolves at build time from a registry (variables, labels,
   citations, Lean snippets).  Seven token namespaces:
   `[[VAR:key]]`, `[[EQ:label]]` / `[[EQREF:label]]`,
@@ -178,7 +178,7 @@ objects, sign conventions), see
 ## T–Z
 
 - **Theorem registry.**  The `theorems:` section of
-  [`manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml).
+  [`docs/manuscript/refs/labels.yaml`](../docs/manuscript/refs/labels.yaml).
   Twenty entries, each carrying a `status:` field (one of
   `proved` / `witness` / `boundary` / `forwarder` /
   `sketch` (empty) / `deferred` (empty)).  The
@@ -231,7 +231,7 @@ objects, sign conventions), see
   models, expressed via the *Triple Play* of linguistic, visual,
   and executable views from a single GNN source.  In this project,
   GNN is introduced in
-  [`manuscript/S08_gnn_generalized_notation_extension.md`](../manuscript/S08_gnn_generalized_notation_extension.md)
+  [`docs/manuscript/S08_gnn_generalized_notation_extension.md`](../docs/manuscript/S08_gnn_generalized_notation_extension.md)
   as a shipped **fifth structural-and-numerical representation**
   alongside the four proof/evidence tracks (prose / equations /
   Python / Lean). It ships a parser, K=2 round-trip, Lean typed-contract
@@ -259,7 +259,7 @@ objects, sign conventions), see
 
 - [`reference/math_reference.md`](reference/math_reference.md) —
   *mathematical* glossary (formal objects, types, Python mirrors).
-- [`manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md)
+- [`docs/manuscript/S06_notation_and_concordance.md`](../docs/manuscript/S06_notation_and_concordance.md)
   — the canonical symbol-and-sign glossary embedded in the manuscript.
 - [`FAQ.md`](FAQ.md) — answers to the 15 most common
   newcomer questions, many of which expand on glossary entries above.

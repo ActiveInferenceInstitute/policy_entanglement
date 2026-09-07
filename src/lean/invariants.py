@@ -22,7 +22,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
-from dashboard_types.dashboard import Invariant
+from dashboard_types.types import Invariant
 
 from .bernoulli_toy import (
     coupling_phase_at,
@@ -63,6 +63,41 @@ class SweepGrid:
         return np.linspace(self.lam_min, self.lam_max, self.num)
 
 
+@dataclass(frozen=True)
+class SweepEvaluation:
+    """Precomputed sweep series shared by invariant families."""
+
+    grid: SweepGrid
+    lambdas: ArrayF
+    closed_mi: ArrayF
+    empirical_mi: ArrayF
+
+    @property
+    def max_mi_residual(self) -> float:
+        return float(np.max(np.abs(self.closed_mi - self.empirical_mi)))
+
+
+def evaluate_sweep(grid: SweepGrid) -> SweepEvaluation:
+    lams = grid.values()
+    return SweepEvaluation(
+        grid=grid,
+        lambdas=lams,
+        closed_mi=np.array([ising_mutual_information(float(lam)) for lam in lams]),
+        empirical_mi=np.array([empirical_mutual_information(float(lam)) for lam in lams]),
+    )
+
+
+def _eq(name: str, actual: float, expected: float, *, tol: float, description: str) -> Invariant:
+    return Invariant(
+        name=name,
+        actual=actual,
+        expected=expected,
+        tol=tol,
+        kind="equal",
+        description=description,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Per-family invariant builders
 # ---------------------------------------------------------------------------
@@ -81,15 +116,15 @@ def ising_invariants(grid: SweepGrid, agreement_tol: float = 1e-9) -> list[Invar
     """
     lams = grid.values()
     q0 = ising_joint_posterior(0.0)
+    sweep = evaluate_sweep(grid)
     out: list[Invariant] = []
 
     out.append(
-        Invariant(
-            name="ising_tc_at_zero",
-            actual=float(total_correlation(q0)),
-            expected=0.0,
+        _eq(
+            "ising_tc_at_zero",
+            float(total_correlation(q0)),
+            0.0,
             tol=1e-12,
-            kind="equal",
             description="Total correlation of the λ=0 Ising joint must be exactly 0",
         )
     )
@@ -104,16 +139,14 @@ def ising_invariants(grid: SweepGrid, agreement_tol: float = 1e-9) -> list[Invar
         )
     )
 
-    closed = np.array([ising_mutual_information(float(lam)) for lam in lams])
-    empirical = np.array([empirical_mutual_information(float(lam)) for lam in lams])
-    residual = float(np.max(np.abs(closed - empirical)))
+    closed = sweep.closed_mi
+    empirical = sweep.empirical_mi
     out.append(
-        Invariant(
-            name="ising_mi_agreement",
-            actual=residual,
-            expected=0.0,
+        _eq(
+            "ising_mi_agreement",
+            sweep.max_mi_residual,
+            0.0,
             tol=agreement_tol,
-            kind="equal",
             description=(
                 "Closed-form I(λ) = log 2 - H_b(σ(λ)) agrees with the empirical "
                 "total correlation of the lambda-entangled joint to floating tol"

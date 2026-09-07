@@ -172,7 +172,7 @@ _CURRENT_REFERENCE_SCAN_ROOTS: tuple[str, ...] = (
     "CONTRIBUTING.md",
     "docs",
     "lean",
-    "manuscript",
+    "docs/manuscript",
     "scripts",
     "src",
     "tests",
@@ -188,7 +188,7 @@ _REFERENCE_DRIFT_EXCLUDES: frozenset[str] = frozenset(
         "docs/CHANGELOG.md",
         "docs/reference/methods_audit.md",
         "docs/reference/veridical_status.md",
-        "manuscript/refs/README.md",
+        "docs/manuscript/refs/README.md",
     }
 )
 
@@ -328,7 +328,7 @@ def mathlibproofs_claim_issues(project_root: Path) -> list[str]:
 
     root = Path(project_root)
     paths = [
-        *(root / "manuscript").glob("*.md"),
+        *(root / "docs" / "manuscript").glob("*.md"),
         root / "README.md",
         root / "AGENTS.md",
         root / "lean" / "MathlibProofs" / "README.md",

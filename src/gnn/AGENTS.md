@@ -27,7 +27,7 @@ Parent: [`../AGENTS.md`](../AGENTS.md) · API: [`../../docs/reference/python_api
 
 - Stage entry: [`../../scripts/simulate_gnn.py`](../../scripts/simulate_gnn.py)
 - Sidecar: `output/data/gnn_bernoulli_roundtrip.json`
-- Manuscript: [`../../manuscript/S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md)
+- Manuscript: [`../../manuscript/S08_gnn_generalized_notation_extension.md`](../../docs/manuscript/S08_gnn_generalized_notation_extension.md)
 - Gates: `tests/test_gnn_round_trip.py`, `tests/test_gnn_concordance.py`
 
 ## Rules

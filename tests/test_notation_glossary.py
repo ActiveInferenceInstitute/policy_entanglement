@@ -2,12 +2,12 @@
 
 Asserts that every symbol-class actually used in the manuscript /
 LaTeX preamble / Python source / Lean source is documented in
-``manuscript/S06_notation_and_concordance.md`` exactly once.
+``docs/manuscript/S06_notation_and_concordance.md`` exactly once.
 
 Scope:
 
 * Every LaTeX `\\newcommand{\\X}{...}` macro defined in
-  `manuscript/preamble.md` is referenced by name in §S6.
+  `docs/manuscript/preamble.md` is referenced by name in §S6.
 * Every Python public identifier that the rest of the test suite
   cross-references (KL divergence, total correlation, entanglement
   posterior, etc.) is referenced in §2a's Python column.
@@ -25,8 +25,8 @@ from pathlib import Path
 import pytest
 
 PROJECT = Path(__file__).resolve().parent.parent
-GLOSSARY = PROJECT / "manuscript" / "S06_notation_and_concordance.md"
-PREAMBLE = PROJECT / "manuscript" / "preamble.md"
+GLOSSARY = PROJECT / "docs" / "manuscript" / "S06_notation_and_concordance.md"
+PREAMBLE = PROJECT / "docs" / "manuscript" / "preamble.md"
 LEAN_DIR = PROJECT / "lean" / "ActinfPolicyEntanglement"
 LEAN_FILES = sorted(LEAN_DIR.glob("*.lean"))
 
@@ -202,7 +202,7 @@ def test_glossary_contains_every_top_section(glossary_text: str) -> None:
 def test_glossary_contains_sign_conventions_section(glossary_text: str) -> None:
     """S06 must include a "Sign conventions" section.
 
-    Pins the round-1 addition (``manuscript/S06_notation_and_concordance.md``
+    Pins the round-1 addition (``docs/manuscript/S06_notation_and_concordance.md``
     grew an explicit "Sign conventions" subsection so prose phrases like
     "modulo a sign convention" trace to a single anchor point in the
     glossary).
@@ -236,7 +236,7 @@ def test_glossary_is_referenced_from_first_use_sections() -> None:
         "2C_lambda_deformation.md",
         "4C_pymdp_harness.md",
     ):
-        path = PROJECT / "manuscript" / fname
+        path = PROJECT / "docs" / "manuscript" / fname
         assert path.exists(), fname
         text = path.read_text()
         assert "[[SECREF:notation]]" in text, f"{fname} does not cross-reference the notation glossary"

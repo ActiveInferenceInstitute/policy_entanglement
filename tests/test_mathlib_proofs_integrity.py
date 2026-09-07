@@ -39,7 +39,7 @@ from pathlib import Path
 from lean.mathlib_proofs_gate import local_warning_issues
 
 PROJECT = Path(__file__).resolve().parent.parent
-MLP = PROJECT / "lean" / "MathlibProofs" / "MathlibProofs.lean"
+MLP = PROJECT / "lean" / "MathlibProofs"
 BUILD_SCRIPT = PROJECT / "scripts" / "build_mathlib_proofs.py"
 
 # Theorems whose genuine, axiom-clean proofs carry the manuscript's
@@ -67,7 +67,11 @@ _FORBIDDEN = ("sorry", "admit", "native_decide", "sorryAx")
 
 def _src() -> str:
     assert MLP.exists(), f"{MLP} missing — the ℝ analytic proof layer is gone."
-    return MLP.read_text(encoding="utf-8")
+    return "\n".join(
+        p.read_text(encoding="utf-8")
+        for p in sorted(MLP.rglob("*.lean"))
+        if ".lake" not in p.parts
+    )
 
 
 def _build_script_module():

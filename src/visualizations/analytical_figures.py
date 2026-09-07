@@ -85,11 +85,26 @@ from .spectral_plots import (
 _SRC_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = _SRC_DIR.parent
 
-deterministic_setup(seed=int(H.FIGURE_GLOBAL_SEED))
-
 #: Default figure output directory. Tests monkeypatch this attribute to redirect
 #: emission into ``tmp_path``; production runs persist into the project tree.
-OUTPUT_DIR = ensure_outdir(PROJECT_ROOT / "output" / "figures")
+OUTPUT_DIR = PROJECT_ROOT / "output" / "figures"
+
+FIGURE_EMITTERS = (
+    "figure_ising_mi_curve",
+    "figure_free_energy_curve",
+    "figure_coupling_tax_quadratic",
+    "figure_phase_diagram",
+    "figure_optimal_lambda",
+    "figure_schmidt_rank_vs_lambda",
+    "figure_phase_landscape",
+    "figure_schmidt_entropy_surface",
+    "figure_joint_heatmap_with_marginals",
+    "figure_archetype_dendrogram",
+    "figure_tensor_train_ranks",
+    "figure_log_weight_flow",
+    "figure_kl_geodesic_in_simplex",
+    "figure_lambda_star_locus",
+)
 
 #: Provenance label injected into every PNG's metadata block. Kept literal so
 #: downstream artifact audits can trace a figure to its conceptual origin even
@@ -511,25 +526,17 @@ def figure_coupling_graph() -> Path | None:
 
 def emit_all_figures() -> list[Path]:
     """Generate every analytical figure and return the emitted paths."""
-    figures: list[Path] = [
-        figure_ising_mi_curve(),
-        figure_free_energy_curve(),
-        figure_coupling_tax_quadratic(),
-        figure_phase_diagram(),
-        figure_optimal_lambda(),
-        figure_schmidt_rank_vs_lambda(),
-        figure_phase_landscape(),
-        figure_schmidt_entropy_surface(),
-        figure_joint_heatmap_with_marginals(),
-        figure_archetype_dendrogram(),
-        figure_tensor_train_ranks(),
-        figure_log_weight_flow(),
-        figure_kl_geodesic_in_simplex(),
-        figure_lambda_star_locus(),
-    ]
-    cg = figure_coupling_graph()
-    if cg is not None:
-        figures.append(cg)
+    from visualizations.setup import deterministic_setup
+
+    deterministic_setup(seed=int(H.FIGURE_GLOBAL_SEED))
+    ensure_outdir(OUTPUT_DIR)
+    figures: list[Path] = []
+    namespace = globals()
+    for name in FIGURE_EMITTERS:
+        figures.append(namespace[name]())
+    coupling_graph = figure_coupling_graph()
+    if coupling_graph is not None:
+        figures.append(coupling_graph)
     return figures
 
 

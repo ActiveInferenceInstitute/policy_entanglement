@@ -20,12 +20,12 @@ monorepo copy step when publishing via `scripts/publish_project_release.py`.
 
 ## Completed (2026-05-27)
 
-- [x] Flip canonical repository URL across `manuscript/config.yaml`, `CITATION.cff`,
+- [x] Flip canonical repository URL across `docs/manuscript/config.yaml`, `CITATION.cff`,
   README/AGENTS hubs, abstract, introduction, and `friedman-2026-actinf-policy-entanglement`
   bibliography entry.
 - [x] Mint production Zenodo concept DOI `10.5281/zenodo.20418904` (cite this; resolves to latest version).
 - [x] Update `src/manuscript/publication_metadata.py` canon constants and inverted-repo guard.
-- [x] Add `manuscript/00_abstract.md` → `0A_abstract.md` symlink for unified release workflow.
+- [x] Add `docs/manuscript/00_abstract.md` → `0A_abstract.md` symlink for unified release workflow.
 - [x] Remove stale “pending DOI / pending archive” prose from §6C.
 
 - [x] Public GitHub repo live at `ActiveInferenceInstitute/policy_entanglement` (org push access confirmed for `docxology`).

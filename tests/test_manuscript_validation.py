@@ -43,8 +43,8 @@ from manuscript.validation import (
 )
 
 PROJECT = Path(__file__).resolve().parent.parent
-REFS = PROJECT / "manuscript" / "refs"
-MANUSCRIPT = PROJECT / "manuscript"
+REFS = PROJECT / "docs" / "manuscript" / "refs"
+MANUSCRIPT = PROJECT / "docs" / "manuscript"
 FIGURE_UNCERTAINTY_CLASSES = {
     "deterministic_grid",
     "canonical_seed",
@@ -146,7 +146,7 @@ def test_validate_hyperlinks_skips_generated_output_paths() -> None:
     assert _is_generated_output_path("../output/figures/whatever.png")
     assert _is_generated_output_path("output/data/foo.csv")
     assert not _is_generated_output_path("../src/lean/joint_dist.py")
-    text = "[gen](../output/data/never_existed.csv) and [src](../src/lean/joint_dist.py)"
+    text = "[gen](../output/data/never_existed.csv) and [src](../../src/lean/joint_dist.py)"
     assert validate_hyperlinks(text, base=MANUSCRIPT) == []
 
 
@@ -388,7 +388,7 @@ def test_validation_report_is_clean_property() -> None:
 
 def test_collect_top_level_sections_reads_registry(tmp_path: Path) -> None:
     """`collect_top_level_sections` reads section numbers from the
-    registry under ``manuscript/refs/labels.yaml`` (Tier-2 contract:
+    registry under ``docs/manuscript/refs/labels.yaml`` (Tier-2 contract:
     section numbers are owned by the registry, not the filename).
     """
     from manuscript.validation import collect_top_level_sections
@@ -533,7 +533,7 @@ def test_validate_lean_wiring_resolves_every_registered_companion() -> None:
     """The live boundary fragment satisfies every registered Lean companion.
 
     This is the four-track coherence gate: every theorem in
-    `manuscript/refs/labels.yaml` whose `lean_module`/`lean_name` are
+    `docs/manuscript/refs/labels.yaml` whose `lean_module`/`lean_name` are
     populated must point at a real Lean declaration in
     `lean/ActinfPolicyEntanglement/`.
     """

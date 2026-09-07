@@ -14,7 +14,14 @@ is ambiguous when the suite is launched through template-hosted pytest.
 
 | Module | Purpose |
 |---|---|
-| [`run_all.py`](run_all.py) | Canonical pipeline runner driven by module-level `SCRIPTS`, with opt-in `PDF_SCRIPTS` / `MATHLIB_PROOF_SCRIPTS` extensions. Parallel producer batch governed by `PARALLEL_STAGE_STEMS`. `_write_manifest()` emits `output/MANIFEST.md` with stage timings + per-artifact SHA-256 (≤ 8 MB). `main()` accepts `project_root` and `scripts_dir`. |
+| [`stages.py`](stages.py) | Frozen `SCRIPTS` topology, flag resolution (`resolve_stages`) |
+| [`manifest.py`](manifest.py) | `StageSummary`, `write_manifest()` → `output/MANIFEST.md` |
+| [`executor.py`](executor.py) | `spawn`, serial/parallel batch runners, `execute_pipeline()` |
+| [`run_all.py`](run_all.py) | Thin `main()`; re-exports legacy `_spawn` / `_write_manifest` aliases |
+| [`build_pdf.py`](build_pdf.py) | PDF orchestration; calls manuscript inject APIs directly |
+| [`pdf_config.py`](pdf_config.py) | Typed `ManuscriptConfig` from YAML |
+| [`pdf_tex_patch.py`](pdf_tex_patch.py) | Hyperlink patching aligned with template rendering |
+| [`pdf_compile.py`](pdf_compile.py) | Pandoc / XeLaTeX / BibTeX helpers |
 
 ## Contract
 

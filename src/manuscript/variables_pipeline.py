@@ -11,6 +11,8 @@ from manuscript.registry_facts import registry_structural_facts
 
 def run_all_facts(project_root: Path) -> dict[str, int]:
     run_all_path = project_root / "scripts" / "run_all.py"
+    if not run_all_path.exists():
+        return {"run_all_script_count": 0}
     spec = importlib.util.spec_from_file_location("run_all", run_all_path)
     if spec is None or spec.loader is None:  # pragma: no cover - defensive
         return {"run_all_script_count": 0}

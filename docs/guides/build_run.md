@@ -85,7 +85,7 @@ uv run pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
 
 Expected output: live collection count from `output/reports/test_results.json`, ≥ 95 % coverage
 on `src/` across the four subpackages `lean/`,
-`simulation/`, `visualizations/`, `manuscript/`.  Round-3 added
+`simulation/`, `visualizations/`, `docs/manuscript/`.  Round-3 added
 35 tests on top of the round-2 baseline, including lock-down tests
 for the new `SpectralWitnesses.lean` and `ConnectionsWitnesses.lean`
 modules (asserted indirectly via
@@ -111,7 +111,7 @@ uv run python scripts/simulate_robustness.py         # robustness / ablation / r
 uv run python scripts/simulate_btai.py               # shipped BTAI baseline sidecar + figure
 uv run python scripts/simulate_adversarial.py        # shipped adversarial sweep sidecar + figure
 uv run python scripts/build_dashboard.py             # interactive multi-view dashboard + plaintext invariants (47 invariants) → output/web/, output/reports/
-uv run python scripts/generate_index.py              # auto-regenerate manuscript/INDEX.md from registry
+uv run python scripts/generate_index.py              # auto-regenerate docs/manuscript/INDEX.md from registry
 uv run python scripts/generate_theorem_map.py        # auto-regenerate per-theorem four-track wiring table
 uv run python scripts/inject_manuscript_variables.py # rendered MDs with token substitution → output/manuscript/
 uv run python scripts/validate_outputs.py            # PNG / JSON / CSV gate
@@ -145,13 +145,13 @@ report three different scopes:
 | Figure suite through `scripts/simulate_robustness.py` | **44** | Adds the robustness expansion: TC envelopes, half-saturation, decomposition residuals, coupling ablation, marginal-null control, interaction robustness, long-horizon replicate envelope, seed diagnostics, and threshold sensitivity. |
 | Full figure suite including `scripts/simulate_btai.py` and `scripts/simulate_adversarial.py` | **46** | Adds the shipped BTAI baseline panel and adversarial-perturbation panel. |
 | `scripts/simulate_gnn.py` | 1 diagnostic PNG | Writes `gnn_bernoulli_roundtrip.png`; validated as an output and discussed in S08, but not registered as a numbered manuscript figure. |
-| `manuscript/refs/labels.yaml::figures` (all registry entries) | **46** | Every paper-facing figure registered for cross-reference; auto-derived via `len(labels.figures)`. The GNN diagnostic PNG is validated separately, outside the numbered figure registry. |
+| `docs/manuscript/refs/labels.yaml::figures` (all registry entries) | **46** | Every paper-facing figure registered for cross-reference; auto-derived via `len(labels.figures)`. The GNN diagnostic PNG is validated separately, outside the numbered figure registry. |
 
 The 15 / 29 / 35 / 44 / 46 paper-facing counts, the extra GNN
 diagnostic PNG, and the 46 registry total should *not* be reconciled
 into one number — they document distinct delivery surfaces.  The
 authoritative paper-facing registry is
-[`manuscript/refs/labels.yaml::figures`](../../manuscript/refs/labels.yaml).
+[`docs/manuscript/refs/labels.yaml::figures`](../manuscript/refs/labels.yaml).
 
 Three of the scripts above are *utility* steps consumed inside
 `run_all.py`:
@@ -160,7 +160,7 @@ Three of the scripts above are *utility* steps consumed inside
 |---|---|---|
 | `dump_archetypes.py` | `output/data/ising_archetypes.csv` (17 λ values × Schmidt modes for the K=2 Ising toy) | Independent CSV artifact for downstream tools; called from `run_all.py` |
 | `parameter_sweep.py` | `output/data/parameter_sweep.csv` (configured `PARAMETER_SWEEP_LAMBDAS` rows × 13 columns: closed-form / empirical MI, free energy at three utility levels, joint / marginal entropy, Schmidt rank, entanglement entropy, phase tag) | Reproducibility artifact + sanity rail for Lean proofs; grid is sourced from `simulation.hyperparameters.PARAMETER_SWEEP_LAMBDAS` |
-| `generate_index.py` | `manuscript/INDEX.md` regenerated from the section registry | Keeps the ToC in sync with `manuscript/refs/labels.yaml` so a section rename only requires a registry edit |
+| `generate_index.py` | `docs/manuscript/INDEX.md` regenerated from the section registry | Keeps the ToC in sync with `docs/manuscript/refs/labels.yaml` so a section rename only requires a registry edit |
 
 ## Project-local PDF and readiness gates
 
@@ -200,9 +200,9 @@ Stages (per the template's default `pipeline.yaml`):
 | 2 | Infra tests | Run the parent-template infra suite at `../../tests/infra_tests/` (relative to this project dir; **not** project-local — it lives at the parent-template root, not under `projects/actinf_policy_entanglement_lean/`) |
 | 3 | Project tests | Run this project's `tests/` (its no-mocks suite, under `projects/actinf_policy_entanglement_lean/tests/`) |
 | 4 | Run analysis | Execute `scripts/*.py` to produce figures + variables |
-| 5 | Render PDF | Concatenate `manuscript/*.md` + `preamble.md`, render to PDF |
+| 5 | Render PDF | Concatenate `docs/manuscript/*.md` + `preamble.md`, render to PDF |
 | 6 | Validate output | Check PDF / markdown integrity |
-| 7 | LLM review | Optional — disabled in `manuscript/config.yaml` |
+| 7 | LLM review | Optional — disabled in `docs/manuscript/config.yaml` |
 | 8 | LLM translations | Optional — disabled |
 | 9 | Copy outputs | Stage final deliverables under `output/<project>/` |
 

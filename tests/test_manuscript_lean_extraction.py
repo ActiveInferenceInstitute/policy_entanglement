@@ -12,8 +12,8 @@ from manuscript.registry import load_registry
 from manuscript.renderer import render_section
 
 PROJECT = Path(__file__).resolve().parent.parent
-REFS = PROJECT / "manuscript" / "refs"
-MANUSCRIPT = PROJECT / "manuscript"
+REFS = PROJECT / "docs" / "manuscript" / "refs"
+MANUSCRIPT = PROJECT / "docs" / "manuscript"
 LEAN_DIR = PROJECT / "lean" / "ActinfPolicyEntanglement"
 
 

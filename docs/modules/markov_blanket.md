@@ -3,7 +3,7 @@
 Boundary witness-form definition and theorem for the Markov-blanket
 separation diagnostic `sep(q) = 1 − I(q) / H(q)` on a finite
 support.  Manuscript anchor:
-[`../manuscript/5D_connections_multi_agent.md`](../../manuscript/5D_connections_multi_agent.md)
+[`../manuscript/5D_connections_multi_agent.md`](../manuscript/5D_connections_multi_agent.md)
 §19.3 (`connections.markov` — Proposition 19.3, *Markov-blanket
 separation as `1 − I/H`*).
 
@@ -83,7 +83,7 @@ in §7 (`information_geometry.md`), where `η = E_q[·]` denotes the
 established in their respective communities; the manuscript carefully
 disambiguates them, and the Lean module identifiers (`Iq`, `Hq`, `sep`)
 are deliberately chosen to avoid collision with the m-coordinate
-notation.  When reading [`S06_notation_and_concordance.md`](../../manuscript/S06_notation_and_concordance.md),
+notation.  When reading [`S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md),
 the policy-blanket leakage row corresponds to `Iq / Hq` here, not to
 the §7 `η` coordinate.
 
@@ -91,9 +91,9 @@ the §7 `η` coordinate.
 
 | Track | Resolves to |
 |---|---|
-| Manuscript section | [`§19.3 Markov blankets and Bayesian mechanics`](../../manuscript/5D_connections_multi_agent.md) (`connections.markov`). |
+| Manuscript section | [`§19.3 Markov blankets and Bayesian mechanics`](../manuscript/5D_connections_multi_agent.md) (`connections.markov`). |
 | Lean module | [`MarkovBlanket.lean`](../../lean/ActinfPolicyEntanglement/MarkovBlanket.lean) (1 structure, 1 theorem, zero `sorry`, zero `axiom`). |
-| Registry label | `prop_11_3` in [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml); current `status: witness`. |
+| Registry label | `prop_11_3` in [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml); current `status: witness`. |
 | Python sanity rail | [`src/lean/free_energy`](../../src/lean/free_energy.py) (`shannon_entropy`, `total_correlation`) — the separation ratio `1 − I/H` is computed directly from these primitives. |
 | Tests | [`tests/test_free_energy.py`](../../tests/test_free_energy.py) — exercises `shannon_entropy` / `total_correlation` against analytic ground truths; the separation ratio is a one-line composition. |
 
@@ -161,7 +161,7 @@ and the separation falls below `1.0`.
   witness-structure idiom (`BoundedQuadraticTax`,
   `SmallLambdaTolerance`) reused here as
   `MarkovBlanketSeparationWitness`.
-* Manuscript [`§5D Connections to multi-agent geometry`](../../manuscript/5D_connections_multi_agent.md)
+* Manuscript [`§5D Connections to multi-agent geometry`](../manuscript/5D_connections_multi_agent.md)
   and the policy-blanket leakage row of
-  [`S06 Notation and concordance`](../../manuscript/S06_notation_and_concordance.md)
+  [`S06 Notation and concordance`](../manuscript/S06_notation_and_concordance.md)
   — the prose context for this diagnostic.

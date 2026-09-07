@@ -23,7 +23,7 @@ No other structural regressions identified.
 | ID | Severity | Evidence | Proposed remedy | Disposition |
 |----|----------|----------|-----------------|-------------|
 | J1 | HIGH | `output_gates/pymdp_validators.py` — 807 lines, 13 validators | Split into sweep / long-horizon / revertibility / robustness modules; 41-line facade | **Applied** |
-| J2 | HIGH | `manuscript/validation.py` — 795 lines mixed scan + check + tree | Split into `validation_report`, `validation_patterns`, `validation_scan`, `validation_checks`; 210-line facade | **Applied** |
+| J2 | HIGH | `docs/manuscript/validation.py` — 795 lines mixed scan + check + tree | Split into `validation_report`, `validation_patterns`, `validation_scan`, `validation_checks`; 210-line facade | **Applied** |
 | J3 | MEDIUM | `scripts/simulate_revertibility.py` — 165 lines inline CSV/JSON/plot I/O | `simulation/revertibility_pipeline.py` + 48-line script wrapper | **Applied** |
 | J4 | MEDIUM | Six `test_coverage_*.py` at repo `tests/` root (~2.2k LOC meta-tests) | Move to `tests/coverage/`; `tests/coverage/README.md`; shared `output_gates_helpers.py` | **Applied** |
 | J5 | MEDIUM | `dashboard_types/dashboard.py` (776), `readiness.py` (708), `variables.py` (696) | Split dashboard into `types`/`paths`/`cli`/`payload`/`panels`; `readiness_emit.py`; `_JSON_SIDECAR_REGISTRY` | **Applied** (round-7 dashboard split; `hyperparameters.py` deferred item closed round-8) |
@@ -108,7 +108,7 @@ Updated API reference docs: `docs/reference/python_api_manuscript.md`, `docs/ref
 | Item | Change |
 |------|--------|
 | `hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py` | Domain split; `hyperparameters.py` facade unchanged import surface |
-| `manuscript/variable_ranges.py` | SSOT for `ANALYTICAL_VARIABLE_RANGES`; gates + CLI share ranges |
+| `docs/manuscript/variable_ranges.py` | SSOT for `ANALYTICAL_VARIABLE_RANGES`; gates + CLI share ranges |
 | `tests/coverage/test_{manuscript,orchestration,dashboard}_coverage.py` | Six meta-test modules merged into three |
 | `reporting/_interactive_dashboard_{compat,fallback}.py` | Infra-first HTML; local module ~340 LOC |
 

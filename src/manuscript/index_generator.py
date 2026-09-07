@@ -1,7 +1,7 @@
 """Auto-generated manuscript TOC (library implementation).
 
 Business logic for :doc:`scripts/generate_index.py </scripts/generate_index>`.
-Walks the manuscript/ directory, groups files by IMRAD Part (encoded in the
+Walks the docs/manuscript/ directory, groups files by IMRAD Part (encoded in the
 filename prefix `<digit><letter>_`), and emits a TOC table that pairs each
 file with its registry title (when registered) or the heading from the file
 itself (for Part divider files that intentionally have no registry entry).
@@ -61,7 +61,7 @@ def _file_title(file_path: Path) -> str:
 
 
 def build_index_text(*, manuscript_dir: Path) -> str:
-    """Build the full text of ``manuscript/INDEX.md``.
+    """Build the full text of ``docs/manuscript/INDEX.md``.
 
     Args:
         manuscript_dir: Path to the manuscript directory containing the
@@ -82,7 +82,7 @@ def build_index_text(*, manuscript_dir: Path) -> str:
     body.append(
         "Authoritative section ordering, **auto-generated** from "
         "[`refs/labels.yaml`](refs/labels.yaml) by "
-        "[`../scripts/generate_index.py`](../scripts/generate_index.py).  "
+        "[`../../scripts/generate_index.py`](../../scripts/generate_index.py).  "
         "Do not hand-edit — modify the registry instead."
     )
     body.append("")
@@ -166,7 +166,7 @@ def build_index_text(*, manuscript_dir: Path) -> str:
     body.append("")
     body.append(
         "The manuscript ↔ code contract is documented in "
-        "[`../docs/guides/styleguide.md`](../docs/guides/styleguide.md):"
+        "[`../guides/styleguide.md`](../guides/styleguide.md):"
     )
     body.append("")
     body.append("* every numeric value reaches the prose via `[[VAR:key]]` (no hardcoded numbers);")
@@ -181,7 +181,7 @@ def build_index_text(*, manuscript_dir: Path) -> str:
     body.append("* every `[@citekey]` resolves through [`refs/citations.yaml`](refs/citations.yaml);")
     body.append(
         "* simulation hyperparameters live in "
-        "[`../src/simulation/hyperparameters.py`](../src/simulation/hyperparameters.py) "
+        "[`../../src/simulation/hyperparameters.py`](../../src/simulation/hyperparameters.py) "
         "— never as a literal in a script or in prose."
     )
     body.append("")
@@ -190,7 +190,7 @@ def build_index_text(*, manuscript_dir: Path) -> str:
 
 
 def write_index(*, manuscript_dir: Path) -> Path:
-    """Write ``manuscript/INDEX.md`` and return its path."""
+    """Write ``docs/manuscript/INDEX.md`` and return its path."""
     text = build_index_text(manuscript_dir=manuscript_dir)
     out_path = manuscript_dir / "INDEX.md"
     out_path.write_text(text)

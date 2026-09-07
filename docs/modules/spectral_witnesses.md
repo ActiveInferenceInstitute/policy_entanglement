@@ -5,7 +5,7 @@ spectral / tensor-network claims that were historically outside the
 boundary fragment: **Proposition 8.2** (Schmidt rank upper-semicontinuous in
 `λ`) and **Theorem 8.3** (sparsity-rank tradeoff for tensor-train
 coupling).  Manuscript anchors:
-[`../manuscript/2G_spectral.md`](../../manuscript/2G_spectral.md)
+[`../manuscript/2G_spectral.md`](../manuscript/2G_spectral.md)
 §8.1 (`spectral.bipartite` — Proposition 8.2) and §8.3
 (`spectral.multistream_tt` — Theorem 8.3).
 
@@ -102,10 +102,10 @@ constructively without analytic content.
 
 | Track | Resolves to |
 |---|---|
-| Manuscript section (Prop 8.2) | [`§8.1 Bipartite Schmidt decomposition`](../../manuscript/2G_spectral.md) (`spectral.bipartite`). |
-| Manuscript section (Thm 8.3) | [`§8.3 Multi-stream tensor decomposition`](../../manuscript/2G_spectral.md) (`spectral.multistream_tt`). |
+| Manuscript section (Prop 8.2) | [`§8.1 Bipartite Schmidt decomposition`](../manuscript/2G_spectral.md) (`spectral.bipartite`). |
+| Manuscript section (Thm 8.3) | [`§8.3 Multi-stream tensor decomposition`](../manuscript/2G_spectral.md) (`spectral.multistream_tt`). |
 | Lean module | [`SpectralWitnesses.lean`](../../lean/ActinfPolicyEntanglement/SpectralWitnesses.lean) (2 structures, 3 theorems, zero `sorry`, zero `axiom`). |
-| Registry labels | `prop_7_2` (Prop 8.2) and `thm_7_3` (Thm 8.3) in [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
+| Registry labels | `prop_7_2` (Prop 8.2) and `thm_7_3` (Thm 8.3) in [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
 | Python sanity rail | [`src/lean/spectral`](../../src/lean/spectral.py) — `schmidt_rank(q, atol=1e-9)` and `tensor_train_ranks(q, atol=1e-9)` produce the numerical witnesses on K-stream Ising joints. |
 | Multi-K experiments | [`scripts/simulate_multi_k.py`](../../scripts/simulate_multi_k.py) sweeps the K-stream Ising ensemble at $K \in \{3, 4\}$ and writes `output/data/multi_k_summary.json` plus three figures (`multi_k_total_correlation`, `multi_k_aligned_mass`, `multi_k_tt_rank_profile`) that empirically envelope the boundary witnesses on the multi-stream sparsity grid. |
 | Tests | [`tests/test_spectral.py`](../../tests/test_spectral.py) and [`tests/test_witness_theorems.py`](../../tests/test_witness_theorems.py) — the latter exercises both witnesses against floating tolerance on the canonical Ising ensemble. |

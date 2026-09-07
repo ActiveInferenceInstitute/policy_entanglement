@@ -5,7 +5,7 @@ connection claims that were historically outside the boundary fragment:
 **Theorem 17.1** (hierarchical-AIF concentration analog) and
 **Proposition 17.2** (Sophisticated-inference embedding).  Manuscript
 anchor:
-[`../manuscript/5B_connections_aif.md`](../../manuscript/5B_connections_aif.md)
+[`../manuscript/5B_connections_aif.md`](../manuscript/5B_connections_aif.md)
 §17 (`connections.hierarchical` — Theorem 17.1, anchor `thm_11_1`;
 `connections.sophisticated` — Proposition 17.2, anchor `prop_11_2`).
 
@@ -101,10 +101,10 @@ embedded joint.
 
 | Track | Resolves to |
 |---|---|
-| Manuscript section (Thm 17.1) | [`§17.2 Hierarchical / Deep AIF`](../../manuscript/5B_connections_aif.md) (`connections.hierarchical`). |
-| Manuscript section (Prop 17.2) | [`§17.3 Sophisticated inference`](../../manuscript/5B_connections_aif.md) (`connections.sophisticated`). |
+| Manuscript section (Thm 17.1) | [`§17.2 Hierarchical / Deep AIF`](../manuscript/5B_connections_aif.md) (`connections.hierarchical`). |
+| Manuscript section (Prop 17.2) | [`§17.3 Sophisticated inference`](../manuscript/5B_connections_aif.md) (`connections.sophisticated`). |
 | Lean module | [`ConnectionsWitnesses.lean`](../../lean/ActinfPolicyEntanglement/ConnectionsWitnesses.lean) (2 structures, 3 theorems, zero `sorry`, zero `axiom`). |
-| Registry labels | `thm_11_1` (Thm 17.1) and `prop_11_2` (Prop 17.2) in [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
+| Registry labels | `thm_11_1` (Thm 17.1) and `prop_11_2` (Prop 17.2) in [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
 | Python sanity rail (Thm 17.1) | [`src/lean/decomposition`](../../src/lean/decomposition.py) (`free_energy_against_entangled_prior`) and the long-horizon experiment [`scripts/simulate_long_horizon.py`](../../scripts/simulate_long_horizon.py) — the configured rollout is an empirical sidecar for finite-horizon concentration behavior; it does not prove the hierarchical-AIF process-theory claim. |
 | Python sanity rail (Prop 17.2) | [`src/simulation/inference`](../../src/simulation/inference.py) — `coupled_policy_posterior` is the numerical coupled-policy posterior under λ-deformation; sophisticated-inference look-ahead is exercised by the per-stream EFE that pymdp computes inside `Agent.infer_policies`. |
 | Tests | [`tests/test_witness_theorems.py`](../../tests/test_witness_theorems.py) exercises both witnesses against floating tolerance on the canonical Ising ensemble; [`tests/test_long_horizon.py`](../../tests/test_long_horizon.py) pins the steady-state convergence numerics. |

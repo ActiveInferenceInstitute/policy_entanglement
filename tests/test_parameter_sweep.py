@@ -1,6 +1,6 @@
 """Tests for :mod:`simulation.parameter_sweep` (importable sweep writer).
 
-Referenced from ``manuscript/S08_gnn_generalized_notation_extension.md`` as the
+Referenced from ``docs/manuscript/S08_gnn_generalized_notation_extension.md`` as the
 validation gate for ``output/data/parameter_sweep.csv``.
 """
 

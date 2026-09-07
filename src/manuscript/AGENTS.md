@@ -1,18 +1,20 @@
 # AGENTS.md — `src/manuscript/`
 
-Supporting library for assembling and validating manuscript-facing artifacts from Python (token lists, bibliography hooks, markdown rendering helpers tied to workflow around [`../manuscript/`](../manuscript/) at project root — `config.yaml`, sections, `.bib`). This **Python** tree is tooling; narrative sources remain under the sibling `manuscript/` directory consumed by Layer-1 rendering.
+Supporting library for assembling and validating manuscript-facing artifacts from Python (token lists, bibliography hooks, markdown rendering helpers tied to workflow around [`../manuscript/`](../../docs/manuscript/) at project root — `config.yaml`, sections, `.bib`). This **Python** tree is tooling; narrative sources remain under the sibling `docs/manuscript/` directory consumed by Layer-1 rendering.
 
 ## Modules
 
 | File / package | Role |
 | --- | --- |
 | `tokens.py` | Regex definitions for every `[[FIG:...]]` / `[[EQ:...]]` / `[[VAR:...]]` / `[[SEC:...]]` / `[[THM:...]]` / `[[LEAN:...]]` / `[@cite]` token plus `iter_tokens()` for the validator. |
-| `registry.py` | Typed loaders for `manuscript/refs/{labels,citations}.yaml` (figures, equations, sections, theorems, citations); the `Registry` dataclass is the in-memory single source of truth. |
+| `registry.py` | Typed loaders for `docs/manuscript/refs/{labels,citations}.yaml` (figures, equations, sections, theorems, citations); the `Registry` dataclass is the in-memory single source of truth. |
 | `registry_facts.py` | Structural registry counts for `manuscript_variables.py` and output gates. |
 | `lean_extract.py` | Live extraction of Lean source snippets from `lean/ActinfPolicyEntanglement/<Module>.lean` so `[[LEAN:label]]` embeds the actual proof / declaration text at render time. |
 | `equation_numbering.py` | Single-pass auto-numbering: walks every section in source order, assigns each display equation `S.K`; `retag_display_math` injects / rewrites `\tag{S.K}` post-substitution. |
 | `bibliography.py` | `auto_bibliography(citations, topic)` — emits Markdown bullet list grouped by `topic:`; powers `[[CITELIST:topic]]`. |
 | `renderer.py` | The `render_section` / `render_all` entry points: resolve every token and run the equation auto-numbering pre-pass; called by [`scripts/inject_manuscript_variables.py`](../../scripts/inject_manuscript_variables.py). |
+| `renderer_headings.py` | Section anchor injection (`{#sec:LABEL}` on `#` / `##` headings). |
+| `renderer_anchors.py` | Theorem anchor planting, parent-chain file resolution, anchor deduplication. |
 | `index_generator.py` | Auto-generated TOC builder consumed by [`scripts/generate_index.py`](../../scripts/generate_index.py). |
 | `validation.py` | Tree orchestrator facade; delegates to `validation_{report,patterns,scan,checks}.py`. |
 | `validation_report.py` | `ManuscriptValidationReport` dataclass and provenance class constants. |
@@ -26,7 +28,7 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | `readiness.py` | Release-readiness orchestration; emitters in `readiness_emit.py`. |
 | `readiness_emit.py` | Markdown/JSON/index writers for reviewer release artifacts. |
 | `theorem_map.py` | Four-track theorem wiring table generator for [`scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). |
-| `audit_matrix.py` | Claim audit matrix rows for [`scripts/generate_audit_matrix.py`](../../scripts/generate_audit_matrix.py); cross-track rows from [`manuscript/refs/audit_tracks.yaml`](../../manuscript/refs/audit_tracks.yaml). |
+| `audit_matrix.py` | Claim audit matrix rows for [`scripts/generate_audit_matrix.py`](../../scripts/generate_audit_matrix.py); cross-track rows from [`docs/manuscript/refs/audit_tracks.yaml`](../../docs/manuscript/refs/audit_tracks.yaml). |
 | `float_real_interval.py` | Tier-N interval bracket witness for Float decomposition residuals (not a Lean proof). |
 | `publication_metadata.py` | DOI / repository URL drift gates for current-facing docs. |
 | `variables.py` | `build_manuscript_variables` / `write_manuscript_variables` / `build_float_real_residual` / `decomposition_certificate_grid` for [`scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py). |

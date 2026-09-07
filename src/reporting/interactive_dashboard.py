@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dashboard_types.dashboard import Control, Invariant, Panel
+from dashboard_types.types import Control, Invariant, Panel
 
 try:
     from infrastructure.reporting.interactive_dashboard import InteractiveDashboard

@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from orchestration import build_pdf as bp
+from orchestration import pdf_compile as pc
 from orchestration import run_all as ra
 from orchestration.build_pdf import COMBINED_STEM, render_combined_pdf
 from orchestration.run_all import StageSummary
@@ -31,7 +32,7 @@ def test_insert_preamble_into_tex_and_clean_artifacts(tmp_path: Path) -> None:
     tex.write_text("\\documentclass{article}\n\\begin{document}\n\\end{document}\n", encoding="utf-8")
     pre = tmp_path / "pre.tex"
     pre.write_text("% preamble\n\\usepackage{x}\n", encoding="utf-8")
-    bp._insert_preamble_into_tex(combined_tex=tex, preamble_tex=pre)
+    pc.insert_preamble_into_tex(combined_tex=tex, preamble_tex=pre)
     merged = tex.read_text(encoding="utf-8")
     assert "\\usepackage{x}" in merged
     assert merged.index("\\usepackage{x}") < merged.index("\\begin{document}")
@@ -53,7 +54,7 @@ def test_insert_preamble_into_tex_and_clean_artifacts(tmp_path: Path) -> None:
 
 def test_run_raises_on_failure(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="failed"):
-        bp._run(["false"], cwd=tmp_path)
+        pc.run_command(["false"], cwd=tmp_path)
 
 
 def test_insert_preamble_missing_marker_raises(tmp_path: Path) -> None:
@@ -62,7 +63,7 @@ def test_insert_preamble_missing_marker_raises(tmp_path: Path) -> None:
     pre = tmp_path / "pre.tex"
     pre.write_text("% p\n", encoding="utf-8")
     with pytest.raises(ValueError, match="begin{document}"):
-        bp._insert_preamble_into_tex(combined_tex=tex, preamble_tex=pre)
+        pc.insert_preamble_into_tex(combined_tex=tex, preamble_tex=pre)
 
 
 def test_run_bibtex_writes_log(tmp_path: Path) -> None:
@@ -72,12 +73,12 @@ def test_run_bibtex_writes_log(tmp_path: Path) -> None:
     pdf_dir.mkdir()
     (pdf_dir / f"{COMBINED_STEM}.aux").write_text("\\citation{}\n", encoding="utf-8")
     with pytest.raises(RuntimeError):
-        bp._run_bibtex(pdf_dir=pdf_dir)
+        pc.run_bibtex(pdf_dir=pdf_dir)
     assert (pdf_dir / "_bibtex_stdout.log").exists()
 
 
 def _seed_minimal_injected_manuscript(project_root: Path) -> None:
-    ms = project_root / "manuscript"
+    ms = project_root / "docs" / "manuscript"
     injected = project_root / "output" / "manuscript"
     for d in (ms, injected):
         d.mkdir(parents=True, exist_ok=True)
@@ -115,8 +116,8 @@ def test_render_combined_pdf_stubs_latex(tmp_path: Path, monkeypatch: pytest.Mon
         (path.parent / f"{COMBINED_STEM}.pdf").write_bytes(b"%PDF-1.4")
         return path
 
-    monkeypatch.setattr(bp, "_pandoc_to_tex", _fake_pandoc)
-    monkeypatch.setattr(bp, "_latex_to_pdf", _touch_pdf)
+    monkeypatch.setattr(bp, "pandoc_to_tex", _fake_pandoc)
+    monkeypatch.setattr(bp, "latex_to_pdf", _touch_pdf)
     out = render_combined_pdf(project_root=tmp_path)
     assert out.name.endswith("_combined.pdf")
     assert (tmp_path / "output" / "pdf" / f"{COMBINED_STEM}.md").exists()
@@ -171,8 +172,8 @@ def test_render_combined_pdf_copies_references_bib(tmp_path: Path, monkeypatch: 
         path.write_bytes(b"%PDF-1.4")
         return path
 
-    monkeypatch.setattr(bp, "_pandoc_to_tex", _fake_pandoc)
-    monkeypatch.setattr(bp, "_latex_to_pdf", _touch_pdf)
+    monkeypatch.setattr(bp, "pandoc_to_tex", _fake_pandoc)
+    monkeypatch.setattr(bp, "latex_to_pdf", _touch_pdf)
     render_combined_pdf(project_root=tmp_path)
     assert (tmp_path / "output" / "pdf" / "references.bib").exists()
 
@@ -188,9 +189,9 @@ def test_latex_to_pdf_with_stubbed_xelatex(tmp_path: Path, monkeypatch: pytest.M
     def _fake_run(cmd, *, cwd, stdout_path=None):
         (cwd / f"{COMBINED_STEM}.pdf").write_bytes(b"%PDF-1.4")
 
-    monkeypatch.setattr(bp, "_run", _fake_run)
-    monkeypatch.setattr(bp, "_run_bibtex", lambda **_: None)
-    produced = bp._latex_to_pdf(
+    monkeypatch.setattr(pc, "run_command", _fake_run)
+    monkeypatch.setattr(pc, "run_bibtex", lambda **_: None)
+    produced = bp.latex_to_pdf(
         combined_tex=combined_tex,
         pdf_dir=pdf_dir,
         pdf_path=pdf_path,

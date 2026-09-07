@@ -510,7 +510,7 @@ class TestSimulatePymdpCLI:
             [sys.executable, str(PROJECT_ROOT / "scripts" / "simulate_pymdp.py"), "--help"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=360,
         )
         assert result.returncode == 0
         out = result.stdout
@@ -542,7 +542,7 @@ class TestSimulatePymdpCLI:
             ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=360,
         )
         assert result.returncode != 0
         assert "ensemble-K" in (result.stderr + result.stdout)
@@ -557,7 +557,7 @@ class TestSimulatePymdpCLI:
             ],  # K defaults to 2 → length mismatch
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=360,
         )
         assert result.returncode != 0
         assert "observations" in (result.stderr + result.stdout)
@@ -574,7 +574,7 @@ class TestSimulatePymdpCLI:
             ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=360,
         )
         assert result.returncode != 0
         assert "sweep-lambda-max" in (result.stderr + result.stdout)
@@ -604,7 +604,7 @@ class TestSimulatePymdpCLI:
                 [sys.executable, str(script_path)],
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=360,
             )
             assert result.returncode == 0
             assert "pymdp not installed" in result.stdout

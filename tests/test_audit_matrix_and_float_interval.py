@@ -32,7 +32,7 @@ def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
     rows = build_audit_matrix_rows(project)
     assert len(rows) >= 28
     assert tuple(rows[0].keys()) == AUDIT_MATRIX_COLUMNS
-    labels = load_labels(project / "manuscript" / "refs" / "labels.yaml")
+    labels = load_labels(project / "docs" / "manuscript" / "refs" / "labels.yaml")
     for label in labels.theorems:
         assert any(row["claim_area"].startswith(f"{label} (") for row in rows)
     roadmap = next(row for row in rows if row["claim_area"].startswith("roadmap_float_real_residual"))
@@ -43,7 +43,7 @@ def test_audit_matrix_rows_cover_all_registry_theorems() -> None:
 
 def test_audit_matrix_no_silent_veridical_fallback() -> None:
     project = Path(__file__).resolve().parent.parent
-    labels = load_labels(project / "manuscript" / "refs" / "labels.yaml")
+    labels = load_labels(project / "docs" / "manuscript" / "refs" / "labels.yaml")
     missing: list[str] = []
     for label, entry in labels.theorems.items():
         if entry.tests.strip():
@@ -129,7 +129,7 @@ def test_generate_audit_matrix_script_check() -> None:
 def test_load_audit_track_rows_rejects_invalid_track(tmp_path: Path) -> None:
     from manuscript.audit_matrix import _load_audit_track_rows
 
-    tracks_dir = tmp_path / "manuscript" / "refs"
+    tracks_dir = tmp_path / "docs" / "manuscript" / "refs"
     tracks_dir.mkdir(parents=True)
     (tracks_dir / "audit_tracks.yaml").write_text("tracks:\n  - claim_area: only-one-column\n", encoding="utf-8")
     with pytest.raises(ValueError, match="missing columns"):

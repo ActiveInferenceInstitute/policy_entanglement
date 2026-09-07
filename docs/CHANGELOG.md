@@ -21,7 +21,7 @@ those counts moved between rounds.
   (first registered v1.0.0 archive).
 - `publication_metadata.py`, `CITATION.cff`, manuscript abstract/introduction,
   and hub AGENTS/README surfaces updated for cross-linked GitHub + Zenodo citation.
-- Added `manuscript/00_abstract.md` symlink → `0A_abstract.md` for template
+- Added `docs/manuscript/00_abstract.md` symlink → `0A_abstract.md` for template
   release-workflow compatibility.
 
 ---
@@ -40,7 +40,7 @@ PDF validation @ `86b9557`.
 
 ## Maintenance — 2026-05-26 (publication DOI, audit matrix, interval witness)
 
-- Wired Zenodo DOI `10.5281/zenodo.20301239` through `manuscript/config.yaml`,
+- Wired Zenodo DOI `10.5281/zenodo.20301239` through `docs/manuscript/config.yaml`,
   `CITATION.cff`, citation registry, and `src/manuscript/publication_metadata.py`
   (inverted pending-DOI gates for current-facing docs).
 - Added `src/manuscript/audit_matrix.py` +
@@ -62,7 +62,7 @@ PDF validation @ `86b9557`.
   (replaces tautological `decomposition_interval_contains_float`).
 - `publication_metadata.py`: `LEGACY_*` exports; `UNRESOLVED_*` demoted from
   `__all__` (aliases **removed** in post-v1 polish @ `86b9557`).
-- Audit matrix: `TheoremEntry` extended fields, `manuscript/refs/audit_tracks.yaml`,
+- Audit matrix: `TheoremEntry` extended fields, `docs/manuscript/refs/audit_tracks.yaml`,
   collapsed test-gate normalizer, drift test for silent veridical fallback.
 
 **Verification:** 1470 passed, 1 skipped, 95.02% `src/` coverage, regression 47/47,
@@ -72,20 +72,20 @@ PDF validation @ `86b9557`.
 
 ## Maintenance — 2026-05-25 (round-10 thermo-nuclear — variables/readiness/regression splits)
 
-**J9 — variables cluster.** Split `manuscript/variables.py` (651 LOC) into
+**J9 — variables cluster.** Split `docs/manuscript/variables.py` (651 LOC) into
 `variables_analytical.py`, `variables_pipeline.py`, and `variables_sidecars.py`
 with a thin facade preserving `build_manuscript_variables` import paths.
 Facade binding tests in `tests/test_manuscript_variables_builder.py`.
 
 **J10 — readiness audit.** Extracted pure audit helpers to
-`manuscript/readiness_audit.py`; `readiness.py` is orchestrator-only.
+`docs/manuscript/readiness_audit.py`; `readiness.py` is orchestrator-only.
 
 **J11 — regression gate.** Split baseline I/O (`regression_baseline.py`) and
 pytest snapshot runners (`regression_pytest.py`); `regression_gate.py` remains
 the thin `gate()` facade with test re-exports.
 
 **J12 — publication metadata oracle.** Moved publication canon checks from
-`tests/test_status_docs.py` into `manuscript/publication_metadata.py` and wired
+`tests/test_status_docs.py` into `docs/manuscript/publication_metadata.py` and wired
 `_report_status()` in `validation_cli.py` so wrong-org repository URLs fail
 the manuscript validator, not only pytest.
 
@@ -153,7 +153,7 @@ split into `hyperparameters_{grids,pymdp,robustness,experiments,sentinels}.py`
 with a backward-compatible facade preserving all import paths and
 `figure_hyperparameter_summary()`.
 
-**Variable range SSOT.** New `manuscript/variable_ranges.py` owns
+**Variable range SSOT.** New `docs/manuscript/variable_ranges.py` owns
 `ANALYTICAL_VARIABLE_RANGES`; `validation_cli.EXPECTED_RANGES` and
 `output_gates.constants.REQUIRED_VARIABLES` merge from the shared dict.
 Binding test in `tests/test_output_gates.py` prevents drift.
@@ -179,7 +179,7 @@ scripts/` clean again.
 
 ## Maintenance — 2026-05-25 (round-7 thermo-nuclear — validator decomposition + revertibility pipeline)
 
-**Manuscript / output-gate split.** `manuscript/validation.py` (795 lines)
+**Manuscript / output-gate split.** `docs/manuscript/validation.py` (795 lines)
 decomposed into `validation_report.py`, `validation_patterns.py`,
 `validation_scan.py`, and `validation_checks.py` with a backward-compatible
 facade. `output_gates/pymdp_validators.py` (807 lines) split into
@@ -213,10 +213,10 @@ documents meta-test ownership.
 ---
 
 **Library split.** Business logic moved from monolithic scripts into
-`src/`: `manuscript/output_gates/` (validators package),
+`src/`: `docs/manuscript/output_gates/` (validators package),
 `gates/regression_gate.py`, `orchestration/run_all.py`,
 `orchestration/build_pdf.py`, `lean/build_gate.py`,
-`manuscript/validation_cli.py`, `manuscript/index_generator.py`.
+`docs/manuscript/validation_cli.py`, `docs/manuscript/index_generator.py`.
 Thin `scripts/*.py` wrappers bootstrap paths and delegate.
 
 **Coverage recovery.** Tests now import library modules directly (not
@@ -423,7 +423,7 @@ Executed remediation (now structurally enforced, not prose-only):
    `validate_lean_wiring` four-track gate enforces registry↔Lean
    consistency.
 2. **Added a machine-checked `faithfulness:` field** to every
-   `status: proved` row in `manuscript/refs/labels.yaml`
+   `status: proved` row in `docs/manuscript/refs/labels.yaml`
    (only `substantive` ×2 = `cor_4_2`,`cor_4_3`; `statement-restricted`
    ×3 = `prop_6_1`,`prop_6_2`,`prop_7_1`; `prop_7_1` was first
    mis-softened to `definitional` and RedTeam-corrected to
@@ -435,7 +435,7 @@ Executed remediation (now structurally enforced, not prose-only):
    `tests/test_h1_headline_invariant.py` pins the specific rows so a
    future relabel cannot re-inflate the count.
 3. **Rewrote every reader-facing headline** (0A, 1A, 1B, 3A, 6C,
-   `manuscript/AGENTS.md`) to state the faithful split plainly via
+   `docs/manuscript/AGENTS.md`) to state the faithful split plainly via
    those derived tokens — not an appended hedge — and corrected the
    `2F` body claim that the Lean "discharges the closure-under-log-
    mixtures identity" and the `3B` table row that defined `proved` as

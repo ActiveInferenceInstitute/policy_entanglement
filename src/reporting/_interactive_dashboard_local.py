@@ -14,7 +14,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, cast
 
-from dashboard_types.dashboard import Control, Invariant, Panel
+from dashboard_types.types import Control, Invariant, Panel
 from reporting._interactive_dashboard_compat import (
     PLOTLY_CDN,
     USE_INFRA_HTML,

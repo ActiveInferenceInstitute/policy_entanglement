@@ -3,7 +3,7 @@
 Per-module concept index. Each Markdown file here pairs **one Lean module** under
 [`../../lean/ActinfPolicyEntanglement/`](../../lean/ActinfPolicyEntanglement/) with its
 **Python mirror** under [`../../src/lean/`](../../src/lean/) and its **manuscript anchor**
-under [`../../manuscript/`](../../manuscript/).
+under [`../../manuscript/`](../manuscript/).
 
 ## Index
 
@@ -37,7 +37,7 @@ under [`../../manuscript/`](../../manuscript/).
    `tests/test_<module>.py`.
 4. **Manuscript anchor.** Link to the manuscript section that **states**
    the theorem (not the supplement; the supplement carries the proof).
-5. **Stay synchronized with `manuscript/refs/labels.yaml`.** When a theorem
+5. **Stay synchronized with `docs/manuscript/refs/labels.yaml`.** When a theorem
    moves between modules, update both the registry and this page.
 
 ## Current ground truth

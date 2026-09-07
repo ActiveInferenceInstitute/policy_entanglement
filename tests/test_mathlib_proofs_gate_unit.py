@@ -14,7 +14,7 @@ PROJECT = Path(__file__).resolve().parent.parent
 
 
 def test_declared_keystones_reads_live_source() -> None:
-    src = PROJECT / "lean" / "MathlibProofs" / "MathlibProofs.lean"
+    src = PROJECT / "lean" / "MathlibProofs"
     names = mpg.declared_keystones(src)
     assert "entanglement_decomposition_generalK" in names
 

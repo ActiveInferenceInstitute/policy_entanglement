@@ -215,6 +215,12 @@ class DecompositionSweepPoint:
     lhs: float
     rhs_total: float
 
+@dataclass(frozen=True)
+class SweepEvaluation:
+    """Precomputed sweep series shared by invariant families."""
+    grid: SweepGrid
+    lambdas: ArrayF
+
 def decomposition_sweep_points(grid: SweepGrid) -> list[DecompositionSweepPoint]
 
 def ising_invariants(grid: SweepGrid, agreement_tol: float = 1e-9) -> list[Invariant]
@@ -234,6 +240,7 @@ def decomposition_invariants_from_points(
 ) -> list[Invariant]
 def coupling_pays_invariants(grid: SweepGrid,
                              lam_threshold: float = 0.1) -> list[Invariant]
+def evaluate_sweep(grid: SweepGrid) -> SweepEvaluation
 def affine_log_weight_invariants(
     lam_grid: tuple[float, ...] = (0.0, 0.5, 1.0, 2.0, 4.0),
 ) -> list[Invariant]

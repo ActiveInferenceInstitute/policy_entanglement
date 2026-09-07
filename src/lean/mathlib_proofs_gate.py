@@ -27,10 +27,24 @@ KEYSTONE_THEOREMS = (
 FORBIDDEN_LOCAL_TOKENS = ("sorry", "admit ", "axiom ", "unsafe ", "partial ")
 
 
+def _package_source(mathlib_src: Path) -> str:
+    """Source text of the MathlibProofs slice: a single file or the whole
+    module tree (keystone theorems live in per-topic submodule files)."""
+    if mathlib_src.is_dir():
+        return "\n".join(
+            p.read_text(encoding="utf-8")
+            for p in sorted(mathlib_src.rglob("*.lean"))
+            if ".lake" not in p.parts
+        )
+    if mathlib_src.exists():
+        return mathlib_src.read_text(encoding="utf-8")
+    return ""
+
+
 def declared_keystones(mathlib_src: Path) -> list[str]:
-    if not mathlib_src.exists():
+    src = _package_source(mathlib_src)
+    if not src:
         return []
-    src = mathlib_src.read_text(encoding="utf-8")
     return [name for name in KEYSTONE_THEOREMS if re.search(rf"\btheorem\s+{re.escape(name)}\b", src)]
 
 
@@ -127,7 +141,7 @@ def _hydrate_mathlib_cache(mathlib_dir: Path) -> None:
 
 def run_mathlib_proofs_gate(project_root: Path) -> int:
     mathlib_dir = project_root / "lean" / "MathlibProofs"
-    mathlib_src = mathlib_dir / "MathlibProofs.lean"
+    mathlib_src = mathlib_dir
     lakefile = mathlib_dir / "lakefile.lean"
     if not lakefile.exists():
         print("MathlibProofs has no Lake scaffold yet; nothing to build.")

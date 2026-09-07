@@ -57,7 +57,7 @@ lean/
 
 Every numbered manuscript theorem has a live Lean companion in one of
 four status categories (see
-[`../manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml) for
+[`../manuscript/refs/labels.yaml`](../docs/manuscript/refs/labels.yaml) for
 the per-theorem mapping; no `deferred` or `sketch` rows remain):
 
 | Status | Count | Meaning |
@@ -103,7 +103,7 @@ for the Mathlib-enrichment plan.
 ## Cross-references
 
 * Numerical companion: [`../src/`](../src/)
-* Manuscript sections: [`../manuscript/`](../manuscript/)
+* Manuscript sections: [`../manuscript/`](../docs/manuscript/)
 * Architecture / math reference: [`../docs/`](../docs/)
 * Agent workflow: [`AGENTS.md`](AGENTS.md)
 * Lean code style (header / naming / witness-form idiom / layering): [`STYLE.md`](STYLE.md)

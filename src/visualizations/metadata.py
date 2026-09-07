@@ -284,6 +284,24 @@ def figure_metadata(
     return md
 
 
+def pipeline_figure_metadata(
+    *,
+    project_root: Path,
+    source_script: str,
+    source_function: str,
+    hyperparameters: Mapping[str, object],
+    **extra: object,
+) -> dict[str, str]:
+    """Build figure metadata for simulation pipeline emitters."""
+    return figure_metadata(
+        source_script=source_script,
+        source_function=source_function,
+        hyperparameters=dict(hyperparameters),
+        extra=dict(extra) if extra else None,
+        project_root=project_root,
+    )
+
+
 def _infer_uncertainty_semantics(*, source_script: str, source_function: str) -> str:
     """Infer a conservative uncertainty class for generated figures.
 

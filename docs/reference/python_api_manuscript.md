@@ -1,4 +1,4 @@
-# Python API: subpackage `manuscript/`
+# Python API: subpackage `docs/manuscript/`
 
 *Latest generated audit.*
 
@@ -37,7 +37,7 @@ than a one-dimensional gap proxy.
 
 ---
 
-## Subpackage `manuscript/`
+## Subpackage `docs/manuscript/`
 
 Auto-injection + validation toolkit consumed by
 [`scripts/inject_manuscript_variables.py`](../../scripts/inject_manuscript_variables.py)
@@ -285,7 +285,7 @@ replaced with a `[[VAR:<key>]]` token sourced from
 see [`../guides/styleguide/manuscript-variables.md`](../guides/styleguide/manuscript-variables.md).
 
 `validate_lean_wiring` is the **four-track coherence CI gate**: for
-every theorem in `manuscript/refs/labels.yaml::theorems` whose
+every theorem in `docs/manuscript/refs/labels.yaml::theorems` whose
 `lean_module` / `lean_name` fields are populated, it confirms that
 the qualified name actually resolves to a declaration in the live
 boundary fragment under `lean/ActinfPolicyEntanglement/`. A renamed
@@ -745,4 +745,16 @@ def stale_literal_issues(text: str, rel: str, patterns: dict[str, str]) -> list[
 def live_status_line_issues(rel: str, line_no: int, line: str, live: LiveStatus) -> list[str]
 ```
 
+### `publication_metadata.py`
+
+Canonical Zenodo concept/version DOI state consumed by the DOI-drift
+gates; values are updated deliberately on release (see
+`docs/guides/zenodo-doi-strategy.md`).
+
+```python
+CANONICAL_VERSION_DOI = "10.5281/zenodo.20419637"
+CANONICAL_VERSION_RECORD = "https://zenodo.org/records/20419637"
+```
+
+---
 ---

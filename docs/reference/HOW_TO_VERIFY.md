@@ -18,7 +18,7 @@ lake build
 Expected: 22 jobs, exit 0, zero `sorry`/`axiom`/`unsafe`/`partial`/
 `noncomputable` declarations.  Each manuscript theorem with a Lean
 companion has its source extracted live into
-[`manuscript/S05_lean_code_skeleton.md`](../../manuscript/S05_lean_code_skeleton.md)
+[`docs/manuscript/S05_lean_code_skeleton.md`](../manuscript/S05_lean_code_skeleton.md)
 via the `[[LEAN:...]]` token system; the manuscript renderer's
 `scripts/validate_manuscript.py` fails the build on any unresolved
 token, so prose and Lean cannot drift silently.

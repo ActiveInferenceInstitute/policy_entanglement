@@ -10,6 +10,8 @@ import pytest
 
 from lean import mathlib_proofs_gate as mpg
 from orchestration import build_pdf as bp
+from orchestration import pdf_compile as pc
+from orchestration.pdf_config import ManuscriptConfig
 
 
 def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, script: str) -> None:
@@ -29,8 +31,8 @@ def test_pandoc_to_tex_assembles_command(tmp_path: Path, monkeypatch: pytest.Mon
     combined_tex = pdf_dir / f"{bp.COMBINED_STEM}.tex"
     preamble_tex = pdf_dir / "_preamble.tex"
     preamble_tex.write_text("\\usepackage{x}\n\\begin{document}\n", encoding="utf-8")
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "config.yaml").write_text("paper:\n  title: Demo\n", encoding="utf-8")
 
     def _fake_run(cmd, *, cwd, stdout_path=None):
@@ -39,13 +41,13 @@ def test_pandoc_to_tex_assembles_command(tmp_path: Path, monkeypatch: pytest.Mon
             encoding="utf-8",
         )
 
-    monkeypatch.setattr(bp, "_run", _fake_run)
-    bp._pandoc_to_tex(
+    monkeypatch.setattr(pc, "run_command", _fake_run)
+    pc.pandoc_to_tex(
         combined_md=combined_md,
         combined_tex=combined_tex,
         pdf_dir=pdf_dir,
         preamble_tex=preamble_tex,
-        source_manuscript=ms,
+        config=ManuscriptConfig.load(ms),
         project_root=tmp_path,
     )
     assert "\\usepackage{x}" in combined_tex.read_text(encoding="utf-8")

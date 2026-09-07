@@ -73,7 +73,7 @@ class CrossReference:
 # Adding a new function:
 #   1. Add a ``CrossReference`` entry below, keyed by ``module.function``.
 #   2. Ensure the ``theorem`` / ``equation`` / ``section`` tokens exist
-#      in ``manuscript/refs/labels.yaml``.
+#      in ``docs/manuscript/refs/labels.yaml``.
 #   3. Ensure ``lean_declaration`` and ``mathlib_proof`` resolve to
 #      actual Lean declarations (test_lean_statement_faithfulness.py
 #      pins these on every CI run).

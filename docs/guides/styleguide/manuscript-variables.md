@@ -13,12 +13,12 @@ step:
 | --- | --- | --- |
 | `[[VAR:key]]` | a numeric value, numeric list, or explicitly allowlisted categorical descriptor | `output/data/manuscript_variables.json` |
 | `[[VAR:key:fmt]]` | the same value formatted with Python `format(value, fmt)` | as above |
-| `[[FIG:label]]` / `[[FIGREF:label]]` | image directive / inline cross-ref | `manuscript/refs/labels.yaml` → `figures` |
-| `[[EQ:label]]` / `[[EQREF:label]]` | display equation / inline cross-ref | `manuscript/refs/labels.yaml` → `equations` |
-| `[[SEC:label]]` / `[[SECREF:label]]` | full section heading / inline `§N` | `manuscript/refs/labels.yaml` → `sections` |
-| `[[THM:label]]` / `[[THMREF:label]]` | bold theorem block / inline ref | `manuscript/refs/labels.yaml` → `theorems` |
+| `[[FIG:label]]` / `[[FIGREF:label]]` | image directive / inline cross-ref | `docs/manuscript/refs/labels.yaml` → `figures` |
+| `[[EQ:label]]` / `[[EQREF:label]]` | display equation / inline cross-ref | `docs/manuscript/refs/labels.yaml` → `equations` |
+| `[[SEC:label]]` / `[[SECREF:label]]` | full section heading / inline `§N` | `docs/manuscript/refs/labels.yaml` → `sections` |
+| `[[THM:label]]` / `[[THMREF:label]]` | bold theorem block / inline ref | `docs/manuscript/refs/labels.yaml` → `theorems` |
 | `[[LEAN:label]]` | fenced Lean source extracted from `lean/ActinfPolicyEntanglement/<module>.lean` | live source |
-| `[@key]` / `[@k1; @k2]` | `(Author year)` inline citation | `manuscript/refs/citations.yaml` |
+| `[@key]` / `[@k1; @k2]` | `(Author year)` inline citation | `docs/manuscript/refs/citations.yaml` |
 | `[[CITELIST:topic]]` | topic-grouped bibliography section | as above |
 
 ## The numeric-value contract
@@ -68,7 +68,7 @@ calls
 [`manuscript.validation.find_hardcoded_numeric_literals`](../../reference/python_api.md#validationpy)
 on every manuscript section and
 `find_hardcoded_rendered_source_literals` on headings plus the
-rendered fields in `manuscript/refs/labels.yaml`.  The numeric gate
+rendered fields in `docs/manuscript/refs/labels.yaml`.  The numeric gate
 flags these pattern families:
 
 | Pattern | Example caught | Replacement |
@@ -86,7 +86,7 @@ bodies, and the bold theorem-block paragraph
 **Bypass**: there is no opt-out.  If a numeric literal is genuinely
 fixed by mathematical convention (e.g. `K = 2` for the Bernoulli
 toy, `\log 2` saturation), it must either (a) be a defined symbol
-in [`S06_notation_and_concordance.md`](../../../manuscript/S06_notation_and_concordance.md)
+in [`S06_notation_and_concordance.md`](../../manuscript/S06_notation_and_concordance.md)
 or (b) live inside an inline code span / display-math block
 where the validator already does not flag it.  Otherwise extend
 `hyperparameters.py` and `manuscript_variables.py` so the value
@@ -115,7 +115,7 @@ by the round-2 tests:
 | `run_all_script_count` | `len(scripts.run_all.SCRIPTS)` | `_run_all_facts()` imports the live `SCRIPTS` tuple from `scripts/run_all.py` | hand-maintained script-count prose |
 | `lean_structure_count` | count of `structure` declarations across the 17 Lean submodules (current value: **11**, including `FloatRealResidualWitness`) | `_lean_facts()` scans comment-stripped Lean source; legacy key `lean_inductive_count` removed | the old `lean_inductive_count` name |
 | `lean_total_declarations` | `lean_def_count + lean_theorem_count + lean_structure_count` | derived live from the three constituent counts in `_lean_facts()` (current value: **126** = 39 + 76 + 11) | hardcoded total of 84 / 90 / 103 |
-| `theorem_status_*_count` | theorem-status counts from `manuscript/refs/labels.yaml` | `_registry_facts()` derives the 21-row theorem roll-up (5 proved, 11 witness, 3 boundary, 1 forwarder, 1 roadmap) | typed status summaries in prose |
+| `theorem_status_*_count` | theorem-status counts from `docs/manuscript/refs/labels.yaml` | `_registry_facts()` derives the 21-row theorem roll-up (5 proved, 11 witness, 3 boundary, 1 forwarder, 1 roadmap) | typed status summaries in prose |
 | `manuscript_section_file_count` | source/rendered section-file count used by the manuscript build | `_registry_facts()` counts the canonical manuscript section files; read `output/data/manuscript_variables.json` for the live value instead of hand-maintaining it here | stale "56 sections" prose |
 
 Every prose mention of these counts must use `[[VAR:…]]`; the

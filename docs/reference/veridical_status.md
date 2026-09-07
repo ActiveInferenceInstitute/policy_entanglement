@@ -52,7 +52,7 @@ do not all carry the same mathematical weight**. The honest split:
 
 > **Statement-faithfulness note (registry `status: proved` ≠ "proves the
 > named manuscript proposition").** `status: proved` in
-> `manuscript/refs/labels.yaml` means *machine-checked in stock Lean
+> `docs/manuscript/refs/labels.yaml` means *machine-checked in stock Lean
 > without analytic witness assumptions* — it does **not** assert that the
 > Lean statement is the full manuscript proposition it is mapped to.
 > Of the 5 `proved` rows, only **2 are `substantive`** (`cor_4_2`,
@@ -95,7 +95,7 @@ do not all carry the same mathematical weight**. The honest split:
 > cross-reference docs updated atomically; the four-track wiring gate
 > `validate_lean_wiring` enforces registry↔Lean name consistency).
 > Every `status: proved` row now also carries a machine-checked
-> **`faithfulness:`** field in `manuscript/refs/labels.yaml`, one of
+> **`faithfulness:`** field in `docs/manuscript/refs/labels.yaml`, one of
 > `substantive` | `definitional` | `statement-restricted`:
 > `cor_4_2`, `cor_4_3` = `substantive`; `prop_6_1`, `prop_6_2`,
 > `prop_7_1` = `statement-restricted` (no row is `definitional` — the
@@ -379,9 +379,9 @@ strictly-positive simplex `M`.)
 | No authoritative inventory of pipeline outputs; orphan files in `output/` were silent. | Round-5 P2-2: `scripts/run_all.py` writes `output/MANIFEST.md` at the end of every run — per-stage timings + complete artifact table with sizes. | Verified on a 1-stage run; manifest path printed at end. |
 | Long-horizon convergence logic (`tail_window_kl`) was inline inside `long_horizon_rollout` and tested only at a short synthetic horizon; the configured `LONG_HORIZON_STEPS` numerical witness for habit accumulation was untested. | Round-5 P1-3: `tail_window_kl` extracted into a pure-numpy helper (no pymdp); new `tests/test_tail_window_kl.py` parameterizes convergence across multiple synthetic horizons. Round-trip regression test added to `tests/test_long_horizon.py` (pymdp branch). | All 11 new tests pass. |
 | Every static test used *symmetric* K=2 Ising ensembles; asymmetric `\|Π^k\|` was never exercised. | Round-5 P1-4: new `tests/test_heterogeneous_ensemble.py` exercises K=2 with `\|Π^0\| = 2`, `\|Π^1\| = 3` and the reverse `(3, 2)` shape; verifies joint shape, mean-field collapse at λ = 0, monotone TC growth, and determinism. | All 5 new tests pass. |
-| `manuscript/2D_decomposition.md` mentioned Theorem 5.1's "live Lean companion" in a single parenthetical; the `boundary` (not `proved`) status was easy to miss. | Round-5 P0-2: explicit honesty-note block-quote added immediately after the [[LEAN:thm_4_1]] inline directive, linking to this `veridical_status.md`'s substantive / typed-API split. | Manuscript diff. |
-| `manuscript/refs/citations.yaml` was missing the foundational works for *multi-information* (McGill 1954) and *information geometry* (Amari 1985), both of which appear prominently in §2D and §2F. | Round-5 P1-5: added `mcgill-1954` and `amari-1985` entries; cited in §2B's notation block (`I(p) = … (multi-information [@mcgill-1954])`) and §2F's opening sentence (`[@amari-1985; @amari-nagaoka-2000; @amari-2016]`). | Manuscript diff. |
-| `manuscript/S05_lean_code_skeleton.md` lines 173 / 177 mis-labeled "Proposition 8.1" / "Proposition 8.2" for Geometry-fragment theorems that are actually Propositions 7.1 / 7.2. | Round-5 P2-4 cosmetic: numbering corrected to 7.1 / 7.2. | Manuscript diff. |
+| `docs/manuscript/2D_decomposition.md` mentioned Theorem 5.1's "live Lean companion" in a single parenthetical; the `boundary` (not `proved`) status was easy to miss. | Round-5 P0-2: explicit honesty-note block-quote added immediately after the [[LEAN:thm_4_1]] inline directive, linking to this `veridical_status.md`'s substantive / typed-API split. | Manuscript diff. |
+| `docs/manuscript/refs/citations.yaml` was missing the foundational works for *multi-information* (McGill 1954) and *information geometry* (Amari 1985), both of which appear prominently in §2D and §2F. | Round-5 P1-5: added `mcgill-1954` and `amari-1985` entries; cited in §2B's notation block (`I(p) = … (multi-information [@mcgill-1954])`) and §2F's opening sentence (`[@amari-1985; @amari-nagaoka-2000; @amari-2016]`). | Manuscript diff. |
+| `docs/manuscript/S05_lean_code_skeleton.md` lines 173 / 177 mis-labeled "Proposition 8.1" / "Proposition 8.2" for Geometry-fragment theorems that are actually Propositions 7.1 / 7.2. | Round-5 P2-4 cosmetic: numbering corrected to 7.1 / 7.2. | Manuscript diff. |
 | Public predicates `is_planning_stream`, `is_reflexive_stream`, `is_purely_reflexive`, `is_purely_planning`, `is_heterogeneous` in `src/lean/heterogeneous.py` lacked docstrings. | Round-5 P2-5: full docstrings added (semantics, manuscript section references, runnable example). | Source diff. |
 | New `docs/CONCEPTS.md` page absent: newcomer reading-order jump from FAQ → 140-page combined PDF was a cliff. | Round-5 P2-4: added `docs/CONCEPTS.md` (three-minute, zero-jargon capsule on the K=2 binary toy + the three theorem families) and linked from `docs/READING_ORDER.md`. | Docs diff. |
 
@@ -396,7 +396,7 @@ strictly-positive simplex `M`.)
 | Phase-4 sketch in §3B used `− totalCorrelation q` while body of §2D used `+ I(q)`. | Sign aligned in §3B Phase-4 block (annotated as "rendered with the manuscript's plus-`I` convention"). | Manuscript diff. |
 | Stale test counts in README and docs. | Replaced volatile hand-maintained counts with live-report pointers; conditional-skip wording clarified. | `uv run pytest tests/ --cov=src --cov-fail-under=95` is summarized by `output/reports/test_results.json`. |
 
-Per-theorem boundary status (from `manuscript/refs/labels.yaml`):
+Per-theorem boundary status (from `docs/manuscript/refs/labels.yaml`):
 
 * `proved` — fully discharged within the boundary fragment.
 * `boundary` — type-checked statement; analytic content discharged
@@ -511,7 +511,7 @@ scripts/manuscript_variables.py              (analytical + pymdp computations)
                 ↓
 output/data/manuscript_variables.json        (mirrored values)
                 ↓
-[[VAR:key]] tokens in manuscript/*.md        (renderer substitutes)
+[[VAR:key]] tokens in docs/manuscript/*.md        (renderer substitutes)
                 ↓
 output/manuscript/*.md                       (rendered prose with values)
                 ↓
@@ -579,7 +579,7 @@ in order:
    `simulation.*` function.
 4. `src/simulation/hyperparameters.py` — confirm the sentinel-λ /
    grid the value was computed at hasn't changed.
-5. `manuscript/refs/labels.yaml` (`equations:` / `theorems:`) — if a
+5. `docs/manuscript/refs/labels.yaml` (`equations:` / `theorems:`) — if a
    cross-reference shifted, check the registry.
 6. `tests/test_manuscript_variables_pipeline.py` — adjust the
    range-gate parametrization if and only if the change is
@@ -592,7 +592,7 @@ slips in, an `axiom` is added):
 2. Replace the regression with a witness-form theorem (callee
    supplies the analytic witness; boundary fragment certifies the
    decomposition).
-3. Update `manuscript/refs/labels.yaml`'s `theorems:` block (status
+3. Update `docs/manuscript/refs/labels.yaml`'s `theorems:` block (status
    field) so the table in §1 above stays accurate.
 
 ---

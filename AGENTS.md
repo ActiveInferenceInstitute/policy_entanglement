@@ -2,7 +2,7 @@
 
 **Citation metadata:** DOI [`10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904) · source repository
 [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement)
-· cite via [`CITATION.cff`](CITATION.cff) and [`manuscript/config.yaml`](manuscript/config.yaml).
+· cite via [`CITATION.cff`](CITATION.cff) and [`docs/manuscript/config.yaml`](docs/manuscript/config.yaml).
 
 This is the agent / contributor onboarding guide for the
 **Policy Entanglement in Active Inference** project. Read
@@ -12,7 +12,7 @@ alongside the code:
 
 - [`docs/AGENTS.md`](docs/AGENTS.md) — documentation conventions
 - [`lean/AGENTS.md`](lean/AGENTS.md) — Lean 4 boundary fragment rules
-- [`manuscript/AGENTS.md`](manuscript/AGENTS.md) — prose + registry rules
+- [`docs/manuscript/AGENTS.md`](docs/manuscript/AGENTS.md) — prose + registry rules
 - [`scripts/AGENTS.md`](scripts/AGENTS.md) — thin-orchestrator pipeline
 - [`tests/AGENTS.md`](tests/AGENTS.md) — no-mocks test policy
 
@@ -51,14 +51,14 @@ for the witness-payload-discharge plan.
 | Lean submodules in [`lean/ActinfPolicyEntanglement/`](lean/ActinfPolicyEntanglement/) | Source-derived by `scripts/manuscript_variables.py`; see `output/data/manuscript_variables.json` |
 | Lake jobs green | Live summary from `scripts/build_lean.py` and `output/reports/release_readiness.json` |
 | Hygiene budget | Guarded by `scripts/build_lean.py`: zero `sorry`, zero `axiom`, zero `unsafe`/`partial`/`noncomputable`, zero boundary `Mathlib` imports |
-| Lean declarations and theorem-row counts | Source-derived from Lean files and `manuscript/refs/labels.yaml`; live roll-up in `output/data/manuscript_variables.json` and `docs/reference/_theorem_map.md` |
+| Lean declarations and theorem-row counts | Source-derived from Lean files and `docs/manuscript/refs/labels.yaml`; live roll-up in `output/data/manuscript_variables.json` and `docs/reference/_theorem_map.md` |
 | Pipeline scripts (`scripts/run_all.py`) | Canonical default list lives in `scripts/run_all.py`; release runs may add `--with-pdf` and `--with-mathlib` subgates |
 | Python tests | Live full-suite count and pass/skip split from `output/reports/test_results.json` |
 | Coverage on `src/` | ≥ 95 % gate; live percentage from `output/reports/test_results.json`; critical validator-module floors are enforced by `scripts/regression_gate.py` |
 | Lint / type-check | Run `uvx ruff check src/ scripts/ tests/` and `uv run mypy src/ scripts/`; both must be zero-error |
 | PNG figures (in `output/figures/`) | Live count from `output/reports/release_readiness.json` / `output/figures/` |
 | Rendered manuscript files (in `output/manuscript/`) | Live count from `output/reports/release_readiness.json` |
-| YAML citation and bibliography entries | Source-derived from `manuscript/refs/citations.yaml` by `scripts/manuscript_variables.py` and bibliography validation |
+| YAML citation and bibliography entries | Source-derived from `docs/manuscript/refs/citations.yaml` by `scripts/manuscript_variables.py` and bibliography validation |
 | Dashboard invariants | Live count from `output/reports/dashboard_invariants.txt` and the regression gate |
 | Combined PDF | Live page count and file size from `scripts/validate_pdf.py` / `pdfinfo` after `scripts/run_all.py --with-pdf` |
 
@@ -69,7 +69,7 @@ moved between rounds lives in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 [`docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv);
 regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matrix.py)
 (`--write` / `--check`); cross-track rows from
-[`manuscript/refs/audit_tracks.yaml`](manuscript/refs/audit_tracks.yaml).
+[`docs/manuscript/refs/audit_tracks.yaml`](docs/manuscript/refs/audit_tracks.yaml).
 
 ## Repository layout
 
@@ -88,7 +88,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
 │   │   ├── Convexity · MarkovBlanket · SpectralWitnesses · ConnectionsWitnesses
 │   │   └── MathlibRefinementRoadmap.md   ← witness-payload-discharge plan
 │   └── FepSketches/     ← fep_lean-compatible `FepSketches.*` re-exports
-├── manuscript/          ← Modular markdown sections + config + preamble + INDEX.md
+├── docs/manuscript/          ← Modular markdown sections + config + preamble + INDEX.md
 ├── docs/                ← Modular technical documentation
 │   ├── README.md · CHANGELOG.md · FAQ.md · READING_ORDER.md
 │   ├── guides/ · reference/ · modules/ · simulation/
@@ -97,7 +97,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
 │   ├── simulation/      ← pymdp 1.0.1 POMDP harness (specs, builders, agents, …)
 │   ├── gnn/             ← Fifth-track GNN round-trip (parse → bridge → sidecar)
 │   ├── visualizations/  ← Reusable plotting helpers
-│   ├── manuscript/      ← Registry, validators, renderer, lean-snippet extractor
+│   ├── docs/manuscript/      ← Registry, validators, renderer, lean-snippet extractor
 │   ├── reporting/       ← Dashboard HTML/JSON/plaintext emission
 │   ├── gates/           ← Parameterised pipeline gate logic (`regression_gate.py`)
 │   ├── orchestration/   ← End-to-end pipeline runner (`run_all.py`)
@@ -122,7 +122,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
    never use them as ordinary identifiers — use `Pol`, `q_lam`,
    `lam`, etc.
 4. **Every numeric value flows through `[[VAR:...]]`.** No hardcoded
-   `121-point grid`, `seed = 42`, `T = 10 steps` etc. in `manuscript/`
+   `121-point grid`, `seed = 42`, `T = 10 steps` etc. in `docs/manuscript/`
    prose, headings, figure captions, figure short labels, or rendered
    registry titles. All such values are owned by
    [`src/simulation/hyperparameters.py`](src/simulation/hyperparameters.py),
@@ -136,7 +136,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
    `Figure 7`, or `Eq. (3)` in paper-facing source fields.
    When code comments, tests, docs, or figure annotations mention a
    display number for reader orientation, check it against
-   `manuscript/refs/labels.yaml`; old display numbers belong only in
+   `docs/manuscript/refs/labels.yaml`; old display numbers belong only in
    explicitly historical revision notes.
    The validator
    [`scripts/validate_manuscript.py`](scripts/validate_manuscript.py)
@@ -204,9 +204,9 @@ revision history.)
   snapshot — current is 11 witness · 5 proved · 3 boundary · 1
   forwarder.)  Note `status: proved` ≠ "proved as named": per-row
   `faithfulness:` (only 2 substantive; 3 statement-restricted) lives in
-  `manuscript/refs/labels.yaml` and `docs/reference/veridical_status.md`.
+  `docs/manuscript/refs/labels.yaml` and `docs/reference/veridical_status.md`.
   The current live distribution is generated from
-  `manuscript/refs/labels.yaml` into
+  `docs/manuscript/refs/labels.yaml` into
   `output/data/manuscript_variables.json` and the theorem map.
 - **+6 PNGs**, **+1 dashboard invariant** (`revertibility_kl_equals_multiinformation`,
   bringing the total to 47), **+3 pipeline scripts**, **+35 round-3
@@ -233,7 +233,7 @@ at $\lambda = 0$ is exactly mean-field"*. The four-track contract
 shapes the work in a definite order:
 
 1. **Manuscript prose first.**  Add a paragraph (and a registry entry
-   in `manuscript/refs/labels.yaml::theorems`) under the appropriate
+   in `docs/manuscript/refs/labels.yaml::theorems`) under the appropriate
    section. Use `[[THMREF:my_label]]` for forward references.
 
 2. **Lean statement next.**  Add a `theorem` to the closest
@@ -285,9 +285,9 @@ analytical drift.
 | add a figure | `scripts/generate_figures.py` or `scripts/simulate_*.py` | `uv run python scripts/<script>.py` |
 | change a grid / seed / rollout horizon | [`src/simulation/hyperparameters.py`](src/simulation/hyperparameters.py) | full pipeline (JSON mirror + manuscript prose update automatically) |
 | add a manuscript variable | extend a `_*_facts` helper in [`scripts/manuscript_variables.py`](scripts/manuscript_variables.py) and reference it via `[[VAR:key]]` | `uv run python scripts/manuscript_variables.py && uv run python scripts/inject_manuscript_variables.py` |
-| change manuscript prose | a file under `manuscript/` (no hardcoded numbers — use `[[VAR:…]]`) | `uv run python scripts/inject_manuscript_variables.py && uv run python scripts/validate_manuscript.py` |
-| add a registered equation | extend `manuscript/refs/labels.yaml` under `equations:` and place via `[[EQ:label]]` | full pipeline (auto-numbering picks it up at render time) |
-| validate the release PDF | `manuscript/`, `output/manuscript/`, local Pandoc/XeLaTeX renderer | `uv run python scripts/build_pdf.py && uv run python scripts/validate_pdf.py` |
+| change manuscript prose | a file under `docs/manuscript/` (no hardcoded numbers — use `[[VAR:…]]`) | `uv run python scripts/inject_manuscript_variables.py && uv run python scripts/validate_manuscript.py` |
+| add a registered equation | extend `docs/manuscript/refs/labels.yaml` under `equations:` and place via `[[EQ:label]]` | full pipeline (auto-numbering picks it up at render time) |
+| validate the release PDF | `docs/manuscript/`, `output/manuscript/`, local Pandoc/XeLaTeX renderer | `uv run python scripts/build_pdf.py && uv run python scripts/validate_pdf.py` |
 | prepare MathlibProofs | `lean/MathlibProofs/` only | `uv run python scripts/build_mathlib_proofs.py` (do not cite as proved until real theorem source builds) |
 | add architecture / math / stats docs | a file under `docs/` | (none) |
 
@@ -347,7 +347,7 @@ uv run mypy src/ scripts/
 CI runs each gate independently; the project-wide hyperlink audit
 test (`tests/test_project_wide_hyperlinks.py`) additionally validates
 that every cross-link inside `AGENTS.md`, `README.md`, `docs/`,
-`manuscript/`, and `lean/` resolves to a real file.
+`docs/manuscript/`, and `lean/` resolves to a real file.
 
 ## Known limitations
 
@@ -361,7 +361,7 @@ that every cross-link inside `AGENTS.md`, `README.md`, `docs/`,
   and
   [`docs/reference/lean_reference.md`](docs/reference/lean_reference.md)
   for per-theorem witness signatures.
-- The canonical manuscript is the modular set under `manuscript/`;
+- The canonical manuscript is the modular set under `docs/manuscript/`;
   `scripts/generate_figures.py`, `scripts/simulate_*.py`, and
   `scripts/manuscript_variables.py` feed it numerical content from
   `src/` via `output/`.
@@ -375,7 +375,7 @@ that every cross-link inside `AGENTS.md`, `README.md`, `docs/`,
 - [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — per-round revision history
 - [`docs/FAQ.md`](docs/FAQ.md) — common questions
 - [`docs/READING_ORDER.md`](docs/READING_ORDER.md) — curated reading paths
-- [`manuscript/INDEX.md`](manuscript/INDEX.md) — manuscript section index
+- [`docs/manuscript/INDEX.md`](docs/manuscript/INDEX.md) — manuscript section index
 - [`lean/ActinfPolicyEntanglement/MathlibRefinementRoadmap.md`](lean/ActinfPolicyEntanglement/MathlibRefinementRoadmap.md)
   — witness-payload-discharge plan
 - [`scripts/run_all.py`](scripts/run_all.py) — canonical default pipeline plus optional release subgates

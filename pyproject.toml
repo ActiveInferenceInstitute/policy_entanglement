@@ -119,7 +119,7 @@ omit = ["tests/*", "*/__init__.py", "*/AGENTS.md"]
 # modules' bodies are unreachable, so an aspirational 95 can never be met
 # here and the pipeline gate (infrastructure/reporting/pipeline_test_runner.py
 # `_project_declared_coverage_floor`) fails the project against its own
-# unattainable target. The pure-Python manuscript/lean surface IS driven
+# unattainable target. The pure-Python docs/manuscript/lean surface IS driven
 # high with real no-mock tests; measured TOTAL coverage on src/ in the
 # reproducible gate environment is ≥95% on src/ (2026-05-24, 1332+ passed /
 # measured ≥95% TOTAL on src/ in the reproducible gate environment). 95 is the enforced floor in pyproject.toml and

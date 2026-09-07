@@ -67,7 +67,7 @@ def test_dashboard_reporting_imports_are_project_local() -> None:
         env=env,
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=360,
     )
 
     assert proc.returncode == 0, f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"

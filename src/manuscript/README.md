@@ -4,9 +4,9 @@ Python helpers for assembling and validating the manuscript: token
 regexes, registry loaders, equation auto-numbering, Lean-source
 extraction, citation/bibliography helpers, the rendering entry points,
 and the validator suite.  Author-facing markdown sources live one
-level up under [`../../manuscript/`](../../manuscript/); this Python
+level up under [`../../manuscript/`](../../docs/manuscript/); this Python
 tree is tooling.  Public symbols are re-exported from
-`manuscript/__init__.py`.
+`docs/manuscript/__init__.py`.
 
 See parent docs: [`../AGENTS.md`](../AGENTS.md), [`../README.md`](../README.md).
 Subpackage rules: [`AGENTS.md`](AGENTS.md).
@@ -16,7 +16,7 @@ Subpackage rules: [`AGENTS.md`](AGENTS.md).
 | Module | Role | Exports |
 |---|---|---|
 | [`tokens.py`](tokens.py) | Regex catalog + single-pass token iterator | `FIG_RE`, `FIGREF_RE`, `EQ_RE`, `EQREF_RE`, `VAR_RE`, `CITATION_RE`, `CITELIST_RE`, `SEC_RE`, `SECREF_RE`, `THM_RE`, `THMREF_RE`, `LEAN_RE`, `iter_tokens` |
-| [`registry.py`](registry.py) | Typed YAML loaders for `manuscript/refs/{labels,citations}.yaml` | `Figure`, `Equation`, `Citation`, `Section`, `TheoremEntry`, `LabelsRegistry`, `CitationRegistry`, `Registry`, `load_labels`, `load_citations`, `load_registry` |
+| [`registry.py`](registry.py) | Typed YAML loaders for `docs/manuscript/refs/{labels,citations}.yaml` | `Figure`, `Equation`, `Citation`, `Section`, `TheoremEntry`, `LabelsRegistry`, `CitationRegistry`, `Registry`, `load_labels`, `load_citations`, `load_registry` |
 | [`equation_numbering.py`](equation_numbering.py) | Single-pass `S.K` auto-numbering pre-pass + retagger | `file_to_section_number`, `precompute_equation_numbers`, `assign_within_section_numbers`, `retag_display_math`, `section_equation_count` |
 | [`lean_extract.py`](lean_extract.py) | Live extraction of theorems / declarations from `lean/ActinfPolicyEntanglement/<Module>.lean` | `LeanSnippet`, `load_lean_snippets`, `render_lean_snippet` |
 | [`bibliography.py`](bibliography.py) | `[[CITELIST:topic]]` resolver + BibTeX writer | `auto_bibliography`, `write_references_bib` |

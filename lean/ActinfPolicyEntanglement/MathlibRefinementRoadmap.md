@@ -91,7 +91,7 @@ the authoritative gate.
 
 ## Theorem-status budget
 
-From [`../../manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml):
+From [`../../manuscript/refs/labels.yaml`](../../docs/manuscript/refs/labels.yaml):
 
 | Status | Count | Meaning |
 |---|---:|---|
@@ -281,7 +281,7 @@ code do case analysis on stream mode without classical logic:
 ## Effort estimate
 
 See §12 of the manuscript
-([`../../manuscript/3B_lean_formalization.md`](../../manuscript/3B_lean_formalization.md))
+([`../../manuscript/3B_lean_formalization.md`](../../docs/manuscript/3B_lean_formalization.md))
 for the current scope and priority order (~6 months total for an experienced Lean
 contributor; KL bookkeeping discharge of `thm_4_1` is the
 *first-publishable-result* milestone at ~8–10 weeks).

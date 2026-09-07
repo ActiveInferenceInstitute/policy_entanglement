@@ -42,7 +42,7 @@ def section_paths(manuscript_dir: Path) -> list[Path]:
 
 def collect_section_subheadings(manuscript_dir: Path) -> dict[int, set[int]]:
     """Return `{N: {M, M', ...}}` of subsection numbers `§N.M` defined
-    in the registry under `manuscript/refs/labels.yaml`.
+    in the registry under `docs/manuscript/refs/labels.yaml`.
 
     Section numbering is owned by the registry (single source of truth);
     headings in the markdown are intentionally clean (`## Title`) so LaTeX
@@ -71,7 +71,7 @@ def collect_section_subheadings(manuscript_dir: Path) -> dict[int, set[int]]:
 
 def collect_top_level_sections(manuscript_dir: Path) -> set[int]:
     """Return `{N}` for top-level section number ``N`` registered in
-    ``manuscript/refs/labels.yaml``.
+    ``docs/manuscript/refs/labels.yaml``.
 
     Section numbering is owned by the registry, not the filename — file
     prefixes encode IMRAD-part membership (``1B_``, ``2D_``, …) but the

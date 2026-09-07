@@ -12,7 +12,9 @@ from simulation import hyperparameters as H
 
 
 def test_meta_files_constant_used_by_precompute_and_renderer() -> None:
-    expected = frozenset({"README.md", "AGENTS.md", "INDEX.md", "SYNTAX.md", "preamble.md"})
+    expected = frozenset(
+        {"README.md", "AGENTS.md", "INDEX.md", "SYNTAX.md", "preamble.md", "00_abstract.md"}
+    )
     assert expected == MANUSCRIPT_NON_BODY_MD
     assert "SYNTAX.md" in MANUSCRIPT_NON_BODY_MD
     assert renderer.__doc__ is not None

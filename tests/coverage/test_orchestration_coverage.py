@@ -22,6 +22,7 @@ from manuscript.validation import ManuscriptValidationReport
 from manuscript.validation_cli import _report_issues, _report_rendered_leaks, _report_status
 from manuscript.validation_cli import main as validation_cli_main
 from orchestration import build_pdf as bp
+from orchestration import pdf_compile as pc
 from orchestration import run_all as ra
 from orchestration.build_pdf import (
     _as_mapping,
@@ -79,9 +80,9 @@ PROJECT = Path(__file__).resolve().parent.parent.parent
 
 
 def _seed_labels_yaml(project_root: Path) -> None:
-    refs = project_root / "manuscript" / "refs"
+    refs = project_root / "docs" / "manuscript" / "refs"
     refs.mkdir(parents=True, exist_ok=True)
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
 
 
 def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -254,7 +255,7 @@ def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pyte
 
 
 def test_theorem_map_helpers_and_write() -> None:
-    refs = PROJECT / "manuscript" / "refs"
+    refs = PROJECT / "docs" / "manuscript" / "refs"
     registry = load_registry(refs)
     thm = registry.labels.theorems["thm_4_1"]
     assert "THMREF" in tm._theorem_token(thm)
@@ -278,13 +279,19 @@ def test_build_pdf_mirror_run_and_main_paths(tmp_path: Path, monkeypatch: pytest
     assert bp._load_config(tmp_path / "empty") == {}
 
     log = tmp_path / "run.log"
-    bp._run(["echo", "hi"], cwd=tmp_path, stdout_path=log)
+    pc.run_command(["echo", "hi"], cwd=tmp_path, stdout_path=log)
     assert "hi" in log.read_text(encoding="utf-8")
 
     scripts = tmp_path / "scripts"
     scripts.mkdir()
     for name in ("manuscript_variables.py", "inject_manuscript_variables.py"):
         (scripts / name).write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
+
+    ms = tmp_path / "docs" / "manuscript"
+    (ms / "refs").mkdir(parents=True)
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", ms / "refs" / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "citations.yaml", ms / "refs" / "citations.yaml")
+    (ms / "config.yaml").write_text("paper:\n  title: T\n", encoding="utf-8")
 
     pdf_path = tmp_path / "output" / "pdf" / "actinf_policy_entanglement_lean_combined.pdf"
 
@@ -355,11 +362,11 @@ def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.Mo
     counts = readiness_mod._status_counts([" R file", "?? x"])
     assert counts["other"] == 1
 
-    _seed = tmp_path / "manuscript" / "refs"
+    _seed = tmp_path / "docs" / "manuscript" / "refs"
     _seed.mkdir(parents=True)
     import shutil
 
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", _seed / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", _seed / "labels.yaml")
 
     fig = tmp_path / "output" / "figures" / "tiny.png"
     fig.parent.mkdir(parents=True)
@@ -399,7 +406,7 @@ def test_validation_cli_rendered_leaks_and_status(tmp_path: Path) -> None:
     (rendered / "01_a.md").write_text("Unresolved [[FIG:missing]] token\n", encoding="utf-8")
     assert _report_rendered_leaks(rendered, project_root=tmp_path) >= 1
 
-    outside = tmp_path / "elsewhere" / "manuscript"
+    outside = tmp_path / "elsewhere" / "docs" / "manuscript"
     assert _report_rendered_leaks(outside, project_root=tmp_path) == 0
 
     assert _report_status(PROJECT) >= 0
@@ -487,7 +494,7 @@ def test_theorem_map_no_lean_companion_branch() -> None:
 
 
 def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
-    src_ms = tmp_path / "manuscript"
+    src_ms = tmp_path / "docs" / "manuscript"
     inj_ms = tmp_path / "output" / "manuscript"
     src_ms.mkdir(parents=True)
     inj_ms.mkdir(parents=True)
@@ -526,11 +533,11 @@ def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
 
     from manuscript.registry_facts import registry_structural_facts
 
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     refs = ms / "refs"
     refs.mkdir(parents=True)
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
-    shutil.copy(PROJECT / "manuscript" / "refs" / "citations.yaml", refs / "citations.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "citations.yaml", refs / "citations.yaml")
     labels = yaml.safe_load((refs / "labels.yaml").read_text(encoding="utf-8"))
     labels["theorems"]["bad_row"] = "not-a-dict"
     (refs / "labels.yaml").write_text(yaml.dump(labels), encoding="utf-8")
@@ -665,7 +672,7 @@ def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: py
 
     monkeypatch.setattr("manuscript.readiness.load_project_status", lambda _root: _Status())
     (tmp_path / "output" / "reports").mkdir(parents=True)
-    (tmp_path / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
     (tmp_path / "output" / "reports" / "test_results.json").write_text(
         json.dumps(
             {
@@ -680,7 +687,7 @@ def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: py
         ),
         encoding="utf-8",
     )
-    (tmp_path / "manuscript" / "config.yaml").write_text("paper:\n  title: t\n", encoding="utf-8")
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("paper:\n  title: t\n", encoding="utf-8")
     _seed_labels_yaml(tmp_path)
     path = readiness_mod.write_release_readiness(tmp_path)
     assert path.exists()
@@ -693,7 +700,7 @@ def test_build_pdf_main_success_path(tmp_path: Path, monkeypatch: pytest.MonkeyP
     for name in ("manuscript_variables.py", "inject_manuscript_variables.py"):
         (scripts / name).write_text("print('ok')\n", encoding="utf-8")
 
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     injected = tmp_path / "output" / "manuscript"
     for d in (ms, injected):
         d.mkdir(parents=True, exist_ok=True)
@@ -779,7 +786,7 @@ def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys)
     (rendered / "01_a.md").write_text("clean prose\n", encoding="utf-8")
     assert _report_rendered_leaks(rendered, project_root=tmp_path) == 0
 
-    missing = tmp_path / "nope" / "manuscript"
+    missing = tmp_path / "nope" / "docs" / "manuscript"
     assert _report_rendered_leaks(missing, project_root=tmp_path) == 0
     assert "skipped" in capsys.readouterr().out
 
@@ -787,8 +794,8 @@ def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys)
 
 
 def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "config.yaml").write_text(
         "paper:\n  title: Title\n  subtitle: Sub\n  date: 2026-01-01\nauthors:\n  - name: Author\n",
         encoding="utf-8",
@@ -800,7 +807,7 @@ def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
     assert _as_sequence("bad") == ()
     cfg = _load_config(ms)
     assert cfg["paper"]["title"] == "Title"
-    args = _metadata_args(source_manuscript=ms, project_root=tmp_path)
+    args = _metadata_args(cfg, project_root=tmp_path)
     assert any("Title" in a for a in args)
     assert not any("normalsize" in a for a in args)
     assert not any("Sub" in a for a in args)
@@ -815,12 +822,15 @@ def test_build_pdf_main_missing_manuscript(tmp_path: Path) -> None:
     assert build_pdf_main(project_root=tmp_path) != 0
 
 
-def test_regenerate_injected_manuscript_fails_on_bad_script(tmp_path: Path) -> None:
-    scripts = tmp_path / "scripts"
-    scripts.mkdir()
-    (scripts / "manuscript_variables.py").write_text("raise SystemExit(3)\n", encoding="utf-8")
+def test_regenerate_injected_manuscript_fails_on_unresolved_token(tmp_path: Path) -> None:
+    ms = tmp_path / "docs" / "manuscript"
+    (ms / "refs").mkdir(parents=True)
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", ms / "refs" / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "citations.yaml", ms / "refs" / "citations.yaml")
+    (ms / "config.yaml").write_text("paper:\n  title: T\n", encoding="utf-8")
+    (ms / "01_bad.md").write_text("See [[VAR:totally_unknown_key_9ef3]] here.\n", encoding="utf-8")
     code = regenerate_injected_manuscript(project_root=tmp_path)
-    assert code == 3
+    assert code == 1
 
 
 def test_build_gate_main_missing_lean_dir(tmp_path: Path) -> None:

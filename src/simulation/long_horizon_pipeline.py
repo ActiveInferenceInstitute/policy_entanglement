@@ -10,7 +10,7 @@ from pathlib import Path
 from simulation import hyperparameters as H  # noqa: N812 - H = hyperparameters (manuscript convention).
 from simulation.agents import pymdp_available
 from simulation.long_horizon import long_horizon_rollout, long_horizon_summary
-from visualizations.metadata import figure_metadata
+from visualizations.metadata import pipeline_figure_metadata
 from visualizations.multi_k_plots import plot_long_horizon_marginals, plot_long_horizon_steady_state
 from visualizations.setup import deterministic_setup, ensure_outdir
 
@@ -26,12 +26,12 @@ def figure_metadata_snapshot(project_root: Path, source_function: str, **extra) 
         "tail_window": int(H.LONG_HORIZON_TAIL_WINDOW),
         "steady_state_tol": float(H.LONG_HORIZON_STEADY_STATE_TOL),
     }
-    return figure_metadata(
+    return pipeline_figure_metadata(
+        project_root=project_root,
         source_script="scripts/simulate_long_horizon.py",
         source_function=source_function,
         hyperparameters=snapshot,
-        extra=dict(extra) if extra else None,
-        project_root=project_root,
+        **extra,
     )
 
 

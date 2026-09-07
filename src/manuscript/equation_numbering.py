@@ -40,7 +40,7 @@ TAG_RE = re.compile(r"\\tag\s*\{[^}]*\}")
 
 def file_to_section_number(registry: Registry) -> dict[str, str]:
     """Return ``{file_name: registry_section_number}`` from
-    ``manuscript/refs/labels.yaml``.
+    ``docs/manuscript/refs/labels.yaml``.
 
     Only sections with a non-empty ``file`` field are recorded; sub-
     sections inherit numbering through their parent's file.

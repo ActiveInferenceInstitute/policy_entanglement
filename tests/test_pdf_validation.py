@@ -90,8 +90,8 @@ def test_validate_pdf_artifacts_with_template_extractor(tmp_path: Path) -> None:
     (pdf_dir / "_combined_manuscript.log").write_text("", encoding="utf-8")
     (pdf_dir / "_xelatex_stdout.log").write_text("", encoding="utf-8")
 
-    manuscript = project / "manuscript"
-    manuscript.mkdir()
+    manuscript = project / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     opts = ",".join(f"{k}={v}in" for k, v in EXPECTED_PDF_MARGINS_IN.items())
     (manuscript / "preamble.md").write_text(
         f"\\usepackage[a4paper,{opts}]{{geometry}}\n",
@@ -129,8 +129,8 @@ def test_validate_pdf_artifacts_reports_small_pdf_missing_intermediates_and_stdo
     pdf = pdf_dir / "paper.pdf"
     pdf.write_bytes(b"%PDF-1.4\nsmall")
     (pdf_dir / "_xelatex_stdout.log").write_text("Warning: something happened\n", encoding="utf-8")
-    manuscript = project / "manuscript"
-    manuscript.mkdir()
+    manuscript = project / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "preamble.md").write_text("no geometry package here\n", encoding="utf-8")
 
     template_root = tmp_path / "template"

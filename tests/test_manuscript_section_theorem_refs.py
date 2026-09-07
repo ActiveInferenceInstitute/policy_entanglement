@@ -13,8 +13,8 @@ from manuscript.renderer import render_section
 from manuscript.tokens import iter_tokens
 
 PROJECT = Path(__file__).resolve().parent.parent
-REFS = PROJECT / "manuscript" / "refs"
-MANUSCRIPT = PROJECT / "manuscript"
+REFS = PROJECT / "docs" / "manuscript" / "refs"
+MANUSCRIPT = PROJECT / "docs" / "manuscript"
 
 
 # ---------------------------------------------------------------------------

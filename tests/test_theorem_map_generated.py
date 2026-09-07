@@ -5,7 +5,7 @@ the result matches ``docs/reference/_theorem_map.md`` byte-for-byte.
 
 Any change to:
 
-  * ``manuscript/refs/labels.yaml::theorems`` (new theorem, renamed
+  * ``docs/manuscript/refs/labels.yaml::theorems`` (new theorem, renamed
     Lean companion, status update),
   * ``scripts/generate_theorem_map.py::PYTHON_COMPANION``,
   * ``scripts/generate_theorem_map.py::TEST_GATE``,
@@ -109,8 +109,8 @@ def test_every_current_theorem_has_python_and_test_columns(generator_module) -> 
             sys.path.insert(0, p)
     from manuscript.registry import load_registry  # noqa: E402
 
-    registry = load_registry(PROJECT / "manuscript" / "refs")
-    raw = yaml.safe_load((PROJECT / "manuscript" / "refs" / "labels.yaml").read_text(encoding="utf-8"))["theorems"]
+    registry = load_registry(PROJECT / "docs" / "manuscript" / "refs")
+    raw = yaml.safe_load((PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml").read_text(encoding="utf-8"))["theorems"]
     missing: list[str] = []
     for label, theorem in registry.labels.theorems.items():
         if not theorem.has_lean_companion:
@@ -141,7 +141,7 @@ def test_every_current_theorem_has_mathlib_readiness_metadata(generator_module) 
         sys.path.insert(0, src)
     from manuscript.registry import load_registry  # noqa: E402
 
-    labels = set(load_registry(PROJECT / "manuscript" / "refs").labels.theorems)
+    labels = set(load_registry(PROJECT / "docs" / "manuscript" / "refs").labels.theorems)
     readiness = generator_module.MATHLIB_READINESS
     assert set(readiness) == labels
     empty = [label for label, row in readiness.items() if len(row) != 3 or not all(str(cell).strip() for cell in row)]

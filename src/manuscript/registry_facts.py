@@ -24,7 +24,7 @@ THEOREM_STATUS_KEYS = ("proved", "witness", "boundary", "forwarder", "sketch", "
 def registry_structural_facts(project_root: Path) -> dict[str, int]:
     """Counts derived from manuscript registries and section files."""
 
-    manuscript_dir = project_root / "manuscript"
+    manuscript_dir = project_root / "docs" / "manuscript"
     labels_path = manuscript_dir / "refs" / "labels.yaml"
     citations_path = manuscript_dir / "refs" / "citations.yaml"
     labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}

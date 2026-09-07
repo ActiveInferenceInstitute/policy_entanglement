@@ -7,7 +7,7 @@ has the same visual and audit contract.
 
 matplotlib / seaborn / plotly figure helpers + PNG reproducibility
 metadata. Pure I/O + plotting; no numerical work — every numerical
-input is computed by `lean/`, `simulation/`, or `manuscript/`.
+input is computed by `lean/`, `simulation/`, or `docs/manuscript/`.
 
 Imports: `from visualizations.<module> import …` (`pythonpath = src/`).
 
@@ -212,6 +212,8 @@ def figure_metadata(*, source_script: str, source_function: str,
 def summarize_array(values: Any) -> dict[str, Any]
 def figure_statistics(fig: Any) -> dict[str, Any]
 def read_figure_metadata(png_path: Path) -> dict[str, str]
+def pipeline_figure_metadata(*, project_root: Path, source_script: str,
+                             source_function: str) -> dict[str, str]
 def has_project_metadata(png_path: Path) -> bool
 ```
 
@@ -311,7 +313,24 @@ def figure_log_weight_flow() -> Path
 def figure_kl_geodesic_in_simplex() -> Path
 def figure_lambda_star_locus() -> Path
 def figure_coupling_graph() -> Path | None
+FIGURE_EMITTERS: tuple[str, ...]
 def emit_all_figures() -> list[Path]
+```
+
+### `pymdp_context.py` (pymdp figure runtime context)
+
+Shared path/logger context for the pymdp-grounded figure emitters,
+so `scripts/simulate_pymdp.py` and the dashboard builders bind the
+same output directories and provenance metadata.
+
+```python
+@dataclass
+class PymdpFigureContext:
+    project_root: Path
+    fig_dir: Path
+    sim_dir: Path
+    logger: RunLogger
+    source_script: str
 ```
 
 ---

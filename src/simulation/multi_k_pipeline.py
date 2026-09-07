@@ -9,7 +9,7 @@ from pathlib import Path
 from simulation import hyperparameters as H  # noqa: N812 - H = hyperparameters (manuscript convention).
 from simulation.agents import pymdp_available
 from simulation.multi_k_experiments import multi_k_summary, run_multi_k_sweep
-from visualizations.metadata import figure_metadata
+from visualizations.metadata import pipeline_figure_metadata
 from visualizations.multi_k_plots import (
     plot_multi_k_aligned_mass,
     plot_multi_k_total_correlation,
@@ -27,12 +27,12 @@ def figure_metadata_snapshot(project_root: Path, source_function: str, **extra) 
         "sweep_lambda_max": float(H.MULTI_K_SWEEP_LAMBDAS.stop),
         "figure_global_seed": int(H.FIGURE_GLOBAL_SEED),
     }
-    return figure_metadata(
+    return pipeline_figure_metadata(
+        project_root=project_root,
         source_script="scripts/simulate_multi_k.py",
         source_function=source_function,
         hyperparameters=snapshot,
-        extra=dict(extra) if extra else None,
-        project_root=project_root,
+        **extra,
     )
 
 

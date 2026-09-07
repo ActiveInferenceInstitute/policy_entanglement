@@ -12,5 +12,5 @@ should be checked against the live sources and generated artifacts:
 - [`../CHANGELOG.md`](../CHANGELOG.md)
 - [`../reference/methods_audit.md`](../reference/methods_audit.md)
 - [`../reference/reproducibility_checklist.md`](../reference/reproducibility_checklist.md)
-- [`../../manuscript/4B_empirical_suite.md`](../../manuscript/4B_empirical_suite.md)
+- [`../../manuscript/4B_empirical_suite.md`](../manuscript/4B_empirical_suite.md)
 - [`../../scripts/run_all.py`](../../scripts/run_all.py)

@@ -46,7 +46,7 @@ analytical track in `lean/*.py` runs in **float64** (numpy default).
 This precision mismatch is why the pymdp-vs-closed-form agreement
 tolerance is `PARAMETER_SWEEP_AGREEMENT_TOLERANCE`, not the stricter
 symbolic tolerances used for exact algebraic checks.  The boundary is documented
-inline in `manuscript/4C_pymdp_harness.md`; tests in
+inline in `docs/manuscript/4C_pymdp_harness.md`; tests in
 `tests/test_simulation_pymdp.py` apply the float32-aware tolerance
 budget.
 
@@ -160,7 +160,7 @@ uv run python scripts/simulate_revertibility.py    # m-projection KL identity sw
 ```
 
 Each emits a `output/data/*_summary.json` plus the figures registered
-in `manuscript/refs/labels.yaml::figures` (six total — see
+in `docs/manuscript/refs/labels.yaml::figures` (six total — see
 [`visualizations.md`](visualizations.md)).  Multi-K invariants exercise
 the **sparsity-rank tradeoff witness** ([[THMREF:thm_7_3]]) and the
 **Schmidt-rank upper-semicontinuity witness** ([[THMREF:prop_7_2]])

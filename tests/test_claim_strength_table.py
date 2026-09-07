@@ -7,7 +7,7 @@ CLAIM_STRENGTHS = ("proved", "witness", "empirical", "hypothesis", "roadmap")
 
 
 def test_claim_strength_legend_and_evidence_ladder_are_complete() -> None:
-    text = (PROJECT / "manuscript" / "S07_reference_tables.md").read_text(encoding="utf-8")
+    text = (PROJECT / "docs" / "manuscript" / "S07_reference_tables.md").read_text(encoding="utf-8")
     assert "## Claim-Strength Legend" in text
     assert "## Evidence Ladder and Claim Provenance" in text
     for strength in CLAIM_STRENGTHS:

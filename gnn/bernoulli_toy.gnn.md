@@ -6,7 +6,7 @@
 # streams with a symmetric Ising habit coupling on the joint policy space.
 # This is the canonical worked example of manuscript §6.1 / Supplement S03,
 # expressed here as the *fifth track* (GNN) alongside prose, equations,
-# Python/pymdp, and Lean. See manuscript/S08_gnn_generalized_notation_extension.md.
+# Python/pymdp, and Lean. See docs/manuscript/S08_gnn_generalized_notation_extension.md.
 
 ## GNNSection
 

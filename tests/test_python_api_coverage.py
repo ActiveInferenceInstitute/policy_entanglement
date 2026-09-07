@@ -152,7 +152,7 @@ def test_every_subpackage_has_a_section(api_doc_text) -> None:
         "## Subpackage `lean/`",
         "## Subpackage `simulation/`",
         "## Subpackage `visualizations/`",
-        "## Subpackage `manuscript/`",
+        "## Subpackage `docs/manuscript/`",
     ):
         assert hdr in api_doc_text, f"missing API doc section: {hdr!r}"
 

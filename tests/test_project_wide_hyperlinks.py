@@ -1,7 +1,7 @@
 """Project-wide hyperlink audit.
 
 The existing ``manuscript.validation`` validator only walks
-``manuscript/``.  This regression test extends the no-dangling-link
+``docs/manuscript/``.  This regression test extends the no-dangling-link
 invariant to **every** markdown file in the project: docs/, README,
 AGENTS, CONTRIBUTING, src/*/README, tests/README, and so on.
 
