@@ -6,7 +6,7 @@
 load-bearing boundary-fragment theorems from
 `ActinfPolicyEntanglement/` under the `FepSketches.*` namespace,
 matching the convention used alongside the
-[`ActiveInferenceInstitute/fep_lean`](https://github.com/ActiveInferenceInstitute/fep_lean)
+[`ActiveInferenceInstitute/fep_formal`](https://github.com/ActiveInferenceInstitute/fep_formal)
 catalog in the [docxology/template](https://github.com/docxology/template)
 monorepo.
 
