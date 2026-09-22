@@ -226,7 +226,7 @@ objects, sign conventions), see
 
 - **GNN (Generalized Notation Notation).**  Per Smékal & Friedman
   (2023, Zenodo `10.5281/zenodo.7803328`) and the upstream repo
-  [`ActiveInferenceInstitute/GeneralizedNotationNotation`](https://github.com/ActiveInferenceInstitute/GeneralizedNotationNotation):
+  [`ActiveInferenceInstitute/Generalized_Notation_Notation`](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation):
   a model-description language for active-inference generative
   models, expressed via the *Triple Play* of linguistic, visual,
   and executable views from a single GNN source.  In this project,

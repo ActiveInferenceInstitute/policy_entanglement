@@ -320,7 +320,7 @@ source of truth when the package graph changes.
 
 Supplement §S8 introduces **Generalized Notation Notation (GNN)** —
 per Smékal & Friedman (2023, Zenodo `10.5281/zenodo.7803328`) and the
-upstream repo [`ActiveInferenceInstitute/GeneralizedNotationNotation`](https://github.com/ActiveInferenceInstitute/GeneralizedNotationNotation)
+upstream repo [`ActiveInferenceInstitute/Generalized_Notation_Notation`](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation)
 — as a shipped fifth **structural-and-numerical** representation of
 the framework alongside the four proof/evidence tracks (prose /
 equations / Python / Lean).

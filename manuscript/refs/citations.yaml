@@ -343,7 +343,7 @@ friedman-2026-fep-lean:
   title: "Towards Lean 4 Formalization of the Free Energy Principle: AI-Driven Theorem Sketching and Verification for Active Inference and Bayesian Mechanics"
   venue: "Active Inference Journal. Zenodo"
   doi: "10.5281/zenodo.19699234"
-  url: "https://github.com/ActiveInferenceInstitute/fep_lean"
+  url: "https://github.com/ActiveInferenceInstitute/fep_formal"
   topic: formalization
 
 friedman-2026-actinf-policy-entanglement:
@@ -1375,7 +1375,7 @@ aii-gnn-repo:
   year: 2023
   title: "GeneralizedNotationNotation"
   venue: "Open-source software (Active Inference Institute)"
-  url: "https://github.com/ActiveInferenceInstitute/GeneralizedNotationNotation"
+  url: "https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation"
   note: "Reference implementation of Generalized Notation Notation. Cited as the upstream of the shipped fifth (structural-and-numerical) representation in the GNN extension supplement; the bridge ships as a project-owned parser, a verified K=2 round-trip, and a Lean typed-contract emitter (empirical per the Claim-Strength Legend), with the upstream first-class coupling primitive named as an honest residual."
   topic: software
 

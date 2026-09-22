@@ -3,7 +3,7 @@
 Convenience wrappers that expose the load-bearing structural facts of
 the Policy Entanglement boundary fragment under the `FepSketches.*`
 namespace, matching the import layout used next to
-[`ActiveInferenceInstitute/fep_lean`](https://github.com/ActiveInferenceInstitute/fep_lean).
+[`ActiveInferenceInstitute/fep_formal`](https://github.com/ActiveInferenceInstitute/fep_formal).
 
 ## Files
 

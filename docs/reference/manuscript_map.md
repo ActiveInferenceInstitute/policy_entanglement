@@ -73,7 +73,7 @@ changed Python / test companion fails the gate immediately.
 | [Appendix E — Lean code skeleton](../../manuscript/S05_lean_code_skeleton.md) | [`lean_reference.md`](lean_reference.md), [`lean/`](../../lean/) |
 | [Appendix §S6 — Notation concordance](../../manuscript/S06_notation_and_concordance.md) | [`glossary.md`](../glossary.md), [`math_reference.md`](math_reference.md) |
 | [Appendix §S7 — Reference tables (claim strength + evidence ladder + module inventory + bundle stats + JSONL schema)](../../manuscript/S07_reference_tables.md) | [`veridical_status.md`](veridical_status.md), [`methods_and_assumptions.md`](methods_and_assumptions.md) |
-| [Appendix §S8 — GNN as a Shipped Fifth Track (parser + verified round-trip + Lean typed-contract emitter; `empirical`)](../../manuscript/S08_gnn_generalized_notation_extension.md) | `src/gnn/`, `gnn/*.gnn.md`, `scripts/simulate_gnn.py`; upstream repo [`ActiveInferenceInstitute/GeneralizedNotationNotation`](https://github.com/ActiveInferenceInstitute/GeneralizedNotationNotation); citation: Smékal & Friedman 2023 (Zenodo `10.5281/zenodo.7803328`) |
+| [Appendix §S8 — GNN as a Shipped Fifth Track (parser + verified round-trip + Lean typed-contract emitter; `empirical`)](../../manuscript/S08_gnn_generalized_notation_extension.md) | `src/gnn/`, `gnn/*.gnn.md`, `scripts/simulate_gnn.py`; upstream repo [`ActiveInferenceInstitute/Generalized_Notation_Notation`](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation); citation: Smékal & Friedman 2023 (Zenodo `10.5281/zenodo.7803328`) |
 
 ## Theorems / propositions index
 

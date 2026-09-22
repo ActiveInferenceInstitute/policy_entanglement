@@ -21,7 +21,7 @@ is in [`STYLE.md`](STYLE.md).
    [`ActinfPolicyEntanglement/MathlibRefinementRoadmap.md`](ActinfPolicyEntanglement/MathlibRefinementRoadmap.md).
 2. **Pin: Lean 4 v4.29.0.**  Match `lean-toolchain` to the release pin
    used in
-   [`ActiveInferenceInstitute/fep_lean`](https://github.com/ActiveInferenceInstitute/fep_lean)
+   [`ActiveInferenceInstitute/fep_formal`](https://github.com/ActiveInferenceInstitute/fep_formal)
    so template-side builds stay comparable.
 3. **Reserved tokens.**  Never use `Π` (binder for dependent products)
    or `λ` (binder for lambda) as identifiers.  Substitutes: `Pol`,

@@ -101,7 +101,7 @@ root, and two Lake-internal targets.
 `lean/FepSketches/PolicyEntanglementBoundary.lean` re-exposes the
 load-bearing structural facts under the `FepSketches.*` namespace,
 matching the import layout used alongside the
-[fep_lean](https://github.com/ActiveInferenceInstitute/fep_lean) catalog
+[fep_formal](https://github.com/ActiveInferenceInstitute/fep_formal) catalog
 [@friedman-2026-fep-lean] and the [research manuscript template monorepo](https://github.com/docxology/template)
 (GitHub organization **docxology**).
 

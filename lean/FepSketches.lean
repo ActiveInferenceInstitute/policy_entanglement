@@ -2,7 +2,7 @@
   FepSketches.lean
   Top-level re-export hub for the policy entanglement boundary fragment,
   aligned with the `FepSketches.*` import path used next to
-  `ActiveInferenceInstitute/fep_lean`.  Re-exports every submodule under
+  `ActiveInferenceInstitute/fep_formal`.  Re-exports every submodule under
   `FepSketches.*` so downstream agents can depend on a single import.
 -/
 import FepSketches.PolicyEntanglementBoundary
