@@ -5,7 +5,7 @@ package «MathlibProofs» where
   moreLeanArgs := #["-DautoImplicit=false"]
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.29.0"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.35.0"
 
 /--
 Optional additive package for Mathlib-backed witness discharge.

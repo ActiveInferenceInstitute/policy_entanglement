@@ -1,4 +1,7 @@
-import Mathlib
+module
+public import Mathlib
+
+@[expose] public section
 
 /-!
 Separate Mathlib-backed witness-discharge package.
@@ -28,8 +31,9 @@ Mathlib-discharged manuscript claim.
 -/
 theorem vecMulVec_rank_le_one {m n R : Type*} [Fintype n] [CommRing R]
     (w : m → R) (v : n → R) :
-    (Matrix.vecMulVec w v).rank ≤ 1 :=
-  Matrix.rank_vecMulVec_le w v
+    (Matrix.vecMulVec w v).rank ≤ 1 := by
+  nontriviality R
+  exact Matrix.rank_vecMulVec_le w v
 
 /--
 Any matrix that is pointwise equal to an outer product has rank at most one.
@@ -45,6 +49,7 @@ theorem rank_le_one_of_pointwise_factorization {m n R : Type*} [Fintype n] [Comm
     (A : Matrix m n R) (u : m → R) (v : n → R)
     (h : ∀ i j, A i j = u i * v j) :
     A.rank ≤ 1 := by
+  nontriviality R
   have hA : A = Matrix.vecMulVec u v := by
     ext i j
     exact h i j
@@ -379,13 +384,13 @@ theorem streamMarginal_productDist {A : Type*} [Fintype A] [DecidableEq A] {K : 
       (if i s = j then ∏ u, factor u (i u) else 0) = ∏ u, F u (i u) := by
     intro i
     by_cases hij : i s = j
-    · simp only [hij, if_pos]
+    · simp only [hij, ite_eq_left]
       refine Finset.prod_congr rfl ?_
       intro u _
       by_cases hus : u = s
       · subst hus; simp [hF, hij]
       · simp [hF, hus]
-    · simp only [hij, if_neg, not_false_iff]
+    · simp only [hij, ite_eq_right, not_false_iff]
       -- the `s`-coordinate factor of `∏ F` is `0`, killing the product.
       have hzero : F s (i s) = 0 := by simp [hF, hij]
       have : ∏ u, F u (i u) = 0 := by
@@ -702,7 +707,7 @@ theorem partition_sum_pos (Ek : Fin K → A → ℝ) (Jpot : (Fin K → A) → �
     (lam : ℝ) (hEkpos : ∀ k a, 0 < Ek k a)
     (hEknorm : ∀ k, (∑ a, Ek k a) = 1) :
     0 < ∑ π, entangledNumer Ek Jpot lam π := by
-  haveI := policySpace_nonempty Ek hEknorm
+  have := policySpace_nonempty Ek hEknorm
   exact Finset.sum_pos (fun π _ => entangledNumer_pos Ek Jpot lam hEkpos π)
     Finset.univ_nonempty
 
@@ -867,7 +872,7 @@ theorem free_energy_decomposition_full
     have hsingle :
         q (fun _ => a) ≤ ∑ i : Fin K → A, if i s = a then q i else 0 := by
       have hmem : (Finset.univ : Finset (Fin K → A)).Nonempty := by
-        haveI := policySpace_nonempty Ek hEknorm
+        have := policySpace_nonempty Ek hEknorm
         exact Finset.univ_nonempty
       have hle := Finset.single_le_sum
         (f := fun i : Fin K → A => if i s = a then q i else 0)
