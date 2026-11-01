@@ -26,6 +26,7 @@ Historical round deltas live in `docs/CHANGELOG.md` and
 | `manuscript_map.md` | Hand-authored | When a manuscript chapter is added / split / merged |
 | `math_reference.md` | Hand-authored | When the load-bearing identities (Theorem 5.1, the closed form, the coupling tax) change |
 | `python_api.md` | Hand-authored index over `python_api_*.md` + `gates/` / `orchestration/` sections | When `src/` exposes a new public symbol outside the four domain subpackages |
+| `python_api_gnn.md` | Hand-authored | When `src/gnn/` exposes a new public symbol |
 | `python_api_lean.md` | Hand-authored | When `src/lean/` exposes a new public symbol |
 | `python_api_manuscript.md` | Hand-authored | When `src/manuscript/` exposes a new public symbol |
 | `python_api_simulation.md` | Hand-authored | When `src/simulation/` exposes a new public symbol |

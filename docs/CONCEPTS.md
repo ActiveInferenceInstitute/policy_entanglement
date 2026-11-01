@@ -124,8 +124,12 @@ For a step-by-step verification recipe see
 Supplemental section §S8 ships **Generalized Notation Notation (GNN)**
 [Smékal & Friedman 2023] as a fifth structural-and-numerical
 representation of the framework.  The bridge includes a project-owned
-GNN parser, a K=2 Bernoulli round-trip from `gnn/bernoulli_toy.gnn.md`,
-a Lean typed-contract emitter, and a `simulate_gnn.py` pipeline stage.
+GNN parser checked against the pinned upstream parser
+(`gnn/upstream.json`), a K=2 Bernoulli round-trip from
+`gnn/bernoulli_toy.gnn.md`, a production ensemble specified in
+`gnn/production_ensemble.gnn.md` and verified elementwise against
+`src/simulation/builders.py`, a Lean typed-contract emitter, and a
+`simulate_gnn.py` pipeline stage.
 It does **not** prove theorems or promote any registry row: the
 four-track proof contract (prose / equations / Python / Lean) remains
 the analytic contract.  See

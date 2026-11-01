@@ -17,7 +17,7 @@ page is self-contained and easy to grep:
 | [`src/simulation/`](../../src/simulation/) | pymdp 1.0.1 POMDP harness | [`python_api_simulation.md`](python_api_simulation.md) |
 | [`src/visualizations/`](../../src/visualizations/) | Reusable plotting helpers | [`python_api_visualizations.md`](python_api_visualizations.md) |
 | [`src/manuscript/`](../../src/manuscript/) | Auto-injection + validation toolkit | [`python_api_manuscript.md`](python_api_manuscript.md) |
-| [`src/gnn/`](../../src/gnn/) | GNN fifth-track parser + round-trip + Lean typed-contract emitter | [`python_api_gnn.md`](python_api_gnn.md) |
+| [`src/gnn/`](../../src/gnn/) | GNN parser + round-trip + production-harness conformance + pinned-upstream conformance + Lean typed-contract emitter | [`python_api_gnn.md`](python_api_gnn.md) |
 | [`src/reporting/`](../../src/reporting/) | Standalone dashboard/reporting helpers | This page |
 
 ## Module index by subpackage
@@ -41,7 +41,7 @@ page is self-contained and easy to grep:
   `bibliography.py`, `lean_extract.py`, `equation_numbering.py`,
   `validation.py`, `variable_ranges.py`, `status.py`, `pdf_validation.py`, `variables.py`,
   `output_gates/`.
-* **`gnn/`** — `parser.py`, `model.py`, `bridge.py`, `runner.py`,
+* **`gnn/`** — `parser.py`, `model.py`, `bridge.py`, `harness.py`, `upstream.py`, `runner.py`,
   `lean_emit.py`.
 * **`dashboard_types/`** — `dashboard.py` (shared dashboard datatypes +
   builder consumed by `scripts/build_dashboard.py`).

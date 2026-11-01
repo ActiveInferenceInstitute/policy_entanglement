@@ -262,7 +262,7 @@ The canonical pipeline executed by
 9. `simulate_robustness.py` — robustness, ablation, and replicate sidecars
 10. `simulate_btai.py` — shipped BTAI baseline worked run
 11. `simulate_adversarial.py` — shipped adversarial-perturbation sweep
-12. `simulate_gnn.py` — GNN fifth-track round-trip and Lean typed-contract emitter
+12. `simulate_gnn.py` — GNN round-trip, production-harness conformance check, and Lean typed-contract emitter
 13. `manuscript_variables.py` — JSON variable mirror from current hyperparameters and sidecars
 14. `build_dashboard.py` — invariant dashboard (47 invariants)
 15. `generate_index.py` — manuscript index

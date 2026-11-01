@@ -49,7 +49,7 @@ producing scripts.
 | `scripts/simulate_robustness.py` (robustness expansion) | 9 | robustness envelopes, half-saturation, decomposition residuals, ablation, interaction, replicate, seed-diagnostic, and threshold-sensitivity sidecars |
 | `scripts/simulate_btai.py` | 1 | shipped BTAI baseline panel |
 | `scripts/simulate_adversarial.py` | 1 | shipped adversarial-perturbation panel |
-| `scripts/simulate_gnn.py` | 1 diagnostic | `gnn_bernoulli_roundtrip.png`; validated output, not a numbered manuscript figure |
+| `scripts/simulate_gnn.py` | 1 diagnostic + 2 JSON sidecars | `gnn_bernoulli_roundtrip.png` plus `gnn_bernoulli_roundtrip.json` / `gnn_production_conformance.json`; validated outputs, not numbered manuscript figures |
 | `manuscript/refs/labels.yaml::figures` (registry total) | 46 | paper-facing registered figure union; excludes the non-registry GNN diagnostic PNG |
 
 ### `scripts/generate_figures.py` (headline analytical) produces:

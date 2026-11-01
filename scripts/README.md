@@ -28,12 +28,12 @@ Scripts must not implement algorithms.  See
 | [`simulate_long_horizon.py`](simulate_long_horizon.py) | Configured long-horizon coupled rollout (habit-accumulation witness) | `pymdp_long_horizon.csv` + `long_horizon_*` PNGs + `long_horizon_summary.json` |
 | [`simulate_revertibility.py`](simulate_revertibility.py) | m-projection back-to-mean-field witness (Prop 7.3 / Theorem 5.1 identity) | `pymdp_revertibility.csv` + `revertibility_witness.png` + `revertibility_summary.json` |
 | [`simulate_robustness.py`](simulate_robustness.py) | Robustness, ablation, and long-horizon replicate sidecars | one-axis, two-axis, ablation, replicate, seed-diagnostic, and threshold-sensitivity CSV/PNG/JSON sidecars |
-| [`simulate_gnn.py`](simulate_gnn.py) | GNN fifth-track round-trip and Lean typed-contract emitter | GNN sidecar JSON and generated Lean contract |
+| [`simulate_gnn.py`](simulate_gnn.py) | GNN fifth-track round-trip, production-harness conformance check, and Lean typed-contract emitter | GNN sidecar JSONs (`gnn_bernoulli_roundtrip.json`, `gnn_production_conformance.json`) and generated Lean contract |
 | [`simulate_btai.py`](simulate_btai.py) | Shipped BTAI baseline worked run over the registered MCTS budget grid | `btai_baseline.json` + `btai_baseline.png` |
 | [`simulate_adversarial.py`](simulate_adversarial.py) | Shipped adversarial-perturbation sweep over the registered $(\varepsilon,\lambda)$ grid | `adversarial_sweep.json` + `adversarial_sweep.png` |
 | [`build_dashboard.py`](build_dashboard.py) | Interactive multi-view Plotly dashboard + plaintext invariants + JSON payload | `../output/web/dashboard.html`, `../output/reports/dashboard_*.txt`, `../output/data/dashboard_payload.json` |
 | [`generate_audit_matrix.py`](generate_audit_matrix.py) | Regenerate the pymdp / Lean / manuscript claim audit matrix CSV | `../docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv` (via `--write`) |
-| [`gnn_to_pymdp.py`](gnn_to_pymdp.py) | GNN → pymdp structural-config generator from `.gnn` declarations (S08 deliverable) | JSON config on stdout |
+| [`gnn_to_pymdp.py`](gnn_to_pymdp.py) | GNN → pymdp structural-config generator from `.gnn` declarations (S08 deliverable); `--harness` emits the full production-harness config (per-stream `A`/`B`/`C`/`D`, coupling, `gamma`) | JSON config on stdout |
 | [`generate_index.py`](generate_index.py) | Regenerate `manuscript/INDEX.md` from the registry | `manuscript/INDEX.md` |
 | [`generate_theorem_map.py`](generate_theorem_map.py) | Auto-generate the per-theorem four-track wiring table | `../docs/reference/_theorem_map.md` |
 | [`inject_manuscript_variables.py`](inject_manuscript_variables.py) | Resolve every `[[…]]` token, auto-number every `$$..$$` block | rendered files in `../output/manuscript/` |

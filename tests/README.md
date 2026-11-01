@@ -59,6 +59,11 @@ uv run pytest tests/test_bernoulli_toy.py::test_empirical_mi_matches_closed_form
 | [`test_logging_utils.py`](test_logging_utils.py) | `simulation/logging_utils.py` (JSONL run logger, runtime, status, schema) |
 | [`test_notation_glossary.py`](test_notation_glossary.py) | `manuscript/S06_notation_and_concordance.md` ↔ preamble macros + Python idents + Lean abbrevs (drift gate) |
 | [`test_pymdp_extras.py`](test_pymdp_extras.py) | `simulation/statistics.py` + `visualizations/{pymdp_extras,metadata}.py` + the no-hardcoded-numeric-literal detector |
+| [`test_gnn_parser.py`](test_gnn_parser.py) | `gnn/parser.py` (grammar, section aliases, error paths) |
+| [`test_gnn_round_trip.py`](test_gnn_round_trip.py) | `gnn/bridge.py` round-trip vs the closed-form oracle |
+| [`test_gnn_harness_conformance.py`](test_gnn_harness_conformance.py) | `gnn/harness.py` + `gnn/production_ensemble.gnn.md` ↔ `simulation/builders.py` production arrays (drift gate) |
+| [`test_gnn_upstream_conformance.py`](test_gnn_upstream_conformance.py) | `gnn/upstream.py` — project parser vs the **pinned** upstream parser (digest conformance + non-vacuity mutant) |
+| [`test_simulate_gnn.py`](test_simulate_gnn.py) | `gnn/runner.py` + `scripts/simulate_gnn.py` (sidecars, figure, Lean shell, determinism) |
 | [`test_python_api_coverage.py`](test_python_api_coverage.py) | `docs/reference/python_api.md` ↔ every public `src/` identifier (documentation drift gate) |
 | [`test_veridicality.py`](test_veridicality.py) | end-to-end audit chain: prose `[[VAR:...]]` ↔ JSON ↔ JSONL log ↔ Lean source |
 | [`lean/test_lean_build.py`](lean/test_lean_build.py) | `cd lean && lake build` smoke |
@@ -98,3 +103,6 @@ uv run pytest tests/test_bernoulli_toy.py::test_empirical_mi_matches_closed_form
 | Equation auto-numbering: source eq count = rendered tag count per section | `test_rendered_section_has_no_unnumbered_display_math`, `test_rendered_section_tags_match_section_number` |
 | Reader-facing prose uses American English outside code identifiers and citation titles | `test_reader_facing_docs_use_american_english` |
 | Hyperparameters JSON mirror equals source-of-truth constants | `test_summary_matches_manuscript_variables_json_when_present` |
+| Production harness arrays equal the GNN declaration elementwise (declared drift fails) | `test_gnn_ensemble_matches_the_production_build`, `test_conformance_report_detects_declared_array_drift` |
+| Project parser digest equals the pinned upstream parser's digest for every shipped spec | `test_project_parser_digest_matches_upstream` |
+| Upstream comparison is non-vacuous (spaced ontology section diverges) | `test_conformance_check_discriminates_on_the_leniency_mutant` |

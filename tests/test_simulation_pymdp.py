@@ -195,3 +195,38 @@ def test_rollout_total_correlations_and_joint_trajectory() -> None:
     assert traj.shape == (3, 2, 2)
     for q in traj:
         assert is_pmf(q, atol=1e-7)
+
+
+def _gnn_declared_production_ensemble():  # type: ignore[no-untyped-def]
+    """The production ensemble reconstructed from ``gnn/production_ensemble.gnn.md``."""
+    from pathlib import Path
+
+    from gnn.harness import ensemble_from_gnn
+    from gnn.parser import parse_gnn_file
+
+    spec_path = Path(__file__).resolve().parents[1] / "gnn" / "production_ensemble.gnn.md"
+    return ensemble_from_gnn(parse_gnn_file(spec_path))
+
+
+def test_gnn_declared_ensemble_builds_the_same_pymdp_agents() -> None:
+    """The spec-sourced production ensemble drives the same per-stream agents."""
+    declared = _gnn_declared_production_ensemble()
+    reference = make_ising_ensemble()
+    assert len(build_pymdp_agents(declared)) == len(build_pymdp_agents(reference)) == 2
+    observations = [1, 0]
+    q_declared = per_stream_policy_posterior(declared, observations=observations)
+    q_reference = per_stream_policy_posterior(reference, observations=observations)
+    for left, right in zip(q_declared, q_reference, strict=True):
+        assert np.allclose(left, right, atol=1e-9)
+        assert left.shape == (2,)
+
+
+def test_gnn_declared_ensemble_matches_the_lambda_coupled_posterior() -> None:
+    """The GNN-sourced ensemble reproduces the builder ensemble's coupled posterior."""
+    declared = _gnn_declared_production_ensemble()
+    reference = make_ising_ensemble()
+    q_declared = coupled_policy_posterior(declared, observations=[0, 1], lam=1.5)
+    q_reference = coupled_policy_posterior(reference, observations=[0, 1], lam=1.5)
+    assert np.allclose(q_declared, q_reference, atol=1e-9)
+    assert q_declared.shape == (2, 2)
+    assert np.isclose(q_declared.sum(), 1.0, atol=1e-9)

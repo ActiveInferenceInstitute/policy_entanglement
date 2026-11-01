@@ -170,6 +170,9 @@ def test_pipeline_stage_returns_nonzero_on_wrong_coupling(tmp_path: Path) -> Non
         "J={\n  (0.1, -0.1),\n  (-0.1, 0.1)\n}",
     )
     (bad_gnn_dir / "bernoulli_toy.gnn.md").write_text(text)
+    # The stage also verifies the production harness spec, so keep it present
+    # (unmodified) — the failure here must come from the toy's wrong coupling.
+    (bad_gnn_dir / "production_ensemble.gnn.md").write_text((GNN_DIR / "production_ensemble.gnn.md").read_text())
     rc = run(
         data_dir=tmp_path / "data",
         fig_dir=tmp_path / "fig",
