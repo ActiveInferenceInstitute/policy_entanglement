@@ -353,3 +353,261 @@ def test_validate_outputs_subprocess() -> None:
         text=True,
     )
     assert result.returncode == 0, result.stderr
+
+
+def _write_output_csv(path: Path, header: list[str], rows: list[list[str]]) -> None:
+    """Write a small CSV fixture under a redirected ``output/`` tree."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [",".join(header), *(",".join(row) for row in rows)]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _long_horizon_table(steps: int, *, marginal: str = "0.5") -> list[list[str]]:
+    return [[str(t), "0.25", marginal, marginal] for t in range(steps)]
+
+
+_LONG_HORIZON_HEADER = ["t", "total_correlation", "q0_u0", "q0_u1"]
+_REPLICATE_HEADER = [
+    "seed",
+    "t",
+    "total_correlation",
+    "habit_accumulation",
+    "tail_kl_window_max",
+    "adjacent_kl_max",
+]
+_DIAGNOSTIC_HEADER = [
+    "seed",
+    "habit_accumulation",
+    "tc_final",
+    "tc_max",
+    "tail_kl_window_max",
+    "adjacent_kl_max",
+    "margin_to_tolerance",
+    "failure_mode",
+]
+_THRESHOLD_HEADER = ["threshold", "pass_rate", "pass_count", "fail_count", "ci_low", "ci_high"]
+_ROBUSTNESS_REQUIRED = {
+    "scenario_id",
+    "axis",
+    "level",
+    "observations",
+    "gamma",
+    "preference_strength",
+    "coupling_scale",
+    "lambda",
+    "total_correlation",
+    "joint_entropy",
+    "marginal_entropy_sum",
+    "coupling_term",
+    "aligned_mass",
+    "decomposition_lhs",
+    "decomposition_rhs",
+    "decomposition_residual",
+}
+_ABLATION_REQUIRED = {
+    "variant",
+    "lambda",
+    "total_correlation",
+    "joint_entropy",
+    "marginal_entropy_sum",
+    "coupling_term",
+    "aligned_mass",
+    "decomposition_lhs",
+    "decomposition_rhs",
+    "decomposition_residual",
+}
+
+
+def test_long_horizon_validator_flags_missing_columns_and_length(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    csv_path = out / "simulations" / "pymdp_long_horizon.csv"
+    _write_output_csv(csv_path, ["t"], [["0"], ["1"]])
+    assert pymdp_validators.validate_long_horizon() == 1
+
+    _write_output_csv(csv_path, _LONG_HORIZON_HEADER, [["0", "0.1", "0.5", "0.5"]])
+    assert pymdp_validators.validate_long_horizon() == 1
+
+
+def test_long_horizon_validator_flags_non_normalized_marginals(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    _write_output_csv(
+        out / "simulations" / "pymdp_long_horizon.csv",
+        _LONG_HORIZON_HEADER,
+        _long_horizon_table(int(H.LONG_HORIZON_STEPS), marginal="0.25"),
+    )
+    assert pymdp_validators.validate_long_horizon() >= 1
+
+
+def test_long_horizon_validator_flags_summary_drift(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    _write_output_csv(
+        out / "simulations" / "pymdp_long_horizon.csv",
+        _LONG_HORIZON_HEADER,
+        _long_horizon_table(int(H.LONG_HORIZON_STEPS)),
+    )
+    summary = {
+        "long_horizon_tc_recomputed_max_abs_diff": 0.0,
+        "long_horizon_tail_window": int(H.LONG_HORIZON_TAIL_WINDOW),
+        "long_horizon_tail_kl_first_max": 0.0,
+        "long_horizon_tail_kl_mean_max": 0.0,
+        "long_horizon_tail_kl_window_max": 0.0,
+        "long_horizon_adjacent_kl_mean_max": 0.0,
+        "long_horizon_adjacent_kl_max": 0.0,
+    }
+    summary_path = out / "data" / "long_horizon_summary.json"
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+
+    summary_path.write_text(json.dumps(summary | {"long_horizon_tail_window": 999}), encoding="utf-8")
+    assert pymdp_validators.validate_long_horizon() >= 1
+
+    steady_state_tol = float(H.LONG_HORIZON_STEADY_STATE_TOL)
+    summary_path.write_text(
+        json.dumps(summary | {"long_horizon_tail_kl_window_max": steady_state_tol * 2.0}),
+        encoding="utf-8",
+    )
+    assert pymdp_validators.validate_long_horizon() >= 1
+
+    summary_path.write_text(json.dumps(summary | {"long_horizon_adjacent_kl_max": -1.0}), encoding="utf-8")
+    assert pymdp_validators.validate_long_horizon() >= 1
+
+
+def test_long_horizon_replicates_validator_flags_row_drift(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    seeds = [int(s) for s in H.LONG_HORIZON_REPLICATE_SEEDS]
+    rows = [[str(seed), str(t), "0.1", "1", "0.0", "0.0"] for seed in seeds for t in range(5)]
+    _write_output_csv(out / "simulations" / "pymdp_long_horizon_replicates.csv", _REPLICATE_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon_replicates() >= 1
+
+
+def test_long_horizon_seed_diagnostics_flags_margin_and_mode_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    seeds = [int(s) for s in H.LONG_HORIZON_REPLICATE_SEEDS]
+    tol = float(H.LONG_HORIZON_STEADY_STATE_TOL)
+    path = out / "simulations" / "pymdp_long_horizon_seed_diagnostics.csv"
+
+    def rows(*, habit: int, mode: str, margin: str) -> list[list[str]]:
+        return [[str(s), str(habit), "0.1", "0.2", "0.0", "0.0", margin, mode] for s in seeds]
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=1, mode="passes", margin=f"{tol:.6f}"))
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() == 0
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=1, mode="passes", margin="999.0"))
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=1, mode="tail_window_kl_above_tol", margin=f"{tol:.6f}"))
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=0, mode="passes", margin=f"{tol:.6f}"))
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=1, mode="passes", margin=f"{tol:.6f}")[:-2])
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
+
+    _write_output_csv(path, _DIAGNOSTIC_HEADER, rows(habit=2, mode="passes", margin=f"{tol:.6f}"))
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() >= 1
+
+
+def test_long_horizon_threshold_sensitivity_flags_rate_and_ci_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    thresholds = [float(x) for x in H.LONG_HORIZON_DIAGNOSTIC_THRESHOLDS]
+    rows = [[f"{th:.6f}", "0.6", "3", "2", "0.3", "0.9"] for th in thresholds]
+    path = out / "simulations" / "pymdp_long_horizon_threshold_sensitivity.csv"
+
+    _write_output_csv(path, _THRESHOLD_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon_threshold_sensitivity() == 0
+
+    rows[2] = [f"{thresholds[2]:.6f}", "1.5", "3", "2", "0.3", "0.9"]
+    _write_output_csv(path, _THRESHOLD_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon_threshold_sensitivity() >= 1
+
+    rows[2] = [f"{thresholds[2]:.6f}", "0.6", "3", "2", "0.7", "0.9"]
+    _write_output_csv(path, _THRESHOLD_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon_threshold_sensitivity() >= 1
+
+    _write_output_csv(path, _THRESHOLD_HEADER, rows[:-2])
+    assert pymdp_validators.validate_long_horizon_threshold_sensitivity() >= 1
+
+
+def test_long_horizon_validators_accept_absent_artifacts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_output_dir(monkeypatch, tmp_path)
+    assert pymdp_validators.validate_long_horizon() == 0
+    assert pymdp_validators.validate_long_horizon_replicates() == 0
+    assert pymdp_validators.validate_long_horizon_seed_diagnostics() == 0
+    assert pymdp_validators.validate_long_horizon_threshold_sensitivity() == 0
+
+
+def test_long_horizon_validator_flags_row_sequence_and_negative_tc(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    steps = int(H.LONG_HORIZON_STEPS)
+    rows = _long_horizon_table(steps)
+    rows[3][0] = "7"
+    rows[4][1] = "-1.0"
+    _write_output_csv(out / "simulations" / "pymdp_long_horizon.csv", _LONG_HORIZON_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon() >= 1
+
+
+def test_long_horizon_replicates_validator_flags_row_content(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    seeds = [int(s) for s in H.LONG_HORIZON_REPLICATE_SEEDS]
+    rows = [
+        [str(seed), str(2 * t), "0.1", "1", "0.0", "0.0"]
+        for seed in seeds
+        for t in range(5)
+        if not (seed == seeds[0] and t == 1)
+    ]
+    rows.append([str(seeds[0]), "1", "0.1", "2", "0.0", "0.0"])
+    rows.append([str(seeds[0]), "1", "-0.5", "1", "0.0", "0.0"])
+    _write_output_csv(out / "simulations" / "pymdp_long_horizon_replicates.csv", _REPLICATE_HEADER, rows)
+    assert pymdp_validators.validate_long_horizon_replicates() >= 1
+
+
+def test_long_horizon_replicates_validator_flags_summary_seed_count(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    seeds = [int(s) for s in H.LONG_HORIZON_REPLICATE_SEEDS]
+    steps = int(H.LONG_HORIZON_STEPS)
+    rows = [[str(seed), str(t), "0.1", "1", "0.0", "0.0"] for seed in seeds for t in range(steps)]
+    _write_output_csv(out / "simulations" / "pymdp_long_horizon_replicates.csv", _REPLICATE_HEADER, rows)
+    summary_path = out / "data" / "long_horizon_replicates_summary.json"
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(
+            {
+                "long_horizon_replicate_seed_count": 3,
+                "long_horizon_replicate_habit_pass_rate": 0.5,
+                "long_horizon_replicate_tc_final_mean": 0.1,
+                "long_horizon_replicate_tail_kl_window_max": 0.05,
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert pymdp_validators.validate_long_horizon_replicates() >= 1
+
+
+def test_robustness_validators_flag_absent_and_short_artifacts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    out = _patch_output_dir(monkeypatch, tmp_path)
+    assert pymdp_validators.validate_robustness_suite() == 0
+    assert pymdp_validators.validate_coupling_ablation() == 0
+
+    _write_output_csv(
+        out / "simulations" / "pymdp_robustness.csv",
+        ["scenario_id", *sorted(_ROBUSTNESS_REQUIRED - {"scenario_id"})],
+        [["coupling_0", *["0.0"] * len(_ROBUSTNESS_REQUIRED - {"scenario_id"})]],
+    )
+    assert pymdp_validators.validate_robustness_suite() >= 1
+
+    _write_output_csv(
+        out / "simulations" / "pymdp_coupling_ablation.csv",
+        ["variant", *sorted(_ABLATION_REQUIRED - {"variant"})],
+        [["null", *["0.0"] * len(_ABLATION_REQUIRED - {"variant"})]],
+    )
+    assert pymdp_validators.validate_coupling_ablation() >= 1
