@@ -15,7 +15,7 @@ Confirmed by `uv run python scripts/build_lean.py`:
 
 | Item | Current state |
 |---|---|
-| Toolchain | stock Lean 4 v4.29.0 |
+| Toolchain | stock Lean 4 v4.35.0 |
 | Lake build | 22 jobs green |
 | Boundary modules | 17 files under `lean/ActinfPolicyEntanglement/` |
 | Hygiene | 0 strict `sorry`, 0 `axiom`, 0 `unsafe` / `partial` / `noncomputable`, 0 `Mathlib` imports |

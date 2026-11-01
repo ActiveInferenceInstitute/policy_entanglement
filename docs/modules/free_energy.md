@@ -17,7 +17,7 @@ fragment.  Every other Lean module (`Decomposition`, `Geometry`,
 definitions to state a higher-level identity.  The module is
 deliberately Mathlib-free: every quantity is a simple `Float`-valued
 reduction over a `Finset`-style finite support that the caller
-supplies, so the file compiles on stock Lean 4 v4.29.0.
+supplies, so the file compiles on stock Lean 4 v4.35.0.
 
 Mathlib analogs (slated for the Mathlib refinement payload-discharge)
 are noted in each definition's docstring; the Mathlib refinement

@@ -25,7 +25,7 @@ stack, and a modular manuscript.
 
 The Lean fragment is currently:
 
-- **Mathlib-free** — builds on stock Lean 4 v4.29.0
+- **Mathlib-free** — builds on stock Lean 4 v4.35.0
 - **`sorry`-free** — every algebraic theorem is fully proved on the
   in-house `CommScalar α` typeclass, every existence theorem is
   expressed as a witness-consuming boundary form
@@ -81,7 +81,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
 ├── conftest.py          ← canonical `src/` PYTHONPATH insertion
 ├── lean/                ← Lean 4 package (boundary fragment + FepSketches re-exports)
 │   ├── lakefile.lean    ← Lake build config; Mathlib-free / sorry-free / axiom-free
-│   ├── lean-toolchain   ← pinned to leanprover/lean4:v4.29.0
+│   ├── lean-toolchain   ← pinned to leanprover/lean4:v4.35.0
 │   ├── ActinfPolicyEntanglement/
 │   │   ├── Basic · Scalar · JointDist · Coupling · FreeEnergy · Geometry · Spectral
 │   │   ├── Heterogeneous · BernoulliToy · Decomposition · Constructive · Monotonicity
@@ -111,7 +111,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
 
 1. **Mathlib-free at the Lean boundary.** Do not add `import Mathlib…`
    to any module under `lean/ActinfPolicyEntanglement/` or
-   `lean/FepSketches/`. The package builds on stock Lean 4 v4.29.0;
+   `lean/FepSketches/`. The package builds on stock Lean 4 v4.35.0;
    any Mathlib refinement lives in a separate `MathlibProofs`
    library inside `lean/`.
 2. **Hygiene budget = 0.** No `sorry`, no `axiom`, no `unsafe` /

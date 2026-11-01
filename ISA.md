@@ -94,7 +94,7 @@ RedTeam concur, and a certify verdict issued.
 ### Genuine fixes from the review
 - [x] ISC-13: S08 hardcoded `7.77e-16` literal → `[[VAR:gnn_roundtrip_max_residual:.2e]]` token.
 - [x] ISC-14: S08 three mis-pointed `[[SECREF:open_questions]]` (GNN residuals) → `[[SECREF:app.gnn_downstream]]` (legit Q8 graph-neural-network refs kept).
-- [x] ISC-15: 1C hardcoded `stock Lean v4.29.0` → `[[VAR:lean_toolchain_version]]` (pre-existing drift in untouched parts).
+- [x] ISC-15: 1C hardcoded `stock Lean v4.29.0` → `[[VAR:lean_toolchain_version]]` (pre-existing drift in untouched parts). *Historical issue record, fixed at that epoch; the fleet pin is now `leanprover/lean4:v4.35.0`.*
 - [x] ISC-16: soundness-gate fail-closed fix — `tests/test_mathlib_axiom_audit.py` no longer skips-green on a nonzero build with the toolchain present; nonzero → FAIL (the advisor+Forge #1 must-fix).
 - [x] ISC-17: ISC-16 fix is NON-VACUOUS — `classify_axiom_probe` unit test proves nonzero/sorryAx → "fail" even with the xfail opt-out; green path (rc=0) unchanged.
 - [x] ISC-18: dated static axiom-audit witness committed (`docs/_audit/MATHLIB_AXIOM_AUDIT.md`) so a referee confirms foundational-only without rebuilding.
@@ -163,7 +163,7 @@ RedTeam concur, and a certify verdict issued.
 - ISC-12: no "verified/proven/machine-checked" crosses the Float↔ℝ bridge unqualified — grep co-occurrences all properly scoped (1C:136 "machine-checks ℝ and tests the Float"; 3B:218 the roadmap bridge; 3B:231 "no claim"; 3A:10 the precise "machine-checked means…").
 - ISC-13: S08 `7.77e-16` → `[[VAR:gnn_roundtrip_max_residual:.2e]]` (renders).
 - ISC-14: S08 :40/:70/:133 `[[SECREF:open_questions]]` → `[[SECREF:app.gnn_downstream]]`; legit Q8 graph-NN refs (:41,:43) kept; renders.
-- ISC-15: 1C:129 `stock Lean v4.29.0` → `stock Lean [[VAR:lean_toolchain_version]]`.
+- ISC-15: 1C:129 `stock Lean v4.29.0` → `stock Lean [[VAR:lean_toolchain_version]]`. *Historical issue record; the fleet pin is now `leanprover/lean4:v4.35.0`.*
 - ISC-16: `tests/test_mathlib_axiom_audit.py` fail-closed — `classify_axiom_probe` replaces the skip-on-nonzero; nonzero+toolchain-present → FAIL. Both axiom-audit tests pass (`tests/test_mathlib_axiom_audit.py ..`).
 - ISC-17: NON-VACUITY — `test_classify_axiom_probe_is_fail_closed` green: rc=0→pass; rc≠0 (incl. sorryAx) → "fail" even with xfail opt-out; only provisioning-gap+opt-out → xfail. Green path (rc=0) unchanged → no regression.
 - ISC-18: `docs/_audit/MATHLIB_AXIOM_AUDIT.md` dated witness committed (verbatim `#print axioms`, command, exit, scope).

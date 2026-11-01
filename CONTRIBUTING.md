@@ -133,7 +133,7 @@ These are non-negotiable. CI enforces every one of them.
 ## Development environment
 
 * **Python:** 3.10–3.12 (CI matrix tests all three).
-* **Lean:** 4.29.0, pinned via `lean/lean-toolchain`.
+* **Lean:** 4.35.0, pinned via `lean/lean-toolchain`.
 * **Package manager:** `uv` (`uv sync --group sim --group viz`).
 * **IDE:** point your interpreter at `.venv/bin/python` after `uv sync`.
 

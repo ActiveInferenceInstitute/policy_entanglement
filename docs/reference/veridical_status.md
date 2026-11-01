@@ -40,7 +40,7 @@ Live count from `lake build` + `scripts/build_lean.py`:
 
 The headline "76 theorems / lemmas" count above is the literal number
 of `theorem` / `lemma` keywords the Lean kernel checks. Every one of
-those declarations type-checks under stock Lean v4.29.0, but **they
+those declarations type-checks under stock Lean v4.35.0, but **they
 do not all carry the same mathematical weight**. The honest split:
 
 | Category | Approx count | What it certifies |

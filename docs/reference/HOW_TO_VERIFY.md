@@ -8,7 +8,7 @@
 ## 1.  Float boundary fragment (fast — ~5 minutes cold)
 
 Verifies the typed-API surface every numbered theorem rides on.  Stock
-Lean 4.29.0; **no Mathlib dependency**.
+Lean 4.35.0; **no Mathlib dependency**.
 
 ```bash
 cd lean
@@ -45,7 +45,7 @@ uv run python scripts/build_mathlib_proofs.py
 uv run pytest tests/test_mathlib_axiom_audit.py -v
 ```
 
-Cold build of the Mathlib v4.29.0 dependency tree is multi-hour; warm
+Cold build of the Mathlib v4.35.0 dependency tree is multi-hour; warm
 re-builds (incremental) are minutes.  Expected: 8249 jobs green, exit
 0, `#print axioms free_energy_decomposition_full` returns
 `[propext, Classical.choice, Quot.sound]` only.  Two independent

@@ -17,7 +17,7 @@ per-stream factors into a joint mass function.
 
 It avoids `Mathlib.Probability.PMF` by using plain `Float`-valued
 mass functions and a `List` support, so the boundary fragment
-compiles on stock Lean 4 v4.29.0.
+compiles on stock Lean 4 v4.35.0.
 
 ## Types
 

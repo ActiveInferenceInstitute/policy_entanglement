@@ -10,7 +10,7 @@ Lean 4 package for *Policy Entanglement in Active Inference* — the
 
 The package is intentionally **Mathlib-free** at the boundary layer so
 the core entanglement-decomposition skeleton compiles on a stock
-Lean 4 toolchain (pinned to leanprover/lean4:v4.29.0 to match the
+Lean 4 toolchain (pinned to leanprover/lean4:v4.35.0 to match the
 `fep_lean` release pin used in sibling template manuscripts).
 
 **Hygiene state:** zero `sorry`, zero `axiom`, zero

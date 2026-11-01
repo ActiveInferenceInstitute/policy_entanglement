@@ -5,7 +5,7 @@
 Lean 4 boundary fragment for the Policy Entanglement project.
 **Seventeen** submodules under `lean/ActinfPolicyEntanglement/` plus the
 `ActinfPolicyEntanglement.lean` root, building on **stock Lean 4
-v4.29.0** with **no Mathlib dependency**, **no `sorry`**, **no
+v4.35.0** with **no Mathlib dependency**, **no `sorry`**, **no
 `axiom`**, and **no `unsafe` / `partial` / `noncomputable`**. Phase 0
 is complete: every numbered manuscript theorem (21 total) has a live
 Lean companion — 11 witness, 5 proved, 1 forwarder, 3 boundary.

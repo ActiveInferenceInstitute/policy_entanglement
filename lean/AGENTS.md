@@ -6,7 +6,7 @@ Working notes for agents editing the Lean 4 boundary fragment.
 `output/data/manuscript_variables.json` (`lean_*`, `theorem_registry_count`)
 and `scripts/build_lean.py` / `output/reports/test_results.json` — do not
 hard-code declaration totals here. The boundary fragment builds on the pin in
-`lean/lean-toolchain` (currently Lean 4 v4.29.0). Per-theorem status lives in
+`lean/lean-toolchain` (currently Lean 4 v4.35.0). Per-theorem status lives in
 [`docs/reference/veridical_status.md`](../docs/reference/veridical_status.md).
 The additive MathlibProofs plan lives in
 [`ActinfPolicyEntanglement/MathlibRefinementRoadmap.md`](ActinfPolicyEntanglement/MathlibRefinementRoadmap.md);
@@ -19,7 +19,7 @@ is in [`STYLE.md`](STYLE.md).
    `ActinfPolicyEntanglement/` or `FepSketches/`.  Mathlib refinement
    is an additive MathlibProofs task — see
    [`ActinfPolicyEntanglement/MathlibRefinementRoadmap.md`](ActinfPolicyEntanglement/MathlibRefinementRoadmap.md).
-2. **Pin: Lean 4 v4.29.0.**  Match `lean-toolchain` to the release pin
+2. **Pin: Lean 4 v4.35.0.**  Match `lean-toolchain` to the release pin
    used in
    [`ActiveInferenceInstitute/fep_formal`](https://github.com/ActiveInferenceInstitute/fep_formal)
    so template-side builds stay comparable.

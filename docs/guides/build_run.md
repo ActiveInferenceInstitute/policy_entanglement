@@ -23,7 +23,7 @@ Coupling, Decomposition, FreeEnergy, Geometry, Heterogeneous,
 JointDist, **MarkovBlanket** (round-2), Monotonicity, Scalar, Spectral,
 **SpectralWitnesses** (round-3), **ConnectionsWitnesses** (round-3),
 `FloatRealResidualWitness`)
-all compile and type-check on stock Lean 4 v4.29.0. The substantive
+all compile and type-check on stock Lean 4 v4.35.0. The substantive
 stock-Lean algebraic subset is proved in the boundary fragment; analytic
 content outside the stock-Lean boundary (KL chain rule, SVD-based rank,
 real-analytic continuity, tensor-train rank envelopes, measure
@@ -43,7 +43,7 @@ enforced by
 
 ### Toolchain
 
-The package pins `leanprover/lean4:v4.29.0` via
+The package pins `leanprover/lean4:v4.35.0` via
 [`../lean/lean-toolchain`](../../lean/lean-toolchain).  `lake build` uses
 [elan](https://github.com/leanprover/elan) to install the right toolchain
 on first invocation.

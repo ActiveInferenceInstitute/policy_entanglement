@@ -79,7 +79,7 @@ def test_build_manuscript_variables_core_keys() -> None:
     assert facts["lean_submodule_count"] >= 10
     assert "theorem_registry_count" in facts
     assert "run_all_script_count" in facts
-    assert facts["lean_toolchain_version"] == "v4.29.0"
+    assert facts["lean_toolchain_version"] == "v4.35.0"
     assert facts["pymdp_distribution_version"] == "1.0.1"
     assert "leanprover/lean4:" in facts["lean_toolchain_pin"]
 

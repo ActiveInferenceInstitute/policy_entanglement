@@ -98,7 +98,7 @@ deliberately at the K=2 binary toy so that the conceptual move (the
 The project has **two Lean packages** with complementary roles:
 
 1. **`lean/ActinfPolicyEntanglement/`** — the *Float boundary fragment*.
-   Compiles on stock Lean 4.29.0 with **no Mathlib dependency**, zero
+   Compiles on stock Lean 4.35.0 with **no Mathlib dependency**, zero
    `sorry`, zero non-foundational axioms.  Its job is to give every
    numbered theorem a *typed* declaration that the manuscript
    renderer embeds via `[[LEAN:...]]` tokens — so prose and Lean

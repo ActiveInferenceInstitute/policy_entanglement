@@ -9,7 +9,7 @@
 - **Audit date:** 2026-05-24
 - **Command:** `uv run python scripts/build_mathlib_proofs.py`
 - **Exit code:** `0`
-- **Toolchain:** `leanprover/lean4:v4.29.0` + Mathlib (the `lean/MathlibProofs/` package)
+- **Toolchain:** `leanprover/lean4:v4.29.0` + Mathlib at this 2026-05-24 audit epoch (the repository now pins `leanprover/lean4:v4.35.0`; the live audit is `scripts/build_mathlib_proofs.py`)
 - **Result:** all 9 keystone theorems `#print axioms` foundational-only — i.e. only
   `propext`, `Classical.choice`, `Quot.sound` (no `sorryAx`, no `native_decide`,
   no project-introduced axiom).
