@@ -6,6 +6,12 @@
   "test_count_min": 1428,
   "test_failed_max": 0,
   "coverage_percent_min": 95.22,
+  "coverage_percent_min_evidence": {
+    "comment": "The environment this floor was measured in was not recorded when the baseline was captured (round-6-thermo-nuclear, 2026-05-23). Re-measured 2026-11-01 with `pytest tests/ --cov=src --cov-fail-under=95`: 95.35% with the pymdp `sim` group installed (commit 9633185, `uv sync --group sim --group viz`), 88.39% without it (commit d88c6f6, 173 tests skipped because the pymdp-gated modules are unimportable). The recorded 95.22 therefore does not reproduce in either environment today; tolerance.coverage_drop_pct_max (1.0 point) absorbs the gap. Re-baselining is a deliberate maintainer decision, not a drive-by edit.",
+    "recorded_environment": "unrecorded",
+    "recorded_at": "2026-05-23",
+    "rechecked_at": "2026-11-01"
+  },
   "invariant_count_min": 47,
   "lean_lake_jobs_min": 22,
   "lean_sorry_max": 0,
