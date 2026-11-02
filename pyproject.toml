@@ -37,11 +37,11 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 
-# inferactively-pymdp==1.0.1 brings the `pymdp` import plus the JAX /
+# inferactively-pymdp==1.0.4 brings the `pymdp` import plus the JAX /
 # chex / equinox stack used by src/simulation/ to simulate the analytical
 # setting end-to-end.
 sim = [
-    "inferactively-pymdp==1.0.1",
+    "inferactively-pymdp==1.0.4",
 ]
 
 # Visualization extras (heatmaps, dendrograms, network diagrams).
@@ -65,7 +65,7 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 sim = [
-    "inferactively-pymdp==1.0.1",
+    "inferactively-pymdp==1.0.4",
 ]
 viz = [
     "seaborn>=0.13.0",
@@ -94,11 +94,11 @@ python_files = ["test_*.py"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short --strict-markers"
 markers = [
-    "requires_pymdp: tests that require the inferactively-pymdp==1.0.1 sim group",
+    "requires_pymdp: tests that require the inferactively-pymdp==1.0.4 sim group",
     "slow: longer-running integration tests",
 ]
 filterwarnings = [
-    # inferactively-pymdp==1.0.1 + Equinox emit a benign UserWarning on Agent construction.
+    # inferactively-pymdp==1.0.4 + Equinox emit a benign UserWarning on Agent construction.
     "ignore:A JAX array is being set as static.*:UserWarning",
 ]
 
