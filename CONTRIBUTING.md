@@ -14,7 +14,7 @@ reference if anything in this guide drifts.
 ## TL;DR (5-minute setup)
 
 ```bash
-# 1. Sync deps (sim + viz groups recommended)
+# 1. Sync deps (sim + viz groups: the coverage gate's environment)
 uv sync --group sim --group viz
 
 # 2. Verify the Lean budget is 0 sorry / 0 axiom / 0 unsafe
@@ -29,14 +29,15 @@ uv run python scripts/run_all.py
 
 If all four steps exit 0 you are ready to contribute.
 
-> **Coverage gate note.** The ≥95% `src/` floor is defined for the
-> reproducible core environment (`uv sync` with no extras). With the
-> optional pymdp `sim` group installed, the pymdp-gated simulation
-> surface becomes reachable-but-thinly-covered and the aggregate
-> measures ~94.8% — a documented rotating-project exception
-> (`pyproject.toml` → `[tool.coverage]`), not a regression. For the
-> gate run, use the core environment; install `--group sim --group viz`
-> when you need to exercise the pymdp surface locally.
+> **Coverage gate note.** The ≥95% `src/` floor is single-sourced from
+> `pyproject.toml` (`[tool.coverage.report] fail_under`) and enforced in the
+> environment that installs the optional pymdp `sim` group — the same
+> environment `docs/reference/reproducibility_checklist.md` prescribes and
+> `scripts/run_all.py` runs in. Without that group the pymdp-gated simulation
+> modules are unreachable and their lines count as uncovered, so the aggregate
+> measures ~88% and the floor cannot be met there. Shortfalls are covered by the
+> pipeline gate's recorded rotating-project tolerance
+> (`scripts/regression_baseline.json`); the floor itself is never lowered.
 
 ## Project layout
 
@@ -133,7 +134,7 @@ These are non-negotiable. CI enforces every one of them.
 ## Development environment
 
 * **Python:** 3.10–3.12 (CI matrix tests all three).
-* **Lean:** 4.29.0, pinned via `lean/lean-toolchain`.
+* **Lean:** 4.35.0, pinned via `lean/lean-toolchain`.
 * **Package manager:** `uv` (`uv sync --group sim --group viz`).
 * **IDE:** point your interpreter at `.venv/bin/python` after `uv sync`.
 

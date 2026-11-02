@@ -23,7 +23,7 @@ Coupling, Decomposition, FreeEnergy, Geometry, Heterogeneous,
 JointDist, **MarkovBlanket** (round-2), Monotonicity, Scalar, Spectral,
 **SpectralWitnesses** (round-3), **ConnectionsWitnesses** (round-3),
 `FloatRealResidualWitness`)
-all compile and type-check on stock Lean 4 v4.29.0. The substantive
+all compile and type-check on stock Lean 4 v4.35.0. The substantive
 stock-Lean algebraic subset is proved in the boundary fragment; analytic
 content outside the stock-Lean boundary (KL chain rule, SVD-based rank,
 real-analytic continuity, tensor-train rank envelopes, measure
@@ -43,7 +43,7 @@ enforced by
 
 ### Toolchain
 
-The package pins `leanprover/lean4:v4.29.0` via
+The package pins `leanprover/lean4:v4.35.0` via
 [`../lean/lean-toolchain`](../../lean/lean-toolchain).  `lake build` uses
 [elan](https://github.com/leanprover/elan) to install the right toolchain
 on first invocation.
@@ -149,7 +149,7 @@ report three different scopes:
 | `scripts/generate_figures.py` + `scripts/simulate_pymdp.py` + round-3 sims (`simulate_multi_k.py`, `simulate_long_horizon.py`, `simulate_revertibility.py`) | **35** | Adds the round-3 experiments: `multi_k_total_correlation`, `multi_k_aligned_mass`, `multi_k_tt_rank_profile`, `long_horizon_marginals`, `long_horizon_steady_state`, `revertibility_witness`. |
 | Figure suite through `scripts/simulate_robustness.py` | **44** | Adds the robustness expansion: TC envelopes, half-saturation, decomposition residuals, coupling ablation, marginal-null control, interaction robustness, long-horizon replicate envelope, seed diagnostics, and threshold sensitivity. |
 | Full figure suite including `scripts/simulate_btai.py` and `scripts/simulate_adversarial.py` | **46** | Adds the shipped BTAI baseline panel and adversarial-perturbation panel. |
-| `scripts/simulate_gnn.py` | 1 diagnostic PNG | Writes `gnn_bernoulli_roundtrip.png`; validated as an output and discussed in S08, but not registered as a numbered manuscript figure. |
+| `scripts/simulate_gnn.py` | 1 diagnostic PNG + 2 JSON sidecars | Writes `gnn_bernoulli_roundtrip.png` and the sidecars `gnn_bernoulli_roundtrip.json` / `gnn_production_conformance.json`; validated as outputs and discussed in S08, but not registered as a numbered manuscript figure. |
 | `manuscript/refs/labels.yaml::figures` (all registry entries) | **46** | Every paper-facing figure registered for cross-reference; auto-derived via `len(labels.figures)`. The GNN diagnostic PNG is validated separately, outside the numbered figure registry. |
 
 The 15 / 29 / 35 / 44 / 46 paper-facing counts, the extra GNN

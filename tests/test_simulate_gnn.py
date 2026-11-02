@@ -14,7 +14,7 @@ import pytest
 
 from gnn.lean_emit import _bool_arg, _lean_float, emit_lean_structure
 from gnn.parser import parse_gnn_file
-from gnn.runner import FIGURE_NAME, SIDECAR_NAME, run
+from gnn.runner import CONFORMANCE_SIDECAR_NAME, FIGURE_NAME, SIDECAR_NAME, run
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 GNN_DIR = PROJECT_ROOT / "gnn"
@@ -41,6 +41,7 @@ def test_runner_sidecar_is_byte_identical_on_rerun(tmp_path: Path) -> None:
     run(data_dir=d1, fig_dir=f1, gnn_dir=GNN_DIR, lean_out=tmp_path / "a.lean")
     run(data_dir=d2, fig_dir=f2, gnn_dir=GNN_DIR, lean_out=tmp_path / "b.lean")
     assert (d1 / SIDECAR_NAME).read_bytes() == (d2 / SIDECAR_NAME).read_bytes()
+    assert (d1 / CONFORMANCE_SIDECAR_NAME).read_bytes() == (d2 / CONFORMANCE_SIDECAR_NAME).read_bytes()
 
 
 def test_emitted_lean_is_a_typed_contract_not_a_proof() -> None:

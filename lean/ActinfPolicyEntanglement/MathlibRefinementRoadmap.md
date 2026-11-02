@@ -43,7 +43,7 @@ hypotheses currently passed as `structure` parameters.
 This roadmap does **not** describe a current gap in the live tree. The
 boundary fragment under [`./`](.) is:
 
-* **Mathlib-free** — compiles on stock Lean 4 v4.29.0 with zero Mathlib imports,
+* **Mathlib-free** — compiles on stock Lean 4 v4.35.0 with zero Mathlib imports,
 * **0 strict `sorry`** — every `.lean` file in the boundary fragment is free of blocking `sorry`s (the only mentions of the word live in docstrings advertising this fact),
 * **0 `axiom`** beyond the stock Lean kernel,
 * **0 `unsafe` / `partial` / `noncomputable`** declarations,
@@ -292,7 +292,7 @@ contributor; KL bookkeeping discharge of `thm_4_1` is the
 
 The live boundary fragment under [`./`](.) ships **17 submodules** with
 **0 strict `sorry`, 0 axioms, 0 `unsafe`/`partial`/`noncomputable`, and
-no Mathlib import** on stock Lean 4 v4.29.0, certifying a live Lean
+no Mathlib import** on stock Lean 4 v4.35.0, certifying a live Lean
 companion for **every** numbered manuscript theorem (11 witness, 5
 proved, 1 forwarder, 3 boundary). The Mathlib4 discharge work
 described above is the additive plan to discharge the analytic content

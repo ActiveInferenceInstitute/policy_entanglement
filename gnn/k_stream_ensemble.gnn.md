@@ -112,7 +112,7 @@ gamma={(0.0)}
 
 Static
 
-## ActInf Ontology Annotation
+## ActInfOntologyAnnotation
 
 pi1=Stream1PolicyVector
 pi2=Stream2PolicyVector

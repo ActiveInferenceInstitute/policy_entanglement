@@ -109,7 +109,7 @@ Then deep dives:
 | Strict `sorry` | Guarded zero budget | enforced by `scripts/build_lean.py` |
 | `axiom` declarations | Guarded zero budget | enforced by `scripts/build_lean.py` |
 | `unsafe` / `partial` / `noncomputable` | Guarded zero budget | enforced by `scripts/build_lean.py` |
-| Boundary Mathlib imports | Guarded zero budget | stock Lean v4.29.0 boundary |
+| Boundary Mathlib imports | Guarded zero budget | stock Lean v4.35.0 boundary |
 
 ### Theorem-registry roll-up
 

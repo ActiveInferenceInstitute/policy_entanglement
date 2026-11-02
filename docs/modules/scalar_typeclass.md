@@ -1,7 +1,7 @@
 # `ActinfPolicyEntanglement.Scalar` — abstract scalar typeclass
 
 The `Scalar` module is the foundation that lets the boundary fragment
-prove its algebraic identities **on stock Lean 4 v4.29.0**, without
+prove its algebraic identities **on stock Lean 4 v4.35.0**, without
 Mathlib, without `axiom`s, and without `sorry`s.
 
 It exists because IEEE 754 `Float` arithmetic does not literally

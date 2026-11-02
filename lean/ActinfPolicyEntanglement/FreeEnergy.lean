@@ -3,7 +3,7 @@
 
    Mathlib-free boundary fragment: every quantity is defined via a
    simple `Float`-valued reduction over a `Finset` support that the
-   caller supplies, so this module compiles on stock Lean 4 v4.29.0.
+   caller supplies, so this module compiles on stock Lean 4 v4.35.0.
    Numerical realizations live in
    [`src/lean/free_energy.py`](../../src/lean/free_energy.py). -/
 

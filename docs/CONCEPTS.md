@@ -98,7 +98,7 @@ deliberately at the K=2 binary toy so that the conceptual move (the
 The project has **two Lean packages** with complementary roles:
 
 1. **`lean/ActinfPolicyEntanglement/`** — the *Float boundary fragment*.
-   Compiles on stock Lean 4.29.0 with **no Mathlib dependency**, zero
+   Compiles on stock Lean 4.35.0 with **no Mathlib dependency**, zero
    `sorry`, zero non-foundational axioms.  Its job is to give every
    numbered theorem a *typed* declaration that the manuscript
    renderer embeds via `[[LEAN:...]]` tokens — so prose and Lean
@@ -124,8 +124,12 @@ For a step-by-step verification recipe see
 Supplemental section §S8 ships **Generalized Notation Notation (GNN)**
 [Smékal & Friedman 2023] as a fifth structural-and-numerical
 representation of the framework.  The bridge includes a project-owned
-GNN parser, a K=2 Bernoulli round-trip from `gnn/bernoulli_toy.gnn.md`,
-a Lean typed-contract emitter, and a `simulate_gnn.py` pipeline stage.
+GNN parser checked against the pinned upstream parser
+(`gnn/upstream.json`), a K=2 Bernoulli round-trip from
+`gnn/bernoulli_toy.gnn.md`, a production ensemble specified in
+`gnn/production_ensemble.gnn.md` and verified elementwise against
+`src/simulation/builders.py`, a Lean typed-contract emitter, and a
+`simulate_gnn.py` pipeline stage.
 It does **not** prove theorems or promote any registry row: the
 four-track proof contract (prose / equations / Python / Lean) remains
 the analytic contract.  See

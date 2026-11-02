@@ -171,7 +171,7 @@ grep -rn 'sorry' lean/ActinfPolicyEntanglement/*.lean
 Expected: **0 strict `sorry`** in the boundary fragment — the
 17 boundary submodules under
 [`lean/ActinfPolicyEntanglement/`](../../lean/ActinfPolicyEntanglement/)
-all compile and type-check on stock Lean 4 v4.29.0. The substantive
+all compile and type-check on stock Lean 4 v4.35.0. The substantive
 stock-Lean algebraic subset is proved in the boundary fragment, while
 analytic content outside the stock-Lean boundary is exposed as
 witness-consuming theorems rather than `sorry` placeholders. The

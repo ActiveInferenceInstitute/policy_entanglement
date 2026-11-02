@@ -1,7 +1,7 @@
 /- `ActinfPolicyEntanglement.JointDist` — joint and mean-field
    distributions on the policy space.  Mathlib-free; uses `Float` for
    masses and `List` for the policy support so the boundary fragment
-   compiles on stock Lean 4 v4.29.0.
+   compiles on stock Lean 4 v4.35.0.
 
    Numerical realizations live in
    [`src/lean/joint_dist.py`](../../src/lean/joint_dist.py). -/

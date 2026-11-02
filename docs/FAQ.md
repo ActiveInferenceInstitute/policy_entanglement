@@ -85,7 +85,7 @@ recipes, see
 
 By choice.  The Lean 4 boundary fragment ships with **0 strict
 `sorry`, 0 axioms, 0 unsafe/partial/noncomputable, 0 Mathlib
-imports**, on stock Lean v4.29.0.
+imports**, on stock Lean v4.35.0.
 
 This is achieved by stating analytic content (KL chain rule,
 real-analytic continuity, matrix SVD, tensor-train rank envelopes,
@@ -246,7 +246,7 @@ Three reasons:
    Reducing the dependency surface reduces the number of moving
    parts that can drift.
 2. **Lean hygiene.**  The boundary fragment depends on stock Lean
-   v4.29.0 + nothing else.  Mathlib is a deliberate non-dependency.
+   v4.35.0 + nothing else.  Mathlib is a deliberate non-dependency.
 3. **Pipeline runtime.**  The full `run_all.py` walks the live `SCRIPTS` table
    in tens of seconds on a stock laptop because each stage is a thin
    Python orchestrator over numpy.

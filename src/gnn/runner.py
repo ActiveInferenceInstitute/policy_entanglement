@@ -17,6 +17,16 @@ carries both the agreement residual and an embedded **zero-coupling
 negative-control** residual (proving the bridge responds to the declared
 coupling), so that evidence is a durable artifact, not just a test-time
 assertion.
+
+The same stage also verifies the **production harness** against its GNN
+specification: :func:`compute_production_conformance` compares
+``gnn/production_ensemble.gnn.md`` elementwise against
+:func:`gnn.harness.production_ensemble` (the ensemble
+``simulation.builders.make_ising_ensemble`` materializes under the
+``simulation.hyperparameters`` constants) and emits
+``output/data/gnn_production_conformance.json`` with the per-array residuals
+and an embedded control-slice-swap negative control.  Harness drift fails the
+stage.
 """
 
 from __future__ import annotations
@@ -29,6 +39,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from gnn.bridge import reconstruct_mi_curve
+from gnn.harness import conformance_negative_control, conformance_report, production_ensemble
 from gnn.lean_emit import emit_lean_structure
 from gnn.parser import parse_gnn_file
 from lean.bernoulli_toy import ising_mutual_information  # INDEPENDENT comparison oracle (closed form)
@@ -40,7 +51,9 @@ from simulation.hyperparameters import (
 ArrayF = NDArray[np.float64]
 
 TOY_GNN = "bernoulli_toy.gnn.md"
+PRODUCTION_GNN = "production_ensemble.gnn.md"
 SIDECAR_NAME = "gnn_bernoulli_roundtrip.json"
+CONFORMANCE_SIDECAR_NAME = "gnn_production_conformance.json"
 FIGURE_NAME = "gnn_bernoulli_roundtrip.png"
 LEAN_NAME = "BernoulliToyGnn.lean"
 
@@ -97,6 +110,36 @@ def compute_roundtrip(gnn_dir: Path) -> dict[str, object]:
     }
 
 
+def compute_production_conformance(gnn_dir: Path) -> dict[str, object]:
+    """Compare the production spec against the harness build and build the payload.
+
+    Parses ``gnn/production_ensemble.gnn.md``, reconstructs the ensemble from
+    its declarations (:func:`gnn.harness.ensemble_from_gnn`), compares it
+    elementwise against :func:`gnn.harness.production_ensemble`, and embeds a
+    control-slice-swap negative control.  Returns a JSON-serializable dict
+    (deterministic given the GNN source and the hyperparameters).
+    """
+    model = parse_gnn_file(gnn_dir / PRODUCTION_GNN)
+    reference = production_ensemble()
+    report = conformance_report(model, reference)
+    neg_ctrl = conformance_negative_control(model, reference)
+    return {
+        "model_section": model.section,
+        "model_version": model.version,
+        "num_streams": model.num_streams,
+        "declared_model_parameters": dict(model.model_parameters),
+        "reference": {
+            "num_streams": reference.num_streams(),
+            "policy_shape": list(reference.policy_shape()),
+            "gamma": float(reference.gamma),
+        },
+        "conformance": report.to_payload(),
+        "conformant": bool(report.conformant),
+        "negative_control_swapped_control_max_abs_diff": float(neg_ctrl),
+        "negative_control_discriminates": bool(neg_ctrl > 0.0),
+    }
+
+
 def _plot(payload: dict[str, object], fig_path: Path) -> None:
     """Two-panel figure: MI-curve overlay + round-trip residual."""
     import matplotlib.pyplot as plt
@@ -150,16 +193,16 @@ def _plot(payload: dict[str, object], fig_path: Path) -> None:
 
 
 def run(*, data_dir: Path, fig_dir: Path, gnn_dir: Path, lean_out: Path | None = None) -> int:
-    """Execute the GNN round-trip stage and emit sidecar + figure + Lean.
+    """Execute the GNN round-trip stage and emit sidecars + figure + Lean.
 
     Args:
-        data_dir: ``output/data`` for the JSON sidecar.
+        data_dir: ``output/data`` for the JSON sidecars.
         fig_dir: ``output/figures`` for the PNG.
         gnn_dir: the ``gnn/`` source directory.
         lean_out: optional path for the emitted Lean typed-contract file.
 
     Returns:
-        Process exit code (0 on success / round-trip pass).
+        Process exit code (0 on success / round-trip + harness conformance pass).
     """
     from visualizations.setup import ensure_outdir
 
@@ -179,9 +222,15 @@ def run(*, data_dir: Path, fig_dir: Path, gnn_dir: Path, lean_out: Path | None =
     ensure_outdir(lean_path.parent)
     lean_path.write_text(emit_lean_structure(model), encoding="utf-8")
 
+    # Verify the production harness against its GNN specification.
+    conformance = compute_production_conformance(gnn_dir)
+    conformance_sidecar = data_dir / CONFORMANCE_SIDECAR_NAME
+    conformance_sidecar.write_text(json.dumps(conformance, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
     print(str(sidecar))
     print(str(fig_dir / FIGURE_NAME))
     print(str(lean_path))
+    print(str(conformance_sidecar))
     if not payload["round_trip_passes"]:
         print(f"GNN round-trip FAILED: max residual {payload['max_abs_residual']} > tol {payload['tolerance']}")
         return 1
@@ -190,8 +239,25 @@ def run(*, data_dir: Path, fig_dir: Path, gnn_dir: Path, lean_out: Path | None =
     ]:  # pragma: no cover - defensive: the fixed non-trivial lambda grid makes zero-coupling always diverge
         print("GNN round-trip negative control is VACUOUS (zero-coupling did not diverge)")
         return 1
+    if not conformance["conformant"]:
+        print(
+            "GNN production conformance FAILED: max abs diff "
+            f"{conformance['conformance']['max_abs_diff']} != 0 "  # type: ignore[index]
+            f"(spec {PRODUCTION_GNN})"
+        )
+        return 1
+    if not conformance[
+        "negative_control_discriminates"
+    ]:  # pragma: no cover - defensive: the declared hold/swap slices differ, so the swap always diverges
+        print("GNN production conformance negative control is VACUOUS (control swap did not diverge)")
+        return 1
     print(
         f"GNN round-trip OK: max residual {payload['max_abs_residual']:.3e} <= tol {payload['tolerance']:.1e}; "
         f"neg-control (J=0) residual {payload['negative_control_zero_coupling_max_residual']:.3e}"
+    )
+    print(
+        f"GNN production conformance OK: max abs diff {conformance['conformance']['max_abs_diff']} "  # type: ignore[index]
+        f"== 0; neg-control (control swap) diff "
+        f"{conformance['negative_control_swapped_control_max_abs_diff']:.3e}"
     )
     return 0

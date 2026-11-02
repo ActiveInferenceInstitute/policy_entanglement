@@ -163,6 +163,6 @@ If a script grows a function that *computes* something rather than
 
 ## Pinned versions
 
-* Lean: `leanprover/lean4:v4.29.0` (matches the `fep_lean` catalog pin).
+* Lean: `leanprover/lean4:v4.35.0` (matches the `fep_lean` catalog pin).
 * Python: `>= 3.10` (matches the parent template).
 * numpy: `>= 1.24`, scipy: `>= 1.10`, matplotlib: `>= 3.7`.

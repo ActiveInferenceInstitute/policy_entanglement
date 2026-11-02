@@ -20,7 +20,7 @@ separate analytic discharge layer.
 
 ## Current Contract
 
-The current boundary build uses stock Lean 4 v4.29.0 under
+The current boundary build uses stock Lean 4 v4.35.0 under
 [`../ActinfPolicyEntanglement/`](../ActinfPolicyEntanglement/) and enforces:
 
 * 0 strict `sorry`;

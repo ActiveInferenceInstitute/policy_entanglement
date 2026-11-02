@@ -79,11 +79,16 @@
 | `manuscript_variables.py` | data | numeric mirror → `output/data/manuscript_variables.json` |
 | `dump_archetypes.py` | data | Schmidt-archetype CSV |
 | `parameter_sweep.py` | data | configurable closed-form λ sweep — CLI-overridable grid, utilities, phase thresholds (defaults reproduce the canonical 121-row sweep) |
+| `check_concordance.py` | report | report-only four-track concordance check (registry `lean_name` presence in Lean source + S06 Python identifiers resolve; exit 0 by design) |
 | `simulate_pymdp.py` | sim + figures | pymdp 1.0.1 run → 14 PNGs + 2 CSVs + summary JSON (lambda sweep, rollout, free-energy bundle, and dashboards) |
 | `simulate_multi_k.py` | sim + figures | configured multi-stream sweep → per-K CSV + 3 PNGs + JSON summary |
 | `simulate_long_horizon.py` | sim + figures | configured habit-accumulation rollout → CSV + 2 PNGs + JSON summary |
 | `simulate_revertibility.py` | sim + figures | m-projection witness (Prop 7.3 / Theorem 5.1) → CSV + PNG + JSON summary |
 | `simulate_robustness.py` | sim + figures | robustness, ablation, and replicate sidecars → CSVs, PNGs, and JSON summaries for one-axis, two-axis, ablation, and long-horizon diagnostics |
+| `simulate_btai.py` | sim + figures | shipped BTAI baseline worked run over the registered MCTS budget grid |
+| `simulate_adversarial.py` | sim + figures | shipped adversarial-perturbation sweep over the registered $(\varepsilon,\lambda)$ grid |
+| `simulate_gnn.py` | GNN | fifth-track round-trip + production-harness conformance sidecar + Lean typed-contract emitter |
+| `gnn_to_pymdp.py` | GNN | `.gnn` → pymdp structural config on stdout; `--harness` emits the production-harness config |
 | `build_dashboard.py` | sim + web | interactive multi-view Plotly dashboard at `output/web/dashboard.html` (six panels, three live controls), companion plaintext `output/reports/dashboard_invariants.txt` + `output/reports/dashboard_summary.txt` + `output/data/dashboard_payload.json`. Every grid / utility / threshold is a CLI flag; exits non-zero on any invariant failure. |
 | `generate_index.py` | manuscript | regenerate `manuscript/INDEX.md` from registry |
 | `generate_theorem_map.py` | manuscript | regenerate `docs/reference/_theorem_map.md` four-track wiring table |

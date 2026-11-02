@@ -3,7 +3,7 @@
 Machine-checked types, definitions and theorem statements for the
 Policy Entanglement framework.  The package is **Mathlib-free** at this
 layer so it builds on a stock Lean toolchain (pinned to
-`leanprover/lean4:v4.29.0` via [`lean-toolchain`](lean-toolchain)).
+`leanprover/lean4:v4.35.0` via [`lean-toolchain`](lean-toolchain)).
 
 **Current boundary state.** The boundary fragment ships **17 submodules**
 (plus the package root and the `FepSketches` re-export) certifying a
@@ -24,7 +24,7 @@ lake build           # 22/22 jobs green; sorry-free / axiom-free
 ```
 lean/
 ├── lakefile.lean                    ← Lake package definition
-├── lean-toolchain                   ← v4.29.0 (matches fep_lean release pin)
+├── lean-toolchain                   ← v4.35.0 (matches fep_lean release pin)
 ├── lake-manifest.json               ← Generated lockfile
 ├── ActinfPolicyEntanglement.lean    ← Root module: imports every submodule
 ├── ActinfPolicyEntanglement/        ← Boundary-fragment submodules (see below)

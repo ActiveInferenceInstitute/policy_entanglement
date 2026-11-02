@@ -65,7 +65,7 @@ SCRIPTS: list[tuple[str, str]] = [
     ("simulate_robustness.py", "robustness, ablation, and replicate sidecars"),
     ("simulate_btai.py", "shipped BTAI head-to-head baseline worked run"),
     ("simulate_adversarial.py", "shipped adversarial-perturbation (epsilon, lambda)-grid sweep"),
-    ("simulate_gnn.py", "GNN fifth-track round-trip (reconstruct I(lambda) from gnn/bernoulli_toy.gnn.md)"),
+    ("simulate_gnn.py", "GNN round-trip + production-harness conformance (gnn/*.gnn.md)"),
     ("manuscript_variables.py", "compute in-text variable substitutions"),
     ("build_dashboard.py", "interactive multi-view dashboard + plaintext invariants"),
     ("generate_index.py", "auto-generate manuscript/INDEX.md from registry"),

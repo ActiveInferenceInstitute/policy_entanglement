@@ -92,7 +92,7 @@ stage produces inputs for the next.
 8.  simulate_robustness.py    → robustness / ablation / replicate CSVs, JSON summaries, and PNGs
 9.  simulate_btai.py          → output/data/btai_baseline.json + BTAI figure
 10. simulate_adversarial.py   → output/data/adversarial_sweep.json + adversarial figure
-11. simulate_gnn.py           → GNN K=2 round-trip + Lean typed-contract emitter sidecars
+11. simulate_gnn.py           → GNN round-trip + production-harness conformance sidecars + Lean typed-contract emitter
 12. manuscript_variables.py   → output/data/manuscript_variables.json (every [[VAR:...]] value)
 13. build_dashboard.py        → output/web/dashboard.html + output/data/dashboard_payload.json
                                   + output/reports/dashboard_invariants.txt
@@ -276,11 +276,14 @@ proof track. The shipped pieces are concrete and CI-covered:
    reconstructs the closed-form mutual-information curve;
 3. a Lean typed-contract emitter that produces boundary-compatible
    structure declarations;
-4. the `simulate_gnn.py` pipeline stage plus parser, round-trip, and
-   concordance tests.
+4. the `simulate_gnn.py` pipeline stage plus parser, round-trip,
+   concordance, production-harness conformance, and pinned-upstream
+   conformance tests.
 
 This does **not** amend the four-track proof contract above. GNN
 reproduces structure and numbers; it proves no theorem, promotes no
 registry theorem row, and leaves the first-class upstream coupling
 primitive, full-bundle pymdp regeneration, and GNN-to-Lean proving
-paths as explicit open work in S08.
+paths as explicit open work in S08. Parser-level conformance to the
+pinned upstream release and elementwise conformance of the production
+harness specification are shipped, not open.
