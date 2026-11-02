@@ -338,6 +338,9 @@ imports use relative form (`from .coupling import …`).
 - Agent / contributor cheat-sheet: [`AGENTS.md`](AGENTS.md)
 - Styleguide (manuscript ↔ code contract): [`docs/guides/styleguide.md`](docs/guides/styleguide.md)
 - Live audit page: [`docs/reference/veridical_status.md`](docs/reference/veridical_status.md)
+- GNN declarations and upstream pin: [`gnn/`](gnn/) with the parser record in
+  [`gnn/upstream.json`](gnn/upstream.json); repositories that consume the
+  notation follow the [GNN downstream adoption guide](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/main/docs/gnn/integration/downstream_adoption.md).
 
 ## Reading order
 
