@@ -158,3 +158,51 @@ def test_stale_status_issues_ignores_unparseable_metric_rows_without_reporting_d
     )
 
     assert stale_status_issues(tmp_path, status) == []
+
+
+def test_load_project_status_falls_back_to_coverage_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    reports = tmp_path / "output" / "reports"
+    pdf_dir = tmp_path / "output" / "pdf"
+    reports.mkdir(parents=True)
+    pdf_dir.mkdir(parents=True)
+    (reports / "test_results.json").write_text(
+        '{"project": {"total": 10, "passed": 10, "skipped": 0, "failed": 0}}',
+        encoding="utf-8",
+    )
+    (reports / "coverage.json").write_text(
+        '{"totals": {"percent_covered": 91.25}}',
+        encoding="utf-8",
+    )
+    pdf = pdf_dir / "actinf_policy_entanglement_lean_combined.pdf"
+    pdf.write_bytes(b"%PDF-1.4\nstatus\n")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    _write_pdfinfo_shim(
+        bin_dir,
+        "#!/bin/sh\necho 'Pages: 12'\necho 'File size: 34567 bytes'\n",
+    )
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}")
+
+    status = load_project_status(tmp_path)
+
+    assert status == ProjectStatus(
+        tests_total=10,
+        tests_passed=10,
+        tests_skipped=0,
+        tests_failed=0,
+        coverage_percent=91.25,
+        pdf_pages=12,
+        pdf_size_bytes=34_567,
+    )
+
+
+def test_load_project_status_raises_when_neither_source_reports_coverage(tmp_path: Path) -> None:
+    reports = tmp_path / "output" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "test_results.json").write_text(
+        '{"project": {"total": 10, "passed": 10, "skipped": 0, "failed": 0}}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(KeyError, match="coverage_percent missing"):
+        load_project_status(tmp_path)
