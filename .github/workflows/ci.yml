@@ -136,4 +136,8 @@ jobs:
       - name: Run the GNN upstream conformance tests
         env:
           POLICY_ENTANGLEMENT_GNN_ROOT: ${{ runner.temp }}/gnn
+          # This test reads only the pinned parser checkout and the gnn/ specs;
+          # it does not depend on the generated artifact tree, so skip the
+          # session bootstrap rather than regenerate it in a clean checkout.
+          ACTINF_SKIP_BOOTSTRAP: "1"
         run: uv run --no-sync python -m pytest -q tests/test_gnn_upstream_conformance.py
