@@ -1,0 +1,93 @@
+name: CI
+
+# The repository's canonical contributor gates, run on GitHub Actions:
+# `scripts/run_all.py` (Lean boundary build + hygiene budget, artifact
+# generation, output/manuscript validation, and the regression gate against
+# scripts/regression_baseline.json), plus Ruff and Mypy. One job: every gate
+# shares the one generated-artifact tree the suite reads, and a failure in
+# any of them fails the same run.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: "Pipeline gates, lint, and Lean budget"
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      # tests/test_mathlib_axiom_audit.py's `#print axioms` probe builds
+      # lean/MathlibProofs, whose lakefile requires a pinned `mathlib4`
+      # revision (see lean/MathlibProofs/lakefile.lean) — a multi-GB fetch plus a
+      # full Mathlib build. That build is the documented optional release gate
+      # (`scripts/run_all.py --with-mathlib` / `make build-mathlib-proofs`), not a
+      # push/PR gate: on a fresh runner the probe would sit in its own 1800 s
+      # timeout. The boundary fragment's hygiene budget IS enforced here (first
+      # pipeline stage), and the fast MathlibProofs source locks still run in the
+      # suite.
+      PYTEST_ADDOPTS: >-
+        --deselect tests/test_mathlib_axiom_audit.py::test_keystones_are_foundational_only_on_the_automatic_path
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The pipeline's first stage is `scripts/build_lean.py`, which runs
+      # `lake build` and the sorry/axiom/unsafe budget gate. The toolchain is
+      # pinned by lean/lean-toolchain; elan installs with no default toolchain
+      # and resolves that pin on first use.
+      - name: Install the pinned Lean toolchain (elan)
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.1"
+          python-version: "3.12"
+          enable-cache: true
+
+      # The `sim` group installs inferactively-pymdp==1.0.1; the suite and the
+      # pymdp-backed generators require it (tests/AGENTS.md, pyproject.toml
+      # [tool.coverage.report]). `uv sync` also installs the default groups
+      # (`dev`, `viz`, `lint`), which carry pytest, Ruff and Mypy.
+      - name: Sync dependencies
+        run: uv sync --frozen --group sim
+
+      # Every later step passes `--no-sync` so they run against exactly the
+      # environment synced above: a re-syncing `uv sync`/`uv run` resolves the
+      # default groups (`dev`, `viz`, `lint`), which do not include `sim`. With
+      # pymdp pruned, the 173 gated simulation tests skip instead of running and
+      # the aggregate coverage measures ~88.8% against the recorded floor, so the
+      # regression gate would fail for an environment reason rather than a code
+      # one. (`uv sync` without `--group sim` was observed to remove pymdp on
+      # 2026-11-02; `uv run` did not remove it — `--no-sync` makes the step order
+      # safe either way.)
+      #
+      # Canonical order from scripts/run_all.py: Lean budget, figure/simulation
+      # generation, manuscript variables and validators, then the regression gate
+      # (pytest + coverage against the recorded baseline in
+      # scripts/regression_baseline.json, this project's acceptance mechanism for
+      # the declared >=95% floor).
+      - name: Pipeline (Lean budget, artifacts, validation, regression gate)
+        run: uv run --no-sync python scripts/run_all.py
+
+      - name: Ruff lint
+        run: uv run --no-sync ruff check src/ scripts/ tests/
+
+      - name: Ruff format check
+        run: uv run --no-sync ruff format --check src/ scripts/ tests/
+
+      - name: Mypy type check
+        run: uv run --no-sync mypy src/ scripts/
