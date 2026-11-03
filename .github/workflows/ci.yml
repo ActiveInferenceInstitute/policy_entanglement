@@ -91,3 +91,49 @@ jobs:
 
       - name: Mypy type check
         run: uv run --no-sync mypy src/ scripts/
+
+  # The project-owned parser is cited-not-vendored; this job exercises it
+  # against the real upstream parser of the revision pinned in gnn/upstream.json.
+  # The ordinary `ci` job runs the same test without an explicit checkout, so it
+  # skips; setting the checkout here makes an unavailable or divergent pin fail
+  # the named conformance job instead.
+  gnn-conformance:
+    name: gnn conformance (pinned v5.0.3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.1"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --frozen --group sim
+
+      - name: Provision the pinned GNN parser checkout
+        env:
+          GNN_ROOT: ${{ runner.temp }}/gnn
+        run: |
+          set -euo pipefail
+          REVISION=$(uv run --no-sync python -c "import json; print(json.load(open('gnn/upstream.json'))['commit'])")
+          TAG=$(uv run --no-sync python -c "import json; print(json.load(open('gnn/upstream.json'))['tag'])")
+          URL=$(uv run --no-sync python -c "import json; print(json.load(open('gnn/upstream.json'))['repository'])")
+          git init --quiet "$GNN_ROOT"
+          git -C "$GNN_ROOT" remote add origin "$URL"
+          git -C "$GNN_ROOT" fetch --depth 1 origin "$REVISION" "refs/tags/$TAG:refs/tags/$TAG"
+          git -C "$GNN_ROOT" checkout --quiet --detach "$REVISION"
+          # A moved tag must fail here, not silently install a different tree.
+          test "$(git -C "$GNN_ROOT" rev-parse "refs/tags/$TAG^{commit}")" = "$REVISION"
+          uv venv --python 3.12 "$GNN_ROOT/.venv"
+          # The pinned parser needs these; a missing dependency fails the run.
+          uv pip install --python "$GNN_ROOT/.venv/bin/python" numpy defusedxml psutil
+
+      - name: Run the GNN upstream conformance tests
+        env:
+          POLICY_ENTANGLEMENT_GNN_ROOT: ${{ runner.temp }}/gnn
+        run: uv run --no-sync python -m pytest -q tests/test_gnn_upstream_conformance.py
