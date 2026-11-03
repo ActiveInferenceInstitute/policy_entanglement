@@ -41,7 +41,7 @@ dev = [
 # chex / equinox stack used by src/simulation/ to simulate the analytical
 # setting end-to-end.
 sim = [
-    "inferactively-pymdp==1.0.1",
+    "inferactively-pymdp==1.0.4",
 ]
 
 # Visualization extras (heatmaps, dendrograms, network diagrams).
@@ -65,7 +65,7 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 sim = [
-    "inferactively-pymdp==1.0.1",
+    "inferactively-pymdp==1.0.4",
 ]
 viz = [
     "seaborn>=0.13.0",
