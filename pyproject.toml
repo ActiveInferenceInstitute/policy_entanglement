@@ -79,6 +79,7 @@ lint = [
 ]
 
 [tool.uv]
+constraint-dependencies = ["pillow>=13.0.0"]
 default-groups = ["dev", "viz", "lint"]
 
 [tool.pytest.ini_options]
