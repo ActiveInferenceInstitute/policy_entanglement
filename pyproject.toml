@@ -159,7 +159,7 @@ ignore = ["E501"]  # line length handled by formatter
 "tests/**/*.py" = ["N802", "N803", "N806", "N812", "E402", "E741"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_ignores = true
 ignore_missing_imports = true   # pymdp / seaborn / plotly are optional
