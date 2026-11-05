@@ -98,7 +98,7 @@ jobs:
   # skips; setting the checkout here makes an unavailable or divergent pin fail
   # the named conformance job instead.
   gnn-conformance:
-    name: gnn conformance (pinned v5.0.3)
+    name: gnn conformance (pinned)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -141,3 +141,10 @@ jobs:
           # session bootstrap rather than regenerate it in a clean checkout.
           ACTINF_SKIP_BOOTSTRAP: "1"
         run: uv run --no-sync python -m pytest -q tests/test_gnn_upstream_conformance.py
+
+      - name: Report the resolved GNN version
+        run: |
+          PIN=gnn/upstream.json
+          VERSION=$(python3 -c "import json;print(json.load(open('$PIN'))['tag'].removeprefix('v'))")
+          test -n "$VERSION"
+          echo "gnn-version=${VERSION}" >> "$GITHUB_STEP_SUMMARY"
