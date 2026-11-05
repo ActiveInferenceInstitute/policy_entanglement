@@ -8,7 +8,7 @@ import subprocess
 import urllib.error
 import urllib.request
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -273,7 +273,7 @@ def _git_dirty(repo_root: Path | None = None) -> bool:
 
 
 def _utc_now() -> str:
-    return datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _to_jsonable(obj: Any) -> Any:
