@@ -9,14 +9,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover - Python <3.11 fallback
-    import tomli as tomllib
 
 from gates.regression_baseline import fail as _fail
 from gates.regression_baseline import info as _info
