@@ -9,14 +9,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime, timezone
+import tomllib
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover - Python <3.11 fallback
-    import tomli as tomllib
 
 from gates.regression_baseline import fail as _fail
 from gates.regression_baseline import info as _info
@@ -223,7 +219,7 @@ def write_fresh_test_results(
     )
     coverage_percent = coverage_percent_from_json(coverage_json_path)
     report: dict[str, Any] = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "generated_by": "scripts/regression_gate.py",
         "pytest_command": cmd,
         "pytest_returncode": proc.returncode,

@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import subprocess
 from collections.abc import Mapping
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -90,7 +90,7 @@ def _git_revision(project_root: Path | None = None) -> str:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    return datetime.now(UTC).isoformat(timespec="milliseconds")
 
 
 def summarize_array(values: Any) -> dict[str, Any]:
