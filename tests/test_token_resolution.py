@@ -134,9 +134,8 @@ def test_all_tokens_resolve(kind: str) -> None:
             elif kind in {"FIG", "FIGREF"}:
                 if raw not in KNOWN_FIGURES:
                     failures.append((rel, kind, raw))
-            elif kind == "EQREF":
-                if raw not in KNOWN_EQUATIONS:
-                    failures.append((rel, kind, raw))
+            elif kind == "EQREF" and raw not in KNOWN_EQUATIONS:
+                failures.append((rel, kind, raw))
     if failures:
         lines = [f"Unresolved {kind} tokens:"]
         for fp, k, raw in failures:
