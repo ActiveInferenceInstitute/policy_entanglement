@@ -6,7 +6,35 @@ deferred.
 
 **Owner:** Daniel Ari Friedman (daniel@activeinference.institute)
 
-**Last reviewed:** 2026-08-01 (deepest hostile red-team review; implementation pass + completion pass)
+**Last reviewed:** 2026-08-01 (deepest hostile red-team review; implementation pass + completion pass); re-checked 2026-11-11 (Institute improvements pass 3)
+
+---
+
+## Institute improvements pass 3 (2026-11-11)
+
+Documentation-completeness re-check (bounded, offline). Findings and fixes:
+
+- **Dead `docs/FAQ.md` links to generated `output/` artifacts (fixed).** `FAQ.md`
+  §2 and §7 rendered `output/pdf/`, `output/reports/release_readiness.json`,
+  `output/MANIFEST.md`, and `output/reports/test_results.json` as Markdown links.
+  The entire `output/` tree is gitignored and disposable, so those links are dead
+  on a clean checkout (the project-wide hyperlink audit skips `output/`, so it did
+  not flag them). They are now inline-code path references, matching the
+  `docs/README.md` convention, so the FAQ no longer advertises broken links.
+- **`docs/` index gaps (fixed).** `docs/README.md` now lists `CONCEPTS.md` in the
+  cross-cutting section; `docs/reference/README.md` now indexes `HOW_TO_VERIFY.md`
+  and `python_api_gnn.md`, which were reachable only indirectly.
+- **Rendered sidecar staleness (fixed).** `.aii/docs/INTEGRATION.md` and
+  `.aii/README.md` showed the old `python -m pytest` task row and omitted `lint`;
+  both were hand-synced to `.aii/config.yaml` (`uv run pytest tests/
+  --cov=src --cov-fail-under=95`, `uvx ruff check src/ scripts/ tests/`, `make`).
+  `.aii/config.yaml` now declares `institute.maturity: wip` to match the rendered
+  record. The `aii_platform.aii_sidecar docs --overwrite` generator is unavailable
+  offline, so the rendered files were edited by hand and match the config exactly.
+
+No new dead links remain: a relative-link walk over every tracked `*.md` finds
+none outside the intentional template-layout notes. No folder with three or more
+tracked files lacks a `README.md`/`AGENTS.md` pair.
 
 ---
 

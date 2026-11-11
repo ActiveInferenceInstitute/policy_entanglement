@@ -46,11 +46,11 @@ For full orientation, start at
 ## 2.  Where is the manuscript?
 
 In [`../manuscript/`](../manuscript/) — modular Markdown. The
-rendered PDF lives under [`../output/pdf/`](../output/pdf/) after
+rendered PDF lives under `../output/pdf/` after
 running the template render pipeline. Live render counts, figure
 counts, page counts, and file sizes come from
-[`../output/reports/release_readiness.json`](../output/reports/release_readiness.json)
-and [`../output/MANIFEST.md`](../output/MANIFEST.md), not from
+`../output/reports/release_readiness.json`
+and `../output/MANIFEST.md`, not from
 hand-maintained FAQ prose.
 
 The single source of truth for figures, equations, theorems, and
@@ -173,8 +173,8 @@ three empirical experiments (`simulate_multi_k.py`,
 `simulate_long_horizon.py`, `simulate_revertibility.py`). For the
 per-round count deltas, use [`CHANGELOG.md`](CHANGELOG.md); for current
 pipeline, test, figure, and theorem-registry state, use
-[`../output/reports/release_readiness.json`](../output/reports/release_readiness.json),
-[`../output/reports/test_results.json`](../output/reports/test_results.json),
+`../output/reports/release_readiness.json`,
+`../output/reports/test_results.json`,
 and [`reference/_theorem_map.md`](reference/_theorem_map.md).
 
 ---

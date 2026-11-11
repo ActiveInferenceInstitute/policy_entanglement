@@ -11,6 +11,7 @@ repo:
     pymdp simulations, and closed-form free-energy decomposition.
 institute:
   category: research-software
+  maturity: wip
   steward: Active Inference Institute
 ecosystem:
   relations:

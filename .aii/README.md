@@ -43,7 +43,8 @@ Institute repositories without touching this project's own content. The schema i
 
 | Task | Command | Working directory | Description |
 | --- | --- | --- | --- |
-| `test` | `python -m pytest` | `.` | Run the test suite. |
+| `test` | `uv run pytest tests/ --cov=src --cov-fail-under=95` | `.` | Run the coverage-gated test suite. |
+| `lint` | `uvx ruff check src/ scripts/ tests/` | `.` | Run the Ruff lint gate. |
 | `make` | `make` | `.` | Default make target. |
 
 ## Links

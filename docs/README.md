@@ -30,6 +30,7 @@ concept in two clicks.
 ## Cross-cutting top-level pages
 
 * [`CHANGELOG.md`](CHANGELOG.md) — per-round revision history (rounds 1, 2, 3).
+* [`CONCEPTS.md`](CONCEPTS.md) — three-minute, zero-jargon capsule on the K=2 binary toy and the three theorem families (entry point before [`READING_ORDER.md`](READING_ORDER.md)).
 * [`RELEASE_v1.0.0.md`](RELEASE_v1.0.0.md) — v1.0.0 release receipt: canonical identifiers (GitHub, Zenodo concept/version DOIs, deposit PDF hash) and completed release steps.
 * [`FAQ.md`](FAQ.md) — answers to the 15 most likely newcomer questions.
 * [`READING_ORDER.md`](READING_ORDER.md) — curated reading paths by reader persona (active-inference researcher, Lean formalizer, Python engineer, reviewer, newcomer).
