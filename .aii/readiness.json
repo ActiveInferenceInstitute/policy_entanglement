@@ -1,0 +1,11 @@
+{
+  "schema": "aii-readiness/v1",
+  "repo": "ActiveInferenceInstitute/policy_entanglement",
+  "tier": "python-library",
+  "standard_version": "1.0.0",
+  "baseline": {
+    "commit": "89575313c313d317f6059c92e38c2cd7c69df0ba",
+    "measured_at": "2026-11-10"
+  },
+  "waivers": []
+}

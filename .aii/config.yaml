@@ -1,11 +1,14 @@
-# AII sidecar — InstituteOS metadata. Schema: instituteos.platform.aii_sidecar
+# AII sidecar — InstituteOS metadata. Schema: aii_platform.aii_sidecar
 meta:
-  updated: '2026-06-30'
+  sidecar_version: 1.2.1
+  updated: '2026-11-10'
 repo:
   name: policy_entanglement
   slug: policy-entanglement
   full_name: ActiveInferenceInstitute/policy_entanglement
-  description: Policy Entanglement in Active Inference v1.0.0
+  description: Research project developing a tunable mean-field deformation framework
+    for multi-stream policy ensembles in active inference, with a Lean 4 boundary,
+    pymdp simulations, and closed-form free-energy decomposition.
 institute:
   category: research-software
   steward: Active Inference Institute
@@ -16,6 +19,9 @@ ecosystem:
     note: Federated via the InstituteOS .aii manifest.
   - repo: ActiveInferenceInstitute/Active_Inference_Ontology
     note: Uses Active Inference Ontology terms.
+  - repo: ActiveInferenceInstitute/pymdp
+    relation: depends-on
+    note: Consumes the pymdp active-inference library.
   links:
     github: https://github.com/ActiveInferenceInstitute/policy_entanglement
     website: https://www.activeinference.org
@@ -32,21 +38,40 @@ artifacts:
 - path: LICENSE
   kind: doc
   description: License.
+- path: AGENTS.md
+  kind: doc
+  description: Agent guidance.
+- path: CITATION.cff
+  kind: citation
+  description: Machine-readable citation metadata.
+- path: tests
+  kind: test
+  description: Test suite.
+- path: docs
+  kind: doc
+  description: Documentation tree.
+- path: manuscript
+  kind: publication
+  description: Manuscript sources and artifacts.
 provenance:
   license: MIT
   citation:
     doi: 10.5281/zenodo.20418904
+    text: Active Inference Institute — policy_entanglement.
 instituteos:
   tags:
-  - policy
-  - entanglement
-  - inference
-  - python
+  - policy-entanglement
+  - active-inference
+  - lean
+  - pymdp
 capabilities:
 - python-package
 - tested
 - documentation
 - dataset
+- ci
+- citation
+- manuscript-publication
 tasks:
   test:
     cmd: python -m pytest
@@ -54,3 +79,10 @@ tasks:
   make:
     cmd: make
     description: Default make target.
+docs:
+- README.md
+- AGENTS.md
+- docs/INTEGRATION.md
+- docs/README.md
+- docs/AGENTS.md
+schema: aii-sidecar/v1

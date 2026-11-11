@@ -373,3 +373,11 @@ Float Boundary.* Active Inference Institute (working manuscript).
 > [`10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904). Source code and
 > reproducibility artifacts live at
 > [`https://github.com/ActiveInferenceInstitute/policy_entanglement`](https://github.com/ActiveInferenceInstitute/policy_entanglement).
+
+## InstituteOS sidecar
+
+This repository carries a committed [`.aii/`](.aii/README.md) sidecar with curated
+InstituteOS metadata (`aii-sidecar/v1`): category, maturity, ecosystem relations,
+key artifacts, provenance, and portable tasks. It is read by
+[InstituteOS](https://github.com/ActiveInferenceInstitute/InstituteOS) tooling and
+does not affect the project's build or runtime.
