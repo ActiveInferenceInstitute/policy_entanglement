@@ -1,7 +1,7 @@
 # AII sidecar — InstituteOS metadata. Schema: aii_platform.aii_sidecar
 meta:
   sidecar_version: 1.2.1
-  updated: '2026-11-10'
+  updated: '2026-11-11'
 repo:
   name: policy_entanglement
   slug: policy-entanglement
@@ -74,8 +74,11 @@ capabilities:
 - manuscript-publication
 tasks:
   test:
-    cmd: python -m pytest
-    description: Run the test suite.
+    cmd: uv run pytest tests/ --cov=src --cov-fail-under=95
+    description: Run the coverage-gated test suite.
+  lint:
+    cmd: uvx ruff check src/ scripts/ tests/
+    description: Run the Ruff lint gate.
   make:
     cmd: make
     description: Default make target.

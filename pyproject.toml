@@ -19,6 +19,7 @@ build-backend = "setuptools.build_meta"
 name = "actinf_policy_entanglement_lean"
 version = "0.3.0"
 description = "Tunable mean-field deformation framework for multi-stream policy ensembles in active inference (Lean 4 + Python companion + pymdp POMDP harness)."
+license = { text = "MIT" }
 authors = [
     {name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"},
 ]
