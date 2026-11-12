@@ -19,17 +19,20 @@ The canonical pin file is [`../gnn/upstream.json`](../gnn/upstream.json), schema
 | `recorded` | `2026-11-12` |
 | `parser_module` / `parser_class` | `gnn.parsers.markdown_parser` / `MarkdownGNNParser` |
 
-The GNN-FEP contract requires the upstream `gnn.importers` reader instead of
-the local `src/gnn/upstream.py::load_upstream_pin` copy. The arm now invokes
-the contract checker with `--require-pointer --workflow .github/workflows/ci.yml
---job gnn-conformance`, against source extracted from the pinned commit.
-It never substitutes the checkout's newer working tree.
+The [GNN-FEP contract](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/main/docs/workflows/gnn-fep.md)
+stages adoption by the pinned revision. This release predates `gnn.importers`,
+so the arm retains `src/gnn/upstream.py::load_upstream_pin` and does **not**
+invoke the absent shared reader or vendor it.
 
-**Migration blocked:** the pinned release does not contain `gnn/importers.py`.
-The checker therefore fails at module import. The local bootstrap pin reader
-and its tests remain until a reviewed upstream release/pin decision makes the
-shared reader available; this is not a completed single-reader migration.
-No pin or schema is changed here.
+The interim arm checks that this pointer names `gnn/upstream.json`, the pinned
+revision (full or its first twelve characters), `ci.yml`, and `gnn-conformance`.
+The existing canonical-release test and checkout/tag checks detect pin drift.
+Missing or unreadable pointer content and missing facts fail explicitly.
+
+**Shared-reader cutover remains blocked** until a reviewed pin advance to a
+release containing `src/gnn/importers.py`. That change must remove the local
+reader and its pin-shape tests and call the shared reader from the pinned
+environment. No pin or schema is changed here.
 
 ## What the job parses
 
@@ -47,8 +50,7 @@ fetch, checkout, `remote set-url`, or install there; a missing piece is an
 explicit refusal, not a repair. `tests/test_gate_gnn_root.py` proves HEAD,
 refs, origin, local config and the working tree are unchanged.
 
-The arm runs the shared contract checker first, then retains the independent
-digest-conformance check even if the contract checker fails:
+After the interim pin/pointer drift check, the arm runs
 `python -m pytest -q tests/test_gnn_upstream_conformance.py`, which:
 
 - extracts `src/gnn` from the pinned commit with `git archive` so the bytes

@@ -175,3 +175,35 @@ def test_gate_module_keeps_the_cache_outside_the_working_tree() -> None:
     assert PROJECT not in GATE.GNN_CACHE.parents
     assert GATE.ENV_UPSTREAM_ROOT == "POLICY_ENTANGLEMENT_GNN_ROOT"
     assert Path(GATE.__file__) == GATE_PATH
+
+
+@pytest.mark.parametrize(
+    "missing,code",
+    [
+        ("gnn/upstream.json", "pointer-pin-unnamed"),
+        ("a" * 40, "pointer-revision-unnamed"),
+        (".github/workflows/ci.yml", "pointer-workflow-unnamed"),
+        ("gnn-conformance", "pointer-job-unnamed"),
+    ],
+)
+def test_pointer_drift_is_refused(tmp_path: Path, missing: str, code: str) -> None:
+    commit = "a" * 40
+    facts = ["gnn/upstream.json", commit, ".github/workflows/ci.yml", "gnn-conformance"]
+    pointer = tmp_path / "GNN.md"
+    pointer.write_text("\n".join(fact for fact in facts if fact != missing), encoding="utf-8")
+
+    with pytest.raises(SystemExit, match=code):
+        GATE._validate_pointer(pointer, _pin(commit))
+
+
+def test_missing_pointer_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="pointer-missing"):
+        GATE._validate_pointer(tmp_path / "GNN.md", _pin("a" * 40))
+
+
+def test_unreadable_pointer_is_refused(tmp_path: Path) -> None:
+    pointer = tmp_path / "GNN.md"
+    pointer.write_bytes(b"\xff")
+
+    with pytest.raises(SystemExit, match="pointer-unreadable"):
+        GATE._validate_pointer(pointer, _pin("a" * 40))

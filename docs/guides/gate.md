@@ -80,7 +80,9 @@ The `gnn` arm is the conformance job's only definition of the check; see
 1. reads the canonical pin [`../../gnn/upstream.json`](../../gnn/upstream.json)
    (schema `gnn-importer-pin/v1`, `v5.0.3` at
    `8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1`) through
-   `gnn.upstream.load_upstream_pin`;
+   `gnn.upstream.load_upstream_pin`, then checks `.github/GNN.md` for the pin
+   path, pinned revision (full or first twelve characters), workflow filename,
+   and conformance job key. Missing/unreadable pointers and omitted facts fail;
 2. provisions a gate-owned checkout outside the working tree —
    `$XDG_CACHE_HOME/policy_entanglement/gnn-upstream/<tag>-<commit>/`, or
    `$GATE_CACHE_DIR` — and refuses a tag that no longer resolves to the pin.
@@ -94,24 +96,19 @@ The `gnn` arm is the conformance job's only definition of the check; see
    it there, or to unset the variable and let the gate use its cache;
 3. gives the gate-owned checkout its own interpreter with `numpy`, `defusedxml`
    and `psutil`;
-4. runs the GNN-FEP contract command from `src/gnn` extracted at the pinned
-   commit, using that checkout's interpreter and a temporary `PYTHONPATH`:
-   `python -m gnn.importers check --repo . --require-pointer
-   --workflow .github/workflows/ci.yml --job gnn-conformance`;
-5. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
+4. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
    `POLICY_ENTANGLEMENT_GNN_ROOT` and `ACTINF_SKIP_BOOTSTRAP` set, then prints
-   and (under GitHub Actions) records `gnn-version=… commit=…`. A failing
-   contract check still fails the arm even if the independent digest test passes.
+   and (under GitHub Actions) records `gnn-version=… commit=…`. The canonical
+   release assertion and checkout/tag checks remain the pin-drift checks.
 
-**GNN-FEP migration is blocked at the current pin:** that release has no
-`gnn.importers` module, so the contract command fails at import. The bootstrap
-still uses the local pin reader; neither it nor its pin-shape tests can be
-replaced honestly by a module the pin does not contain. A reviewed upstream
-release/pin decision is required. No newer live checkout, vendored reader,
-fallback success, pin change, or schema change is substituted here.
+The [GNN-FEP prerequisite](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/main/docs/workflows/gnn-fep.md#prerequisite-the-reader-ships-in-a-revision-not-in-a-version-name)
+requires this interim local-reader state because the current pin has no
+`gnn.importers` module. The arm does not call that absent module, vendor its
+source, or substitute a newer live checkout. Shared-reader cutover must accompany
+a reviewed pin advance to a release containing the reader, with deletion of the
+local reader and its pin-shape tests in that same change.
 
-A cold cache needs network access; a warm cache avoids acquisition but does
-not resolve the missing-reader blocker.
+A cold cache needs network access; a warm cache is offline-safe.
 
 ## Measured wall times
 

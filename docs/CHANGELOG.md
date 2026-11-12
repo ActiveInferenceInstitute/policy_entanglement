@@ -13,13 +13,15 @@ those counts moved between rounds.
 
 ## Pending — GNN-FEP member migration (2026-11-12)
 
-- Added the contract's `gnn.importers check` invocation to the existing `gnn`
-  arm with required pointer, workflow, and job checks. It executes source
-  extracted from the pin, not a newer checkout's working files, and its failure
-  remains a failure even when the independent parser-digest tests pass.
-- Adoption remains blocked: the pinned release does not contain the shared
-  reader. The bootstrap's local pin reader and its tests remain pending a
-  reviewed upstream release/pin decision; the migration is not complete.
+- Followed the updated contract prerequisite: removed the premature invocation
+  of `gnn.importers`, which is absent from the pinned release. The `gnn` arm
+  retains the local pin reader and now checks pointer drift (pin path, revision,
+  workflow filename, and job key), alongside the existing pin/tag checks.
+- Added negative regression coverage for omitted pointer facts and missing or
+  unreadable pointers.
+- Shared-reader cutover remains blocked until a reviewed pin advance to a
+  release containing the reader; that change must delete the local reader
+  and its pin-shape tests.
 - Preserved the pin, schema, other gate arms, and manuscript producer name.
   The contract defers the producer rename until the next manuscript render.
 

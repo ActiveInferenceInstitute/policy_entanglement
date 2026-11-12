@@ -47,13 +47,10 @@ MathlibProofs builds, ``requires_pymdp`` marks the ``sim``-group surface.
 
 from __future__ import annotations
 
-import io
 import os
 import shutil
 import subprocess
 import sys
-import tarfile
-import tempfile
 import time
 from collections.abc import Callable, Sequence
 from pathlib import Path
@@ -268,56 +265,39 @@ def _ensure_parser_environment(root: Path) -> Path:
     return python
 
 
-def _check_importer(root: Path, pin: UpstreamPin, python: Path) -> int:
-    """Run the shared reader from the pinned tree, never the checkout's live source."""
-    archive = subprocess.run(
-        ["git", "-C", str(root), "archive", pin.commit, "src/gnn"],
-        stdin=subprocess.DEVNULL,
-        check=True,
-        capture_output=True,
-    )
-    with tempfile.TemporaryDirectory(prefix="gnn-importer-") as temporary:
-        source = Path(temporary)
-        with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as stream:
-            if sys.version_info >= (3, 12):
-                stream.extractall(source, filter="data")
-            else:
-                stream.extractall(source)
-        env = {**os.environ, "PYTHONPATH": str(source / "src"), "PYTHONDONTWRITEBYTECODE": "1"}
-        return _run(
-            [
-                str(python),
-                "-m",
-                "gnn.importers",
-                "check",
-                "--repo",
-                ".",
-                "--require-pointer",
-                "--workflow",
-                ".github/workflows/ci.yml",
-                "--job",
-                "gnn-conformance",
-                "--expected-commit",
-                pin.commit,
-                "--expected-tag",
-                pin.tag,
-            ],
-            env=env,
-        )
+def _validate_pointer(path: Path, pin: UpstreamPin) -> None:
+    """Interim GNN-FEP drift check while the pinned release lacks the shared reader."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError as exc:
+        raise SystemExit(f"gate gnn: pointer-missing: {path}") from exc
+    except (OSError, UnicodeError) as exc:
+        raise SystemExit(f"gate gnn: pointer-unreadable: {path}: {exc}") from exc
+    required = {
+        "pointer-pin-unnamed": PIN_PATH.relative_to(PROJECT_ROOT).as_posix(),
+        "pointer-workflow-unnamed": "ci.yml",
+        "pointer-job-unnamed": "gnn-conformance",
+    }
+    missing = [code for code, fact in required.items() if fact not in text]
+    if pin.commit not in text and pin.commit[:12] not in text:
+        missing.append("pointer-revision-unnamed")
+    if missing:
+        raise SystemExit(f"gate gnn: {path}: {', '.join(missing)}")
+    print("gnn pin/pointer drift check: ok (local reader; shared-reader cutover pending)", flush=True)
 
 
 def _arm_gnn() -> int:
     pin = load_upstream_pin(PIN_PATH)
+    _validate_pointer(PROJECT_ROOT / ".github" / "GNN.md", pin)
     explicit = os.environ.get(ENV_UPSTREAM_ROOT)
     if explicit:
         # Another repository's checkout: validate only, never provision it.
         root = Path(explicit)
-        python = _validate_external_checkout(root, pin)
+        _validate_external_checkout(root, pin)
     else:
         root = _gnn_cache_root(pin)
         _ensure_checkout(root, pin)
-        python = _ensure_parser_environment(root)
-    checker_status = _check_importer(root, pin, python)
+        _ensure_parser_environment(root)
     env = dict(os.environ)
     env[ENV_UPSTREAM_ROOT] = str(root)
     # The conformance test reads the pin and the shipped specs only; the
@@ -330,7 +310,7 @@ def _arm_gnn() -> int:
     if summary:
         with open(summary, "a", encoding="utf-8") as handle:
             handle.write(f"gnn-version={version} commit={pin.commit}\n")
-    return checker_status or status
+    return status
 
 
 # --- arms ----------------------------------------------------------------
