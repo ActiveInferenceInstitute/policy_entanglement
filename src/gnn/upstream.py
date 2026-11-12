@@ -27,6 +27,7 @@ import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -43,6 +44,13 @@ PIN_RELATIVE_PATH = "gnn/upstream.json"
 PARSER_RELATIVE_PATH = "src/gnn/parsers/markdown_parser.py"
 
 _PIN_KEYS = ("repository", "tag", "commit", "parser_module", "parser_class")
+#: Canonical importer-pin schema identifier; a pin that declares it also records
+#: the date it was taken.
+PIN_SCHEMA = "gnn-importer-pin/v1"
+#: Fields the canonical importer-pin schema adds to the release identity. They
+#: are optional so a pin predating the schema stays readable.
+_PIN_SCHEMA_KEYS = ("schema", "recorded")
+_PIN_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _TAG_RE = re.compile(r"v\d+\.\d+\.\d+")
 _COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 _MODULE_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)+")
@@ -64,6 +72,9 @@ class UpstreamPin:
         commit: Full 40-hex commit identity the tag resolves to.
         parser_module: Dotted import path of the upstream parser module.
         parser_class: Parser class name inside ``parser_module``.
+        schema: Canonical importer-pin schema identifier, when the pin declares
+            one; ``None`` for a pin that predates the schema.
+        recorded: Date (``YYYY-MM-DD``) the pin was taken, when recorded.
     """
 
     repository: str
@@ -71,10 +82,17 @@ class UpstreamPin:
     commit: str
     parser_module: str
     parser_class: str
+    schema: str | None = None
+    recorded: str | None = None
 
 
 def load_upstream_pin(path: Path) -> UpstreamPin:
     """Read and validate the pinned upstream GNN release identity.
+
+    The pin must declare exactly :data:`_PIN_KEYS`, plus optionally the
+    canonical importer-pin fields :data:`_PIN_SCHEMA_KEYS`: a ``schema`` equal
+    to :data:`PIN_SCHEMA` and a ``recorded`` ``YYYY-MM-DD`` date. Any other
+    field is refused, so a typo cannot ride along unread.
 
     Raises:
         UpstreamPinError: on an unreadable, ambiguous, or malformed pin.
@@ -92,10 +110,28 @@ def load_upstream_pin(path: Path) -> UpstreamPin:
         data = json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=unique)
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise UpstreamPinError(f"cannot read upstream pin {path}: {exc}") from exc
-    if not isinstance(data, dict) or set(data) != set(_PIN_KEYS):
+    if not isinstance(data, dict):
         raise UpstreamPinError(f"upstream pin must declare exactly {list(_PIN_KEYS)}")
+    missing = [key for key in _PIN_KEYS if key not in data]
+    unknown = sorted(set(data) - set(_PIN_KEYS) - set(_PIN_SCHEMA_KEYS))
+    if missing or unknown:
+        raise UpstreamPinError(
+            f"upstream pin must declare exactly {list(_PIN_KEYS)}"
+            f" (optionally {list(_PIN_SCHEMA_KEYS)});"
+            f" missing {missing}, unknown {unknown}"
+        )
     if not all(isinstance(value, str) for value in data.values()):
         raise UpstreamPinError("upstream pin fields must be strings")
+    if "schema" in data and data["schema"] != PIN_SCHEMA:
+        raise UpstreamPinError(f"upstream pin schema must be {PIN_SCHEMA!r}")
+    if "recorded" in data:
+        recorded = str(data["recorded"])
+        if not _PIN_DATE_RE.fullmatch(recorded):
+            raise UpstreamPinError("upstream pin recorded must be a YYYY-MM-DD date")
+        try:
+            date.fromisoformat(recorded)
+        except ValueError as exc:
+            raise UpstreamPinError("upstream pin recorded must be a real calendar date") from exc
     if not str(data["repository"]).startswith("https://github.com/"):
         raise UpstreamPinError("upstream repository must be an HTTPS GitHub URL")
     if not _TAG_RE.fullmatch(str(data["tag"])):
@@ -112,6 +148,8 @@ def load_upstream_pin(path: Path) -> UpstreamPin:
         commit=str(data["commit"]),
         parser_module=str(data["parser_module"]),
         parser_class=str(data["parser_class"]),
+        schema=str(data["schema"]) if "schema" in data else None,
+        recorded=str(data["recorded"]) if "recorded" in data else None,
     )
 
 
