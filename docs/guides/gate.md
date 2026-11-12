@@ -94,11 +94,24 @@ The `gnn` arm is the conformance job's only definition of the check; see
    it there, or to unset the variable and let the gate use its cache;
 3. gives the gate-owned checkout its own interpreter with `numpy`, `defusedxml`
    and `psutil`;
-4. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
+4. runs the GNN-FEP contract command from `src/gnn` extracted at the pinned
+   commit, using that checkout's interpreter and a temporary `PYTHONPATH`:
+   `python -m gnn.importers check --repo . --require-pointer
+   --workflow .github/workflows/ci.yml --job gnn-conformance`;
+5. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
    `POLICY_ENTANGLEMENT_GNN_ROOT` and `ACTINF_SKIP_BOOTSTRAP` set, then prints
-   and (under GitHub Actions) records `gnn-version=… commit=…`.
+   and (under GitHub Actions) records `gnn-version=… commit=…`. A failing
+   contract check still fails the arm even if the independent digest test passes.
 
-A cold cache needs network access; a warm cache is offline-safe.
+**GNN-FEP migration is blocked at the current pin:** that release has no
+`gnn.importers` module, so the contract command fails at import. The bootstrap
+still uses the local pin reader; neither it nor its pin-shape tests can be
+replaced honestly by a module the pin does not contain. A reviewed upstream
+release/pin decision is required. No newer live checkout, vendored reader,
+fallback success, pin change, or schema change is substituted here.
+
+A cold cache needs network access; a warm cache avoids acquisition but does
+not resolve the missing-reader blocker.
 
 ## Measured wall times
 

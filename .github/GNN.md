@@ -19,13 +19,17 @@ The canonical pin file is [`../gnn/upstream.json`](../gnn/upstream.json), schema
 | `recorded` | `2026-11-12` |
 | `parser_module` / `parser_class` | `gnn.parsers.markdown_parser` / `MarkdownGNNParser` |
 
-`src/gnn/upstream.py::load_upstream_pin` validates that file (required keys,
-the optional `gnn-importer-pin/v1` `schema`/`recorded` fields, HTTPS GitHub URL,
-stable tag, full commit, dotted module, identifier class, unknown fields
-refused). Re-pinning is a deliberate change: it moves the recorded commit and
-re-runs the conformance test — the test itself also pins the pin
-(`CANONICAL_TAG` / `CANONICAL_COMMIT` in
-[`../tests/test_gnn_upstream_conformance.py`](../tests/test_gnn_upstream_conformance.py)).
+The GNN-FEP contract requires the upstream `gnn.importers` reader instead of
+the local `src/gnn/upstream.py::load_upstream_pin` copy. The arm now invokes
+the contract checker with `--require-pointer --workflow .github/workflows/ci.yml
+--job gnn-conformance`, against source extracted from the pinned commit.
+It never substitutes the checkout's newer working tree.
+
+**Migration blocked:** the pinned release does not contain `gnn/importers.py`.
+The checker therefore fails at module import. The local bootstrap pin reader
+and its tests remain until a reviewed upstream release/pin decision makes the
+shared reader available; this is not a completed single-reader migration.
+No pin or schema is changed here.
 
 ## What the job parses
 
@@ -43,7 +47,8 @@ fetch, checkout, `remote set-url`, or install there; a missing piece is an
 explicit refusal, not a repair. `tests/test_gate_gnn_root.py` proves HEAD,
 refs, origin, local config and the working tree are unchanged.
 
-It then runs
+The arm runs the shared contract checker first, then retains the independent
+digest-conformance check even if the contract checker fails:
 `python -m pytest -q tests/test_gnn_upstream_conformance.py`, which:
 
 - extracts `src/gnn` from the pinned commit with `git archive` so the bytes

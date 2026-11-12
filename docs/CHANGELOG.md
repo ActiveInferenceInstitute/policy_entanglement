@@ -11,6 +11,20 @@ those counts moved between rounds.
 
 ---
 
+## Pending — GNN-FEP member migration (2026-11-12)
+
+- Added the contract's `gnn.importers check` invocation to the existing `gnn`
+  arm with required pointer, workflow, and job checks. It executes source
+  extracted from the pin, not a newer checkout's working files, and its failure
+  remains a failure even when the independent parser-digest tests pass.
+- Adoption remains blocked: the pinned release does not contain the shared
+  reader. The bootstrap's local pin reader and its tests remain pending a
+  reviewed upstream release/pin decision; the migration is not complete.
+- Preserved the pin, schema, other gate arms, and manuscript producer name.
+  The contract defers the producer rename until the next manuscript render.
+
+---
+
 ## Release — v1.0.0 (2026-05-27)
 
 - Canonical public source repository:
