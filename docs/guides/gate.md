@@ -125,12 +125,15 @@ benchmarks.
 | `types` (`mypy`) | 0.4 s (`uv run mypy`) | 0.9 s (`gate.py types`) |
 | `docs` | 2.1 s (hyperlink audit only) | 23.5 s cold / 7.4 s warm (hyperlink audit + stale-registry scan + generated-index freshness) |
 | `gnn` | 2.5 s (test only, `POLICY_ENTANGLEMENT_GNN_ROOT` pointing at an existing checkout with a prepared virtualenv) | 14.7 s cold (fetch + venv + dependency install + test), 3.6 s warm |
-| `test-fast` | not measured cleanly (see below) | 687.5 s, exit 0 (1427 passed, 1 skipped, 114 deselected, 1 xfailed) |
-| `test-full` | 349.5 s, exit 1 (1543 collected, 5 failures: 4 from artifact stamps at an older commit and one undocumented constant) | 715.1 s, exit 0 (1539 passed, 1 skipped, 2 deselected by the `slow` marker, 1 xfailed) |
+| `test-fast` | not measured cleanly (see below) | 687.5 s, exit 0 |
+| `test-full` | 349.5 s, exit 1 (stale artifact stamps and an undocumented constant) | 715.1 s, exit 0 |
 | `pipeline` (`run_all.py`) | not measured — exceeded the 10-minute arm bound on this host (artifact generation plus the coverage regression gate; aborted while the regression gate's pytest was at 8 min 33 s) | same bound, not measured |
 | `pipeline` stages excluding the regression gate (`run_all.py --skip regression_gate`) | not measured | 375.2 s (19 stages, all outputs validated) |
 | `pdf` | — | 142.2 s and 176.6 s on two runs (38 rendered sections → combined PDF) |
 | `pdf-validate` | — | 2.4 s (exit 0) |
+
+These are historical timing samples. Current test counts, pass/skip splits,
+and coverage come from `output/reports/test_results.json`, not this table.
 
 `test-full` is **not** faster in this table: 349.5 s before, 715.1 s after. The
 after run happened while other repositories' suites were saturating this host,
