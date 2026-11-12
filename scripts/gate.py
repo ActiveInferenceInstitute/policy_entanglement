@@ -131,16 +131,67 @@ def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _gnn_root(pin: UpstreamPin) -> Path:
-    """Explicit selection wins; otherwise a per-pin cache directory."""
-    explicit = os.environ.get(ENV_UPSTREAM_ROOT)
-    if explicit:
-        return Path(explicit).expanduser()
+def _gnn_cache_root(pin: UpstreamPin) -> Path:
+    """Gate-owned checkout for this pin; the only root this arm may write to."""
     return GNN_CACHE / f"{pin.tag}-{pin.commit[:12]}"
 
 
+def _probe_parser_environment(python: Path) -> bool:
+    """True when ``python`` can import the pinned parser's runtime dependencies."""
+    if not python.exists():
+        return False
+    probe = subprocess.run(
+        [str(python), "-c", "import numpy, defusedxml, psutil"],
+        cwd=PROJECT_ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return probe.returncode == 0
+
+
+def _validate_external_checkout(root: Path, pin: UpstreamPin) -> Path:
+    """Validate an operator-supplied checkout without modifying it.
+
+    ``POLICY_ENTANGLEMENT_GNN_ROOT`` may name a checkout that belongs to another
+    repository (an upstream clone or a mirror), so this arm only reads it: no
+    ``git init``, fetch, checkout, remote re-point, or dependency install. A
+    missing commit, moved tag, or unprepared interpreter is the operator's to
+    fix, or they can unset the variable and let the gate use its own cache.
+    """
+    root = root.expanduser()
+    if not (root / ".git").exists():
+        raise SystemExit(
+            f"gate gnn: {ENV_UPSTREAM_ROOT}={root} is not an existing git checkout. This arm never "
+            "creates or provisions an explicitly selected checkout; unset "
+            f"{ENV_UPSTREAM_ROOT} to let it fetch {pin.tag} into its own cache."
+        )
+    if _git(root, "cat-file", "-e", f"{pin.commit}^{{commit}}").returncode != 0:
+        raise SystemExit(
+            f"gate gnn: {root} does not contain the pinned commit {pin.commit} for {pin.tag}. "
+            "This arm does not fetch into an explicitly selected checkout: fetch it there "
+            f"yourself, or unset {ENV_UPSTREAM_ROOT} to use the gate-managed cache."
+        )
+    tag = _git(root, "rev-parse", f"refs/tags/{pin.tag}^{{commit}}")
+    if tag.returncode == 0 and tag.stdout.strip() != pin.commit:
+        raise SystemExit(
+            f"gate gnn: tag {pin.tag} in {root} no longer resolves to the pinned commit "
+            f"{pin.commit} (found {tag.stdout.strip()}); re-pinning is a deliberate change, "
+            "not a gate fix"
+        )
+    python = _checkout_python(root)
+    if not _probe_parser_environment(python):
+        raise SystemExit(
+            f"gate gnn: {root} has no usable parser interpreter ({python}). The pinned parser "
+            "runs under the checkout's own virtualenv, which needs numpy, defusedxml and psutil. "
+            "This arm does not install into an explicitly selected checkout; prepare it there, "
+            f"or unset {ENV_UPSTREAM_ROOT} to use the gate-managed cache."
+        )
+    print(f"  validated operator checkout {root} (read-only: HEAD, refs, origin, venv untouched)", flush=True)
+    return python
+
+
 def _ensure_checkout(root: Path, pin: UpstreamPin) -> None:
-    """Fetch the pinned commit once, and fail loudly if the tag has moved."""
+    """Provision the gate-owned cache checkout; fail loudly if the tag has moved."""
     if not (root / ".git").exists():
         root.mkdir(parents=True, exist_ok=True)
         result = _git(root, "init", "--quiet")
@@ -190,17 +241,10 @@ def _checkout_python(root: Path) -> Path:
 
 
 def _ensure_parser_environment(root: Path) -> Path:
-    """Give the pinned checkout an interpreter that can run its own parser."""
+    """Give the gate-owned checkout an interpreter that can run the pinned parser."""
     python = _checkout_python(root)
-    if python.exists():
-        probe = subprocess.run(
-            [str(python), "-c", "import numpy, defusedxml, psutil"],
-            cwd=PROJECT_ROOT,
-            check=False,
-            capture_output=True,
-        )
-        if probe.returncode == 0:
-            return python
+    if _probe_parser_environment(python):
+        return python
     version = os.environ.get("GATE_GNN_PYTHON", "3.12")
     if not python.exists() and _run(["uv", "venv", "--python", version, str(root / ".venv")]) != 0:
         raise SystemExit("gate gnn: cannot create the pinned checkout's virtualenv")
@@ -223,9 +267,15 @@ def _ensure_parser_environment(root: Path) -> Path:
 
 def _arm_gnn() -> int:
     pin = load_upstream_pin(PIN_PATH)
-    root = _gnn_root(pin)
-    _ensure_checkout(root, pin)
-    _ensure_parser_environment(root)
+    explicit = os.environ.get(ENV_UPSTREAM_ROOT)
+    if explicit:
+        # Another repository's checkout: validate only, never provision it.
+        root = Path(explicit)
+        _validate_external_checkout(root, pin)
+    else:
+        root = _gnn_cache_root(pin)
+        _ensure_checkout(root, pin)
+        _ensure_parser_environment(root)
     env = dict(os.environ)
     env[ENV_UPSTREAM_ROOT] = str(root)
     # The conformance test reads the pin and the shipped specs only; the

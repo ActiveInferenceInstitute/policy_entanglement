@@ -29,12 +29,21 @@ re-runs the conformance test — the test itself also pins the pin
 
 ## What the job parses
 
-The arm fetches that commit into a per-pin cache directory outside the working
-tree (`$XDG_CACHE_HOME/policy_entanglement/gnn-upstream/<tag>-<commit>/`, or
-`$GATE_CACHE_DIR`, or `$POLICY_ENTANGLEMENT_GNN_ROOT` when it names the
-checkout), fails if the `v5.0.3` tag no longer resolves to the pinned commit,
-and gives the checkout its own interpreter with the parser's runtime
-dependencies (`numpy`, `defusedxml`, `psutil`). It then runs
+The arm provisions a per-pin cache directory outside the working tree
+(`$XDG_CACHE_HOME/policy_entanglement/gnn-upstream/<tag>-<commit>/`, or
+`$GATE_CACHE_DIR`), fails if the `v5.0.3` tag no longer resolves to the pinned
+commit, and gives that checkout its own interpreter with the parser's runtime
+dependencies (`numpy`, `defusedxml`, `psutil`).
+
+`POLICY_ENTANGLEMENT_GNN_ROOT` is validated read-only instead: the named
+checkout (often another repository's clone or mirror) must already contain the
+pinned commit, any existing tag must still peel to it, and its `.venv` must
+already import the parser's dependencies. The arm performs no `git init`,
+fetch, checkout, `remote set-url`, or install there; a missing piece is an
+explicit refusal, not a repair. `tests/test_gate_gnn_root.py` proves HEAD,
+refs, origin, local config and the working tree are unchanged.
+
+It then runs
 `python -m pytest -q tests/test_gnn_upstream_conformance.py`, which:
 
 - extracts `src/gnn` from the pinned commit with `git archive` so the bytes

@@ -81,12 +81,19 @@ The `gnn` arm is the conformance job's only definition of the check; see
    (schema `gnn-importer-pin/v1`, `v5.0.3` at
    `8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1`) through
    `gnn.upstream.load_upstream_pin`;
-2. fetches that commit into an operator cache outside the working tree —
+2. provisions a gate-owned checkout outside the working tree —
    `$XDG_CACHE_HOME/policy_entanglement/gnn-upstream/<tag>-<commit>/`, or
-   `$GATE_CACHE_DIR`, or `$POLICY_ENTANGLEMENT_GNN_ROOT` when that explicitly
-   names the checkout — and refuses a tag that no longer resolves to the pin;
-3. gives the checkout its own interpreter with `numpy`, `defusedxml` and
-   `psutil`;
+   `$GATE_CACHE_DIR` — and refuses a tag that no longer resolves to the pin.
+   `$POLICY_ENTANGLEMENT_GNN_ROOT` is different: it names a checkout that may
+   belong to another repository (an upstream clone or a mirror), so it is
+   validated **read-only** — the commit must already be present, an existing tag
+   must still peel to the pin, and its `.venv` must already import `numpy`,
+   `defusedxml` and `psutil`. The arm never runs `git init`, fetch, checkout,
+   `remote set-url`, or a dependency install in an explicitly selected
+   checkout; anything missing is refused with instructions to fetch or prepare
+   it there, or to unset the variable and let the gate use its cache;
+3. gives the gate-owned checkout its own interpreter with `numpy`, `defusedxml`
+   and `psutil`;
 4. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
    `POLICY_ENTANGLEMENT_GNN_ROOT` and `ACTINF_SKIP_BOOTSTRAP` set, then prints
    and (under GitHub Actions) records `gnn-version=… commit=…`.
