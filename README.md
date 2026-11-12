@@ -232,21 +232,24 @@ uv sync --group sim --group viz
 # Lean build (boundary fragment, no Mathlib needed):
 cd lean && lake build                              # 22/22 jobs green
 
-# Lean + sorry/axiom budget gate (returns non-zero on regression):
-uv run python scripts/build_lean.py
+# Every gate is an arm of scripts/gate.py; `make` targets are aliases:
+make build-lean      # lake build + sorry/axiom/unsafe budget gate
+make test-fast       # fast loop: pytest -m 'not requires_pymdp and not slow'
+make test-full       # pytest -m 'not slow'
+make docs            # project-wide hyperlink audit + generated-docs freshness
+make gnn             # pinned upstream GNN parser conformance
+make ci              # lint + format + mypy + the full pipeline (the CI job)
+make readiness       # release path: pipeline-release + PDF validation + report
 
-# Python tests (live full-suite count from output/reports/test_results.json; configured coverage gate in pyproject.toml):
-uv run pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
-
-# Run *everything* end-to-end (canonical order from scripts/run_all.py):
+# Direct equivalents (live full-suite count from output/reports/test_results.json;
+# coverage gate configured in pyproject.toml):
+uv run pytest tests/ -m "not slow" --cov=src --cov-report=term-missing --cov-fail-under=95
 uv run python scripts/run_all.py
-
-# Release/readiness gate, including PDF render validation:
-make readiness
-
-# Explicit full release pipeline (PDF + optional MathlibProofs subgate):
 uv run python scripts/run_all.py --with-pdf --with-mathlib
 ```
+
+[`docs/guides/gate.md`](docs/guides/gate.md) lists every arm with its measured
+wall time.
 
 The canonical pipeline executed by
 [`scripts/run_all.py`](scripts/run_all.py) is, in order:

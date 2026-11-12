@@ -23,7 +23,7 @@ concept in two clicks.
 | Subdir | Audience | Purpose |
 |---|---|---|
 | [`reference/`](reference/) | All | Cross-cutting references — architecture, math, Lean theorems, Python API, manuscript ↔ code map |
-| [`guides/`](guides/) | Engineers | How-to: build, run, test, recipe-based quickstart |
+| [`guides/`](guides/) | Engineers | How-to: build, run, test, gate arms with measured wall times, recipe-based quickstart |
 | [`modules/`](modules/) | Researchers | Per-concept deep dives (decomposition, geometry, spectral, Bernoulli, heterogeneous, **convexity**, **Markov blanket**, **spectral witnesses**, **connections witnesses**) |
 | [`simulation/`](simulation/) | Researchers / Engineers | pymdp 1.0.1 POMDP harness + visualization helpers |
 
@@ -47,7 +47,8 @@ For a first pass, read:
 4. [`reference/methods_audit.md`](reference/methods_audit.md) — compact Lean + pymdp methods audit.
 5. [`reference/reproducibility_checklist.md`](reference/reproducibility_checklist.md) — release/readiness gate for reviewers.
 6. [`guides/build_run.md`](guides/build_run.md) — how to compile, test, and render.
-7. [`reference/math_reference.md`](reference/math_reference.md) — every formal object in one page.
+7. [`guides/gate.md`](guides/gate.md) — the single gate entry point (`scripts/gate.py` / `make`), its arms, the CI mapping, and measured wall times.
+8. [`reference/math_reference.md`](reference/math_reference.md) — every formal object in one page.
 
 Then deep dives:
 
@@ -83,6 +84,7 @@ Then deep dives:
 | [`reference/manuscript_map.md`](reference/manuscript_map.md) | reference | Section-by-section map: manuscript ↔ Lean ↔ Python ↔ tests ↔ docs |
 | [`guides/styleguide.md`](guides/styleguide.md) | guides | **Manuscript ↔ code contract** — configurable simulations, injected variables, equation / figure auto-numbering, citation rules, American English |
 | [`guides/build_run.md`](guides/build_run.md) | guides | Compile, test, render, generate figures |
+| [`guides/gate.md`](guides/gate.md) | guides | Gate entry point, arms, CI mapping, measured wall times |
 | [`guides/quickstart_recipes.md`](guides/quickstart_recipes.md) | guides | Copy-paste recipes for every common task |
 | [`guides/testing.md`](guides/testing.md) | guides | No-mocks policy, coverage targets, invariants checked |
 | [`modules/decomposition_theorem.md`](modules/decomposition_theorem.md) | modules | Statement, proof scaffold, and numerical checks for the decomposition identity |

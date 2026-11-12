@@ -16,29 +16,25 @@ make readiness
 ```
 
 **Expanded view — the underlying steps `run_all.py` performs
-internally** (this is *not* literally what `make readiness` shells out
-to; see the actual recipe below).  `make readiness` runs only the
-seven commands in the recipe — `validate_manuscript.py`,
-`validate_outputs.py`, `build_lean.py`, and `build_mathlib_proofs.py`
-execute *inside* `run_all.py`, not as separate top-level invocations:
+internally.** `make readiness` is one gate arm
+(`python scripts/gate.py readiness`); it composes the release arms and
+stops at the first failure:
 
 ```bash
-uv run python scripts/run_all.py --with-pdf --with-mathlib
+python scripts/gate.py pipeline-release   # run_all.py --with-pdf --with-mathlib
 # ↳ internally runs build_lean.py, validate_outputs.py,
-#   validate_manuscript.py, and (with --with-mathlib) the MathlibProofs
-#   build, among the canonical scripts
-uv run python scripts/validate_pdf.py
-uv run pytest tests/ --cov=src --cov-fail-under=95
-uvx ruff check src/ scripts/ tests/
-uvx ruff format --check src/ scripts/ tests/
-uv run mypy src/ scripts/
-uv run python scripts/readiness_report.py
+#   validate_manuscript.py, and the MathlibProofs build
+python scripts/gate.py pdf-validate       # validate_pdf.py
+python scripts/gate.py lint               # ruff check
+python scripts/gate.py format             # ruff format --check
+python scripts/gate.py types              # mypy
+python scripts/gate.py readiness          # all of the above + readiness_report.py
 ```
 
-The literal `make readiness` recipe (from the `Makefile`) is exactly
-the seven shell steps above; it does *not* separately invoke
-`validate_manuscript.py`, `validate_outputs.py`, `build_lean.py`, or
-`build_mathlib_proofs.py` as standalone commands.
+`validate_manuscript.py`, `validate_outputs.py`, `build_lean.py`, and the
+MathlibProofs build execute *inside* `run_all.py`; `make readiness` does not
+invoke them as separate top-level commands. Every arm is listed in
+[`../guides/gate.md`](../guides/gate.md).
 
 ## What Must Be True
 

@@ -18,16 +18,20 @@ reference if anything in this guide drifts.
 uv sync --group sim --group viz
 
 # 2. Verify the Lean budget is 0 sorry / 0 axiom / 0 unsafe
-uv run python scripts/build_lean.py
+make build-lean
 
-# 3. Run the full Python suite with coverage gate
-uv run pytest tests/ --cov=src --cov-fail-under=95
+# 3. Every CI gate — lint, format check, mypy, and the end-to-end pipeline
+#    (figures → sim → manuscript validation → regression gate)
+make ci
 
-# 4. End-to-end pipeline (figures → sim → manuscript validation)
-uv run python scripts/run_all.py
+# 4. The whole pytest selection that does not need a Lean toolchain build
+make test-full
 ```
 
-If all four steps exit 0 you are ready to contribute.
+If all four steps exit 0 you are ready to contribute. Every `make` target
+delegates to [`scripts/gate.py`](scripts/gate.py); `python scripts/gate.py
+--list` prints the arms and [`docs/guides/gate.md`](docs/guides/gate.md) is the
+arm-by-arm run guide with measured wall times.
 
 > **Coverage gate note.** The ≥95% `src/` floor is single-sourced from
 > `pyproject.toml` (`[tool.coverage.report] fail_under`) and enforced in the
@@ -141,17 +145,17 @@ These are non-negotiable. CI enforces every one of them.
 ## Pre-PR checklist
 
 ```bash
-# Lean hygiene
-uv run python scripts/build_lean.py
-# Python tests + coverage gate
-uv run pytest tests/ --cov=src --cov-fail-under=95
-# Manuscript validation
-uv run python scripts/validate_manuscript.py
-# Output validation (regenerates everything)
-uv run python scripts/run_all.py
+make build-lean     # Lean hygiene budget (lake build + sorry/axiom gate)
+make ci             # ruff check, ruff format --check, mypy, full pipeline
+make test-full      # whole pytest selection short of the Lean release probes
+make docs           # project-wide hyperlink audit + generated-docs freshness
+make gnn            # pinned upstream GNN parser conformance
 ```
 
-If all four exit 0, your PR is ready.
+`make ci` and `make gnn` are exactly the two GitHub Actions jobs (`ci` and
+`gnn-conformance`); `make slow` adds the optional release probes (Lean
+toolchain build test and the MathlibProofs axiom audit). If every arm exits 0,
+your PR is ready.
 
 ## Where to look when stuck
 
