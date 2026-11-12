@@ -154,6 +154,8 @@ def test_pin_file_names_the_canonical_release() -> None:
     assert pin.commit == CANONICAL_COMMIT
     assert pin.parser_module == "gnn.parsers.markdown_parser"
     assert pin.parser_class == "MarkdownGNNParser"
+    assert pin.schema == "gnn-importer-pin/v1"
+    assert pin.recorded is not None
 
 
 def test_pin_loader_rejects_malformed_pins(tmp_path: Path) -> None:
@@ -169,6 +171,9 @@ def test_pin_loader_rejects_malformed_pins(tmp_path: Path) -> None:
             }
         ),
         "extra_key.json": json.dumps(json.loads(valid) | {"extra": "nope"}),
+        "bad_schema.json": json.dumps(json.loads(valid) | {"schema": "repo-specific-pin/v1"}),
+        "bad_recorded.json": json.dumps(json.loads(valid) | {"recorded": "2026-13-01"}),
+        "short_recorded.json": json.dumps(json.loads(valid) | {"recorded": "2026-11"}),
         "duplicate_key.json": valid.replace('"tag": "v5.0.3",', '"tag": "v5.0.3", "tag": "v5.0.3",'),
         "bad_repo.json": valid.replace("https://github.com/", "https://example.com/"),
         "bad_tag.json": valid.replace('"v5.0.3"', '"5.0.3"'),

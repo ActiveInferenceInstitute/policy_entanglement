@@ -54,9 +54,9 @@ upstream parser is a test-time check against the pinned release recorded in
 
 | Identifier | Kind | Purpose |
 |---|---|---|
-| `UpstreamPin` | dataclass | The pinned upstream release identity (`repository`, `tag`, `commit`, `parser_module`, `parser_class`). |
+| `UpstreamPin` | dataclass | The pinned upstream release identity (`repository`, `tag`, `commit`, `parser_module`, `parser_class`, plus `schema`/`recorded` when the canonical importer-pin schema is declared). |
 | `UpstreamPinError` | exception | Raised when the pin is malformed/unusable or an upstream digest payload is incomplete. |
-| `load_upstream_pin` | function | Read and validate `gnn/upstream.json` (exact keys, HTTPS GitHub URL, stable tag, full commit, dotted module, identifier class). |
+| `load_upstream_pin` | function | Read and validate `gnn/upstream.json` (required keys, optional `gnn-importer-pin/v1` `schema`/`recorded`, HTTPS GitHub URL, stable tag, full commit, dotted module, identifier class; any other field is refused). |
 | `default_gnn_root` | function | Conventional sibling checkout path of the upstream GNN repository. |
 | `resolve_gnn_root` | function | Resolve the checkout root: explicit `POLICY_ENTANGLEMENT_GNN_ROOT` selection wins, otherwise the sibling checkout. |
 | `gnn_checkout_python` | function | Interpreter of the upstream checkout's `.venv` (runs the pinned parser). |
