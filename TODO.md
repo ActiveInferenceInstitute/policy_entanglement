@@ -1,12 +1,76 @@
 # TODO — Policy Entanglement in Active Inference (`actinf_policy_entanglement_lean`)
 
 **Status:** Active — review passes complete; all Minor/Medium findings implemented and all
-previously-scoped Major findings (M1, M2) implemented this continuation. No item remains
-deferred.
+previously-scoped Major findings (M1, M2) implemented. The 2026-11-12 dependency pass verifies
+both cutovers as landed and leaves one open item: the `inferactively-pymdp` 1.0.1 → 1.0.5 bump
+did not reach the documentation, or the test that pins the old string.
 
 **Owner:** Daniel Ari Friedman (daniel@activeinference.institute)
 
-**Last reviewed:** 2026-08-01 (deepest hostile red-team review; implementation pass + completion pass); re-checked 2026-11-11 (Institute improvements pass 3)
+**Last reviewed:** 2026-08-01 (deepest hostile red-team review; implementation pass + completion pass); re-checked 2026-11-11 (Institute improvements pass 3); re-checked 2026-11-12 (dependency-cutover pass)
+
+---
+
+## Dependency-cutover pass (2026-11-12)
+
+Re-check of the two dependency changes merged after the last pass, against the tree they
+landed on (`gnn/upstream.json`, `pyproject.toml`, `uv.lock`, `git log --oneline -20`). Both
+cutovers are in; the second one left the documentation behind.
+
+### Landed (verified on this tree)
+
+- **[x] GNN-FEP cutover — pin `v5.1.0`, interim local reader deleted.** `gnn/upstream.json`
+  now records schema `gnn-importer-pin/v1`, tag `v5.1.0`, commit
+  `75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`, recorded 2026-11-12. The local pin reader
+  (`src/gnn/upstream.py::load_upstream_pin`, `UpstreamPin` and its shape validation) is gone;
+  the `gnn` arm runs `python -m gnn.importers check … --job gnn-conformance` from the pinned
+  release, and `tests/test_gnn_upstream_conformance.py` reads the hand-off through
+  `PinnedRelease`. Merge `2ee376e` (PR #24, merged 2026-11-12); the migration is written up in
+  `docs/CHANGELOG.md` ("Pending — GNN-FEP member migration, adopted (2026-11-12)") and
+  `.github/GNN.md`.
+- **[x] `inferactively-pymdp` 1.0.5 in the `sim` extra and the `sim` group.** `pyproject.toml`
+  pins `inferactively-pymdp==1.0.5` in both `[project.optional-dependencies].sim` and
+  `[dependency-groups].sim`; `uv.lock` resolves 1.0.5; `tests/test_manuscript_variables_builder.py:83`
+  asserts `pymdp_distribution_version == "1.0.5"`. Merge `102369c` (PR #25, merged
+  2026-11-12) — three files, eight lines changed.
+
+### Open
+
+- **[ ] The 1.0.5 bump did not reach the documentation.** 56 tracked files still spell the
+  dependency `inferactively-pymdp==1.0.1` (108 occurrences), among them `README.md`,
+  `AGENTS.md`, `docs/glossary.md`, `docs/simulation/pomdp_simulation.md`,
+  `docs/reference/veridical_status.md` (a verifiability row that reads "pymdp version |
+  **1.0.1**"), `src/simulation/agents.py` (module docstring, `PYMDP_INSTALL_HINT`, and six
+  inline notes), the `requires_pymdp` marker description in `pyproject.toml`, and
+  `manuscript/4C_pymdp_harness.md`. Two things keep it in place: no gate covers a pinned
+  dependency's version string — the `docs` arm runs the hyperlink audit,
+  `tests/test_docs_no_stale_registry_numbers.py` (counts only) and `tests/test_generate_index.py`
+  — and `tests/test_status_docs.py::_pymdp_package_api_wording_issues` **requires**
+  `inferactively-pymdp==1.0.1` in ten current-facing files, so the docs cannot be corrected
+  without editing that test in the same change (derive the expectation from
+  `importlib.metadata.version("inferactively-pymdp")` instead of a literal). `docs/CHANGELOG.md`
+  has no entry for the bump; its newest item is the GNN cutover. Owner: maintainer;
+  unblocked. Verify with `make docs test-fast` after the sweep.
+- **[ ] The `Current status` block above measures a tree that no longer exists.** Its counts
+  (1480 passed / 7 skipped / 1 xfailed, 94.79% `src/` coverage, `ruff` + `mypy` clean) are the
+  2026-08-01 run. 52 commits have landed since, 15 of them touching `tests/` or `src/`,
+  including `2ee376e`'s rewrite of `tests/test_gnn_upstream_conformance.py` and the `uv.lock`
+  change in `102369c`. Re-measure in the `sim` environment (`uv sync --group sim`, then
+  `uv run python -m pytest tests/ --cov=src`, `make lint`, `make types`) and re-date the block;
+  an unmeasured higher number may not be re-certified, so re-dating alone is the minimum.
+  Owner: maintainer; unblocked (the full suite plus the Lean boundary is the ~20 min run noted
+  below).
+- **[ ] No hosted CI evidence since 2026-11-05.** Every run since 2026-11-11 fails before its
+  first step: run `43276001871` (push to `main` after #25) reports both jobs failed with
+  `steps: []`, and the last successful run is `42088350686` (2026-11-05). Merges #16–#25
+  therefore cite no hosted run, and the local arms (`make ci`, `make docs`, `make gnn`) are the
+  only evidence. Blocked outside this repository — organisation Actions billing. Owner:
+  Institute organisation administrators.
+
+**Verification for this pass:** `uv run --no-sync python scripts/gate.py docs` → `12 passed in
+6.71s` (hyperlink audit, stale-registry tripwire, index generator), `gate docs green in 8.3s`,
+exit 0. The `gnn` and `test-full` arms were not run in this pass, and no hosted run is
+available (see above), so this file claims neither as green.
 
 ---
 
