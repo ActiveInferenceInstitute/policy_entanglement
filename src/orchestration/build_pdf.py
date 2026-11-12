@@ -388,6 +388,7 @@ def _pandoc_to_tex(
     ]
     _run(command, cwd=pdf_dir)
     _insert_preamble_into_tex(combined_tex=combined_tex, preamble_tex=preamble_tex)
+    _drop_inert_table_caption_setup(combined_tex=combined_tex)
     _shorten_caption_aux_entries(combined_tex=combined_tex)
     _postprocess_combined_tex(combined_tex=combined_tex, source_manuscript=source_manuscript)
 
@@ -399,6 +400,28 @@ def _insert_preamble_into_tex(*, combined_tex: Path, preamble_tex: Path) -> None
         raise ValueError(f"{combined_tex} does not contain {marker!r}")
     preamble = preamble_tex.read_text(encoding="utf-8").rstrip()
     combined_tex.write_text(text.replace(marker, f"{preamble}\n\n{marker}", 1), encoding="utf-8")
+
+
+_INERT_TABLE_CAPTION_SETUP_RE = re.compile(r"^[ \t]*\\captionsetup\[table\]\{skip=6pt\}[ \t]*\n", re.MULTILINE)
+
+
+def _drop_inert_table_caption_setup(*, combined_tex: Path) -> None:
+    """Drop pandoc's float-table caption skip when the document has no table float.
+
+    Pandoc's LaTeX preamble sets ``\\captionsetup[table]{skip=6pt}`` for any
+    document containing tables. Markdown tables are emitted as ``longtable``,
+    not floats, so on this manuscript the setting is never applied and the
+    ``caption`` package reports ``Unused \\captionsetup[table]`` — a warning the
+    PDF gate treats as release-blocking. Remove the dead line only while the
+    document really has no ``table`` float; a future float table keeps it.
+    """
+
+    text = combined_tex.read_text(encoding="utf-8")
+    if "\\begin{table}" in text:
+        return
+    updated, removed = _INERT_TABLE_CAPTION_SETUP_RE.subn("", text)
+    if removed:
+        combined_tex.write_text(updated, encoding="utf-8")
 
 
 def _shorten_caption_aux_entries(*, combined_tex: Path) -> None:

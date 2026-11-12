@@ -65,6 +65,21 @@ def test_insert_preamble_missing_marker_raises(tmp_path: Path) -> None:
         bp._insert_preamble_into_tex(combined_tex=tex, preamble_tex=pre)
 
 
+def test_drop_inert_table_caption_setup(tmp_path: Path) -> None:
+    """Pandoc's float-table caption skip goes only when no table float exists."""
+    tex = tmp_path / "doc.tex"
+    setup = "\\usepackage{longtable,booktabs,array}\n\\usepackage{caption}\n\\captionsetup[table]{skip=6pt}\n"
+    tex.write_text(setup + "\\begin{document}\n\\begin{longtable}{ll}a&b\\\\\\end{longtable}\n\\end{document}\n")
+    bp._drop_inert_table_caption_setup(combined_tex=tex)
+    stripped = tex.read_text(encoding="utf-8")
+    assert "\\captionsetup[table]" not in stripped
+    assert "\\usepackage{caption}" in stripped
+
+    tex.write_text(setup + "\\begin{document}\n\\begin{table}\\caption{x}\\end{table}\n\\end{document}\n")
+    bp._drop_inert_table_caption_setup(combined_tex=tex)
+    assert "\\captionsetup[table]{skip=6pt}" in tex.read_text(encoding="utf-8")
+
+
 def test_run_bibtex_writes_log(tmp_path: Path) -> None:
     if shutil.which("bibtex") is None:
         pytest.skip("bibtex not on PATH")
