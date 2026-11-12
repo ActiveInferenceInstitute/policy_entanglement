@@ -18,11 +18,11 @@ from types import ModuleType
 
 import pytest
 
-from gnn.upstream import UpstreamPin
+from gnn.upstream import PinnedRelease
 
 PROJECT = Path(__file__).resolve().parent.parent
 GATE_PATH = PROJECT / "scripts" / "gate.py"
-PINNED_TAG = "v5.0.3"
+PINNED_TAG = "v5.1.0"
 
 
 def _load_gate() -> ModuleType:
@@ -75,8 +75,8 @@ def _repo(path: Path) -> tuple[Path, str]:
     return path, _commit(path, "first")
 
 
-def _pin(commit: str, repository: str = "https://github.com/example/upstream") -> UpstreamPin:
-    return UpstreamPin(
+def _pin(commit: str, repository: str = "https://github.com/example/upstream") -> PinnedRelease:
+    return PinnedRelease(
         repository=repository,
         tag=PINNED_TAG,
         commit=commit,
@@ -175,3 +175,45 @@ def test_gate_module_keeps_the_cache_outside_the_working_tree() -> None:
     assert PROJECT not in GATE.GNN_CACHE.parents
     assert GATE.ENV_UPSTREAM_ROOT == "POLICY_ENTANGLEMENT_GNN_ROOT"
     assert Path(GATE.__file__) == GATE_PATH
+
+
+def test_reader_command_is_the_contract_arm(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The pin, pointer and spec checks run as the GNN-FEP arm, in the pinned tree.
+
+    The pointer findings (`pointer-*`) and the pin findings (`pin-*`) belong to
+    the shared reader, so the arm's contribution is the command: the contract's
+    `check --repo .` form, the member's workflow and job, and the selected
+    commit and tag. `python -m gnn.importers` must resolve to the pinned
+    release's `src/`, never to the project's own `gnn` package.
+    """
+    captured: dict[str, object] = {}
+
+    def fake_run(command: list[str], *, env: dict[str, str] | None = None) -> int:
+        captured["command"] = list(command)
+        captured["env"] = dict(env or {})
+        return 0
+
+    monkeypatch.setattr(GATE, "_run", fake_run)
+    pin = _pin("a" * 40)
+    root = tmp_path / "checkout"
+
+    assert GATE._run_pinned_reader(tmp_path / "python", root, pin) == 0
+    assert captured["command"] == [
+        str(tmp_path / "python"),
+        "-m",
+        "gnn.importers",
+        "check",
+        "--repo",
+        ".",
+        "--require-pointer",
+        "--workflow",
+        ".github/workflows/ci.yml",
+        "--job",
+        "gnn-conformance",
+        "--expected-commit",
+        pin.commit,
+        "--expected-tag",
+        pin.tag,
+    ]
+    pinned_src = str(root / "src")
+    assert captured["env"]["PYTHONPATH"].split(os.pathsep)[0] == pinned_src

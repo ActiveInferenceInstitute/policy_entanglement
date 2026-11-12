@@ -11,6 +11,50 @@ those counts moved between rounds.
 
 ---
 
+## Pending — GNN-FEP member migration, adopted (2026-11-12)
+
+- **Pin advanced**: `gnn/upstream.json` moves from `v5.0.3` at
+  `8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1` (which predates the shared reader)
+  to `v5.1.0` at `75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`, the release that
+  ships `src/gnn/importers.py`. Schema, repository, recorded date and the
+  parser module/class are unchanged.
+- **Shared-reader cutover**: the interim local pin reader
+  (`src/gnn/upstream.py::load_upstream_pin`, `UpstreamPin`, its schema/tag/
+  commit/module/class validation and its duplicate-key check) and its pin-shape
+  tests are deleted. The `gnn` arm now runs
+  `python -m gnn.importers check --repo . --require-pointer --workflow
+  .github/workflows/ci.yml --job gnn-conformance --expected-commit …
+  --expected-tag …` from the pinned checkout's interpreter with that checkout's
+  `src/` on `PYTHONPATH`, so the reader and the parser are the pinned release's.
+  The reader owns the pin shape, the `.github/GNN.md` pointer facts, the fork
+  check and the `*.gnn.md` syntax check — including the pointer findings that
+  previously lived in `scripts/gate.py::_validate_pointer`.
+- **One pin read**: the arm reads the pin file once to select what to fetch and
+  hands the release to the conformance test through
+  `POLICY_ENTANGLEMENT_GNN_RELEASE`; `tests/test_gnn_upstream_conformance.py`
+  reads that hand-off through `PinnedRelease`/`pinned_release` instead of the
+  pin. `UpstreamPinError` is now `UpstreamConformanceError`, which names what
+  the module still decides (digest payloads, checkout selection).
+- **Observed parser change in the pinned release**: at `v5.1.0` the upstream
+  `MarkdownGNNParser` reads the spaced ontology heading (`## ActInf Ontology
+  Annotation`) that `v5.0.3` silently ignored, so the conformance test's
+  non-vacuity control moved from that heading to a dtype the two parsers still
+  classify differently (`type=bool`: project `bool`, upstream `binary`). The
+  shipped specs keep the canonical `## ActInfOntologyAnnotation` spelling, so
+  the conformance comparison itself is unchanged and green. Documented in
+  `.github/GNN.md`, `docs/reference/python_api_gnn.md`, `src/gnn/AGENTS.md` and
+  manuscript §S8.
+- `.github/GNN.md`, `docs/guides/gate.md`, `docs/reference/python_api_gnn.md`,
+  `gnn/README.md`, `src/gnn/AGENTS.md` and manuscript §S8 record the adopted
+  state and both revisions; the "cutover blocked / interim reader" text is gone.
+- Preserved: the schema, every other gate arm, the checkout read-only contract
+  for `POLICY_ENTANGLEMENT_GNN_ROOT`, and the manuscript producer name. The
+  contract defers the producer rename until the next manuscript render, and
+  this repository's producer reads the round-trip sidecar, not the pin, so no
+  producer change is required here.
+
+---
+
 ## Release — v1.0.0 (2026-05-27)
 
 - Canonical public source repository:

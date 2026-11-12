@@ -19,8 +19,9 @@ Public API:
 Conformance tooling (imported by module path):
     * :mod:`gnn.harness` — production-ensemble binding + elementwise
       conformance report for ``gnn/production_ensemble.gnn.md``
-    * :mod:`gnn.upstream` — pinned upstream release identity
-      (``gnn/upstream.json``) and parser-digest conformance support
+    * :mod:`gnn.upstream` — the release the ``gnn`` arm selected and
+      parser-digest conformance support (the pin itself is read and validated
+      by the GNN–FEP shared reader, ``python -m gnn.importers``)
 """
 
 from __future__ import annotations

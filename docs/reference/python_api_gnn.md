@@ -50,13 +50,18 @@ upstream parser is a test-time check against the pinned release recorded in
 | `conformance_negative_control` | function | Max-abs-diff after swapping stream 1's declared control slices — the non-vacuity control for `conformance_report`. |
 | `harness_config` | function | Emit the full pymdp-harness configuration (per-stream arrays, joint coupling, `gamma`, cardinalities) from the GNN declarations (`scripts/gnn_to_pymdp.py --harness`). |
 
-## `gnn/upstream.py` — upstream pin + parser-conformance support
+## `gnn/upstream.py` — upstream parser-conformance support
+
+The pin itself is read and validated by the GNN–FEP shared reader
+(`python -m gnn.importers`, run by the `gnn` gate arm from the pinned release's
+own environment); this module carries the release the arm selected and the
+digest comparison, not a second pin reader.
 
 | Identifier | Kind | Purpose |
 |---|---|---|
-| `UpstreamPin` | dataclass | The pinned upstream release identity (`repository`, `tag`, `commit`, `parser_module`, `parser_class`, plus `schema`/`recorded` when the canonical importer-pin schema is declared). |
-| `UpstreamPinError` | exception | Raised when the pin is malformed/unusable or an upstream digest payload is incomplete. |
-| `load_upstream_pin` | function | Read and validate `gnn/upstream.json` (required keys, optional `gnn-importer-pin/v1` `schema`/`recorded`, HTTPS GitHub URL, stable tag, full commit, dotted module, identifier class; any other field is refused). |
+| `PinnedRelease` | dataclass | The upstream release the `gnn` arm selected (`repository`, `tag`, `commit`, `parser_module`, `parser_class`) — the arm's hand-off to the conformance test, published through `ENV_PINNED_RELEASE`. |
+| `pinned_release` | function | Read that hand-off from the environment (or a given mapping); raises when it is absent or incomplete. |
+| `UpstreamConformanceError` | exception | Raised when upstream conformance cannot be decided from the inputs at hand (no arm hand-off, an empty checkout selection, an incomplete upstream digest payload). |
 | `default_gnn_root` | function | Conventional sibling checkout path of the upstream GNN repository. |
 | `resolve_gnn_root` | function | Resolve the checkout root: explicit `POLICY_ENTANGLEMENT_GNN_ROOT` selection wins, otherwise the sibling checkout. |
 | `gnn_checkout_python` | function | Interpreter of the upstream checkout's `.venv` (runs the pinned parser). |
@@ -67,8 +72,7 @@ upstream parser is a test-time check against the pinned release recorded in
 | `DIGEST_DRIVER_SOURCE` | constant | Stdlib-only driver program executed by the pinned checkout's interpreter; prints the upstream parser identity (module/class/version/file/SHA-256) plus one digest per spec. |
 | `DEFAULT_UPSTREAM_DIRNAME` | constant | Conventional directory name of the sibling upstream checkout. |
 | `ENV_UPSTREAM_ROOT` | constant | Environment variable that explicitly selects a checkout (`POLICY_ENTANGLEMENT_GNN_ROOT`). |
-| `PIN_RELATIVE_PATH` | constant | Repo-relative path of the pinned release identity (`gnn/upstream.json`). |
-| `PIN_SCHEMA` | constant | Canonical importer-pin schema identifier (`gnn-importer-pin/v1`); a pin that declares it also records the date it was taken. |
+| `ENV_PINNED_RELEASE` | constant | Environment variable carrying the release the `gnn` arm selected (`POLICY_ENTANGLEMENT_GNN_RELEASE`), as JSON. |
 | `PARSER_RELATIVE_PATH` | constant | Checkout-relative path of the upstream markdown parser (`src/gnn/parsers/markdown_parser.py`). |
 
 ## `gnn/runner.py` — round-trip pipeline stage
@@ -103,6 +107,8 @@ test compares digests of what the two parsers extract from the same bytes, and
 the harness test compares the declared arrays against the builder arrays. Two
 known-normalization differences are deliberate: the declared version `GNN v1.1`
 normalizes to `1.1`, and the project parser accepts the spaced ontology section
-name as an alias while upstream ignores it (so shipped specs use the canonical
-`## ActInfOntologyAnnotation` spelling, and the test's mutant pins the
-difference). See manuscript §S8.
+name as an alias (`v5.1.0` upstream reads it too, where `v5.0.3` ignored it —
+shipped specs keep the canonical `## ActInfOntologyAnnotation` spelling either
+way). One difference remains observable and is what the conformance test's
+non-vacuity mutant pins: `type=bool` is `bool` to the project parser and
+`binary` to the upstream parser. See manuscript §S8.

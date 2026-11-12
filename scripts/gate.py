@@ -47,12 +47,14 @@ MathlibProofs builds, ``requires_pymdp`` marks the ``sim``-group surface.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
 import sys
 import time
 from collections.abc import Callable, Sequence
+from dataclasses import asdict
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -63,9 +65,13 @@ from _bootstrap import ensure_project_paths  # noqa: E402
 
 ensure_project_paths(project_root=PROJECT_ROOT)
 
-from gnn.upstream import ENV_UPSTREAM_ROOT, UpstreamPin, load_upstream_pin  # noqa: E402
+from gnn.upstream import ENV_PINNED_RELEASE, ENV_UPSTREAM_ROOT, PinnedRelease  # noqa: E402
 
 PIN_PATH = PROJECT_ROOT / "gnn" / "upstream.json"
+#: The conformance job and the workflow file that defines it. The GNN-FEP
+#: contract's registry row records this job key; the pointer must name both.
+GNN_WORKFLOW = ".github/workflows/ci.yml"
+GNN_JOB = "gnn-conformance"
 
 
 def _gate_cache_root() -> Path:
@@ -131,7 +137,7 @@ def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _gnn_cache_root(pin: UpstreamPin) -> Path:
+def _gnn_cache_root(pin: PinnedRelease) -> Path:
     """Gate-owned checkout for this pin; the only root this arm may write to."""
     return GNN_CACHE / f"{pin.tag}-{pin.commit[:12]}"
 
@@ -149,7 +155,7 @@ def _probe_parser_environment(python: Path) -> bool:
     return probe.returncode == 0
 
 
-def _validate_external_checkout(root: Path, pin: UpstreamPin) -> Path:
+def _validate_external_checkout(root: Path, pin: PinnedRelease) -> Path:
     """Validate an operator-supplied checkout without modifying it.
 
     ``POLICY_ENTANGLEMENT_GNN_ROOT`` may name a checkout that belongs to another
@@ -190,7 +196,7 @@ def _validate_external_checkout(root: Path, pin: UpstreamPin) -> Path:
     return python
 
 
-def _ensure_checkout(root: Path, pin: UpstreamPin) -> None:
+def _ensure_checkout(root: Path, pin: PinnedRelease) -> None:
     """Provision the gate-owned cache checkout; fail loudly if the tag has moved."""
     if not (root / ".git").exists():
         root.mkdir(parents=True, exist_ok=True)
@@ -265,21 +271,93 @@ def _ensure_parser_environment(root: Path) -> Path:
     return python
 
 
+def _read_pin() -> PinnedRelease:
+    """Bootstrap read of the release the pin declares.
+
+    Pin semantics — the schema, the revision shape, the repository, the
+    pointer and the specifications — belong to the GNN-FEP shared reader,
+    which runs below in the pinned release's own environment and is passed
+    this same commit and tag as ``--expected-*``. This read only selects what
+    to materialize; it decides nothing.
+    """
+    try:
+        payload = json.loads(PIN_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"gate gnn: cannot read {PIN_PATH}: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise SystemExit(f"gate gnn: {PIN_PATH} must be a JSON object")
+    fields = ("repository", "tag", "commit", "parser_module", "parser_class")
+    missing = [key for key in fields if not isinstance(payload.get(key), str) or not payload[key].strip()]
+    if missing:
+        raise SystemExit(f"gate gnn: {PIN_PATH} records no {', '.join(missing)}")
+    return PinnedRelease(
+        repository=payload["repository"].strip(),
+        tag=payload["tag"].strip(),
+        commit=payload["commit"].strip(),
+        parser_module=payload["parser_module"].strip(),
+        parser_class=payload["parser_class"].strip(),
+    )
+
+
+def _run_pinned_reader(python: Path, root: Path, pin: PinnedRelease) -> int:
+    """Run the GNN-FEP shared reader from the pinned release's own tree.
+
+    The reader is not vendored and not overlaid: ``<root>/src`` is the pinned
+    commit's tree, so ``gnn.importers``, the parser it validates the specs
+    with, and the repository that owns the pin check are all the pinned
+    release's. ``--expected-commit``/``--expected-tag`` hold the reader to the
+    release this arm selected.
+    """
+    env = dict(os.environ)
+    pinned_src = str(root / "src")
+    inherited = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = f"{pinned_src}{os.pathsep}{inherited}" if inherited else pinned_src
+    return _run(
+        [
+            str(python),
+            "-m",
+            "gnn.importers",
+            "check",
+            "--repo",
+            ".",
+            "--require-pointer",
+            "--workflow",
+            GNN_WORKFLOW,
+            "--job",
+            GNN_JOB,
+            "--expected-commit",
+            pin.commit,
+            "--expected-tag",
+            pin.tag,
+        ],
+        env=env,
+    )
+
+
 def _arm_gnn() -> int:
-    pin = load_upstream_pin(PIN_PATH)
+    pin = _read_pin()
     explicit = os.environ.get(ENV_UPSTREAM_ROOT)
     if explicit:
         # Another repository's checkout: validate only, never provision it.
         root = Path(explicit)
-        _validate_external_checkout(root, pin)
+        python = _validate_external_checkout(root, pin)
     else:
         root = _gnn_cache_root(pin)
         _ensure_checkout(root, pin)
-        _ensure_parser_environment(root)
+        python = _ensure_parser_environment(root)
+    # One reader, called from the environment this arm already builds: the
+    # pinned release's own tree and interpreter. It owns the pin's shape, the
+    # pointer and the specification checks.
+    status = _run_pinned_reader(python, root, pin)
+    if status != 0:
+        return status
     env = dict(os.environ)
     env[ENV_UPSTREAM_ROOT] = str(root)
-    # The conformance test reads the pin and the shipped specs only; the
-    # generated artifact tree is irrelevant, so skip the session bootstrap.
+    # The arm read the pin once; the conformance test exercises that release
+    # through this hand-off instead of reading the pin a second time.
+    env[ENV_PINNED_RELEASE] = json.dumps(asdict(pin), sort_keys=True)
+    # The digest comparison reads the shipped specs only; the generated
+    # artifact tree is irrelevant, so skip the session bootstrap.
     env["ACTINF_SKIP_BOOTSTRAP"] = "1"
     status = _run(_pytest(GNN_TEST), env=env)
     version = pin.tag.removeprefix("v")
