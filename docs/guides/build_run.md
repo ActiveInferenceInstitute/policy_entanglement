@@ -83,10 +83,22 @@ uv sync --group sim --group viz                # full env, with inferactively-py
 
 ### Tests + coverage
 
+Every gate is an arm of one entry point — [`../../scripts/gate.py`](../../scripts/gate.py) —
+and the `make` targets are aliases of those arms:
+
 ```bash
-cd projects/actinf_policy_entanglement_lean
-uv run pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
+make test-fast        # pytest -m 'not requires_pymdp and not slow' (no sim group, no Lean builds)
+make test-full        # pytest -m 'not slow'
+make test-sim         # pytest -m 'requires_pymdp' (needs `uv sync --group sim`)
+make slow             # pytest -m 'slow' (Lean toolchain build + MathlibProofs axiom audit)
+make ci               # lint + format check + mypy + the full pipeline (all CI gates)
+
+# Coverage directly (the pipeline's regression gate runs this selection):
+uv run pytest tests/ -m "not slow" --cov=src --cov-report=term-missing --cov-fail-under=95
 ```
+
+[`gate.md`](gate.md) documents each arm, the CI mapping, and the measured wall
+times.
 
 Expected output: live collection count from `output/reports/test_results.json`, ≥ 95 % coverage
 on `src/` across the four subpackages `lean/`,
@@ -172,16 +184,16 @@ Three of the scripts above are *utility* steps consumed inside
 For this project, prefer the local wrappers:
 
 ```bash
-uv run python scripts/build_pdf.py
-uv run python scripts/validate_pdf.py
-make readiness
+make pdf           # scripts/build_pdf.py
+make validate-pdf  # scripts/validate_pdf.py
+make readiness     # the `readiness` gate arm: pipeline-pdf + validate-pdf + ci + report
 ```
 
 `build_pdf.py` regenerates the injected manuscript, combines the
 rendered sections, and runs local Pandoc/XeLaTeX/BibTeX rendering.
 `validate_pdf.py` scans the combined PDF text, TeX, LaTeX log, and
-compact-margin contract. `make readiness` runs the full project gates,
-then writes `output/reports/release_readiness.md`.
+compact-margin contract. `make readiness` runs those gates, then writes
+`output/reports/release_readiness.md`.
 
 ## Legacy Template Pipeline (Not Required)
 
@@ -213,15 +225,20 @@ Stages (per the template's default `pipeline.yaml`):
 
 ## CI
 
-The template's GitHub Actions workflow runs:
+[`../../.github/workflows/ci.yml`](../../.github/workflows/ci.yml) has two jobs,
+and both call [`../../scripts/gate.py`](../../scripts/gate.py) arms:
 
-```bash
-uv run pytest projects/actinf_policy_entanglement_lean/tests/ \
-    --cov=projects/actinf_policy_entanglement_lean/src \
-    --cov-fail-under=95
-```
+| Job | Steps |
+|---|---|
+| `ci` — "Pipeline gates, lint, and Lean budget" | installs the pinned Lean toolchain with elan, `uv sync --frozen --group sim`, then the `lint`, `format`, `types` and `pipeline` arms |
+| `gnn-conformance` — "gnn conformance (pinned)" | `uv sync --frozen` (default groups only), then the `gnn` arm, which fetches the commit pinned in [`../../gnn/upstream.json`](../../gnn/upstream.json) and runs `tests/test_gnn_upstream_conformance.py` |
 
-If you bump the coverage floor, update [`../pyproject.toml`](../../pyproject.toml)
+Locally, `make ci` and `make gnn` are those two jobs verbatim. The
+`slow`-marked release probes (Lean toolchain build test, MathlibProofs axiom
+audit) are opt-in via `make slow`. GitHub Actions billing is locked org-wide
+for this estate, so local runs are the operative gate.
+
+If you bump the coverage floor, update [`../../pyproject.toml`](../../pyproject.toml)
 (`tool.coverage.report.fail_under`) to match.
 
 ## Troubleshooting

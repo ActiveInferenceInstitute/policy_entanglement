@@ -320,43 +320,50 @@ the other so the two stay in sync.
 
 ## Verification gates (before commit)
 
-A contributor must pass all four gates locally before pushing:
+Every gate is an arm of one entry point, [`scripts/gate.py`](scripts/gate.py);
+the `make` targets are thin aliases of the same arms, and
+`.github/workflows/ci.yml` calls those arms directly, so local and CI runs
+cannot drift. [`docs/guides/gate.md`](docs/guides/gate.md) documents each arm
+and its measured wall time.
 
 ```bash
-# Gate 1 — Lean budget: zero sorry/axiom/unsafe regressions
-uv run python scripts/build_lean.py
+# Lean budget: zero sorry/axiom/unsafe regressions
+make build-lean      # scripts/build_lean.py (lake build + hygiene budget)
 
-# Gate 2 — Python tests + coverage floor
-uv sync --group sim --group viz
-uv run pytest tests/ --cov=src --cov-fail-under=95
-# The ≥95% floor is single-sourced from pyproject.toml
-# (`[tool.coverage.report] fail_under`) and is enforced in the environment that
-# installs the optional pymdp `sim` group — the same environment
-# docs/reference/reproducibility_checklist.md prescribes and scripts/run_all.py
-# runs in. With pymdp absent the gated simulation modules are unreachable and
-# their lines count as uncovered, so the aggregate measures ~88% and the floor
-# cannot be met there. A shortfall in the pipeline gate is covered by the
-# recorded rotating-project tolerance in scripts/regression_baseline.json —
-# never by lowering fail_under.
+# Every CI gate: ruff check, ruff format --check, mypy, and the full pipeline
+make ci              # == the `ci` GitHub Actions job
 
-# Gate 3 — Full pipeline (canonical `scripts/run_all.py` order; exits 0 end-to-end on green)
-uv run python scripts/run_all.py
+# Whole pytest selection short of the Lean release probes
+make test-full
 
-# Optional release gate — full pipeline plus PDF render validation
-uv run python scripts/run_all.py --with-pdf
+# Documentation check (no mkdocs in this repository): project-wide hyperlink
+# audit plus generated-docs freshness
+make docs
 
-# Full release gate with optional additive MathlibProofs build recorded:
-uv run python scripts/run_all.py --with-pdf --with-mathlib
+# Pinned upstream GNN parser conformance (fetches the pin in gnn/upstream.json)
+make gnn             # == the `gnn-conformance` GitHub Actions job
 
-# Gate 4 — Lint + type-check (must be 0 errors each)
-uvx ruff check src/ scripts/ tests/
-uv run mypy src/ scripts/
+# Optional release arms
+make slow            # Lean toolchain build test + MathlibProofs axiom audit
+make pipeline-pdf    # pipeline plus PDF render/validation
+make pipeline-release # pipeline --with-pdf --with-mathlib
 ```
 
-CI runs each gate independently; the project-wide hyperlink audit
-test (`tests/test_project_wide_hyperlinks.py`) additionally validates
-that every cross-link inside `AGENTS.md`, `README.md`, `docs/`,
-`manuscript/`, and `lean/` resolves to a real file.
+The ≥95% `src/` floor is single-sourced from `pyproject.toml`
+(`[tool.coverage.report] fail_under`) and is enforced in the environment that
+installs the optional pymdp `sim` group — the same environment
+`docs/reference/reproducibility_checklist.md` prescribes and
+`scripts/run_all.py` runs in. With pymdp absent the gated simulation modules
+are unreachable and their lines count as uncovered, so the aggregate measures
+~88% and the floor cannot be met there. A shortfall in the pipeline gate is
+covered by the recorded rotating-project tolerance in
+`scripts/regression_baseline.json` — never by lowering fail_under.
+
+Selection is expressed with the suite's markers, not file lists: `slow` marks
+the Lean toolchain and MathlibProofs builds, `requires_pymdp` marks the `sim`
+surface. The pipeline arm's regression gate runs `-m "not slow"` (its first
+stage already runs `scripts/build_lean.py`), the fast arm runs
+`-m "not requires_pymdp and not slow"`.
 
 ## Known limitations
 

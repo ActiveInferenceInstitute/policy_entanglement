@@ -68,6 +68,7 @@ upstream parser is a test-time check against the pinned release recorded in
 | `DEFAULT_UPSTREAM_DIRNAME` | constant | Conventional directory name of the sibling upstream checkout. |
 | `ENV_UPSTREAM_ROOT` | constant | Environment variable that explicitly selects a checkout (`POLICY_ENTANGLEMENT_GNN_ROOT`). |
 | `PIN_RELATIVE_PATH` | constant | Repo-relative path of the pinned release identity (`gnn/upstream.json`). |
+| `PIN_SCHEMA` | constant | Canonical importer-pin schema identifier (`gnn-importer-pin/v1`); a pin that declares it also records the date it was taken. |
 | `PARSER_RELATIVE_PATH` | constant | Checkout-relative path of the upstream markdown parser (`src/gnn/parsers/markdown_parser.py`). |
 
 ## `gnn/runner.py` — round-trip pipeline stage

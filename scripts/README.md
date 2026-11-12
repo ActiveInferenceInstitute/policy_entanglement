@@ -15,6 +15,7 @@ Scripts must not implement algorithms.  See
 
 | Script | What it does | Outputs |
 |---|---|---|
+| [`gate.py`](gate.py) | Single gate entry point — every `make` target and every CI step is one of its arms (`lint`, `format`, `types`, `test-fast`, `test-full`, `docs`, `gnn`, `pipeline`, …); `--list` prints them | exit code 0 / 1; per-command wall times; `gnn-version=` line |
 | [`build_lean.py`](build_lean.py) | `cd lean && lake build` + sorry / axiom / unsafe budget gate | exit code 0 / 1 |
 | [`build_mathlib_proofs.py`](build_mathlib_proofs.py) | Optional additive `lean/MathlibProofs/` scaffold build | exit code 0 / 1 |
 | [`build_pdf.py`](build_pdf.py) | Render the combined PDF with local Pandoc/XeLaTeX/BibTeX tooling | `../output/pdf/actinf_policy_entanglement_lean_combined.pdf` |

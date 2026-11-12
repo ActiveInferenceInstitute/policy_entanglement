@@ -19,6 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 BUILD_LEAN = PROJECT_ROOT / "scripts" / "build_lean.py"
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(
     shutil.which("lake") is None,
     reason="`lake` (Lean 4 build tool) not on PATH",

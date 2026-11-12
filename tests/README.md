@@ -28,6 +28,18 @@ uv run pytest tests/test_decomposition.py -v
 uv run pytest tests/test_bernoulli_toy.py::test_empirical_mi_matches_closed_form -v
 ```
 
+The suite's selections are the declared markers, not file lists:
+
+```bash
+make test-fast   # pytest -m 'not requires_pymdp and not slow' — no sim group, no Lean builds
+make test-full   # pytest -m 'not slow' — everything short of the Lean release probes
+make test-sim    # pytest -m 'requires_pymdp' — the inferactively-pymdp surface only
+make slow        # pytest -m 'slow' — Lean toolchain build + MathlibProofs axiom audit
+```
+
+`make` targets are aliases of [`../scripts/gate.py`](../scripts/gate.py) arms,
+which the CI workflow calls directly.
+
 ## File map
 
 | File | Module under test |
