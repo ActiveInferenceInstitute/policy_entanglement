@@ -78,11 +78,10 @@ The `gnn` arm is the conformance job's only definition of the check; see
 [`../../.github/GNN.md`](../../.github/GNN.md) for what it parses. It:
 
 1. reads the canonical pin [`../../gnn/upstream.json`](../../gnn/upstream.json)
-   (schema `gnn-importer-pin/v1`, `v5.0.3` at
-   `8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1`) through
-   `gnn.upstream.load_upstream_pin`, then checks `.github/GNN.md` for the pin
-   path, pinned revision (full or first twelve characters), workflow filename,
-   and conformance job key. Missing/unreadable pointers and omitted facts fail;
+   once (schema `gnn-importer-pin/v1`, `v5.1.0` at
+   `75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`) to select what to fetch. The pin
+   itself is read, validated and reported by the GNN–FEP shared reader, which
+   runs in the pinned environment (step 3);
 2. provisions a gate-owned checkout outside the working tree —
    `$XDG_CACHE_HOME/policy_entanglement/gnn-upstream/<tag>-<commit>/`, or
    `$GATE_CACHE_DIR` — and refuses a tag that no longer resolves to the pin.
@@ -95,18 +94,24 @@ The `gnn` arm is the conformance job's only definition of the check; see
    checkout; anything missing is refused with instructions to fetch or prepare
    it there, or to unset the variable and let the gate use its cache;
 3. gives the gate-owned checkout its own interpreter with `numpy`, `defusedxml`
-   and `psutil`;
+   and `psutil`, and runs the GNN–FEP shared reader there —
+   `python -m gnn.importers check --repo . --require-pointer --workflow
+   .github/workflows/ci.yml --job gnn-conformance --expected-commit … 
+   --expected-tag …` — with that checkout's `src/` on `PYTHONPATH`, so the
+   reader and the parser are the pinned release's. The reader owns the pin
+   shape, the `.github/GNN.md` pointer facts, the fork check and the
+   `*.gnn.md` syntax check;
 4. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
-   `POLICY_ENTANGLEMENT_GNN_ROOT` and `ACTINF_SKIP_BOOTSTRAP` set, then prints
-   and (under GitHub Actions) records `gnn-version=… commit=…`. The canonical
-   release assertion and checkout/tag checks remain the pin-drift checks.
+   `POLICY_ENTANGLEMENT_GNN_ROOT`, `POLICY_ENTANGLEMENT_GNN_RELEASE` and
+   `ACTINF_SKIP_BOOTSTRAP` set, then prints and (under GitHub Actions) records
+   `gnn-version=… commit=…`. The canonical release assertion and checkout/tag
+   checks remain the pin-drift checks.
 
-The [GNN-FEP prerequisite](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/main/docs/workflows/gnn-fep.md#prerequisite-the-reader-ships-in-a-revision-not-in-a-version-name)
-requires this interim local-reader state because the current pin has no
-`gnn.importers` module. The arm does not call that absent module, vendor its
-source, or substitute a newer live checkout. Shared-reader cutover must accompany
-a reviewed pin advance to a release containing the reader, with deletion of the
-local reader and its pin-shape tests in that same change.
+This is the [GNN-FEP](https://github.com/ActiveInferenceInstitute/Generalized_Notation_Notation/blob/main/docs/workflows/gnn-fep.md)
+cutover state: the pin (`v5.1.0`, `75c834bd8519`) contains `src/gnn/importers.py`,
+so the member's interim local reader and its pin-shape tests are deleted and the
+arm calls the shared reader instead of carrying a copy. Nothing is vendored, and
+no newer reader is overlaid on an older parser.
 
 A cold cache needs network access; a warm cache is offline-safe.
 
@@ -134,6 +139,13 @@ benchmarks.
 
 These are historical timing samples. Current test counts, pass/skip splits,
 and coverage come from `output/reports/test_results.json`, not this table.
+
+One later sample, so the reader's cost is not guessed: after the GNN-FEP
+cutover (pin `v5.1.0`) the `gnn` arm also runs the shared reader, and a
+warm-cache run on this host on 2026-11-12 took 2.7 s in total — 0.8 s for
+`python -m gnn.importers check` in the pinned environment and 1.4 s for the
+conformance pytest. Calling the reader instead of the deleted local check did
+not move the arm.
 
 `test-full` is **not** faster in this table: 349.5 s before, 715.1 s after. The
 after run happened while other repositories' suites were saturating this host,

@@ -21,7 +21,7 @@ Parent: [`../AGENTS.md`](../AGENTS.md) · API: [`../../docs/reference/python_api
 | `model.py` | Internal GNN graph representation (no closed-form shortcuts) |
 | `bridge.py` | General reconstruction path — **must not** import closed-form MI |
 | `harness.py` | Production-harness binding: GNN declarations → `simulation.specs` ensembles + conformance report |
-| `upstream.py` | Pinned upstream release identity (`gnn/upstream.json`), digest normalization, pinned-parser driver |
+| `upstream.py` | The release the `gnn` arm selected (`PinnedRelease`), digest normalization, pinned-parser driver — the pin itself is read by the GNN–FEP shared reader, not here |
 | `runner.py` | Round-trip + production-conformance orchestration, negative controls, sidecar JSON |
 | `lean_emit.py` | Optional Lean structure emission for the Bernoulli toy |
 | `__init__.py` | Public exports |
@@ -35,9 +35,11 @@ Parent: [`../AGENTS.md`](../AGENTS.md) · API: [`../../docs/reference/python_api
 | `gnn/production_ensemble.gnn.md` | Production K=2 ensemble of the pymdp harness: per-stream `A`/`B`/`C`/`D`, `J`, `gamma`, plus the declared multi-K family |
 | `gnn/upstream.json` | Custody pin: canonical upstream release tag + commit, and the parser module/class under test |
 
-Use the canonical `## ActInfOntologyAnnotation` section spelling: upstream
-ignores the spaced variant, so the shipped specs use the canonical form and the
-project parser keeps the spaced spelling only as a documented alias.
+Use the canonical `## ActInfOntologyAnnotation` section spelling. The shipped
+specs use it; the project parser also accepts the spaced variant as a
+documented alias, and the pinned upstream parser does too since `v5.1.0`
+(`v5.0.3` ignored it, which is why the conformance test's non-vacuity control
+moved to the `type=bool` / `binary` dtype difference).
 
 ## Orchestration
 
@@ -53,6 +55,7 @@ project parser keeps the spaced spelling only as a documented alias.
 - Registry row stays **empirical**; do not promote GNN track to `proved`.
 - Live counts and residuals → `output/reports/test_results.json` / sidecar JSON, not folder docs.
 - The upstream pin is a **custody pin** (`gnn/upstream.json`): keep the canonical release (tag + full commit) pinned; re-pinning is a deliberate change that moves the recorded commit and re-runs the conformance test.
+- Do not add a pin reader here. The `gnn` arm reads the pin once to select what to fetch and calls `python -m gnn.importers` (the GNN–FEP shared reader) from the pinned tree; the conformance test receives the selected release through `POLICY_ENTANGLEMENT_GNN_RELEASE`.
 - Never import upstream GNN code from `src/` — the conformance test runs the real upstream parser out-of-process against the **pinned** tree (`git archive <commit> src/gnn` onto the checkout's interpreter), so the bytes under test are the pinned release's bytes.
 - The conformance check must stay non-vacuous: the upstream test's spaced-section mutant must diverge, and the harness control-swap must produce a non-zero residual.
 - No thresholds in the conformance comparison: production arrays are small rational matrices, so declared and built ensembles must agree exactly.

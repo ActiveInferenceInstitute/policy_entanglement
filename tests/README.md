@@ -74,7 +74,7 @@ which the CI workflow calls directly.
 | [`test_gnn_parser.py`](test_gnn_parser.py) | `gnn/parser.py` (grammar, section aliases, error paths) |
 | [`test_gnn_round_trip.py`](test_gnn_round_trip.py) | `gnn/bridge.py` round-trip vs the closed-form oracle |
 | [`test_gnn_harness_conformance.py`](test_gnn_harness_conformance.py) | `gnn/harness.py` + `gnn/production_ensemble.gnn.md` ↔ `simulation/builders.py` production arrays (drift gate) |
-| [`test_gnn_upstream_conformance.py`](test_gnn_upstream_conformance.py) | `gnn/upstream.py` — project parser vs the **pinned** upstream parser (digest conformance + non-vacuity mutant) |
+| [`test_gnn_upstream_conformance.py`](test_gnn_upstream_conformance.py) | `gnn/upstream.py` — project parser vs the **pinned** upstream parser (digest conformance + non-vacuity mutant); runs inside the `gnn` arm, which reads the pin and calls the shared GNN–FEP reader |
 | [`test_simulate_gnn.py`](test_simulate_gnn.py) | `gnn/runner.py` + `scripts/simulate_gnn.py` (sidecars, figure, Lean shell, determinism) |
 | [`test_python_api_coverage.py`](test_python_api_coverage.py) | `docs/reference/python_api.md` ↔ every public `src/` identifier (documentation drift gate) |
 | [`test_veridicality.py`](test_veridicality.py) | end-to-end audit chain: prose `[[VAR:...]]` ↔ JSON ↔ JSONL log ↔ Lean source |
@@ -117,4 +117,5 @@ which the CI workflow calls directly.
 | Hyperparameters JSON mirror equals source-of-truth constants | `test_summary_matches_manuscript_variables_json_when_present` |
 | Production harness arrays equal the GNN declaration elementwise (declared drift fails) | `test_gnn_ensemble_matches_the_production_build`, `test_conformance_report_detects_declared_array_drift` |
 | Project parser digest equals the pinned upstream parser's digest for every shipped spec | `test_project_parser_digest_matches_upstream` |
-| Upstream comparison is non-vacuous (spaced ontology section diverges) | `test_conformance_check_discriminates_on_the_leniency_mutant` |
+| Upstream comparison is non-vacuous (`type=bool` is `bool` to the project parser, `binary` upstream) | `test_conformance_check_discriminates_on_the_dtype_mutant` |
+| The arm's reader call is the GNN-FEP command, run from the pinned tree | `test_reader_command_is_the_contract_arm` |
