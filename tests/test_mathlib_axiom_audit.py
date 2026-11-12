@@ -77,6 +77,7 @@ def classify_axiom_probe(returncode: int, combined_output: str, *, allow_xfail: 
     return "fail"
 
 
+@pytest.mark.slow  # builds lean/MathlibProofs; the release gate (`scripts/gate.py slow`)
 def test_keystones_are_foundational_only_on_the_automatic_path() -> None:
     if shutil.which("lake") is None:
         # RedTeam Tests M5 (2026-05-20): under strict-mode CI, the
