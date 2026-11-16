@@ -21,6 +21,10 @@ those counts moved between rounds.
 - Focused governed behavioral tests passed after repairing authored test
   contracts: JAX posterior baselines are not assumed uniform; a `TypedDict`
   fixture uses its named fields. Failed receipts remain retained.
+- The integration review also corrected the controlled single-page readiness
+  fixture's supported page-count evidence for hosts without optional `pdfinfo`.
+  Its negative case now proves the producer reached the intended missing-input
+  boundary instead of accepting an unrelated prerequisite failure.
 - Current configuration wording identifies the existing 1.0.5 pin; historical
   1.0.1 observations, measurements, and release records remain unchanged.
 - Archived GNN source selection remains distinct from installed-origin and

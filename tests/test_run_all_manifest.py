@@ -67,6 +67,11 @@ def _readiness_fixture(root: Path) -> Path:
     pdf.parent.mkdir()
     with Image.new("RGB", (16, 16), "white") as image:
         image.save(pdf, format="PDF")
+    # The real status reader supports this page-count evidence when optional
+    # pdfinfo is absent. The fixture PDF above contains exactly one image page.
+    pdf.with_suffix(".log").write_text(
+        f"Output written on {pdf.name} (1 page)\n", encoding="utf-8",
+    )
     scripts = root / "scripts"
     scripts.mkdir()
     (scripts / "readiness_report.py").write_text(
@@ -142,3 +147,7 @@ def test_final_readiness_missing_input_fails_pipeline(tmp_path: Path) -> None:
     assert run_all.main(
         ["--serial", "--only", "readiness_report"], project_root=tmp_path, scripts_dir=scripts,
     ) == 1
+    # Prove the initial producer completed and the intended missing-input
+    # boundary was reached, rather than accepting an unrelated setup failure.
+    assert (tmp_path / "output/reports/release_readiness.json").is_file()
+    assert not (tmp_path / "output/reports/test_results.json").exists()
