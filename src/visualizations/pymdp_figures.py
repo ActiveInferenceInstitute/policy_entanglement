@@ -38,6 +38,7 @@ from simulation import hyperparameters as H  # noqa: N812 — H = hyperparameter
 from simulation.builders import make_ising_ensemble
 from simulation.inference import (
     decomposition_witness_curve,
+    free_energy_bundle,
     free_energy_curve,
 )
 from simulation.logging_utils import RunLogger, default_logger
@@ -46,7 +47,7 @@ from simulation.statistics import (
     pymdp_summary_statistics,
     summary_to_var_dict,
 )
-from simulation.sweep import lambda_sweep
+from simulation.sweep import coupled_marginal_trajectories, lambda_sweep
 from visualizations._io import _save_with_metadata as _save
 from visualizations.annotations import add_stats_box, apply_lambda_axis
 from visualizations.free_energy_plots import (
@@ -99,7 +100,7 @@ def hyperparam_snapshot() -> dict[str, object]:
         "gamma": float(H.PYMDP_ENSEMBLE_GAMMA),
         "coupling_lambda_gen": float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
         "sweep_grid_points": int(H.PYMDP_SWEEP_LAMBDAS.num),
-        "sweep_lambda_max": float(H.PYMDP_SWEEP_LAMBDAS.stop),
+        "sweep_lambda_max": float(max(H.PYMDP_SWEEP_LAMBDAS.start, H.PYMDP_SWEEP_LAMBDAS.stop)),
         "rollout_steps": int(H.PYMDP_ROLLOUT_STEPS),
         "rollout_seed": int(H.PYMDP_ROLLOUT_SEED),
         "rollout_lambda": float(H.PYMDP_ROLLOUT_LAMBDA),
@@ -163,8 +164,8 @@ def _figure_pymdp_lambda_sweep_impl(
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
         observations=list(obs),
         grid_points=int(lams.size),
-        lambda_min=float(lams[0]),
-        lambda_max=float(lams[-1]),
+        lambda_min=float(lams.min()),
+        lambda_max=float(lams.max()),
     ) as ctx:
         sweep = lambda_sweep(spec, obs, lams)
         ctx.update(
@@ -179,20 +180,30 @@ def _figure_pymdp_lambda_sweep_impl(
         writer = csv.writer(fh)
         writer.writerow(["lambda", "total_correlation", "is_pmf"])
         for r in sweep:
-            writer.writerow([f"{r.lam:.4f}", f"{r.total_correlation:.10g}", int(r.is_pmf)])
+            writer.writerow([repr(float(r.lam)), f"{r.total_correlation:.10g}", int(r.is_pmf)])
 
     sentinels = [0, len(sweep) // 2, len(sweep) - 1]
     md = metadata_factory("figure_pymdp_lambda_sweep")
     for s in sentinels:
         r = sweep[s]
-        out = fig_dir / f"pymdp_joint_lambda_{r.lam:.2f}.png"
+        lambda_label = f"{r.lam:.2f}"
+        if float(lambda_label) != r.lam:
+            lambda_label = repr(float(r.lam))
+        out = fig_dir / f"pymdp_joint_lambda_{lambda_label}.png"
+        projection = r.joint if r.joint.ndim == 2 else r.joint.sum(axis=tuple(range(2, r.joint.ndim)))
+        scope = "joint" if r.joint.ndim == 2 else "marginal (streams 0, 1)"
         plot_joint_heatmap_with_marginals(
-            q=r.joint,
-            title=f"pymdp coupled K=2 Ising joint, λ={r.lam:.2f}",
+            q=projection,
+            title=f"pymdp K={spec.num_streams()} Ising {scope}, λ={r.lam:g}",
             out_path=out,
             xticklabels=["u=0", "u=1"],
             yticklabels=["u=0", "u=1"],
-            metadata=metadata_factory("figure_pymdp_lambda_sweep", panel=f"joint_lambda_{r.lam:.2f}"),
+            metadata=metadata_factory(
+                "figure_pymdp_lambda_sweep",
+                panel=f"joint_lambda_{lambda_label}",
+                joint_projection_streams=[0, 1],
+                source_joint_shape=list(r.joint.shape),
+            ),
         )
 
     fig, ax = plt.subplots(figsize=PUBLICATION_STYLE.single, constrained_layout=True)
@@ -207,7 +218,7 @@ def _figure_pymdp_lambda_sweep_impl(
     )
     apply_lambda_axis(ax)
     ax.set_ylabel("Total correlation I(q_λ)  [nats]")
-    ax.set_title("pymdp coupled K=2 Ising: total correlation vs λ")
+    ax.set_title(f"pymdp coupled K={spec.num_streams()} Ising: total correlation vs λ")
     add_stats_box(
         ax,
         {
@@ -256,13 +267,11 @@ def _figure_pymdp_rollout_impl(
             sampled_actions=[list(s.sampled_actions) for s in rollout.steps],
         )
 
-    marginals_per_stream = [
-        np.stack([s.mean_field_marginals[k] for s in rollout.steps], axis=0) for k in range(spec.num_streams())
-    ]
+    marginals_per_stream = coupled_marginal_trajectories(rollout)
 
     return plot_rollout_marginals(
         marginals_per_stream=marginals_per_stream,
-        titles=[f"stream {k}: q_t^k" for k in range(spec.num_streams())],
+        titles=[f"stream {k}: coupled marginal q_t^k" for k in range(spec.num_streams())],
         total_correlations=rollout.total_correlations(),
         out_path=fig_dir / "pymdp_coupled_rollout.png",
         metadata=metadata_factory("figure_pymdp_rollout"),
@@ -291,12 +300,13 @@ def _figure_pymdp_free_energies_impl(
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
         observations=list(obs),
         grid_points=int(lams.size),
-        lambda_min=float(lams[0]),
-        lambda_max=float(lams[-1]),
+        lambda_min=float(lams.min()),
+        lambda_max=float(lams.max()),
     ) as ctx:
         bundles = free_energy_curve(spec, obs, lams)
+        zero_reference = free_energy_bundle(spec, obs, lam=0.0)
         decomposition_witnesses = decomposition_witness_curve(spec, obs, lams)
-        summary = pymdp_summary_statistics(bundles)
+        summary = pymdp_summary_statistics(bundles, zero_reference=zero_reference)
         residual_max = max(w.residual for w in decomposition_witnesses)
         ctx.update(
             tc_min=float(min(b.total_correlation for b in bundles)),
@@ -304,9 +314,9 @@ def _figure_pymdp_free_energies_impl(
             vfe_total_min=float(min(b.vfe_total for b in bundles)),
             vfe_total_max=float(max(b.vfe_total for b in bundles)),
             decomposition_residual_max=float(residual_max),
-            coupling_term_at_lambda_zero=float(bundles[0].coupling_term),
-            joint_entropy_at_lambda_zero=float(bundles[0].joint_entropy),
-            marginal_entropy_sum_at_lambda_zero=float(bundles[0].marginal_entropies.sum()),
+            coupling_term_at_lambda_zero=float(zero_reference.coupling_term),
+            joint_entropy_at_lambda_zero=float(zero_reference.joint_entropy),
+            marginal_entropy_sum_at_lambda_zero=float(zero_reference.marginal_entropies.sum()),
             tc_at_half_saturation=float(summary.tc_at_half_saturation),
             lambda_at_half_saturation=float(summary.lambda_at_half_saturation),
         )
@@ -331,7 +341,7 @@ def _figure_pymdp_free_energies_impl(
         writer.writerow(header)
         for b, w in zip(bundles, decomposition_witnesses, strict=True):
             row = [
-                f"{b.lam:.6f}",
+                repr(float(b.lam)),
                 f"{b.vfe_total:.10g}",
                 f"{b.joint_entropy:.10g}",
                 f"{b.marginal_entropies.sum():.10g}",
@@ -397,6 +407,7 @@ def _figure_pymdp_free_energies_impl(
     )
     kl_png = plot_kl_to_lambda_zero(
         bundles,
+        zero_reference=zero_reference,
         out_path=fig_dir / "pymdp_kl_to_lambda_zero.png",
         metadata=extras_md,
     )
@@ -407,6 +418,7 @@ def _figure_pymdp_free_energies_impl(
     )
     summary_png = plot_pymdp_summary_panel(
         bundles,
+        zero_reference=zero_reference,
         out_path=fig_dir / "pymdp_summary_panel.png",
         summary=summary,
         metadata=extras_md,

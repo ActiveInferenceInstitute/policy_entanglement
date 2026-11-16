@@ -219,9 +219,8 @@ def test_run_btai_scenario_rejects_shape_mismatch_reference() -> None:
 def test_pymdp_grounded_efe_fn_uses_real_pymdp_agent() -> None:
     """End-to-end: BTAI baseline driven by real `pymdp.agent.Agent` EFE.
 
-    Requires real pymdp 1.0.1 to be installed (the project's standard
-    dev environment); if absent, skips honestly via the
-    `requires_pymdp` marker pattern used elsewhere in the suite.
+    Requires the installed pymdp engine (the project's standard dev
+    environment); if absent, skips honestly via import availability.
 
     The test wires the real-pymdp EFE function through `pymdp_grounded_efe_fn`,
     runs a small BTAI scenario, and asserts (a) every per-step posterior is
@@ -269,3 +268,25 @@ def test_pymdp_grounded_efe_fn_rejects_wrong_action_length() -> None:
     efe_fn = pymdp_grounded_efe_fn(spec, (0, 0))
     with pytest.raises(ValueError):
         efe_fn((0,))  # length 1, expected length 2
+
+
+@pytest.mark.requires_pymdp
+def test_pymdp_grounded_btai_prefers_the_actual_policy_posterior_mode() -> None:
+    pytest.importorskip("pymdp")
+    from simulation.btai_baseline import pymdp_grounded_efe_fn
+    from simulation.builders import make_ising_ensemble
+    from simulation.inference import per_stream_policy_posterior
+
+    spec = make_ising_ensemble(num_streams=2, preference_strength=4.0)
+    observations = [0, 1]
+    mode = tuple(int(np.argmax(q)) for q in per_stream_policy_posterior(spec, observations))
+    efe = pymdp_grounded_efe_fn(spec, observations)
+    actions = list(_enumerate_joint_actions(spec.policy_shape()))
+    assert min(actions, key=efe) == mode
+    result = run_btai_scenario(
+        BTAIScenario(horizon=1, mcts_budget=200, seed=7, lambda_value=0.0),
+        spec.policy_shape(),
+        efe,
+    )
+    assert result.final_posterior is not None
+    assert result.final_posterior[mode] > 0.5

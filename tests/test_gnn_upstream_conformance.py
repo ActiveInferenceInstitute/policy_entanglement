@@ -82,8 +82,13 @@ class UpstreamRun:
 
 @pytest.fixture(scope="module")
 def selected_release() -> PinnedRelease:
-    """The release the ``gnn`` arm selected, or a skip outside the arm."""
+    """Require the gate hand-off for explicit selections; otherwise allow a skip."""
     if ENV_PINNED_RELEASE not in os.environ:
+        if ENV_UPSTREAM_ROOT in os.environ:
+            pytest.fail(
+                f"explicit {ENV_UPSTREAM_ROOT} requires {ENV_PINNED_RELEASE}; "
+                "run through `python scripts/gate.py gnn`"
+            )
         pytest.skip(
             f"{ENV_PINNED_RELEASE} is unset: this test runs inside the `gnn` arm "
             "(`python scripts/gate.py gnn`), which reads the pin"

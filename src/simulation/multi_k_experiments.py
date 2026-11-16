@@ -1,16 +1,16 @@
-"""K>2 multi-stream ensemble experiments.
+"""Multi-stream ensemble experiments for every admitted K >= 2.
 
 The default pymdp harness in :mod:`simulation.inference` was sized
 around the K=2 Ising toy (so the K=2 ↔ closed-form Ising channel
 remains the canonical witness for §6 of the manuscript).  This module
-is the implemented K=3 / K=4 generalization, built directly on the existing
+supports every K >= 2 through the existing
 :class:`simulation.specs.CoupledEnsembleSpec` infrastructure.
 
 Each experiment:
 
   1. Builds a real K-stream Ising ensemble via
      :func:`simulation.builders.make_ising_ensemble`.
-  2. Runs the pymdp 1.0.1 agents and the λ-coupling layer at every
+  2. Runs the pymdp agents and the λ-coupling layer at every
      λ in :data:`simulation.hyperparameters.MULTI_K_SWEEP_LAMBDAS`.
   3. Records, for each λ: the joint policy posterior, its per-stream
      marginals, the total correlation $I(q_\\lambda)$ (multi-
@@ -150,34 +150,39 @@ def multi_k_joint_snapshot(
     return coupled_policy_posterior(spec, list(observations), lam=float(lam))
 
 
-def multi_k_summary(results: Sequence[MultiKResult]) -> dict[str, float]:
+def multi_k_summary(
+    results: Sequence[MultiKResult], *, zero_reference: MultiKResult
+) -> dict[str, float]:
     """Per-experiment summary used to populate manuscript variables.
 
     Returns a flat dict of `<prefix>_<stat>` keys.  Stable shape; the
     caller is expected to prefix the keys with the corresponding K
     when merging into the global variables JSON.
+    ``zero_reference`` is a separately evaluated λ=0 result from the same
+    ensemble; requested rows retain their order and alone define extrema.
     """
     if not results:
         raise ValueError("multi_k_summary requires at least one result")
+    if zero_reference.lam != 0.0 or any(row.K != zero_reference.K for row in results):
+        raise ValueError("zero_reference must have lam == 0 and match every result's K")
     tcs = np.array([r.total_correlation for r in results], dtype=np.float64)
     lams = np.array([r.lam for r in results], dtype=np.float64)
     coup = np.array([r.coupling_term for r in results], dtype=np.float64)
-    aligned = np.array([r.aligned_mass for r in results], dtype=np.float64)
-    # Maximum TT bond dimension at the saturating λ (last entry).
-    tt_last = results[-1].tt_ranks
+    endpoint = max(results, key=lambda row: row.lam)
+    tt_at_max = endpoint.tt_ranks
     return {
         "K": float(results[0].K),
         "lambda_min": float(lams.min()),
         "lambda_max": float(lams.max()),
         "tc_min": float(tcs.min()),
         "tc_max": float(tcs.max()),
-        "tc_at_lambda_max": float(tcs[-1]),
+        "tc_at_lambda_max": float(endpoint.total_correlation),
         "coupling_term_min": float(coup.min()),
         "coupling_term_max": float(coup.max()),
-        "aligned_mass_at_lambda_zero": float(aligned[0]),
-        "aligned_mass_at_lambda_max": float(aligned[-1]),
-        "tt_rank_max_at_lambda_max": float(max(tt_last) if tt_last else 0),
-        "tt_rank_sum_at_lambda_max": float(sum(tt_last)),
+        "aligned_mass_at_lambda_zero": float(zero_reference.aligned_mass),
+        "aligned_mass_at_lambda_max": float(endpoint.aligned_mass),
+        "tt_rank_max_at_lambda_max": float(max(tt_at_max) if tt_at_max else 0),
+        "tt_rank_sum_at_lambda_max": float(sum(tt_at_max)),
     }
 
 

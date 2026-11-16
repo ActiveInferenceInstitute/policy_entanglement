@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
+from contextlib import nullcontext
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -31,9 +32,22 @@ CRITICAL_COVERAGE_MODULES: dict[str, float] = {
 _GATE_PYTEST_TIMEOUT_SECONDS = 7200
 
 # Cap on captured child text retained in memory (regression_pytest / run_all /
-# build_gate).  Output is streamed to a temp file during the run and only the
-# final tail is kept, so a chatty child cannot balloon the parent's RSS.
+# build_gate). Output is streamed to disk; only bounded per-stream tails
+# are read back. Production callers retain the complete raw capture files.
 _MAX_CAPTURED_CHARS = 2_000_000
+
+
+def _read_text_tail(path: Path, max_chars: int) -> str:
+    """Read a UTF-8 character tail without loading the complete log."""
+    if max_chars == 0:
+        return ""
+    max_bytes = 4 * max_chars
+    with path.open("rb") as handle:
+        end = handle.seek(0, os.SEEK_END)
+        handle.seek(max(0, end - max_bytes))
+        data = handle.read(max_bytes)
+    text = data.decode("utf-8", errors="replace").replace("\r\n", "\n").replace("\r", "\n")
+    return text[-max_chars:]
 
 
 def run_captured_bounded(
@@ -43,13 +57,25 @@ def run_captured_bounded(
     env: dict[str, str] | None = None,
     timeout: float = _GATE_PYTEST_TIMEOUT_SECONDS,
     max_chars: int = _MAX_CAPTURED_CHARS,
+    capture_dir: Path | None = None,
 ) -> tuple[subprocess.CompletedProcess[Any], str]:
-    """Run a subprocess, streaming stdout/stderr to a temp file (bounded memory)
-    and returning ``(proc, combined_tail)`` where ``combined_tail`` holds at most
-    ``max_chars`` of combined output."""
-    with tempfile.TemporaryDirectory(prefix="regression_gate_capture_") as td:
-        out_path = Path(td) / "stdout.txt"
-        err_path = Path(td) / "stderr.txt"
+    """Return the process and a globally capped stdout-then-stderr character tail.
+
+    A supplied ``capture_dir`` retains complete ``stdout.txt``/``stderr.txt``
+    files, including on failure or timeout; otherwise capture files are temporary.
+    """
+    if max_chars < 0:
+        raise ValueError("max_chars must be non-negative")
+    capture = (
+        tempfile.TemporaryDirectory(prefix="regression_gate_capture_")
+        if capture_dir is None
+        else nullcontext(str(capture_dir))
+    )
+    with capture as td:
+        directory = Path(td)
+        directory.mkdir(parents=True, exist_ok=True)
+        out_path = directory / "stdout.txt"
+        err_path = directory / "stderr.txt"
         with out_path.open("wb") as outf, err_path.open("wb") as errf:
             proc = subprocess.run(
                 list(cmd),
@@ -59,12 +85,10 @@ def run_captured_bounded(
                 stderr=errf,
                 timeout=timeout,
             )
-        stdout = out_path.read_text(encoding="utf-8", errors="replace")
-        stderr = err_path.read_text(encoding="utf-8", errors="replace")
-    combined = stdout if not stdout else f"{stdout}\n{stderr}"
-    if len(combined) > max_chars:
-        combined = combined[-max_chars:]
-    return proc, combined
+        stdout = _read_text_tail(out_path, max_chars)
+        stderr = _read_text_tail(err_path, max_chars)
+    combined = "\n".join(part for part in (stdout, stderr) if part)
+    return proc, combined[-max_chars:] if max_chars else ""
 
 
 _PYTEST_KINDS = {
@@ -204,6 +228,7 @@ def write_fresh_test_results(
         cwd=project_root,
         env=env,
         timeout=_GATE_PYTEST_TIMEOUT_SECONDS,
+        capture_dir=pytest_log_path.parent / f"{pytest_log_path.stem}_capture",
     )
     pytest_log_path.write_text(combined_output, encoding="utf-8")
 
@@ -310,6 +335,7 @@ def lean_budget_snapshot(*, project_root: Path, scripts_dir: Path) -> dict[str, 
         cmd,
         cwd=project_root,
         timeout=_GATE_PYTEST_TIMEOUT_SECONDS,
+        capture_dir=project_root / "output" / "logs" / "regression_gate_lean",
     )
     if proc.returncode != 0:
         return None

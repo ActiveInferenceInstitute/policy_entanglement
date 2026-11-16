@@ -9,9 +9,12 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from lean.coupling import entangled_posterior
+from lean.free_energy import total_correlation
+from lean.joint_dist import mean_field_to_joint
 from simulation.rollout import Rollout, RolloutStep, _sample_from_joint
 from simulation.specs import CoupledEnsembleSpec, StreamSpec
-from simulation.sweep import LambdaSweepResult, marginal_trajectory
+from simulation.sweep import LambdaSweepResult, coupled_marginal_trajectories, marginal_trajectory
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -157,3 +160,41 @@ def test_marginal_trajectory_out_of_range_raises() -> None:
     rollout = _make_rollout([0.0, 0.5])
     with pytest.raises(IndexError, match="stream"):
         marginal_trajectory(rollout, k=99)
+
+
+@pytest.mark.parametrize("k", [2, 3, 4, 6])
+def test_coupled_trajectories_reduce_actual_nonexchangeable_joints(k: int) -> None:
+    """Uncoupled input posteriors and coupled output marginals are distinct channels."""
+    priors = [np.array([0.8, 0.2]), np.array([0.4, 0.6])]
+    priors.extend(np.array([0.2 + 0.1 * (axis % 3), 0.8 - 0.1 * (axis % 3)]) for axis in range(2, k))
+    target = np.array([[0.55, 0.05], [0.15, 0.25]])
+    for prior in priors[2:]:
+        target = np.multiply.outer(target, prior)
+    interaction = np.log(target / mean_field_to_joint(priors))
+    joint = entangled_posterior(
+        priors, [np.zeros(2) for _ in range(k)], interaction, np.zeros_like(interaction),
+        lam=1.0, gamma=1.0,
+    )
+    np.testing.assert_allclose(joint, target, atol=1e-12)
+    transitions = np.array([[[1.0, 0.0], [1.0, 0.0]], [[0.0, 1.0], [0.0, 1.0]]])
+    streams = tuple(
+        StreamSpec(A=np.eye(2), B=transitions, C=np.log(prior), D=np.full(2, 0.5)) for prior in priors
+    )
+    spec = CoupledEnsembleSpec(
+        streams=streams, coupling_j=interaction, coupling_kc=np.zeros_like(interaction), gamma=1.0
+    )
+    steps = tuple(
+        RolloutStep(
+            t=t, observations=(0,) * k, mean_field_marginals=tuple(priors), coupled_joint=joint,
+            sampled_actions=(0,) * k, total_correlation=total_correlation(joint),
+        )
+        for t in range(3)
+    )
+    rollout = Rollout(steps=steps, spec=spec, lam=1.0, seed=7)
+    trajectories = coupled_marginal_trajectories(rollout)
+    expected = [np.array([0.6, 0.4]), np.array([0.7, 0.3]), *priors[2:]]
+    for axis, marginal in enumerate(expected):
+        np.testing.assert_allclose(trajectories[axis], np.tile(marginal, (3, 1)), atol=1e-12)
+        np.testing.assert_allclose(marginal_trajectory(rollout, axis), np.tile(priors[axis], (3, 1)), atol=1e-12)
+    assert not np.allclose(trajectories[0], marginal_trajectory(rollout, 0))
+    assert not np.allclose(trajectories[1], marginal_trajectory(rollout, 1))

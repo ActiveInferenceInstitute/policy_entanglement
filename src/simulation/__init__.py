@@ -101,6 +101,7 @@ from .statistics import (  # noqa: F401
     BundleSummary,
     QuantileEnvelope,
     is_monotone_nondecreasing,
+    kl_to_lambda_zero_curve,
     pymdp_summary_statistics,
     quantile_envelope_over_sweeps,
     summary_to_var_dict,
@@ -108,6 +109,7 @@ from .statistics import (  # noqa: F401
 )
 from .sweep import (  # noqa: F401
     LambdaSweepResult,
+    coupled_marginal_trajectories,
     lambda_sweep,
     marginal_trajectory,
     total_correlation_curve,
@@ -122,6 +124,7 @@ __all__ = [
     "BundleSummary",
     "QuantileEnvelope",
     "is_monotone_nondecreasing",
+    "kl_to_lambda_zero_curve",
     "pymdp_summary_statistics",
     "quantile_envelope_over_sweeps",
     "summary_to_var_dict",
@@ -156,6 +159,7 @@ __all__ = [
     "simulate_coupled_rollout",
     # sweep
     "LambdaSweepResult",
+    "coupled_marginal_trajectories",
     "lambda_sweep",
     "marginal_trajectory",
     "total_correlation_curve",

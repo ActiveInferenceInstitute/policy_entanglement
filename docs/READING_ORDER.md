@@ -113,7 +113,7 @@ analysis.
    — `src/simulation/` (pymdp harness, multi-K, long-horizon,
    revertibility).
 7. [`simulation/pomdp_simulation.md`](simulation/pomdp_simulation.md)
-   — the pymdp 1.0.1 harness layered design + quick example.
+   — the pymdp POMDP harness layered design + quick example.
 8. [`reference/python_api_visualizations.md`](reference/python_api_visualizations.md)
    — `src/visualizations/` figure helpers + PNG reproducibility
    metadata.

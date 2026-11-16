@@ -25,7 +25,7 @@ concept in two clicks.
 | [`reference/`](reference/) | All | Cross-cutting references — architecture, math, Lean theorems, Python API, manuscript ↔ code map |
 | [`guides/`](guides/) | Engineers | How-to: build, run, test, gate arms with measured wall times, recipe-based quickstart |
 | [`modules/`](modules/) | Researchers | Per-concept deep dives (decomposition, geometry, spectral, Bernoulli, heterogeneous, **convexity**, **Markov blanket**, **spectral witnesses**, **connections witnesses**) |
-| [`simulation/`](simulation/) | Researchers / Engineers | pymdp 1.0.1 POMDP harness + visualization helpers |
+| [`simulation/`](simulation/) | Researchers / Engineers | pymdp POMDP harness + visualization helpers |
 
 ## Cross-cutting top-level pages
 
@@ -64,7 +64,7 @@ Then deep dives:
 * [`reference/lean_reference.md`](reference/lean_reference.md) — every Lean theorem, its status (one of `proved` / `boundary` / `witness` / `forwarder`; `sketch` and `deferred` rows are empty as of round 3), and its Mathlib refinement plan (in [`MathlibRefinementRoadmap.md`](../lean/ActinfPolicyEntanglement/MathlibRefinementRoadmap.md)).
 * [`reference/methods_audit.md`](reference/methods_audit.md) — verified Lean and pymdp method contracts.
 * [`reference/python_api.md`](reference/python_api.md) — every Python function, signature, and contract.
-* [`simulation/pomdp_simulation.md`](simulation/pomdp_simulation.md) — pymdp 1.0.1 POMDP harness (specs, builders, agents, inference, rollout, sweep).
+* [`simulation/pomdp_simulation.md`](simulation/pomdp_simulation.md) — pymdp POMDP harness (specs, builders, agents, inference, rollout, sweep).
 * [`simulation/visualizations.md`](simulation/visualizations.md) — reusable plotting helpers.
 * [`guides/testing.md`](guides/testing.md) — what we test, how, and why no mocks.
 
@@ -96,7 +96,7 @@ Then deep dives:
 | [`modules/markov_blanket.md`](modules/markov_blanket.md) | modules | **(round 2)** Markov-blanket separation identity (`prop_11_3`) via `MarkovBlanket.lean` |
 | [`modules/spectral_witnesses.md`](modules/spectral_witnesses.md) | modules | **(round 3)** Schmidt-rank upper-semicontinuity (`prop_7_2`) + sparsity-rank tradeoff (`thm_7_3`) via `SpectralWitnesses.lean` |
 | [`modules/connections_witnesses.md`](modules/connections_witnesses.md) | modules | **(round 3)** Hierarchical AIF λ→∞ limit (`thm_11_1`) + sophisticated-inference embedding (`prop_11_2`) via `ConnectionsWitnesses.lean` |
-| [`simulation/pomdp_simulation.md`](simulation/pomdp_simulation.md) | simulation | pymdp 1.0.1 harness architecture + API |
+| [`simulation/pomdp_simulation.md`](simulation/pomdp_simulation.md) | simulation | pymdp harness architecture + API |
 | [`simulation/visualizations.md`](simulation/visualizations.md) | simulation | Reusable plotting helpers |
 
 ## Lean Fragment Snapshot

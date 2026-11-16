@@ -35,7 +35,7 @@ DESCRIPTIONS: dict[str, str] = {
     "connections_multi_agent_geometry": "Multi-agent + geometric connections — interactive inference, RG-AIF, Markov blankets, CEREBRUM",
     "lean_plan": "Boundary-fragment status table, witness payloads, MathlibProofs trajectory",
     "empirical": "Closed-form Bernoulli + heterogeneous tax + phase + spectral + e-geodesic + coupling graph; pymdp content split into §14–§16",
-    "pymdp_harness": "pymdp 1.0.1 POMDP harness — layered architecture, λ-sweep, deterministic rollout",
+    "pymdp_harness": "pymdp POMDP harness — layered architecture, λ-sweep, deterministic rollout",
     "pymdp_free_energy": "Free-energy bundle — VFE / EFE / entropy / coupling-term / TC observables + 5 dashboards",
     "pymdp_validation": "Three-tier validation gate + JSONL run log + reproducibility contract",
     "open_questions": "Q1–Q15: analytical, identifiability, empirical, conceptual, practical",

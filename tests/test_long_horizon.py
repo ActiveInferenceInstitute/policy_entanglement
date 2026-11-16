@@ -11,7 +11,7 @@ import pytest
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp/JAX runtime unavailable (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 

@@ -25,7 +25,7 @@ def validate_lambda_zero_mean_field_row(
     entropy_tol: float,
     check_coupling_term: bool = True,
 ) -> int:
-    """Validate λ≈0 mean-field baseline on a single sweep row."""
+    """Validate an explicitly selected, exactly λ=0 mean-field row."""
     fail = 0
     if abs(float(row["total_correlation"])) > tc_zero_tol:
         report_fail(f"{label}: λ=0 total_correlation = {row['total_correlation']}")
@@ -57,13 +57,14 @@ def validate_tc_decomposition_group(
     """Validate one λ-sweep group for TC, entropy gap, and optional decomposition residual."""
     fail = rows_match_grid(group, grid, label=label)
     tcs = [finite(r["total_correlation"]) for r in group]
-    if abs(tcs[0]) > zero_tol:
-        report_fail(f"{label}: λ=0 TC {tcs[0]} != 0")
-        fail += 1
-    if monotonic_tc and any(tcs[i + 1] + 1e-9 < tcs[i] for i in range(len(tcs) - 1)):
+    ordered_tcs = [tc for _, tc in sorted(zip((float(row["lambda"]) for row in group), tcs, strict=True))]
+    if monotonic_tc and any(ordered_tcs[i + 1] + 1e-9 < ordered_tcs[i] for i in range(len(ordered_tcs) - 1)):
         report_fail(f"{label}: TC is non-monotone")
         fail += 1
     for r, tc in zip(group, tcs, strict=True):
+        if float(r["lambda"]) == 0.0 and abs(tc) > zero_tol:
+            report_fail(f"{label}: λ=0 TC {tc} != 0")
+            fail += 1
         if tc < -zero_tol:
             report_fail(f"{label}: λ={r['lambda']} TC {tc} < 0")
             fail += 1

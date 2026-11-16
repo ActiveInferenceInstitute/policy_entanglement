@@ -96,11 +96,11 @@ The `gnn` arm is the conformance job's only definition of the check; see
 3. gives the gate-owned checkout its own interpreter with `numpy`, `defusedxml`
    and `psutil`, and runs the GNN–FEP shared reader there —
    `python -m gnn.importers check --repo . --require-pointer --workflow
-   .github/workflows/ci.yml --job gnn-conformance --expected-commit … 
-   --expected-tag …` — with that checkout's `src/` on `PYTHONPATH`, so the
-   reader and the parser are the pinned release's. The reader owns the pin
-   shape, the `.github/GNN.md` pointer facts, the fork check and the
-   `*.gnn.md` syntax check;
+   .github/workflows/ci.yml --job gnn-conformance --expected-commit …
+   --expected-tag …` — from a temporary `git archive <commit>` export with
+   that export's `src/` on `PYTHONPATH`, not the mutable checkout source.
+   The reader owns the pin shape, pointer, repository identity and
+   `*.gnn.md` syntax checks;
 4. runs `pytest -q tests/test_gnn_upstream_conformance.py` with
    `POLICY_ENTANGLEMENT_GNN_ROOT`, `POLICY_ENTANGLEMENT_GNN_RELEASE` and
    `ACTINF_SKIP_BOOTSTRAP` set, then prints and (under GitHub Actions) records
@@ -112,6 +112,12 @@ cutover state: the pin (`v5.1.0`, `75c834bd8519`) contains `src/gnn/importers.py
 so the member's interim local reader and its pin-shape tests are deleted and the
 arm calls the shared reader instead of carrying a copy. Nothing is vendored, and
 no newer reader is overlaid on an older parser.
+
+An explicitly selected invalid checkout is an error. Optional direct pytest
+discovery may skip an absent implicit sibling; that is not a green conformance
+job. Source-origin qualification additionally binds the independent bootstrap,
+manifest, and actual imported parser bytes for the entire parser lifetime.
+It is not installed-origin or release qualification.
 
 A cold cache needs network access; a warm cache is offline-safe.
 
@@ -185,3 +191,21 @@ make test-full
 make docs
 make gnn
 ```
+
+In an admitted source-only maintenance lane, do not use this full sequence as
+permission to regenerate scientific outputs, install dependencies, or build
+Lean. Run only the authorized focused proof in a manager-owned output root;
+preserve historical timing/output records and report excluded prerequisites.
+
+## Stage selection and capture
+
+`run_all.py --only` and `--skip` select exact registered stage names. Unknown
+names are rejected before any child launches. A skipped prerequisite is not
+silently reintroduced; consumers need its already-valid artifact or fail.
+The default DAG validates artifacts before the regression stage, and the
+legacy serial path preserves that ordering.
+
+Child output is spooled to disk, with a bounded in-memory diagnostic tail.
+The complete log remains available for failed-stage diagnosis; truncation of
+the terminal tail does not discard earlier stderr. A successful subprocess
+alone does not establish that its scientific or release outputs are current.

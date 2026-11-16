@@ -10,6 +10,24 @@ those counts moved between rounds.
 *Last reviewed: 2026-05-27.*
 
 ---
+## Unreleased — focused maintenance qualification (2026-11-13)
+
+- Preserved real-Agent `q_pi`, cost `G=-neg_efe`, and actual policy prior `E`;
+  stable log-domain coupling; coupled marginals, full-joint/general-K metrics,
+  and independently evaluated zero references.
+- Corrected actual-lambda endpoint selection and tiny-positive serialization,
+  bounded stdout/stderr summaries with retained full captures, final readiness
+  hashing, and unknown-stage rejection before artifact I/O.
+- Focused governed behavioral tests passed after repairing authored test
+  contracts: JAX posterior baselines are not assumed uniform; a `TypedDict`
+  fixture uses its named fields. Failed receipts remain retained.
+- Current configuration wording identifies the existing 1.0.5 pin; historical
+  1.0.1 observations, measurements, and release records remain unchanged.
+- Archived GNN source selection remains distinct from installed-origin and
+  release qualification. No pin, equation policy, rollout semantics, Lean proof,
+  scientific output, full-status report, coverage measurement, hosted workflow,
+  or release was changed or fabricated by this maintenance.
+
 
 ## Pending — GNN-FEP member migration, adopted (2026-11-12)
 

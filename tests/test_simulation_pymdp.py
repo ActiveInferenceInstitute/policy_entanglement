@@ -1,4 +1,4 @@
-"""End-to-end tests for the pymdp 1.0.1 simulation harness.
+"""End-to-end tests for the installed pymdp simulation harness.
 
 Marked ``requires_pymdp`` — the suite skips entirely when the ``sim``
 group is not installed, keeping the lean infra runner green.
@@ -12,7 +12,7 @@ import pytest
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp/JAX runtime unavailable (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 
@@ -71,6 +71,26 @@ def test_per_stream_efe_returns_finite_vectors() -> None:
         assert G.ndim == 1
         assert G.shape[0] == 2
         assert np.isfinite(G).all()
+
+
+def test_efe_costs_negate_installed_negative_efe_without_changing_posterior() -> None:
+    import jax.numpy as jnp
+
+    spec = make_ising_ensemble(num_streams=2, preference_strength=2.0)
+    observations = [0, 1]
+    costs = per_stream_efe(spec, observations)
+    posteriors = per_stream_policy_posterior(spec, observations)
+    for agent, obs, cost, posterior in zip(
+        build_pymdp_agents(spec), observations, costs, posteriors, strict=True
+    ):
+        qs = agent.infer_states([jnp.asarray([obs])], agent.D)
+        raw_q, neg_efe = agent.infer_policies(qs)
+        expected_q = np.asarray(raw_q, dtype=np.float64).reshape(-1)
+        expected_q /= expected_q.sum()
+        np.testing.assert_array_equal(cost, -np.asarray(neg_efe, dtype=np.float64).reshape(-1))
+        np.testing.assert_allclose(posterior, expected_q, atol=1e-12, rtol=0.0)
+        assert np.ptp(cost) > 0.0
+        assert int(np.argmin(cost)) == int(np.argmax(posterior))
 
 
 def test_per_stream_observations_length_validation() -> None:

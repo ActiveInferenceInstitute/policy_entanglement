@@ -13,7 +13,7 @@ import pytest
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp/JAX runtime unavailable (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 
@@ -128,7 +128,11 @@ def test_multi_k_summary_keys_present() -> None:
         coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
     )
-    summary = multi_k_summary(results)
+    reference = run_multi_k_sweep(
+        K, [0.0], coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
+        gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
+    )[0]
+    summary = multi_k_summary(results, zero_reference=reference)
     expected_keys = {
         "K",
         "lambda_min",
@@ -149,8 +153,9 @@ def test_multi_k_summary_keys_present() -> None:
 
 
 def test_multi_k_summary_rejects_empty() -> None:
+    reference = run_multi_k_sweep(2, [0.0], coupling_lambda_gen=1.0, gamma=1.0)[0]
     with pytest.raises(ValueError):
-        multi_k_summary([])
+        multi_k_summary([], zero_reference=reference)
 
 
 @pytest.mark.parametrize("K", list(H.MULTI_K_VALUES))
@@ -165,3 +170,32 @@ def test_multi_k_tt_ranks_at_lambda_zero_are_all_one(K: int) -> None:
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
     )
     assert results[0].tt_ranks == tuple(1 for _ in range(K - 1))
+
+
+@pytest.mark.parametrize("k", [2, 3, 4, 6])
+@pytest.mark.parametrize("grid", [[2.0, 0.0], [2.0, 0.0, 1.0], [1.0, 3.0, 0.0, 2.0], [3.0, 1.0]])
+def test_summary_uses_actual_zero_and_max_lambda_without_reordering(k: int, grid: list[float]) -> None:
+    rows = run_multi_k_sweep(k, grid, coupling_lambda_gen=1.0, gamma=1.0)
+    reference = run_multi_k_sweep(k, [0.0], coupling_lambda_gen=1.0, gamma=1.0)[0]
+    summary = multi_k_summary(rows, zero_reference=reference)
+    endpoint = rows[grid.index(max(grid))]
+    assert summary["lambda_min"] == min(grid)
+    assert summary["lambda_max"] == max(grid)
+    zero_joint = multi_k_joint_snapshot(k, 0.0, coupling_lambda_gen=1.0, gamma=1.0)
+    expected_zero_mass = zero_joint[(0,) * k] + zero_joint[(1,) * k]
+    assert summary["aligned_mass_at_lambda_zero"] == pytest.approx(expected_zero_mass, abs=1e-10)
+    assert summary["aligned_mass_at_lambda_max"] == pytest.approx(endpoint.aligned_mass)
+    assert summary["tc_at_lambda_max"] == pytest.approx(endpoint.total_correlation)
+    assert summary["tt_rank_max_at_lambda_max"] == max(endpoint.tt_ranks)
+    assert summary["tt_rank_sum_at_lambda_max"] == sum(endpoint.tt_ranks)
+    assert [row.lam for row in rows] == grid
+    if min(grid) > 0.0:
+        assert summary["aligned_mass_at_lambda_zero"] < min(row.aligned_mass for row in rows)
+
+
+def test_summary_rejects_nonzero_or_different_k_reference() -> None:
+    rows = run_multi_k_sweep(2, [1.0, 2.0], coupling_lambda_gen=1.0, gamma=1.0)
+    wrong_k = run_multi_k_sweep(3, [0.0], coupling_lambda_gen=1.0, gamma=1.0)[0]
+    for reference in (rows[0], wrong_k):
+        with pytest.raises(ValueError, match="zero_reference"):
+            multi_k_summary(rows, zero_reference=reference)

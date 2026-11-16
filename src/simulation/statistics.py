@@ -94,27 +94,42 @@ def _half_saturation(
     return half_saturation_interpolated(lams, tcs)
 
 
+def kl_to_lambda_zero_curve(
+    bundles: Sequence[FreeEnergyBundle], *, zero_reference: FreeEnergyBundle
+) -> ArrayF:
+    """KL to an explicitly evaluated λ=0 bundle, in requested sample order."""
+    if zero_reference.lam != 0.0:
+        raise ValueError("zero_reference must have lam == 0")
+    policy_shape = tuple(g.size for g in zero_reference.efe_per_stream)
+    q0 = np.asarray(zero_reference.action_distribution, dtype=np.float64).reshape(-1)
+    if q0.size != int(np.prod(policy_shape)):
+        raise ValueError("zero_reference policy dimensions do not match its action distribution")
+    q0 = q0 / max(float(q0.sum()), 1e-300)
+    values: list[float] = []
+    for bundle in bundles:
+        q = np.asarray(bundle.action_distribution, dtype=np.float64).reshape(-1)
+        if tuple(g.size for g in bundle.efe_per_stream) != policy_shape or q.size != q0.size:
+            raise ValueError("bundle policy dimensions must match zero_reference")
+        q = q / max(float(q.sum()), 1e-300)
+        values.append(_kl(q, q0))
+    return np.asarray(values, dtype=np.float64)
+
+
 def pymdp_summary_statistics(
     bundles: Sequence[FreeEnergyBundle],
+    *,
+    zero_reference: FreeEnergyBundle,
 ) -> BundleSummary:
     """Reduce a list of `FreeEnergyBundle` records to a single
     summary record (one scalar per field).
 
-    Every field is real numeric, derived directly from the bundle
-    fields without any external state.  At least two bundles are
-    required (so min / max / mean are well-defined).
+    Aggregate only the requested rows; use a lambda-sorted local view for
+    endpoints/interpolation without mutating their supplied order. The
+    separately evaluated ``zero_reference`` is not an additional sweep row.
     """
     if len(bundles) < 2:
         raise ValueError("need at least 2 bundles for summary statistics")
-
-    # Field semantics (lambda_min/max, *_at_lambda_max, kl_to_lambda_zero_*)
-    # assume the sweep is ordered ascending by lambda.  Guard against an
-    # unsorted / reversed caller sweep instead of silently mislabelling the
-    # manuscript variables (RedTeam C7, 2026-08-01).
-    lams_raw = np.array([b.lam for b in bundles], dtype=np.float64)
-    if np.any(np.diff(lams_raw) < 0.0):
-        raise ValueError("bundles must be sorted ascending by lam for summary statistics")
-    bundles = list(bundles)
+    bundles = sorted(bundles, key=lambda bundle: bundle.lam)
 
     lams = np.array([b.lam for b in bundles], dtype=np.float64)
     tcs = np.array([b.total_correlation for b in bundles], dtype=np.float64)
@@ -134,22 +149,10 @@ def pymdp_summary_statistics(
         dtype=np.float64,
     )
 
-    q0 = np.asarray(bundles[0].action_distribution, dtype=np.float64).reshape(-1)
-    q0_norm = q0 / q0.sum() if q0.sum() > 0 else q0
     qN = np.asarray(bundles[-1].action_distribution, dtype=np.float64).reshape(-1)
     qN_norm = qN / qN.sum() if qN.sum() > 0 else qN
     uniform = np.full_like(qN_norm, 1.0 / qN_norm.size)
-    kl_to_q0 = np.array(
-        [
-            _kl(
-                np.asarray(b.action_distribution).reshape(-1)
-                / max(float(np.asarray(b.action_distribution).sum()), 1e-300),
-                q0_norm,
-            )
-            for b in bundles
-        ],
-        dtype=np.float64,
-    )
+    kl_to_q0 = kl_to_lambda_zero_curve(bundles, zero_reference=zero_reference)
     kl_uniform_at_max = _kl(qN_norm, uniform)
 
     lam_half, tc_half = _half_saturation(lams, tcs)
@@ -336,4 +339,4 @@ def total_correlation_saturation_index(
     above = np.where(tcs >= target)[0]
     if above.size == 0:  # pragma: no cover — unreachable: tcs.max() is always in above
         return float("inf")
-    return float(lams[int(above[0])])
+    return float(lams[above].min())

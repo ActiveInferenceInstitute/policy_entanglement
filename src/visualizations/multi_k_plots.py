@@ -96,7 +96,7 @@ def plot_multi_k_tt_rank_profile(
             color=palette_color(i),
             linewidth=2.0,
             markersize=6,
-            label=f"K={K}, λ={rec.lam:.2f}",
+            label=f"K={K}, λ={rec.lam:g}",
         )
     ax.set_xlabel("TT cut index")
     ax.set_ylabel("Bond dimension")

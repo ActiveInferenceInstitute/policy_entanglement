@@ -80,7 +80,7 @@
 | `dump_archetypes.py` | data | Schmidt-archetype CSV |
 | `parameter_sweep.py` | data | configurable closed-form λ sweep — CLI-overridable grid, utilities, phase thresholds (defaults reproduce the canonical 121-row sweep) |
 | `check_concordance.py` | report | report-only four-track concordance check (registry `lean_name` presence in Lean source + S06 Python identifiers resolve; exit 0 by design) |
-| `simulate_pymdp.py` | sim + figures | pymdp 1.0.1 run → 14 PNGs + 2 CSVs + summary JSON (lambda sweep, rollout, free-energy bundle, and dashboards) |
+| `simulate_pymdp.py` | sim + figures | pymdp run → 14 PNGs + 2 CSVs + summary JSON (lambda sweep, rollout, free-energy bundle, and dashboards) |
 | `simulate_multi_k.py` | sim + figures | configured multi-stream sweep → per-K CSV + 3 PNGs + JSON summary |
 | `simulate_long_horizon.py` | sim + figures | configured habit-accumulation rollout → CSV + 2 PNGs + JSON summary |
 | `simulate_revertibility.py` | sim + figures | m-projection witness (Prop 7.3 / Theorem 5.1) → CSV + PNG + JSON summary |

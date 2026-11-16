@@ -117,7 +117,7 @@ def test_adversarial_bound_holds_flag_discriminates() -> None:
 
 
 # --------------------------------------------------------------------------
-# BTAI (2a) — requires real pymdp 1.0.1 (skips honestly otherwise)
+# BTAI (2a) — requires real pymdp (skips honestly otherwise)
 # --------------------------------------------------------------------------
 
 

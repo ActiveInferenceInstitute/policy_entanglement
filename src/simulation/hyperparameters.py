@@ -167,8 +167,8 @@ def figure_hyperparameter_summary() -> dict[str, object]:
         "lambda_star_gamma_max": float(LAMBDA_STAR_GAMMAS.stop),
         # pymdp
         "pymdp_sweep_grid_points": grid_count(PYMDP_SWEEP_LAMBDAS),
-        "pymdp_sweep_lambda_min": float(PYMDP_SWEEP_LAMBDAS.start),
-        "pymdp_sweep_lambda_max": float(PYMDP_SWEEP_LAMBDAS.stop),
+        "pymdp_sweep_lambda_min": float(min(PYMDP_SWEEP_LAMBDAS.start, PYMDP_SWEEP_LAMBDAS.stop)),
+        "pymdp_sweep_lambda_max": float(max(PYMDP_SWEEP_LAMBDAS.start, PYMDP_SWEEP_LAMBDAS.stop)),
         "pymdp_rollout_steps": int(PYMDP_ROLLOUT_STEPS),
         "pymdp_rollout_seed": int(PYMDP_ROLLOUT_SEED),
         "pymdp_rollout_lambda": float(PYMDP_ROLLOUT_LAMBDA),
@@ -208,8 +208,8 @@ def figure_hyperparameter_summary() -> dict[str, object]:
         # multi-K, long-horizon, revertibility
         "multi_k_values": list(int(k) for k in MULTI_K_VALUES),
         "multi_k_sweep_grid_points": grid_count(MULTI_K_SWEEP_LAMBDAS),
-        "multi_k_sweep_lambda_min": float(MULTI_K_SWEEP_LAMBDAS.start),
-        "multi_k_sweep_lambda_max": float(MULTI_K_SWEEP_LAMBDAS.stop),
+        "multi_k_sweep_lambda_min": float(min(MULTI_K_SWEEP_LAMBDAS.start, MULTI_K_SWEEP_LAMBDAS.stop)),
+        "multi_k_sweep_lambda_max": float(max(MULTI_K_SWEEP_LAMBDAS.start, MULTI_K_SWEEP_LAMBDAS.stop)),
         "multi_k_sentinel_lambda": float(MULTI_K_SENTINEL_LAMBDA),
         "long_horizon_steps": int(LONG_HORIZON_STEPS),
         "long_horizon_lambda": float(LONG_HORIZON_LAMBDA),

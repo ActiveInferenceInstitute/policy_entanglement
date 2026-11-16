@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 
@@ -216,17 +217,38 @@ def test_latex_to_pdf_with_stubbed_xelatex(tmp_path: Path, monkeypatch: pytest.M
 
 
 def test_run_all_pre_regression_manifest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A real downstream audit sees its producer's bytes before finalization."""
     scripts = tmp_path / "scripts"
     scripts.mkdir()
-    (scripts / "ok.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
-    (scripts / "regression_gate.py").write_text("import sys\nsys.exit(0)\n", encoding="utf-8")
-    monkeypatch.setattr(
-        "orchestration.run_all.SCRIPTS",
-        [("ok.py", "ok"), ("regression_gate.py", "gate")],
+    (tmp_path / "input.json").write_text("[2, 5]", encoding="utf-8")
+    (scripts / "ok.py").write_text(
+        "import json\nfrom pathlib import Path\n"
+        "numbers = json.loads(Path('input.json').read_text())\n"
+        "out = Path('output/data/summary.json')\n"
+        "out.parent.mkdir(parents=True, exist_ok=True)\n"
+        "out.write_text(json.dumps({'total': sum(numbers)}))\n",
+        encoding="utf-8",
     )
-    code = run_all_main(["--only", "ok", "--only", "regression_gate"], project_root=tmp_path, scripts_dir=scripts)
+    (scripts / "regression_gate.py").write_text(
+        "import hashlib, json\nfrom pathlib import Path\n"
+        "content = Path('output/data/summary.json').read_bytes()\n"
+        "manifest = Path('output/MANIFEST.md').read_text()\n"
+        "row = next(line for line in manifest.splitlines() if '`output/data/summary.json`' in line)\n"
+        "assert hashlib.sha256(content).hexdigest() in row\n"
+        "assert int(row.split('|')[2].strip()) == len(content)\n"
+        "stage = next(line for line in manifest.splitlines() if '`ok.py`' in line)\n"
+        "assert stage.split('|')[3].strip() == 'OK'\n"
+        "Path('output/audited.json').write_text(json.dumps({'observed_total': json.loads(content)['total']}))\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(ra, "SCRIPTS", [("ok.py", "produce summary"), ("regression_gate.py", "audit bytes")])
+    code = run_all_main(
+        ["--serial", "--only", "ok", "--only", "regression_gate"], project_root=tmp_path, scripts_dir=scripts
+    )
     assert code == 0
-    assert (tmp_path / "output" / "MANIFEST.md").exists()
+    assert json.loads((tmp_path / "output/audited.json").read_text()) == {"observed_total": 7}
+    final = (tmp_path / "output/MANIFEST.md").read_text()
+    assert "`output/audited.json`" in final
 
 
 def test_write_manifest_large_file_skips_hash(tmp_path: Path) -> None:
@@ -243,3 +265,72 @@ def test_write_manifest_large_file_skips_hash(tmp_path: Path) -> None:
     )
     text = manifest.read_text(encoding="utf-8")
     assert "skipped: >8 MB" in text
+
+
+def _summary_stage(root: Path) -> Path:
+    scripts = root / "scripts"
+    scripts.mkdir()
+    (root / "input.json").write_text("[4, 7]", encoding="utf-8")
+    (scripts / "fixture.py").write_text(
+        "import json\nfrom pathlib import Path\n"
+        "values = json.loads(Path('input.json').read_text())\n"
+        "out = Path('output/total.json')\n"
+        "out.parent.mkdir(parents=True, exist_ok=True)\n"
+        "out.write_text(json.dumps({'total': sum(values)}))\n",
+        encoding="utf-8",
+    )
+    return scripts
+
+
+@pytest.mark.parametrize(
+    "selection",
+    [
+        ["--only", "unknown"],
+        ["--skip", "unknown"],
+        ["--only", "fixture", "--only", "unknown"],
+        ["--only", "fixture", "--skip", "unknown"],
+    ],
+)
+def test_unknown_stages_fail_before_artifact_or_manifest_changes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, selection: list[str]
+) -> None:
+    scripts = _summary_stage(tmp_path)
+    monkeypatch.setattr(ra, "SCRIPTS", [("fixture.py", "sum actual input")])
+    output = tmp_path / "output"
+    output.mkdir()
+    manifest = output / "MANIFEST.md"
+    manifest.write_bytes(b"existing inventory\n")
+    with pytest.raises(SystemExit) as error:
+        run_all_main(selection, project_root=tmp_path, scripts_dir=scripts)
+    assert error.value.code == 2
+    assert manifest.read_bytes() == b"existing inventory\n"
+    assert sorted(path.name for path in output.iterdir()) == ["MANIFEST.md"]
+
+
+def test_known_optional_skip_does_not_activate_or_reject_the_stage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _summary_stage(tmp_path)
+    monkeypatch.setattr(ra, "SCRIPTS", [("fixture.py", "sum actual input")])
+    assert run_all_main(
+        ["--serial", "--only", "fixture", "--skip", "build_pdf", "--skip", "readiness_report"],
+        project_root=tmp_path,
+        scripts_dir=scripts,
+    ) == 0
+    assert json.loads((tmp_path / "output/total.json").read_text()) == {"total": 11}
+    manifest = (tmp_path / "output/MANIFEST.md").read_text()
+    assert "`fixture.py`" in manifest
+    assert "`build_pdf.py`" not in manifest
+    assert "`readiness_report.py`" not in manifest
+
+
+def test_known_selection_fully_filtered_by_skip_executes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _summary_stage(tmp_path)
+    monkeypatch.setattr(ra, "SCRIPTS", [("fixture.py", "sum actual input")])
+    assert run_all_main(
+        ["--only", "fixture", "--skip", "fixture"], project_root=tmp_path, scripts_dir=scripts
+    ) == 0
+    assert not (tmp_path / "output").exists()
+    assert (tmp_path / "input.json").read_text() == "[4, 7]"

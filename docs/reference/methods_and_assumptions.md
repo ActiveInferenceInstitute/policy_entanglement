@@ -167,7 +167,7 @@ All numeric values in manuscript prose flow
   declarations are taken to represent the intended `ℝ` semantics up to
   the numerically-witnessed residual; the verified bridge is the
   scoped residual (§2).
-- **pymdp 1.0.1 / JAX float32 engine** — empirical free-energy bundle
+- **pymdp / JAX float32 engine** (simulation dependency pin configured in `pyproject.toml`) — empirical free-energy bundle
   is computed in float32 then recast at the analytical boundary;
   single-stream agreement bounded `≤ pymdp_single_stream_float_tolerance`.
   Headline TC sentinels are reproducible to that budget, not to their

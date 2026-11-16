@@ -502,13 +502,15 @@ def publication_metadata_issues(project_root: Path, ...) -> list[str]
 Release-readiness orchestrator consumed by ``scripts/readiness_report.py``.
 Emits ``output/reports/release_readiness.{md,json}``, ``release_note.md``,
 and ``release_index.md``. Pure audit helpers live in ``readiness_audit.py``.
+After final stage timings are written, the pipeline calls this complete
+producer again and inventories all four outputs. With `--no-manifest`, the
+existing manifest remains untouched; readiness reads the available evidence.
 
 Hygiene regex constants: ``FORBIDDEN_MATHLIB_LOCAL_TOKENS``,
 ``MANIFEST_STAGE_RE``, ``MANIFEST_TOTAL_RE``.
 
 ```python
 def write_release_readiness(project_root: Path) -> Path
-def refresh_release_readiness_runtime_budget(project_root: Path) -> None
 ```
 
 ### `readiness_audit.py`

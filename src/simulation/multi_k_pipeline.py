@@ -1,4 +1,4 @@
-"""Multi-K ensemble sweep pipeline (K>2 streams)."""
+"""Multi-K ensemble sweep pipeline (K >= 2 streams)."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ def figure_metadata_snapshot(project_root: Path, source_function: str, **extra) 
         "gamma": float(H.PYMDP_ENSEMBLE_GAMMA),
         "coupling_lambda_gen": float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
         "sweep_grid_points": int(H.MULTI_K_SWEEP_LAMBDAS.num),
-        "sweep_lambda_max": float(H.MULTI_K_SWEEP_LAMBDAS.stop),
+        "sweep_lambda_max": float(max(H.MULTI_K_SWEEP_LAMBDAS.values())),
         "figure_global_seed": int(H.FIGURE_GLOBAL_SEED),
     }
     return figure_metadata(
@@ -54,7 +54,7 @@ def write_multi_k_csv(sim_dir: Path, k: int, results) -> Path:
         for row in results:
             writer.writerow(
                 [
-                    f"{row.lam:.6f}",
+                    repr(float(row.lam)),
                     f"{row.total_correlation:.10g}",
                     f"{row.joint_entropy:.10g}",
                     f"{sum(row.marginal_entropies):.10g}",
@@ -96,15 +96,25 @@ def run_multi_k_pipeline(project_root: Path) -> int:
         results_by_k[k_int] = results
         csv_path = write_multi_k_csv(sim_dir, k_int, results)
         print(f"[multi-K] K={k_int}: wrote {csv_path}", flush=True)
-        sub = multi_k_summary(results)
+        zero_reference = run_multi_k_sweep(
+            k_int,
+            [0.0],
+            coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
+            gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
+        )[0]
+        sub = multi_k_summary(results, zero_reference=zero_reference)
         for sub_k, sub_v in sub.items():
             summaries[f"multi_k_K{k_int}_{sub_k}"] = float(sub_v)
-        summaries[f"multi_information_K{k_int}_lambda_{int(H.MULTI_K_SENTINEL_LAMBDA)}"] = float(
-            next(
-                (r.total_correlation for r in results if abs(r.lam - float(H.MULTI_K_SENTINEL_LAMBDA)) < 1e-9),
-                results[-1].total_correlation,
-            )
-        )
+        sentinel_lam = float(H.MULTI_K_SENTINEL_LAMBDA)
+        sentinel = next((row for row in results if row.lam == sentinel_lam), None)
+        if sentinel is None:
+            sentinel = run_multi_k_sweep(
+                k_int,
+                [sentinel_lam],
+                coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
+                gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
+            )[0]
+        summaries[f"multi_information_K{k_int}_sentinel"] = float(sentinel.total_correlation)
 
     def md(fn: str, **extra) -> dict[str, str]:
         return figure_metadata_snapshot(project_root, fn, **extra)
@@ -122,7 +132,7 @@ def run_multi_k_pipeline(project_root: Path) -> int:
     tt_png = plot_multi_k_tt_rank_profile(
         results_by_k,
         out_path=fig_dir / "multi_k_tt_rank_profile.png",
-        lam_index=-1,
+        lam_index=max(range(len(lams)), key=lambda index: lams[index]),
         metadata=md("plot_multi_k_tt_rank_profile"),
     )
 

@@ -52,8 +52,8 @@ def plot_joint_heatmap_with_marginals(
     ax_resid = fig.add_subplot(gs[0, 1])
 
     im = ax_main.imshow(q, origin="lower", aspect="auto", cmap=SEQUENTIAL_CMAP)
-    ax_main.set_xlabel("Stream 0 policy index")
-    ax_main.set_ylabel("Stream 1 policy index")
+    ax_main.set_xlabel("Stream 1 policy index")
+    ax_main.set_ylabel("Stream 0 policy index")
     if xticklabels is not None:
         ax_main.set_xticks(range(q.shape[1]))
         ax_main.set_xticklabels(xticklabels)

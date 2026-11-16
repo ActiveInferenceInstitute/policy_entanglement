@@ -59,6 +59,6 @@ this is by design.
 * [`reference/python_api.md`](../reference/python_api.md) — full
   per-function API reference.
 * [`simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.md)
-  — pymdp 1.0.1 harness internals.
+  — pymdp harness internals.
 * [`reference/manuscript_map.md`](../reference/manuscript_map.md) —
   section ↔ Lean ↔ Python ↔ tests cross-reference.

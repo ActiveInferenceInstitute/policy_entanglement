@@ -223,3 +223,28 @@ def test_decomposition_is_finite_for_random_inputs():
         lam = rng.uniform(0.1, 1.5)
         rhs = entanglement_decomposition_rhs(q, mf, G, J, Kc, gamma, lam)
         assert np.isfinite(rhs.total)
+
+
+def test_decomposition_retains_finite_log_prior_at_large_cancelling_couplings() -> None:
+    mf = [np.array([0.5, 0.5]), np.array([0.5, 0.5])]
+    G = [np.zeros(2), np.zeros(2)]
+    J = np.array([[1.0, -1.0], [-1.0, 1.0]])
+    with np.errstate(over="raise", invalid="raise"):
+        q = entangled_posterior(mf, G, J, J, gamma=1.0, lam=1000.0)
+        lhs = free_energy_against_entangled_prior(q, mf, G, J, J, 1.0, 1000.0)
+        rhs = entanglement_decomposition_rhs(q, mf, G, J, J, 1.0, 1000.0).total
+    expected = 1000.0 - np.log(2.0)
+    assert lhs == pytest.approx(expected, abs=1e-9)
+    assert rhs == pytest.approx(expected, abs=1e-9)
+
+
+def test_partition_preserves_tiny_product_support_before_large_tilt() -> None:
+    from lean.decomposition import coupling_prior_term
+
+    tiny = 1e-200
+    priors = [np.array([tiny, 1.0]), np.array([tiny, 1.0])]
+    q = np.array([[1.0, 0.0], [0.0, 0.0]])
+    interaction = np.array([[1000.0, 0.0], [0.0, 0.0]])
+    with np.errstate(over="raise", invalid="raise"):
+        term = coupling_prior_term(q, interaction, priors, lam=1.0)
+    np.testing.assert_allclose(term, 2.0 * np.log(tiny), atol=1e-10)

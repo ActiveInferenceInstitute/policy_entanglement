@@ -13,7 +13,7 @@ import pytest
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed")
+    pytestmark = pytest.mark.skip(reason="pymdp/JAX runtime unavailable (uv sync --group sim)")
 
 
 from simulation.builders import make_ising_ensemble
@@ -57,7 +57,7 @@ def bundles():
 
 
 def test_summary_returns_dataclass(bundles) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     assert isinstance(s, BundleSummary)
     assert s.n_lambda_points == 9
     assert s.tc_min >= -1e-9
@@ -65,30 +65,30 @@ def test_summary_returns_dataclass(bundles) -> None:
 
 
 def test_summary_half_saturation_within_range(bundles) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     if s.tc_max > 0:
         assert s.lambda_min <= s.lambda_at_half_saturation <= s.lambda_max
 
 
 def test_summary_aligned_mass_in_unit_interval(bundles) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     for v in (s.aligned_mass_min, s.aligned_mass_max, s.aligned_mass_at_lambda_max):
         assert 0.0 - 1e-9 <= v <= 1.0 + 1e-9
 
 
 def test_summary_kl_to_lambda_zero_min_is_zero(bundles) -> None:
     """KL of q_λ to q_0 is identically 0 at λ = 0 by construction."""
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     assert abs(s.kl_to_lambda_zero_min) < 1e-9
 
 
 def test_summary_action_mode_prob_in_unit_interval(bundles) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     assert 0.0 - 1e-9 <= s.action_mode_prob_at_lambda_max <= 1.0 + 1e-9
 
 
 def test_summary_to_var_dict_returns_flat_floats(bundles) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     d = summary_to_var_dict(s)
     assert isinstance(d, dict)
     assert all(isinstance(k, str) for k in d)
@@ -100,7 +100,7 @@ def test_summary_requires_at_least_two_bundles() -> None:
     spec = make_ising_ensemble(num_streams=2)
     bs = free_energy_curve(spec, [0, 0], [0.0])
     with pytest.raises(ValueError):
-        pymdp_summary_statistics(bs)
+        pymdp_summary_statistics(bs, zero_reference=bs[0])
 
 
 # ---------------------------------------------------------------------------
@@ -114,7 +114,7 @@ def test_plot_action_entropy_curve(bundles, tmp_path: Path) -> None:
 
 
 def test_plot_kl_to_lambda_zero(bundles, tmp_path: Path) -> None:
-    p = plot_kl_to_lambda_zero(bundles, out_path=tmp_path / "kl.png")
+    p = plot_kl_to_lambda_zero(bundles, zero_reference=bundles[0], out_path=tmp_path / "kl.png")
     _assert_png(p)
 
 
@@ -124,9 +124,10 @@ def test_plot_marginal_entropy_per_stream(bundles, tmp_path: Path) -> None:
 
 
 def test_plot_pymdp_summary_panel(bundles, tmp_path: Path) -> None:
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     p = plot_pymdp_summary_panel(
         bundles,
+        zero_reference=bundles[0],
         summary=s,
         out_path=tmp_path / "panel.png",
     )

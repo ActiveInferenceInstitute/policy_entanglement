@@ -19,6 +19,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 from lean.free_energy import shannon_entropy as _shannon
+from simulation.inference import FreeEnergyBundle
+from simulation.metrics import aligned_policy_mass
+from simulation.statistics import kl_to_lambda_zero_curve
 
 from ._io import _save_with_metadata as _save
 from .annotations import add_stats_box, apply_lambda_axis
@@ -104,6 +107,7 @@ def plot_action_entropy_curve(
 def plot_kl_to_lambda_zero(
     bundles: Sequence[Any],
     *,
+    zero_reference: FreeEnergyBundle,
     out_path: Path,
     metadata: Mapping[str, str] | None = None,
 ) -> Path:
@@ -116,18 +120,8 @@ def plot_kl_to_lambda_zero(
     """
     if not bundles:
         raise ValueError("need at least one bundle")
-    q0 = np.asarray(bundles[0].action_distribution, dtype=np.float64).reshape(-1)
-    q0_norm = q0 / max(float(q0.sum()), 1e-300)
     lams = np.array([b.lam for b in bundles], dtype=np.float64)
-    kls: list[float] = []
-    for b in bundles:
-        qa = np.asarray(b.action_distribution, dtype=np.float64).reshape(-1)
-        qa = qa / max(float(qa.sum()), 1e-300)
-        mask = qa > 0.0
-        kls.append(
-            float((qa[mask] * (np.log(qa[mask]) - np.log(np.where(q0_norm[mask] > 0, q0_norm[mask], 1e-300)))).sum())
-        )
-    kl = np.array(kls, dtype=np.float64)
+    kl = kl_to_lambda_zero_curve(bundles, zero_reference=zero_reference)
 
     fig, ax = plt.subplots(figsize=PUBLICATION_STYLE.single, constrained_layout=True)
     ax.plot(
@@ -190,6 +184,7 @@ def plot_marginal_entropy_per_stream(
 def plot_pymdp_summary_panel(
     bundles: Sequence[Any],
     *,
+    zero_reference: FreeEnergyBundle,
     out_path: Path,
     summary: Any | None = None,
     metadata: Mapping[str, str] | None = None,
@@ -217,24 +212,8 @@ def plot_pymdp_summary_panel(
     )
     n_streams = bundles[0].marginal_entropies.shape[0]
     h_stream_rows = np.stack([b.marginal_entropies for b in bundles], axis=0)
-    aligned_mass: list[float] = []
-    for b in bundles:
-        flat = np.asarray(b.action_distribution).reshape(-1)
-        if flat.size == 4:
-            aligned_mass.append(float(flat[0] + flat[3]))
-        else:
-            aligned_mass.append(float("nan"))
-    aligned_arr = np.array(aligned_mass, dtype=np.float64)
-
-    q0 = np.asarray(bundles[0].action_distribution).reshape(-1)
-    q0n = q0 / max(float(q0.sum()), 1e-300)
-    kls = []
-    for b in bundles:
-        qa = np.asarray(b.action_distribution).reshape(-1)
-        qa = qa / max(float(qa.sum()), 1e-300)
-        mask = qa > 0.0
-        kls.append(float((qa[mask] * (np.log(qa[mask]) - np.log(np.where(q0n[mask] > 0, q0n[mask], 1e-300)))).sum()))
-    kl = np.array(kls, dtype=np.float64)
+    aligned_arr = np.array([aligned_policy_mass(b.action_distribution) for b in bundles], dtype=np.float64)
+    kl = kl_to_lambda_zero_curve(bundles, zero_reference=zero_reference)
 
     fig, axes = plt.subplots(2, 3, figsize=PUBLICATION_STYLE.dashboard_2x3, constrained_layout=True)
     ax_a, ax_b, ax_c, ax_d, ax_e, ax_f = axes.flatten()
@@ -284,8 +263,14 @@ def plot_pymdp_summary_panel(
     ax_e.set_ylabel("nats")
     ax_e.legend()
 
-    ax_f.plot(lams, aligned_arr, "-o", color=palette_color(3), markersize=3, label=r"$q(0,0)+q(1,1)$")
-    ax_f.axhline(0.5, color="gray", linestyle=":", linewidth=0.7, label="uniform baseline")
+    ax_f.plot(
+        lams, aligned_arr, "-o", color=palette_color(3), markersize=3,
+        label=r"$q(0,\ldots,0)+q(1,\ldots,1)$",
+    )
+    ax_f.axhline(
+        2.0 / bundles[0].action_distribution.size,
+        color="gray", linestyle=":", linewidth=0.7, label="uniform baseline",
+    )
     ax_f.set_title("F. Aligned-corner mass")
     apply_lambda_axis(ax_f, label=r"$\lambda$")
     ax_f.set_ylabel("probability")

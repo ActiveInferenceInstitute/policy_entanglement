@@ -1,6 +1,6 @@
 # `src/simulation/`
 
-`inferactively-pymdp==1.0.1`-backed POMDP simulation harness for
+`inferactively-pymdp`-backed POMDP simulation harness for
 coupled-policy active-inference ensembles, using the `pymdp` import/API.
 Companion to the analytical mirrors in [`../lean/`](../lean/).  Public
 symbols are re-exported from `simulation/__init__.py`.
@@ -14,7 +14,7 @@ Subpackage rules and pymdp guard-rails: [`AGENTS.md`](AGENTS.md).
 |---|---|---|
 | [`specs.py`](specs.py) | Pure data classes (no pymdp dep) | `StreamSpec`, `CoupledEnsembleSpec` |
 | [`builders.py`](builders.py) | Deterministic Ising K-stream toys + helpers | `two_state_identity_likelihood`, `two_action_swap_transitions`, `make_bernoulli_stream`, `ising_coupling_tensor`, `make_ising_ensemble` |
-| [`agents.py`](agents.py) | `pymdp.agent.Agent` adapter from `inferactively-pymdp==1.0.1` — **the only file that imports `pymdp` / `jax`** | `pymdp_available`, `build_pymdp_agent`, `build_pymdp_agents`, `PYMDP_INSTALL_HINT` |
+| [`agents.py`](agents.py) | `pymdp.agent.Agent` adapter from `inferactively-pymdp` — **the only file that imports `pymdp` / `jax`** | `pymdp_available`, `build_pymdp_agent`, `build_pymdp_agents`, `PYMDP_INSTALL_HINT` |
 | [`inference.py`](inference.py) | Per-stream EFE / policy-posterior, λ-coupled joint, free-energy bundle | `per_stream_efe`, `per_stream_policy_posterior`, `coupled_policy_posterior`, `FreeEnergyBundle`, `variational_free_energy`, `expected_free_energy_under_posterior`, `coupling_energy`, `free_energy_bundle`, `free_energy_curve` |
 | [`rollout.py`](rollout.py) | Coupled rollouts under a fixed seed | `RolloutStep`, `Rollout`, `simulate_coupled_rollout` |
 | [`sweep.py`](sweep.py) | λ-sweep across the coupled posterior | `LambdaSweepResult`, `lambda_sweep`, `total_correlation_curve`, `marginal_trajectory` |
@@ -32,7 +32,7 @@ Subpackage rules and pymdp guard-rails: [`AGENTS.md`](AGENTS.md).
 ## Conventions
 
 * `pymdp` is **optional**; `uv sync --group sim` installs
-  `inferactively-pymdp==1.0.1`, which provides the `pymdp` import/API.
+  the `inferactively-pymdp` version pinned in `pyproject.toml`, providing the `pymdp` import/API.
   Tests skip via the `requires_pymdp` marker when missing.
 * The coupled-posterior layering is fixed: pymdp owns the per-stream
   mean-field policy posterior; the analytical layer in

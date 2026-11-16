@@ -1,6 +1,6 @@
 # AGENTS.md — `src/simulation/`
 
-`inferactively-pymdp==1.0.1`-backed POMDP simulation harness for
+`inferactively-pymdp`-backed POMDP simulation harness for
 coupled-policy active-inference ensembles, using the `pymdp` import/API.
 Companion to the analytical mirrors in `src/lean/`.
 
@@ -10,7 +10,7 @@ Companion to the analytical mirrors in `src/lean/`.
 |---|---|
 | `specs.py` | `StreamSpec`, `CoupledEnsembleSpec` — pure data classes (no pymdp dep) |
 | `builders.py` | Deterministic Ising K-stream toy + helpers |
-| `agents.py` | `pymdp.agent.Agent` adapter from `inferactively-pymdp==1.0.1` (the *only* file that imports pymdp / jax) |
+| `agents.py` | `pymdp.agent.Agent` adapter from `inferactively-pymdp` (the *only* file that imports pymdp / jax) |
 | `inference.py` | Per-stream EFE / policy-posterior + λ-coupled joint + `FreeEnergyBundle` (VFE per stream, expected-EFE under posterior, joint / marginal entropy, total correlation, coupling term, action distribution) + `free_energy_curve` |
 | `rollout.py` | `RolloutStep`, `Rollout`, `simulate_coupled_rollout` |
 | `sweep.py` | `LambdaSweepResult`, `lambda_sweep`, `total_correlation_curve`, `marginal_trajectory` |
@@ -44,7 +44,7 @@ Companion to the analytical mirrors in `src/lean/`.
 ## Rules
 
 * `pymdp` is **optional**; `uv sync --group sim` installs
-  `inferactively-pymdp==1.0.1`, which provides the `pymdp` import/API.
+  the `inferactively-pymdp` version pinned in `pyproject.toml`, providing the `pymdp` import/API.
   Tests skip via the `requires_pymdp` marker when missing.
 * Anything that touches `pymdp.agent.Agent` lives in `agents.py`.  The
   rest of the subpackage operates on numpy and the analytical layer

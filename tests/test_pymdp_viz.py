@@ -154,7 +154,7 @@ def test_plot_action_entropy_curve_concentrated_dist(tmp_path) -> None:
 
 def test_plot_kl_to_lambda_zero_creates_file(tmp_path, bundles_6) -> None:
     out = tmp_path / "kl.png"
-    result = plot_kl_to_lambda_zero(bundles_6, out_path=out)
+    result = plot_kl_to_lambda_zero(bundles_6, zero_reference=bundles_6[0], out_path=out)
     assert result == out
     assert out.exists()
     assert out.stat().st_size > 0
@@ -162,19 +162,19 @@ def test_plot_kl_to_lambda_zero_creates_file(tmp_path, bundles_6) -> None:
 
 def test_plot_kl_to_lambda_zero_raises_on_empty(tmp_path) -> None:
     with pytest.raises(ValueError, match="at least one bundle"):
-        plot_kl_to_lambda_zero([], out_path=tmp_path / "kl_empty.png")
+        plot_kl_to_lambda_zero([], zero_reference=_make_bundle(0.0), out_path=tmp_path / "kl_empty.png")
 
 
 def test_plot_kl_to_lambda_zero_identical_dists(tmp_path) -> None:
     bs = [_make_bundle(float(i)) for i in range(3)]
     out = tmp_path / "kl_ident.png"
-    result = plot_kl_to_lambda_zero(bs, out_path=out)
+    result = plot_kl_to_lambda_zero(bs, zero_reference=bs[0], out_path=out)
     assert result.exists()
 
 
 def test_plot_kl_to_lambda_zero_with_metadata(tmp_path, bundles_6) -> None:
     out = tmp_path / "kl_meta.png"
-    result = plot_kl_to_lambda_zero(bundles_6, out_path=out, metadata={"src": "test"})
+    result = plot_kl_to_lambda_zero(bundles_6, zero_reference=bundles_6[0], out_path=out, metadata={"src": "test"})
     assert result.exists()
 
 
@@ -210,22 +210,22 @@ def test_plot_marginal_entropy_per_stream_with_metadata(tmp_path, bundles_6) -> 
 
 def test_plot_pymdp_summary_panel_creates_file(tmp_path, bundles_6) -> None:
     out = tmp_path / "summary.png"
-    result = plot_pymdp_summary_panel(bundles_6, out_path=out)
+    result = plot_pymdp_summary_panel(bundles_6, zero_reference=bundles_6[0], out_path=out)
     assert result == out
     assert out.exists()
     assert out.stat().st_size > 0
 
 
 def test_plot_pymdp_summary_panel_with_summary(tmp_path, bundles_6) -> None:
-    summary = pymdp_summary_statistics(bundles_6)
+    summary = pymdp_summary_statistics(bundles_6, zero_reference=bundles_6[0])
     out = tmp_path / "summary_w_stats.png"
-    result = plot_pymdp_summary_panel(bundles_6, out_path=out, summary=summary)
+    result = plot_pymdp_summary_panel(bundles_6, zero_reference=bundles_6[0], out_path=out, summary=summary)
     assert result.exists()
 
 
 def test_plot_pymdp_summary_panel_summary_none(tmp_path, bundles_6) -> None:
     out = tmp_path / "summary_none.png"
-    result = plot_pymdp_summary_panel(bundles_6, out_path=out, summary=None)
+    result = plot_pymdp_summary_panel(bundles_6, zero_reference=bundles_6[0], out_path=out, summary=None)
     assert result.exists()
 
 
@@ -233,6 +233,7 @@ def test_plot_pymdp_summary_panel_with_metadata(tmp_path, bundles_6) -> None:
     out = tmp_path / "summary_meta.png"
     result = plot_pymdp_summary_panel(
         bundles_6,
+        zero_reference=bundles_6[0],
         out_path=out,
         metadata={"project.source_script": "test.py"},
     )
@@ -256,5 +257,5 @@ def test_plot_pymdp_summary_panel_nonk2_dist(tmp_path) -> None:
 
     bs = [_b8(float(i)) for i in range(4)]
     out = tmp_path / "summary_k3.png"
-    result = plot_pymdp_summary_panel(bs, out_path=out)
+    result = plot_pymdp_summary_panel(bs, zero_reference=bs[0], out_path=out)
     assert result.exists()

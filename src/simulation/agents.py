@@ -1,4 +1,4 @@
-"""pymdp 1.0.1 :class:`Agent` adapters."""
+"""JAX-backed :class:`pymdp.agent.Agent` adapters."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import Any
 
 from .specs import CoupledEnsembleSpec, StreamSpec
 
-PYMDP_INSTALL_HINT = "pymdp 1.0.1 is required for the POMDP simulation harness. Install with: `uv sync --group sim`"
+PYMDP_INSTALL_HINT = "inferactively-pymdp is required for the POMDP simulation harness. Install with: `uv sync --group sim`"
 jnp: Any
 
 try:
@@ -21,15 +21,15 @@ try:
     # lint hooks strip).
     jnp = jax.numpy
 
-    # pymdp 1.0.1 stores some JAX arrays as Equinox static fields and emits a
-    # benign UserWarning at Agent construction time.  Silence only that single
+    # pymdp stores some JAX arrays as Equinox static fields and emits a
+    # benign UserWarning at Agent construction time. Silence only that
     # message so we do not mask other JAX warnings.
     warnings.filterwarnings(
         "ignore",
         message=r"A JAX array is being set as static!.*",
         category=UserWarning,
     )
-    from pymdp.agent import Agent  # pymdp 1.0.1 (JAX-based)
+    from pymdp.agent import Agent
 
     _HAS_PYMDP = True
 except ImportError:  # pragma: no cover - covered by skip in tests
@@ -39,7 +39,7 @@ except ImportError:  # pragma: no cover - covered by skip in tests
 
 
 def pymdp_available() -> bool:
-    """Return True iff `inferactively-pymdp` 1.0.1 is importable."""
+    """Return whether the pymdp import/API is available, not a version check."""
     return _HAS_PYMDP
 
 
@@ -49,8 +49,8 @@ def _require_pymdp() -> None:
 
 
 def _to_jax_pymdp_arrays(spec: StreamSpec) -> tuple[Any, Any, Any, Any]:
-    """Convert numpy arrays to the (batched) JAX list-of-arrays format
-    pymdp 1.0.1 expects.  Returns ``(A_list, B_list, C_list, D_list)``.
+    """Convert numpy arrays to pymdp's batched JAX list-of-arrays format.
+    Returns ``(A_list, B_list, C_list, D_list)``.
     """
     _require_pymdp()
     A_list = [jnp.asarray(spec.A, dtype=jnp.float32)[None, ...]]
@@ -74,9 +74,11 @@ def build_pymdp_agent(
 ) -> Any:
     """Materialise a :class:`pymdp.agent.Agent` from a :class:`StreamSpec`.
 
-    Returns a pymdp 1.0.1 ``Agent`` (JAX-backed).  The caller drives
-    inference via ``agent.infer_states(obs, prior)`` and
-    ``agent.infer_policies(qs)``.
+    Returns a JAX-backed pymdp ``Agent``. The caller drives inference via
+    ``agent.infer_states(obs, prior)`` and ``agent.infer_policies(qs)``.
+    The latter returns ``(q_pi, neg_efe)``; costs are ``-neg_efe``.
+    The default policy prior ``Agent.E`` is uniform over policies and is
+    independent of the state prior ``StreamSpec.D``.
 
     All keyword arguments default to the central hyperparameters
     (:mod:`simulation.hyperparameters`) so a single edit there

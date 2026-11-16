@@ -37,10 +37,10 @@ from lean.decomposition import free_energy_against_entangled_prior
 from lean.free_energy import total_correlation
 from lean.joint_dist import joint_marginals, mean_field_to_joint
 from lean.spectral import tensor_train_ranks
-from simulation.agents import pymdp_available
+from simulation.agents import build_pymdp_agents, pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp/JAX runtime unavailable (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 
@@ -233,10 +233,11 @@ def test_prop_11_2_embedded_VFE_matches_boundary_computation():
     This is not a tautology because path A uses
     `variational_free_energy(...)` while path B reconstructs the same
     scalar from `coupled_policy_posterior`, `joint_marginals`,
-    `per_stream_efe`, and the stream priors by explicit summation.
+    `per_stream_efe`, and actual Agent.E policy priors by explicit summation.
     """
     spec = make_ising_ensemble(coupling_amplitude=1.0, num_streams=2, gamma=1.0)
     observations = [0, 0]
+    policy_priors = [np.asarray(agent.E, dtype=np.float64).reshape(-1) for agent in build_pymdp_agents(spec)]
     for lam in (0.0, 0.5, 1.0, 1.5):
         path_a = float(variational_free_energy(spec, observations, lam).sum())
         q = coupled_policy_posterior(spec, observations, lam)
@@ -245,7 +246,7 @@ def test_prop_11_2_embedded_VFE_matches_boundary_computation():
         hand_terms = []
         for k, (marginal, efe) in enumerate(zip(marginals, efe_terms, strict=True)):
             log_q = np.log(np.where(marginal > 0.0, marginal, 1e-300))
-            log_prior = np.log(np.where(spec.streams[k].D > 0.0, spec.streams[k].D, 1e-300))
+            log_prior = np.log(np.where(policy_priors[k] > 0.0, policy_priors[k], 1e-300))
             hand_terms.append(float(np.sum(marginal * (log_q - log_prior)) + spec.gamma * np.sum(marginal * efe)))
         path_b = float(sum(hand_terms))
         # 1e-9 is a strict float budget: both paths implement the same finite sum but through independent code paths.

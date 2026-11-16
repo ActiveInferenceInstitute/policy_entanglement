@@ -167,12 +167,14 @@ for the payload-discharge plan.
 
 Derived variables emitted by the simulation scripts and
 injected into the manuscript via `[[VAR:...]]` tokens:
+Sentinel keys are stable when the configured coupling changes, including
+fractional values; `multi_k_sentinel_lambda` carries the actual coupling.
 
 | Variable | Source | Meaning |
 |---|---|---|
-| `multi_information_K3_lambda_2` | `simulate_multi_k.py` (K=3 sentinel) | Multi-information `I(q_λ)` at the configured K=3 sentinel λ |
-| `multi_information_K4_lambda_2` | `simulate_multi_k.py` (K=4 sentinel) | Multi-information `I(q_λ)` at the configured K=4 sentinel λ |
-| `multi_information_K5_lambda_2` | `simulate_multi_k.py` (K=5 sentinel) | Multi-information `I(q_λ)` at the configured K=5 sentinel λ |
+| `multi_information_K3_sentinel` | `simulate_multi_k.py` (K=3 sentinel) | Multi-information `I(q_λ)` at the configured K=3 sentinel λ |
+| `multi_information_K4_sentinel` | `simulate_multi_k.py` (K=4 sentinel) | Multi-information `I(q_λ)` at the configured K=4 sentinel λ |
+| `multi_information_K5_sentinel` | `simulate_multi_k.py` (K=5 sentinel) | Multi-information `I(q_λ)` at the configured K=5 sentinel λ |
 | `long_horizon_steady_state_kl` | `simulate_long_horizon.py` | Backward-compatible headline for the strict max tail-window KL, computed as $D_{\mathrm{KL}}(q_t^k\|\bar q^k_{\mathrm{tail}})$ over the trailing window |
 | `long_horizon_adjacent_kl_max` | `simulate_long_horizon.py` | Separately reported adjacent-step KL $D_{\mathrm{KL}}(q_t^k\|q_{t-1}^k)$, not used as the habit criterion |
 | `long_horizon_habit_accumulation` | `simulate_long_horizon.py` | Confirms habit accumulation criterion satisfied |

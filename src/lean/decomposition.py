@@ -43,13 +43,12 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.special import logsumexp
 
-from .coupling import expected_value
+from .coupling import _entangled_prior_log_weights, expected_value
 from .free_energy import (
-    free_energy,
     marginal_free_energy,
+    shannon_entropy,
     total_correlation,
 )
-from .joint_dist import mean_field_to_joint
 
 ArrayF = NDArray[np.float64]
 
@@ -111,12 +110,7 @@ def coupling_prior_term(q: ArrayF, coupling_j: ArrayF, mf_prior: Sequence[ArrayF
     Mirrors ``couplingPriorTerm``.
     """
     Ja = np.asarray(coupling_j, dtype=np.float64)
-    base = mean_field_to_joint(mf_prior)
-    # Numerically stable log-sum-exp avoids overflow at large |lam|.
-    # `logsumexp(x, b=w)` computes log(sum(w * exp(x))) without ever
-    # materialising exp on the hot path. The base weights are
-    # non-negative (a PMF), so the `b=` weighting is well-defined.
-    log_Z = float(logsumexp(lam * Ja, b=base))
+    log_Z = float(logsumexp(_entangled_prior_log_weights(mf_prior, Ja, lam)))
     return log_Z - lam * expected_value(q, Ja)
 
 
@@ -195,24 +189,23 @@ def free_energy_against_entangled_prior(
     normalized entangled prior
     :math:`E_\lambda \propto (\prod_k E_k)\,\exp(\lambda J)`.
 
-    :func:`~lean.free_energy.free_energy` computes
-    ``gamma * E[G] − E[log prior] − H`` with this full :math:`G_\lambda`;
-    splitting into stream / coupling-prior / :math:`I` parts is handled by
-    :func:`entanglement_decomposition_rhs`.
+    Evaluates ``gamma * E[G] − E[log prior] − H`` directly in log space:
+    a representable log prior need not have a representable probability.
+    The RHS independently separates stream / coupling-prior / :math:`I` terms.
     """
-    base = mean_field_to_joint(mf_prior)
+    qa = np.asarray(q, dtype=np.float64)
     Ja = np.asarray(coupling_j, dtype=np.float64)
     Kc_a = np.asarray(coupling_kc, dtype=np.float64)
-    if Ja.shape != Kc_a.shape:
-        raise ValueError("coupling_j and coupling_kc must share the joint shape")
-
-    prior_unnorm = base * np.exp(lam * Ja)
-    prior = prior_unnorm / float(np.sum(prior_unnorm))
+    if Ja.shape != Kc_a.shape or qa.shape != Ja.shape:
+        raise ValueError("q, coupling_j and coupling_kc must share the joint shape")
+    log_prior = _entangled_prior_log_weights(mf_prior, Ja, lam)
+    log_prior -= float(logsumexp(log_prior))
 
     stream_part = _marginals_efes_broadcast_to_joint(per_stream_G, Ja.shape)
     g_lambda_joint = stream_part + lam * Kc_a
 
-    return free_energy(q, prior, g_lambda_joint, gamma)
+    support = qa > 0.0
+    return float(np.sum(qa[support] * (gamma * g_lambda_joint[support] - log_prior[support]))) - shannon_entropy(qa)
 
 
 def decomposition_at_zero(

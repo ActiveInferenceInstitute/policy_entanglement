@@ -1,15 +1,37 @@
 # TODO — Policy Entanglement in Active Inference (`actinf_policy_entanglement_lean`)
 
-**Status:** Active — review passes complete; all Minor/Medium findings implemented and all
-previously-scoped Major findings (M1, M2) implemented. The 2026-11-12 dependency pass verifies
-both cutovers as landed and leaves one open item: the `inferactively-pymdp` 1.0.1 → 1.0.5 bump
-did not reach the documentation, or the test that pins the old string.
+**Status:** Active. Earlier review closures and dependency cutovers below are
+historical receipts, not current recertification. Current-facing wording,
+fresh full-status measurement, and hosted-CI evidence are distinct obligations.
+The preserved 1.0.1 → 1.0.5 cutover record does not establish new scientific results.
 
 **Owner:** Daniel Ari Friedman (daniel@activeinference.institute)
 
 **Last reviewed:** 2026-08-01 (deepest hostile red-team review; implementation pass + completion pass); re-checked 2026-11-11 (Institute improvements pass 3); re-checked 2026-11-12 (dependency-cutover pass)
 
 ---
+## Qualification maintenance — 2026-11-13
+
+Preserved source repairs cover real-Agent cost/prior adaptation, stable log-domain
+coupling, coupled/general-K reporting, independent zero references, exact-lambda
+endpoints, bounded process capture, final readiness/manifest ordering, and strict
+stage selection. Focused governed tests exercised these paths; initial authored
+test-contract errors were retained as failed receipts, corrected without changing
+scientific policy, and requalified. One existing figure-inventory test skipped
+because its fixture had no preexisting scientific outputs; it is not a pass.
+
+Current wording follows the reconciled 55 current/mixed-file inventory plus two
+historical-only files; dated 1.0.1 observations remain unchanged. The literal
+wording guard was removed rather than repinned. No production scientific outputs,
+Lean proofs, full-suite coverage, full-status reports, or hosted workflows were
+regenerated or recertified by this focused maintenance.
+
+- [ ] Fresh status requires admitted `output/reports/test_results.json`,
+  `output/reports/release_readiness.json`, and `output/MANIFEST.md` from their real producers.
+- [ ] Hosted Actions evidence remains an organization-owner obligation.
+- [ ] PE-2 stochastic rollout semantics, analytic proof targets, the Float-to-real
+  bridge, package-origin ownership, and publication/legal decisions remain open.
+
 
 ## Dependency-cutover pass (2026-11-12)
 
@@ -102,12 +124,12 @@ tracked files lacks a `README.md`/`AGENTS.md` pair.
 
 ---
 
-## Current status
+## Historical measured status — 2026-08-01
 
 The repository passed a **deepest hostile red-team review** (root README/AGENTS/ISA/CHANGELOG
 orientation → full-tree review → real-suite + lint measurement → parallel 3-axis subagent
-audit → implement-all-Minor/Medium → re-verify). Headline measured state **on this tree after
-the fix pass** (real values, from `uv run python -m pytest tests/ --cov=src`):
+audit → implement-all-Minor/Medium → re-verify). The following counts, coverage,
+lint, and type results belong to that historical fix pass, not the current tree:
 
 - `1464 + 4 previously-failing` → **1474 passed, 7 skipped, 1 xfailed** after the first fix batch;
   the full-suite run after the S0-1/S0-3 integrity closures is **1478 passed, 7 skipped,
@@ -290,10 +312,10 @@ Major finding followed by how it was closed.
 
 ---
 
-## Major — Scoped (deferred)
+## Historical Major closures — 2026-08-01
 
-**None.** All validated Major findings from the deepest review are implemented (see the
-completion-pass section above). No Major remains deferred.
+No Major finding remained in that review's scope after its completion pass.
+This does not close subsequent PE findings, scientific decisions, or open proof work.
 
 ## DOCS-DEEP pass — 2026-08-02
 

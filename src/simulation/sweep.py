@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from lean.free_energy import total_correlation
-from lean.joint_dist import is_pmf, joint_marginal
+from lean.joint_dist import is_pmf, joint_marginal, joint_marginals
 
 from .inference import coupled_policy_posterior
 from .rollout import Rollout
@@ -79,3 +79,11 @@ def marginal_trajectory(rollout: Rollout, k: int) -> ArrayF:
     if not 0 <= k < rollout.spec.num_streams():
         raise IndexError(f"stream {k} out of range")
     return np.stack([s.mean_field_marginals[k] for s in rollout.steps], axis=0)
+
+
+def coupled_marginal_trajectories(rollout: Rollout) -> tuple[ArrayF, ...]:
+    """Per-stream trajectories reduced from the stored coupled joints."""
+    marginals = [joint_marginals(step.coupled_joint) for step in rollout.steps]
+    return tuple(
+        np.stack([step[k] for step in marginals], axis=0) for k in range(rollout.spec.num_streams())
+    )

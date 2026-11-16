@@ -1,6 +1,6 @@
 """Tests for the pymdp-grounded free-energy methods.
 
-Every test runs *real* pymdp 1.0.1 inference (no mocks) and asserts
+Every inference test runs the installed pymdp engine (no mocks) and asserts
 numerical contracts on the resulting :class:`FreeEnergyBundle`:
 
 * shapes are correct,
@@ -17,14 +17,16 @@ Skips entirely when the ``sim`` group is missing.
 
 from __future__ import annotations
 
+import cProfile
+
 import numpy as np
 import pytest
 
-from simulation.agents import pymdp_available
+from simulation.agents import Agent, build_pymdp_agent, pymdp_available
 
 if not pymdp_available():
     pytestmark = pytest.mark.skip(
-        reason="pymdp 1.0.1 not installed (uv sync --group sim)",
+        reason="pymdp/JAX runtime unavailable (uv sync --group sim)",
     )
 else:
     pytestmark = pytest.mark.requires_pymdp
@@ -34,7 +36,6 @@ from simulation.builders import make_ising_ensemble
 from simulation.inference import (
     DecompositionWitness,
     FreeEnergyBundle,
-    _variational_free_energy_from_parts,
     coupling_energy,
     decomposition_witness_curve,
     expected_free_energy_under_posterior,
@@ -49,30 +50,30 @@ def _spec(K: int = 2):
     return make_ising_ensemble(num_streams=K, gamma=1.0, coupling_amplitude=1.0)
 
 
-def test_variational_free_energy_rejects_nonmatching_state_control_dims() -> None:
-    """Per-stream VFE uses the state prior D as the policy prior, which only
-    makes sense when num_states == num_controls; a mismatched stream must fail
-    fast rather than produce a confusing broadcast error (RedTeam C7,
-    2026-08-01)."""
-    a = np.full((3, 2), 1 / 3)  # (num_obs=3, num_states=2)
-    b = np.full((2, 2, 3), 1 / 2)  # (num_states=2, num_states=2, num_controls=3)
-    c = np.full(3, 0.0)
-    d = np.array([0.5, 0.5])
-    stream = StreamSpec(A=a, B=b, C=c, D=d, name="mismatched")
-    # coupling_j / coupling_kc must span the (policy_count,) dims of the single
-    # mismatched stream (3 controls).
-    bad = CoupledEnsembleSpec(
-        streams=(stream,),
-        coupling_j=np.zeros((3,)),
-        coupling_kc=np.zeros((3,)),
-        gamma=1.0,
+@pytest.mark.parametrize("num_controls", [2, 3])
+def test_variational_free_energy_uses_policy_prior_not_biased_state_prior(num_controls: int) -> None:
+    stream = StreamSpec(
+        A=np.full((3, 2), 1 / 3),
+        B=np.full((2, 2, num_controls), 1 / 2),
+        C=np.zeros(3),
+        D=np.array([0.9, 0.1]),
+        name="independent-policy-prior",
     )
-    with pytest.raises(ValueError, match="num_states == num_controls"):
-        _variational_free_energy_from_parts(
-            bad,
-            margs=[np.array([1 / 3, 1 / 3, 1 / 3])],
-            G_per_stream=[np.zeros(3)],
-        )
+    spec = CoupledEnsembleSpec(
+        streams=(stream,),
+        coupling_j=np.zeros(num_controls),
+        coupling_kc=np.zeros(num_controls),
+    )
+    policy_prior = np.asarray(build_pymdp_agent(stream).E, dtype=np.float64).reshape(-1)
+    bundle = free_energy_bundle(spec, [0], lam=0.7)
+    marginal = bundle.action_distribution
+    expected = np.sum(
+        marginal * (np.log(marginal) - np.log(policy_prior) + spec.gamma * bundle.efe_per_stream[0])
+    )
+    np.testing.assert_allclose(marginal, np.full(num_controls, 1 / num_controls), atol=1e-12, rtol=0.0)
+    assert bundle.vfe_per_stream[0] == pytest.approx(expected, abs=1e-12)
+    if num_controls == 2:
+        assert not np.allclose(policy_prior, stream.D)
 
 
 def test_variational_free_energy_returns_per_stream_array() -> None:
@@ -123,6 +124,23 @@ def test_free_energy_bundle_lambda_zero_baseline() -> None:
     assert b.total_correlation < 1e-10
     assert abs(b.coupling_term) < 1e-12
     assert abs(b.joint_entropy - b.marginal_entropies.sum()) < 1e-10
+
+
+def test_bundle_reuses_one_real_policy_inference_per_stream() -> None:
+    """The one-pass budget covers real inference, not a substituted algorithm."""
+    spec = _spec(K=2)
+    with cProfile.Profile() as profile:
+        bundle = free_energy_bundle(spec, [0, 1], lam=0.0)
+    calls = sum(
+        entry.callcount for entry in profile.getstats() if entry.code is Agent.infer_policies.__code__
+    )
+    assert calls == spec.num_streams()
+    q = bundle.action_distribution.reshape(spec.policy_shape())
+    np.testing.assert_allclose(q, np.outer(q.sum(axis=1), q.sum(axis=0)), atol=1e-12, rtol=0.0)
+    for k, marginal in enumerate((q.sum(axis=1), q.sum(axis=0))):
+        assert bundle.efe_under_posterior[k] == pytest.approx(
+            float(marginal @ bundle.efe_per_stream[k]), abs=1e-12
+        )
 
 
 def test_total_correlation_non_negative_across_grid() -> None:
@@ -372,22 +390,20 @@ def test_quantile_envelope_rejects_same_length_different_lambdas(small_sweep) ->
         quantile_envelope_over_sweeps([small_sweep, shifted])
 
 
-def test_aligned_mass_generic_k3_path(small_sweep) -> None:
-    """_aligned_mass is exercised indirectly via pymdp_summary_statistics
-    when action_distribution has size 8 (K=3, 2^3 = 8)."""
-    from dataclasses import replace
-
+def test_aligned_mass_generic_k3_path() -> None:
+    """The summary reports actual K=3 corner probabilities."""
     from simulation.statistics import pymdp_summary_statistics
 
-    # Construct a synthetic K=3 bundle by swapping in an 8-element action dist.
-    k3_dist = np.array([0.125] * 8, dtype=np.float64)  # uniform K=3 joint
-    b = small_sweep[0]
-    k3_bundle = replace(
-        b,
-        vfe_per_stream=np.array([0.0, 0.0, 0.0]),
-        marginal_entropies=np.array([np.log(2), np.log(2), np.log(2)]),
-        action_distribution=k3_dist,
+    spec = make_ising_ensemble(num_streams=3)
+    bundles = free_energy_curve(spec, [0, 0, 0], [0.0, 1.0, 2.0])
+    reference = free_energy_bundle(spec, [0, 0, 0], lam=0.0)
+    summary = pymdp_summary_statistics(bundles, zero_reference=reference)
+    corner_masses = [
+        bundle.action_distribution[0] + bundle.action_distribution[-1]
+        for bundle in bundles
+    ]
+    assert summary.aligned_mass_min == pytest.approx(min(corner_masses), abs=1e-10)
+    assert summary.aligned_mass_at_lambda_max > corner_masses[0]
+    assert summary.aligned_mass_at_lambda_max == pytest.approx(
+        bundles[-1].action_distribution[0] + bundles[-1].action_distribution[-1]
     )
-    # Should not raise; aligned mass = k3_dist[0] + k3_dist[7] = 0.25.
-    summary = pymdp_summary_statistics([k3_bundle] * 3)
-    assert np.isfinite(summary.aligned_mass_max)

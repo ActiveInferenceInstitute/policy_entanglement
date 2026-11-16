@@ -138,3 +138,57 @@ def test_entangled_prior_3_stream_normalises():
     out = entangled_prior(mf, J, lam=2.0)
     assert is_pmf(out)
     assert out.shape == (2, 2, 2)
+
+
+def test_large_cancelling_couplings_keep_the_uniform_posterior() -> None:
+    mf = _symmetric_priors_2x2()
+    J = np.array([[1.0, -1.0], [-1.0, 1.0]])
+    with np.errstate(over="raise", invalid="raise"):
+        q = entangled_posterior(mf, [np.zeros(2), np.zeros(2)], J, J, gamma=1.0, lam=1000.0)
+    np.testing.assert_allclose(q, np.full((2, 2), 0.25), atol=1e-12, rtol=0.0)
+
+
+def test_large_prior_normalizes_without_materializing_unnormalized_mass() -> None:
+    J = np.array([[1.0, -1.0], [-1.0, 1.0]])
+    with np.errstate(over="raise", invalid="raise"):
+        q = entangled_prior(_symmetric_priors_2x2(), J, lam=1000.0)
+    np.testing.assert_allclose(q, [[0.5, 0.0], [0.0, 0.5]], atol=1e-12, rtol=0.0)
+
+
+def test_log_space_posterior_preserves_moderate_gibbs_weights() -> None:
+    mf = [np.array([0.3, 0.7]), np.array([0.6, 0.4])]
+    G = [np.array([0.2, 0.8]), np.array([-0.3, 0.5])]
+    J = _ising_J()
+    Kc = np.array([[0.1, 0.4], [-0.2, 0.3]])
+    gamma, lam = 1.3, 0.7
+    expected = np.outer(mf[0], mf[1]) * np.exp(
+        lam * J - gamma * (G[0][:, None] + G[1][None, :] + lam * Kc)
+    )
+    expected /= expected.sum()
+    q = entangled_posterior(mf, G, J, Kc, gamma, lam)
+    np.testing.assert_allclose(q, expected, atol=1e-12, rtol=0.0)
+
+
+def test_log_space_posterior_preserves_zero_prior_support() -> None:
+    mf = [np.array([1.0, 0.0]), np.array([0.3, 0.7])]
+    J = np.zeros((2, 2))
+    q = entangled_posterior(mf, [np.zeros(2), np.zeros(2)], J, J, gamma=1.0, lam=1.0)
+    np.testing.assert_allclose(q, [[0.3, 0.7], [0.0, 0.0]], atol=1e-12, rtol=0.0)
+
+
+def test_tiny_product_prior_retains_support_after_log_weighting() -> None:
+    """A product below float64's range can become representable after coupling."""
+    from lean.coupling import entangled_prior
+
+    tiny = 1e-200
+    priors = [np.array([tiny, 1.0]), np.array([tiny, 1.0])]
+    for boost in (600.0, 1000.0):
+        interaction = np.array([[boost, 0.0], [0.0, 0.0]])
+        log_weights = np.array([2.0 * np.log(tiny) + boost, np.log(tiny), np.log(tiny), 0.0])
+        expected_log = log_weights[0] - np.logaddexp.reduce(log_weights)
+        with np.errstate(over="raise", invalid="raise"):
+            joint = entangled_prior(priors, interaction, lam=1.0)
+        assert np.isfinite(joint).all()
+        assert joint[0, 0] > 0.0
+        np.testing.assert_allclose(np.log(joint[0, 0]), expected_log, atol=1e-12)
+        np.testing.assert_allclose(joint.sum(), 1.0, atol=1e-12)

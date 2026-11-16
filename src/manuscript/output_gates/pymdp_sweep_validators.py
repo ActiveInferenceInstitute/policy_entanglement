@@ -113,8 +113,7 @@ def validate_free_energy_bundle() -> int:
     tc_zero_tol = float(H.PYMDP_TC_ZERO_TOLERANCE)
     entropy_tol = float(H.PYMDP_ENTROPY_ADD_TOLERANCE)
     decomp_tol = float(H.PYMDP_DECOMPOSITION_RESIDUAL_TOLERANCE)
-    r0 = next((r for r in rows if abs(float(r["lambda"])) < zero_tol), None)
-    if r0 is not None:
+    for r0 in (row for row in rows if float(row["lambda"]) == 0.0):
         fail += validate_lambda_zero_mean_field_row(
             r0,
             label="pymdp free-energy bundle",
@@ -140,7 +139,7 @@ def validate_free_energy_bundle() -> int:
         ),
     )
     if fail == 0:
-        report_ok(f"{len(rows)} rows; λ=0 baseline + TC ≥ 0 everywhere")
+        report_ok(f"{len(rows)} rows; exact λ=0 rows checked when present + TC ≥ 0 everywhere")
     return fail
 
 
@@ -191,8 +190,7 @@ def validate_multi_k_sweep() -> int:
             finite_columns=("coupling_term", "aligned_mass"),
             after_group=partial(_multi_k_after, k=K),
         )
-        r0 = next((r for r in rows if abs(float(r["lambda"])) < zero_tol), None)
-        if r0 is not None:
+        for r0 in (row for row in rows if float(row["lambda"]) == 0.0):
             fail += validate_lambda_zero_mean_field_row(
                 r0,
                 label=label,
@@ -201,5 +199,5 @@ def validate_multi_k_sweep() -> int:
                 entropy_tol=entropy_tol,
             )
         if fail == 0:
-            report_ok(f"K={K}: {len(rows)} rows; λ=0 mean-field + TC ≥ 0 everywhere")
+            report_ok(f"K={K}: {len(rows)} rows; exact λ=0 rows checked when present + TC ≥ 0 everywhere")
     return fail

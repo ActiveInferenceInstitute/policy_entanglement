@@ -4,7 +4,7 @@ The default :func:`simulate_coupled_rollout` runs for
 :data:`hyperparameters.PYMDP_ROLLOUT_STEPS` steps — enough to
 demonstrate the per-step coupling mechanism. To witness "habit
 accumulation" (Manuscript §9.4) we need a horizon long enough for
-the marginal MF posterior $q^k_t$ to approach a steady-state.
+the coupled posterior marginals $q^k_t$ to approach a steady-state.
 
 This module wraps :func:`simulation.rollout.simulate_coupled_rollout`
 with a richer post-processing layer:
@@ -27,11 +27,11 @@ import numpy as np
 from numpy.typing import NDArray
 
 from lean.free_energy import kl_divergence, total_correlation
-from lean.joint_dist import joint_marginals
 
 from .agents import _require_pymdp
 from .builders import make_ising_ensemble
 from .rollout import Rollout, simulate_coupled_rollout
+from .sweep import coupled_marginal_trajectories
 
 ArrayF = NDArray[np.float64]
 
@@ -45,8 +45,8 @@ class LongHorizonResult:
     * ``seed``                         — deterministic seed used.
     * ``total_correlations``           — ``(T,)`` per-step
       $I(q_t)$.
-    * ``marginal_trajectories``        — list of ``(T, |Π^k|)``
-      arrays, one per stream.
+    * ``marginal_trajectories``        — coupled-joint marginal ``(T, |Π^k|)``
+      arrays, one per stream; not the uncoupled mean-field inputs.
     * ``joint_trajectory``             — ``(T, *policy_shape)`` array
       of full coupled joint posteriors; retained so total correlation
       is exactly recomputable from the stored rollout.
@@ -271,10 +271,7 @@ def long_horizon_rollout(
     tcs = rollout.total_correlations()
     joints = rollout.joint_trajectory()
 
-    # Marginal time-series per stream: ``(T, |Π^k|)``.
-    marg_trajs: list[ArrayF] = []
-    for k in range(spec.num_streams()):
-        marg_trajs.append(np.stack([s.mean_field_marginals[k] for s in rollout.steps], axis=0))
+    marg_trajs = coupled_marginal_trajectories(rollout)
 
     # Tail-window mean per stream plus explicit first/mean/max KL
     # semantics — extracted so convergence witnesses can be exercised
@@ -405,8 +402,3 @@ __all__ = [
     "trajectory_tc_finite",
     "trajectory_tc_nonneg",
 ]
-
-
-# (joint_marginals imported above for downstream consumers that might
-# want to recover full per-step marginal bundles from a Rollout.)
-_ = joint_marginals

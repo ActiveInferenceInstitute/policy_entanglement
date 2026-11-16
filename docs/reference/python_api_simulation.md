@@ -7,7 +7,7 @@ surface is still source-driven: grids and seeds live in
 `hyperparameters.py`, numerical helpers live in `simulation/`, and
 scripts only orchestrate I/O.
 
-`inferactively-pymdp==1.0.1`-backed `pymdp` POMDP simulation harness:
+`inferactively-pymdp`-backed `pymdp` POMDP simulation harness:
 hyperparameters, agent factory, coupled-policy posterior, free-energy
 bundle, λ-sweep, deterministic rollout, structured JSONL logging,
 bundle-aggregation statistics.
@@ -21,11 +21,11 @@ Companion: [`../simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.
 
 ## Subpackage `simulation/`
 
-`inferactively-pymdp==1.0.1` is an optional dependency
+`inferactively-pymdp==1.0.5` is the configured optional dependency
 (`uv sync --group sim`) that provides the `pymdp` import/API; the
 agent / inference / rollout modules raise
 `ModuleNotFoundError(PYMDP_INSTALL_HINT)` when it is missing.
-`pymdp_available()` lets callers gate gracefully.
+`pymdp_available()` checks import availability, not exact installed-version identity.
 
 ### `specs.py`
 
@@ -203,7 +203,8 @@ class BundleSummary:
     action_entropy_min/max: float
     action_mode_prob_at_lambda_max: float
 
-def pymdp_summary_statistics(bundles) -> BundleSummary
+def kl_to_lambda_zero_curve(bundles, *, zero_reference: FreeEnergyBundle) -> ArrayF
+def pymdp_summary_statistics(bundles, *, zero_reference: FreeEnergyBundle) -> BundleSummary
 def summary_to_var_dict(summary, *, prefix="pymdp") -> dict[str, float]
 
 @dataclass(frozen=True)
@@ -316,7 +317,11 @@ class LambdaSweepResult:
 def lambda_sweep(spec, observations, lams) -> list[LambdaSweepResult]
 def total_correlation_curve(spec, observations, lams) -> ArrayF
 def marginal_trajectory(rollout: Rollout, k: int) -> ArrayF
+def coupled_marginal_trajectories(rollout: Rollout) -> tuple[ArrayF, ...]
 ```
+
+`marginal_trajectory` remains explicitly mean-field. The coupled helper reduces
+each stored `coupled_joint`, rather than relabeling its mean-field inputs.
 
 ### `multi_k_experiments.py` (T1: K>2 ensemble experiments)
 
@@ -337,8 +342,13 @@ def run_multi_k_sweep(
 def multi_k_joint_snapshot(
     K: int, lam: float, *, coupling_lambda_gen, gamma, observations=None,
 ) -> ArrayF
-def multi_k_summary(results: Sequence[MultiKResult]) -> dict[str, float]
+def multi_k_summary(results: Sequence[MultiKResult], *, zero_reference: MultiKResult) -> dict[str, float]
 ```
+
+Evaluate `zero_reference` independently with the same ensemble parameters; it
+need not appear among requested CSV rows. Summaries distinguish the actual
+zero baseline, configured sentinel, and maximum-lambda endpoint, without
+reordering requested rows. The zero baseline need not have uniform aligned mass.
 
 Hyperparameters consumed: `MULTI_K_VALUES`, `MULTI_K_SWEEP_LAMBDAS`,
 `MULTI_K_SENTINEL_LAMBDA`. CSV sidecars are emitted as one

@@ -61,23 +61,6 @@ from manuscript.readiness_emit import (
 from manuscript.status import load_project_status
 
 
-def refresh_release_readiness_runtime_budget(project_root: Path) -> None:
-    """Re-sync ``release_readiness.json`` runtime budget from the final manifest."""
-    import json
-
-    json_path = project_root / "output" / "reports" / "release_readiness.json"
-    if not json_path.exists():
-        return
-    try:
-        payload = json.loads(json_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return
-    if not isinstance(payload, dict):
-        return
-    payload["runtime_budget"] = _manifest_stage_timings(project_root=project_root)
-    json_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
 def write_release_readiness(project_root: Path) -> Path:
     """Full release-readiness orchestrator; emits all four artifacts."""
     out = project_root / "output" / "reports" / "release_readiness.md"
@@ -217,7 +200,6 @@ __all__ = [
     "_write_release_note",
     "_write_readiness_json",
     "_write_release_index",
-    "refresh_release_readiness_runtime_budget",
     "subprocess",
     "write_release_readiness",
 ]

@@ -166,17 +166,16 @@ def plot_entropy_decomposition(bundles, *, out_path: Path, metadata=None) -> Pat
     ax.set_ylabel("Entropy [nats]")
     ax.set_title("Joint vs marginal entropy: total correlation as the gap")
     ax.legend(loc="best")
-    add_stats_box(ax, {"max gap": float(tc.max()), "zero gap": float(tc[0])}, loc="lower right")
+    add_stats_box(ax, {"max gap": float(tc.max()), f"gap at λ={lams[0]:g}": float(tc[0])}, loc="lower right")
     return _save(fig, out_path, metadata=metadata)
 
 
 def plot_action_distribution_evolution(bundles, *, out_path: Path, metadata=None) -> Path:
     """Heatmap of the joint action distribution across λ.
 
-    Rows = λ values, columns = joint policies (lex order over
-    $\\prod_k \\Pi^k$).  Each row is a PMF over joint actions; the
-    structure of the matrix shows how mass concentrates onto the
-    aligned diagonal as λ grows.
+    Rows preserve the requested λ order, with actual λ values on the ticks;
+    columns are joint policies in lexicographic order. Row-index coordinates
+    do not imply that a reversed, nonmonotone, or nonuniform grid is linear.
     """
     out_path = Path(out_path)
     lams = _lams_array(bundles)
@@ -187,15 +186,11 @@ def plot_action_distribution_evolution(bundles, *, out_path: Path, metadata=None
         aspect="auto",
         origin="lower",
         cmap="magma",
-        extent=(
-            -0.5,
-            float(flat.shape[1]) - 0.5,
-            float(lams[0]),
-            float(lams[-1]),
-        ),
     )
+    ticks = np.unique(np.linspace(0, len(lams) - 1, min(9, len(lams)), dtype=int))
+    ax.set_yticks(ticks, labels=[f"{lams[index]:g}" for index in ticks])
     ax.set_xlabel(r"Joint policy index (lex over $\prod_k \Pi^k$)")
-    ax.set_ylabel(r"Coupling $\lambda$")
+    ax.set_ylabel(r"Coupling $\lambda$ (requested order)")
     ax.set_title("pymdp coupled posterior: action distribution vs λ")
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label(r"$q_\lambda(\pi)$")

@@ -37,7 +37,7 @@ selects the environment for CI and for local runs alike):
 ``pdf``            ``scripts/build_pdf.py``
 ``pdf-validate``   ``scripts/validate_pdf.py``
 ``ci``             ``lint`` + ``format`` + ``types`` + ``pipeline``
-``readiness``      ``pipeline-release`` + ``pdf-validate`` + lint/format/types + report
+``readiness``      ``pipeline-release`` (includes report) + ``pdf-validate`` + lint/format/types
 =================  =====================================================
 
 The ``fast`` marker expression is the repository's documented selection
@@ -52,6 +52,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import time
 from collections.abc import Callable, Sequence
 from dataclasses import asdict
@@ -65,7 +67,13 @@ from _bootstrap import ensure_project_paths  # noqa: E402
 
 ensure_project_paths(project_root=PROJECT_ROOT)
 
-from gnn.upstream import ENV_PINNED_RELEASE, ENV_UPSTREAM_ROOT, PinnedRelease  # noqa: E402
+from gnn.upstream import (  # noqa: E402
+    ENV_PINNED_RELEASE,
+    ENV_UPSTREAM_ROOT,
+    PinnedRelease,
+    UpstreamConformanceError,
+    resolve_gnn_root,
+)
 
 PIN_PATH = PROJECT_ROOT / "gnn" / "upstream.json"
 #: The conformance job and the workflow file that defines it. The GNN-FEP
@@ -300,46 +308,70 @@ def _read_pin() -> PinnedRelease:
 
 
 def _run_pinned_reader(python: Path, root: Path, pin: PinnedRelease) -> int:
-    """Run the GNN-FEP shared reader from the pinned release's own tree.
+    """Import the selected revision, while ``--repo .`` still targets this member.
 
-    The reader is not vendored and not overlaid: ``<root>/src`` is the pinned
-    commit's tree, so ``gnn.importers``, the parser it validates the specs
-    with, and the repository that owns the pin check are all the pinned
-    release's. ``--expected-commit``/``--expected-tag`` hold the reader to the
-    release this arm selected.
+    The checkout supplies Git objects and an interpreter, never live source.
+    The complete selected tree supplies the reader's resource closure. Its
+    transient extraction is removed on success, refusal, or child failure.
     """
-    env = dict(os.environ)
-    pinned_src = str(root / "src")
-    inherited = env.get("PYTHONPATH")
-    env["PYTHONPATH"] = f"{pinned_src}{os.pathsep}{inherited}" if inherited else pinned_src
-    return _run(
-        [
-            str(python),
-            "-m",
-            "gnn.importers",
-            "check",
-            "--repo",
-            ".",
-            "--require-pointer",
-            "--workflow",
-            GNN_WORKFLOW,
-            "--job",
-            GNN_JOB,
-            "--expected-commit",
-            pin.commit,
-            "--expected-tag",
-            pin.tag,
-        ],
-        env=env,
-    )
+    with tempfile.TemporaryDirectory(prefix="policy-gnn-reader-", dir=os.environ.get("TMPDIR") or None) as tmp:
+        archive_path = Path(tmp) / "release.tar"
+        tree = Path(tmp) / "tree"
+        try:
+            with archive_path.open("wb") as output:
+                result = subprocess.run(
+                    ["git", "-C", str(root), "archive", "--format=tar", pin.commit],
+                    cwd=PROJECT_ROOT,
+                    stdout=output,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+            if result.returncode != 0:
+                raise SystemExit(
+                    f"gate gnn: cannot archive selected commit {pin.commit}: "
+                    f"{result.stderr.decode('utf-8', errors='replace').strip()}"
+                )
+            with tarfile.open(archive_path, "r:") as archive:
+                archive.extractall(tree, filter="data")
+        except (OSError, tarfile.TarError) as exc:
+            raise SystemExit(f"gate gnn: cannot materialize selected reader: {exc}") from exc
+        package = tree / "src" / "gnn"
+        if not (package / "__init__.py").is_file() or not (package / "importers.py").is_file():
+            raise SystemExit(f"gate gnn: selected commit {pin.commit} has no regular gnn.importers package")
+        env = dict(os.environ)
+        env["PYTHONPATH"] = str(tree / "src")
+        return _run(
+            [
+                str(python),
+                "-P",
+                "-B",
+                "-m",
+                "gnn.importers",
+                "check",
+                "--repo",
+                ".",
+                "--require-pointer",
+                "--workflow",
+                GNN_WORKFLOW,
+                "--job",
+                GNN_JOB,
+                "--expected-commit",
+                pin.commit,
+                "--expected-tag",
+                pin.tag,
+            ],
+            env=env,
+        )
 
 
 def _arm_gnn() -> int:
     pin = _read_pin()
-    explicit = os.environ.get(ENV_UPSTREAM_ROOT)
-    if explicit:
-        # Another repository's checkout: validate only, never provision it.
-        root = Path(explicit)
+    if ENV_UPSTREAM_ROOT in os.environ:
+        # Presence is final: an invalid explicit selection never provisions a cache.
+        try:
+            root = resolve_gnn_root(PROJECT_ROOT)
+        except UpstreamConformanceError as exc:
+            raise SystemExit(f"gate gnn: {exc}") from exc
         python = _validate_external_checkout(root, pin)
     else:
         root = _gnn_cache_root(pin)
@@ -446,10 +478,6 @@ def _arm_validate_pdf() -> int:
     return _run(_python("scripts/validate_pdf.py"))
 
 
-def _arm_readiness_report() -> int:
-    return _run(_python("scripts/readiness_report.py"))
-
-
 def _chain(*arms: str) -> int:
     for name in arms:
         status = ARMS[name].run()
@@ -486,8 +514,8 @@ ARMS: dict[str, Arm] = {
     "pdf-validate": Arm("scripts/validate_pdf.py", _arm_validate_pdf),
     "ci": Arm("lint + format + types + pipeline (the CI job)", lambda: _chain("lint", "format", "types", "pipeline")),
     "readiness": Arm(
-        "pipeline-release + pdf-validate + lint + format + types + readiness report",
-        lambda: _chain("pipeline-release", "pdf-validate", "lint", "format", "types") or _arm_readiness_report(),
+        "pipeline-release (including finalized readiness report) + pdf-validate + lint + format + types",
+        lambda: _chain("pipeline-release", "pdf-validate", "lint", "format", "types"),
     ),
 }
 

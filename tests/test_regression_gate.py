@@ -209,9 +209,7 @@ def test_count_invariants_returns_none_for_missing_file(tmp_path: Path) -> None:
 
 
 def test_run_captured_bounded_caps_output_and_honors_timeout(tmp_path: Path) -> None:
-    """The bounded subprocess runner must (a) cap retained output to the tail
-    and (b) surface the child's exit code, without ballooning memory on a
-    chatty child (RedTeam C7, 2026-08-01)."""
+    """Retain the output suffix and preserve nonzero/timeout semantics."""
     import gates.regression_pytest as rp
 
     sys_exe = sys.executable
@@ -241,6 +239,99 @@ def test_run_captured_bounded_caps_output_and_honors_timeout(tmp_path: Path) -> 
             cwd=tmp_path,
             timeout=0.5,
         )
+
+
+@pytest.mark.parametrize(
+    ("stdout", "stderr", "expected"),
+    [("", "", ""), ("OUT", "", "OUT"), ("", "ERR", "ERR"), ("OUT", "ERR", "OUT\nERR")],
+)
+def test_run_captured_bounded_includes_independent_streams(
+    tmp_path: Path, stdout: str, stderr: str, expected: str
+) -> None:
+    from gates.regression_pytest import run_captured_bounded
+
+    capture_dir = tmp_path / "capture"
+    proc, combined = run_captured_bounded(
+        [
+            sys.executable, "-I", "-c",
+            "import sys; sys.stdout.write(sys.argv[1]); sys.stderr.write(sys.argv[2]); sys.exit(7)",
+            stdout, stderr,
+        ],
+        cwd=tmp_path,
+        max_chars=64,
+        timeout=30.0,
+        capture_dir=capture_dir,
+    )
+    assert proc.returncode == 7
+    assert combined == expected
+    assert (capture_dir / "stdout.txt").read_text(encoding="utf-8") == stdout
+    assert (capture_dir / "stderr.txt").read_text(encoding="utf-8") == stderr
+
+
+@pytest.mark.parametrize(
+    ("stdout", "stderr", "expected"),
+    [
+        ("OUT_HEAD\n" + "x" * 8192 + "OUT_END", "", "x" * 57 + "OUT_END"),
+        ("", "ERR_HEAD\n" + "y" * 8192 + "ERR_END", "y" * 57 + "ERR_END"),
+        ("OUT_HEAD\n" + "x" * 8192 + "OUT_END", "ERR_END", "x" * 49 + "OUT_END\nERR_END"),
+        (
+            "OUT_HEAD\n" + "x" * 8192 + "OUT_END",
+            "ERR_HEAD\n" + "y" * 8192 + "ERR_END",
+            "y" * 57 + "ERR_END",
+        ),
+    ],
+)
+def test_run_captured_bounded_preserves_complete_large_disk_logs(
+    tmp_path: Path, stdout: str, stderr: str, expected: str
+) -> None:
+    from gates.regression_pytest import run_captured_bounded
+
+    capture_dir = tmp_path / "capture"
+    proc, combined = run_captured_bounded(
+        [
+            sys.executable, "-I", "-c",
+            "import sys; sys.stdout.write(sys.argv[1]); sys.stderr.write(sys.argv[2]); sys.exit(9)",
+            stdout, stderr,
+        ],
+        cwd=tmp_path,
+        max_chars=64,
+        timeout=30.0,
+        capture_dir=capture_dir,
+    )
+    assert proc.returncode == 9
+    assert combined == expected
+    assert (capture_dir / "stdout.txt").read_text(encoding="utf-8") == stdout
+    assert (capture_dir / "stderr.txt").read_text(encoding="utf-8") == stderr
+
+
+@pytest.mark.parametrize("max_chars", [0, 1, 7])
+def test_run_captured_bounded_caps_characters_not_utf8_bytes(tmp_path: Path, max_chars: int) -> None:
+    from gates.regression_pytest import run_captured_bounded
+
+    text = "\U00010400" * 1000
+    proc, combined = run_captured_bounded(
+        [sys.executable, "-I", "-c", "import sys; sys.stdout.buffer.write(sys.argv[1].encode('utf-8'))", text],
+        cwd=tmp_path,
+        max_chars=max_chars,
+        timeout=30.0,
+    )
+    assert proc.returncode == 0
+    assert combined == "\U00010400" * max_chars
+
+
+def test_capture_stderr_failure_reaches_parallel_dispatch(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from orchestration.run_all import _run_parallel_batch
+
+    (tmp_path / "failure.py").write_text("raise RuntimeError('STAGE_STDERR_FAILURE')\n", encoding="utf-8")
+    results = _run_parallel_batch(
+        ["failure.py"], max_workers=1, scripts_dir=tmp_path, project_root=tmp_path
+    )
+    assert results[0].returncode != 0
+    assert "STAGE_STDERR_FAILURE" in capsys.readouterr().out
+    raw_log = tmp_path / "output" / "logs" / "run_all" / "failure" / "stderr.txt"
+    assert "STAGE_STDERR_FAILURE" in raw_log.read_text(encoding="utf-8")
 
 
 def test_invariants_stale_rev_guards_against_stale_report(tmp_path: Path) -> None:

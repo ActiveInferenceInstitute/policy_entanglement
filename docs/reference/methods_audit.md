@@ -19,7 +19,7 @@ Confirmed by `uv run python scripts/build_lean.py`:
 | Lake build | 22 jobs green |
 | Boundary modules | 17 files under `lean/ActinfPolicyEntanglement/` |
 | Hygiene | 0 strict `sorry`, 0 `axiom`, 0 `unsafe` / `partial` / `noncomputable`, 0 `Mathlib` imports |
-| Manuscript theorem coverage | all 21 registered theorem rows have a Lean companion |
+| Manuscript theorem coverage | 20 mathematical rows with Lean companions plus one roadmap scaffold |
 
 Interpretation:
 
@@ -65,7 +65,7 @@ Interpretation:
 
 ## pymdp Harness
 
-Confirmed locally by importing the installed package:
+Historical installed API observation for `inferactively-pymdp` 1.0.1, retained verbatim; not a 1.0.5 execution receipt:
 
 ```text
 inferactively-pymdp==1.0.1
@@ -75,7 +75,10 @@ Agent.infer_states(observations, empirical_prior, ...)
 Agent.infer_policies(qs) -> (q_pi, G)
 ```
 
-The project adapter matches that API:
+The current configured dependency is `inferactively-pymdp==1.0.5`. The adapter
+retains `q_pi`, converts `neg_efe` to cost `G=-neg_efe`, and reads the policy
+prior `E` separately from state prior `D`. These contracts do not relabel the
+historical observation or regenerate historical outputs:
 
 | Contract | Source |
 |---|---|

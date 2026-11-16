@@ -11,8 +11,11 @@ tree and the absence of a virtualenv are unchanged after the arm refuses.
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import subprocess
+import sys
+from dataclasses import asdict
 from pathlib import Path
 from types import ModuleType
 
@@ -47,9 +50,25 @@ def _env() -> dict[str, str]:
             "GIT_AUTHOR_EMAIL": "gate-test@example.invalid",
             "GIT_COMMITTER_NAME": "Gate Test",
             "GIT_COMMITTER_EMAIL": "gate-test@example.invalid",
+            "GIT_AUTHOR_DATE": "2001-02-03T04:05:06+00:00",
+            "GIT_COMMITTER_DATE": "2001-02-03T04:05:06+00:00",
+            "GIT_ALLOW_PROTOCOL": "file",
+            "GIT_CONFIG_COUNT": "0",
         }
     )
     return env
+
+
+@pytest.fixture(autouse=True)
+def _isolated_gate_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Real subprocesses use file-only transport and no operator Git configuration."""
+    for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR", "GIT_OBJECT_DIRECTORY"):
+        monkeypatch.delenv(key, raising=False)
+    for key, value in _env().items():
+        if key.startswith("GIT_"):
+            monkeypatch.setenv(key, value)
+    monkeypatch.setenv("ACTINF_SKIP_BOOTSTRAP", "1")
+    monkeypatch.setenv("PYTHONDONTWRITEBYTECODE", "1")
 
 
 def _git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -85,14 +104,17 @@ def _pin(commit: str, repository: str = "https://github.com/example/upstream") -
     )
 
 
-def _snapshot(repo: Path) -> dict[str, str]:
-    """Everything a mutation would show up in: HEAD, refs, origin, config, tree."""
+def _snapshot(repo: Path) -> dict[str, object]:
+    """Capture refs/config and actual worktree bytes, including preexisting edits."""
     tracked = _git(repo, "ls-tree", "-r", "--name-only", "HEAD").stdout
-    worktree = sorted(
-        path.relative_to(repo).as_posix()
-        for path in repo.rglob("*")
-        if ".git" not in path.relative_to(repo).parts and path.is_file()
-    )
+    worktree = {}
+    for path in repo.rglob("*"):
+        if ".git" in path.relative_to(repo).parts:
+            continue
+        if path.is_symlink():
+            worktree[path.relative_to(repo).as_posix()] = ("symlink", os.readlink(path))
+        elif path.is_file():
+            worktree[path.relative_to(repo).as_posix()] = ("file", path.read_bytes())
     return {
         "head": _git(repo, "rev-parse", "HEAD").stdout,
         "refs": _git(repo, "for-each-ref", "--format=%(refname) %(objectname)").stdout,
@@ -100,7 +122,7 @@ def _snapshot(repo: Path) -> dict[str, str]:
         "local_config": _git(repo, "config", "--list", "--local").stdout,
         "status": _git(repo, "status", "--porcelain").stdout,
         "tracked": tracked,
-        "worktree": "\n".join(worktree),
+        "worktree": worktree,
     }
 
 
@@ -177,43 +199,184 @@ def test_gate_module_keeps_the_cache_outside_the_working_tree() -> None:
     assert Path(GATE.__file__) == GATE_PATH
 
 
-def test_reader_command_is_the_contract_arm(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The pin, pointer and spec checks run as the GNN-FEP arm, in the pinned tree.
+def _reader_repo(root: Path) -> tuple[Path, str]:
+    """A committed rejection control, not a replacement GNN semantic validator."""
+    repo, _ = _repo(root)
+    package = repo / "src" / "gnn"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (package / "importers.py").write_text(
+        "import json, os, sys\n"
+        "from pathlib import Path\n"
+        "member = json.loads(Path('member-input.json').read_text())\n"
+        "print('PINNED_REJECTION ' + json.dumps(dict(file=__file__, cwd=os.getcwd(),\n"
+        "    argv=sys.argv[1:], pythonpath=os.environ['PYTHONPATH'], member=member)))\n"
+        "raise SystemExit(23)\n",
+        encoding="utf-8",
+    )
+    commit = _commit(repo, "reader")
+    assert _git(repo, "tag", PINNED_TAG, commit).returncode == 0
+    return repo, commit
 
-    The pointer findings (`pointer-*`) and the pin findings (`pin-*`) belong to
-    the shared reader, so the arm's contribution is the command: the contract's
-    `check --repo .` form, the member's workflow and job, and the selected
-    commit and tag. `python -m gnn.importers` must resolve to the pinned
-    release's `src/`, never to the project's own `gnn` package.
-    """
-    captured: dict[str, object] = {}
 
-    def fake_run(command: list[str], *, env: dict[str, str] | None = None) -> int:
-        captured["command"] = list(command)
-        captured["env"] = dict(env or {})
-        return 0
+def _reader_context(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
+    member = tmp_path / "member"
+    member.mkdir()
+    (member / "member-input.json").write_text('{"member": "consumer"}', encoding="utf-8")
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    monkeypatch.setattr(GATE, "PROJECT_ROOT", member)
+    monkeypatch.setenv("TMPDIR", str(scratch))
+    return member, scratch
 
-    monkeypatch.setattr(GATE, "_run", fake_run)
-    pin = _pin("a" * 40)
-    root = tmp_path / "checkout"
 
-    assert GATE._run_pinned_reader(tmp_path / "python", root, pin) == 0
-    assert captured["command"] == [
-        str(tmp_path / "python"),
-        "-m",
-        "gnn.importers",
-        "check",
-        "--repo",
-        ".",
-        "--require-pointer",
-        "--workflow",
-        ".github/workflows/ci.yml",
-        "--job",
-        "gnn-conformance",
-        "--expected-commit",
-        pin.commit,
-        "--expected-tag",
-        pin.tag,
+@pytest.mark.parametrize("state", ["dirty", "different-head", "managed-dirty"])
+def test_reader_executes_selected_bytes_and_preserves_live_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str], state: str
+) -> None:
+    source, commit = _reader_repo(tmp_path / "source")
+    pin = _pin(commit, repository=str(source))
+    root = source
+    if state == "managed-dirty":
+        root = tmp_path / "managed-cache"
+        GATE._ensure_checkout(root, pin)
+    (root / "src/gnn/importers.py").write_text("print('LIVE_SOURCE_IMPORTED')\n", encoding="utf-8")
+    if state == "different-head":
+        _commit(root, "later")
+    elif state == "managed-dirty":
+        GATE._ensure_checkout(root, pin)
+    before_source, before_root = _snapshot(source), _snapshot(root)
+    member, scratch = _reader_context(tmp_path, monkeypatch)
+    monkeypatch.setenv("PYTHONPATH", os.pathsep.join((str(root / "src"), str(PROJECT / "src"))))
+
+    assert GATE._run_pinned_reader(Path(sys.executable), root, pin) == 23
+    output = capfd.readouterr().out
+    trace = json.loads(next(line.removeprefix("PINNED_REJECTION ") for line in output.splitlines()
+                            if line.startswith("PINNED_REJECTION ")))
+    assert "LIVE_SOURCE_IMPORTED" not in output
+    assert trace["member"] == {"member": "consumer"}
+    assert Path(trace["cwd"]) == member
+    assert trace["argv"] == [
+        "check", "--repo", ".", "--require-pointer", "--workflow", ".github/workflows/ci.yml",
+        "--job", "gnn-conformance", "--expected-commit", commit, "--expected-tag", PINNED_TAG,
     ]
-    pinned_src = str(root / "src")
-    assert captured["env"]["PYTHONPATH"].split(os.pathsep)[0] == pinned_src
+    module_path = Path(trace["file"])
+    assert module_path.is_relative_to(scratch)
+    assert trace["pythonpath"] == str(module_path.parent.parent)
+    assert not module_path.exists()
+    assert list(scratch.iterdir()) == []
+    assert _snapshot(source) == before_source
+    assert _snapshot(root) == before_root
+
+
+@pytest.mark.parametrize("missing_commit", [False, True])
+def test_reader_refuses_missing_selected_source_without_live_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, missing_commit: bool
+) -> None:
+    repo, commit = _repo(tmp_path / "source")
+    marker = tmp_path / "live-reader-executed"
+    package = repo / "src/gnn"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (package / "importers.py").write_text(
+        f"from pathlib import Path\nPath({str(marker)!r}).write_text('live')\n", encoding="utf-8"
+    )
+    before = _snapshot(repo)
+    _, scratch = _reader_context(tmp_path, monkeypatch)
+    monkeypatch.setenv("PYTHONPATH", str(repo / "src"))
+    with pytest.raises(SystemExit, match="cannot archive|has no regular"):
+        GATE._run_pinned_reader(Path(sys.executable), repo, _pin("0" * 40 if missing_commit else commit))
+    assert not marker.exists()
+    assert list(scratch.iterdir()) == []
+    assert _snapshot(repo) == before
+
+
+@pytest.mark.parametrize("selection", ["empty", "whitespace", "missing", "file", "directory"])
+def test_invalid_explicit_selection_never_creates_a_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, selection: str
+) -> None:
+    target = tmp_path / selection
+    if selection == "file":
+        target.write_text("operator data", encoding="utf-8")
+    elif selection == "directory":
+        target.mkdir()
+    raw = {"empty": "", "whitespace": " \t "}.get(selection, str(target))
+    cache = tmp_path / "cache"
+    monkeypatch.setattr(GATE, "GNN_CACHE", cache)
+    monkeypatch.setenv(GATE.ENV_UPSTREAM_ROOT, raw)
+    with pytest.raises(SystemExit, match=GATE.ENV_UPSTREAM_ROOT):
+        GATE._arm_gnn()
+    assert not cache.exists()
+    if selection == "file":
+        assert target.read_text(encoding="utf-8") == "operator data"
+    elif selection == "directory":
+        assert list(target.iterdir()) == []
+    else:
+        assert not target.exists()
+
+
+@pytest.mark.parametrize("selection", [" ./upstream ", "~/upstream"])
+def test_explicit_root_normalization_reaches_selected_reader_without_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str], selection: str
+) -> None:
+    pytest.importorskip("defusedxml")
+    pytest.importorskip("psutil")
+    repo, commit = _reader_repo(tmp_path / "upstream")
+    (repo / ".venv").symlink_to(sys.prefix, target_is_directory=True)
+    pin_path = tmp_path / "pin.json"
+    pin_path.write_text(json.dumps(asdict(_pin(commit))), encoding="utf-8")
+    member, scratch = _reader_context(tmp_path, monkeypatch)
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("PYTHONPATH", raising=False)
+    monkeypatch.setenv(GATE.ENV_UPSTREAM_ROOT, selection)
+    monkeypatch.setattr(GATE, "PIN_PATH", pin_path)
+    monkeypatch.setattr(GATE, "GNN_CACHE", tmp_path / "cache")
+    before = _snapshot(repo)
+    assert GATE._arm_gnn() == 23
+    output = capfd.readouterr().out
+    assert f"validated operator checkout {repo.resolve()}" in output
+    trace = json.loads(next(line.removeprefix("PINNED_REJECTION ") for line in output.splitlines()
+                            if line.startswith("PINNED_REJECTION ")))
+    assert Path(trace["cwd"]) == member
+    assert Path(trace["file"]).is_relative_to(scratch)
+    assert _snapshot(repo) == before
+    assert not (tmp_path / "cache").exists()
+    assert list(scratch.iterdir()) == []
+
+
+@pytest.mark.parametrize(
+    ("root_selection", "handoff"),
+    [(None, False), ("", False), ("missing", False), ("", True), ("missing", True)],
+)
+def test_direct_conformance_invocation_distinguishes_unset_from_explicit(
+    tmp_path: Path, root_selection: str | None, handoff: bool
+) -> None:
+    env = _env()
+    env.pop(GATE.ENV_UPSTREAM_ROOT, None)
+    env.pop(GATE.ENV_PINNED_RELEASE, None)
+    env["PYTEST_ADDOPTS"] = ""
+    if root_selection is not None:
+        env[GATE.ENV_UPSTREAM_ROOT] = "" if root_selection == "" else str(tmp_path / "absent")
+    if handoff:
+        env[GATE.ENV_PINNED_RELEASE] = json.dumps(asdict(GATE._read_pin()))
+    node = "test_upstream_parser_ran_from_the_pinned_commit" if handoff else "test_selected_release_is_the_canonical_pin"
+    result = subprocess.run(
+        [
+            sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--no-cov", "-o", "addopts=",
+            "--basetemp", str(tmp_path / "nested"),
+            f"{PROJECT / 'tests/test_gnn_upstream_conformance.py'}::{node}",
+        ],
+        cwd=PROJECT,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if root_selection is None:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "1 skipped" in result.stdout
+    else:
+        assert result.returncode == 1, result.stdout + result.stderr
+        assert "1 error" in result.stdout
+        assert GATE.ENV_UPSTREAM_ROOT in result.stdout

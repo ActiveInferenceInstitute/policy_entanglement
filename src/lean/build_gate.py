@@ -189,6 +189,7 @@ def main(
         ["lake", "build"],
         cwd=lean_dir,
         timeout=_LOCAL_BUILD_TIMEOUT_SECONDS,
+        capture_dir=project_root / "output" / "logs" / "boundary_lake",
     )
     rc = proc.returncode
     stderr_text = bounded_stderr

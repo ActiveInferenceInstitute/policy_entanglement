@@ -33,13 +33,13 @@ python -m gnn.importers check --repo . --require-pointer \
     --expected-commit 75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf --expected-tag v5.1.0
 ```
 
-`python` is the pinned checkout's interpreter and `PYTHONPATH` is that
-checkout's `src/`, so `gnn.importers` is the pinned release's module and the
-specs are parsed by the pinned parser. The reader owns the pin's shape, the
-pointer facts below (this file names `gnn/upstream.json`, `75c834bd8519`,
-`ci.yml` and `gnn-conformance`), the fork check on `repository`, and the
-`*.gnn.md` syntax check. Nothing is vendored and no newer reader is overlaid on
-an older parser.
+`python` is the prepared pinned checkout's interpreter. The reader runs from
+a temporary `git archive <commit>` export, with that export's `src/` on
+`PYTHONPATH`, not the checkout's mutable `src/`. Both reader and parser are
+therefore selected from the pinned release. The reader owns the pin's shape,
+pointer facts (`gnn/upstream.json`, `75c834bd8519`, `ci.yml`,
+`gnn-conformance`), repository identity, and `*.gnn.md` syntax checks.
+Nothing is vendored and no newer reader is overlaid on an older parser.
 
 The arm reads the pin file once, only to select what to fetch, and hands the
 release to the conformance test through `POLICY_ENTANGLEMENT_GNN_RELEASE`; the

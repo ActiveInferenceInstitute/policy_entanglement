@@ -191,12 +191,18 @@ Four additional dashboards over a bundle list:
 
 ```python
 def plot_action_entropy_curve(bundles, *, out_path, metadata=None) -> Path
-def plot_kl_to_lambda_zero(bundles, *, out_path, metadata=None) -> Path
+def plot_kl_to_lambda_zero(bundles, *, out_path, zero_reference: FreeEnergyBundle, metadata=None) -> Path
 def plot_marginal_entropy_per_stream(bundles, *, out_path, metadata=None) -> Path
 def plot_pymdp_summary_panel(bundles, *, out_path,
+                              zero_reference: FreeEnergyBundle,
                               summary: BundleSummary | None = None,
                               metadata=None) -> Path
 ```
+
+Pass the same actual zero reference to summaries, KL curves, and summary panels.
+For K>2, the displayed pair marginal is not a substitute for full-joint total
+correlation. The binary all-aligned *uniform reference* mass is `2/(2^K)`; actual
+zero-coupling mass is derived from the real policy posteriors.
 
 ### `metadata.py` (PNG reproducibility tEXt)
 

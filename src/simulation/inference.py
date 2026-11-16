@@ -44,41 +44,38 @@ def _validate_observations(spec: CoupledEnsembleSpec, observations: Sequence[int
 def _run_pymdp_per_stream(
     spec: CoupledEnsembleSpec,
     observations: Sequence[int],
-) -> tuple[list[ArrayF], list[ArrayF]]:
-    """Run pymdp's per-stream ``infer_states → infer_policies`` once per
-    stream and return ``(q_pi_list, G_list)``.
+) -> tuple[list[ArrayF], list[ArrayF], list[ArrayF]]:
+    """Run ``infer_states → infer_policies`` once per stream.
 
-    * ``q_pi_list[k]`` is the normalized policy posterior of stream ``k``
-      (1-D PMF of length ``num_controls_k``).
-    * ``G_list[k]`` is the EFE vector of stream ``k`` (1-D ndarray of
-      length ``num_controls_k``; pymdp's convention, smaller is preferred).
-
-    Single source of truth for both :func:`per_stream_efe` and
-    :func:`per_stream_policy_posterior`; preserves the K pymdp calls each
-    of those public helpers makes individually.
+    Return the normalized policy posteriors, cost-convention EFE vectors
+    ``G = -neg_efe``, and the actual policy priors ``Agent.E``.  pymdp's
+    returned negative EFE is larger for preferred policies; this adapter
+    exposes costs, for which smaller is preferred, without changing q_pi.
     """
     _require_pymdp()
     _validate_observations(spec, observations)
     agents = build_pymdp_agents(spec)
     q_pi_list: list[ArrayF] = []
     G_list: list[ArrayF] = []
+    E_list: list[ArrayF] = []
     for k, (agent, obs) in enumerate(zip(agents, observations, strict=True)):
         D_list = [jnp.asarray(spec.streams[k].D, dtype=jnp.float32)[None, ...]]
         qs = agent.infer_states([jnp.asarray([obs])], D_list)
-        q_pi, G = agent.infer_policies(qs)
+        q_pi, neg_efe = agent.infer_policies(qs)
         q_pi_list.append(normalize(np.asarray(q_pi, dtype=np.float64).reshape(-1)))
-        G_list.append(np.asarray(G, dtype=np.float64).reshape(-1))
-    return q_pi_list, G_list
+        G_list.append(-np.asarray(neg_efe, dtype=np.float64).reshape(-1))
+        E_list.append(np.asarray(agent.E, dtype=np.float64).reshape(-1))
+    return q_pi_list, G_list, E_list
 
 
 def per_stream_efe(spec: CoupledEnsembleSpec, observations: Sequence[int]) -> list[ArrayF]:
     """Per-stream EFE vectors `(G_0, G_1, ..., G_{K-1})` from running
     pymdp's policy inference once per stream.
 
-    Each `G_k` is a 1-D ndarray of length ``num_controls_k``; signs
-    follow pymdp's convention where smaller `G` is preferred.
+    Each ``G_k`` is a 1-D cost vector of length ``num_controls_k``:
+    ``G_k = -neg_efe_k``, so smaller values are preferred.
     """
-    _q_pi_list, G_list = _run_pymdp_per_stream(spec, observations)
+    _q_pi_list, G_list, _E_list = _run_pymdp_per_stream(spec, observations)
     return G_list
 
 
@@ -90,7 +87,7 @@ def per_stream_policy_posterior(spec: CoupledEnsembleSpec, observations: Sequenc
     the mean-field marginals of the *uncoupled* (λ=0) joint policy
     posterior — the input to the project's analytical coupling layer.
     """
-    q_pi_list, _G_list = _run_pymdp_per_stream(spec, observations)
+    q_pi_list, _G_list, _E_list = _run_pymdp_per_stream(spec, observations)
     return q_pi_list
 
 
@@ -106,7 +103,7 @@ class FreeEnergyBundle:
       $F[q^k] = \\langle \\log q^k - \\log E_k - (-\\gamma G_k) \\rangle_{q^k}$
       computed from the *coupled* marginals (length-K array).
     * ``vfe_total``          — sum of ``vfe_per_stream``.
-    * ``efe_per_stream``     — pymdp's own EFE vector for each stream
+    * ``efe_per_stream``     — cost-convention EFE, ``-neg_efe``, per stream
       (length-K list of arrays of length ``num_controls_k``).
     * ``efe_under_posterior`` — expected EFE under the coupled posterior:
       $\\langle G_k \\rangle_{q^k_\\lambda}$ per stream.
@@ -153,6 +150,7 @@ def _variational_free_energy_from_parts(
     spec: CoupledEnsembleSpec,
     margs: list[ArrayF],
     G_per_stream: list[ArrayF],  # noqa: N803 — G = expected free energy (manuscript symbol).
+    policy_priors: list[ArrayF],
 ) -> ArrayF:
     """Compute per-stream VFE from pre-computed marginals and EFE vectors.
 
@@ -160,25 +158,8 @@ def _variational_free_energy_from_parts(
     and ``G_per_stream``.  ``F[q^k] = ⟨log q^k⟩ − ⟨log E_k⟩ + γ⟨G_k⟩``.
     """
     out = np.zeros(spec.num_streams(), dtype=np.float64)
-    for k, (m, G_k) in enumerate(zip(margs, G_per_stream, strict=True)):
-        s = spec.streams[k]
-        # The per-stream VFE uses `s.D` (the state prior) as the policy prior
-        # `E_k`.  This is only valid when the policy space and state space have
-        # the same cardinality (num_states == num_controls) AND D is uniform,
-        # which holds for every production builder (make_bernoulli_stream /
-        # make_ising_ensemble use prior_bias=0.5 with 2-state/2-action
-        # streams).  Guard the shape so a mis-sized stream fails fast with a
-        # clear message instead of a confusing broadcast error (RedTeam C7,
-        # 2026-08-01).
-        if s.num_controls() != s.num_states():
-            raise ValueError(
-                f"stream {k} ({s.name!r}): per-stream VFE uses the state prior "
-                f"D as the policy prior, which requires num_states == num_controls "
-                f"(got states={s.num_states()}, controls={s.num_controls()}). "
-                "Provide a stream with equal state/control dims (and uniform D) "
-                "or compute the policy prior explicitly."
-            )
-        log_E = np.log(np.where(s.D > 0.0, s.D, 1e-300))
+    for k, (m, G_k, E_k) in enumerate(zip(margs, G_per_stream, policy_priors, strict=True)):
+        log_E = np.log(np.where(E_k > 0.0, E_k, 1e-300))
         log_q = np.log(np.where(m > 0.0, m, 1e-300))
         out[k] = float((m * log_q).sum() - (m * log_E).sum() + spec.gamma * float((m * G_k).sum()))
     return out
@@ -201,10 +182,10 @@ def variational_free_energy(
     """
     _require_pymdp()
     spec.validate()
-    q = coupled_policy_posterior(spec, observations, lam)
+    mf, G_per_stream, policy_priors = _run_pymdp_per_stream(spec, observations)
+    q = coupled_policy_posterior(spec, observations, lam, precomputed_mf=mf)
     margs = joint_marginals(q)
-    G_per_stream = per_stream_efe(spec, observations)
-    return _variational_free_energy_from_parts(spec, margs, G_per_stream)
+    return _variational_free_energy_from_parts(spec, margs, G_per_stream, policy_priors)
 
 
 def expected_free_energy_under_posterior(
@@ -222,9 +203,9 @@ def expected_free_energy_under_posterior(
     """
     _require_pymdp()
     spec.validate()
-    q = coupled_policy_posterior(spec, observations, lam)
+    mf, G, _policy_priors = _run_pymdp_per_stream(spec, observations)
+    q = coupled_policy_posterior(spec, observations, lam, precomputed_mf=mf)
     margs = joint_marginals(q)
-    G = per_stream_efe(spec, observations)
     return np.array(
         [float((m * g).sum()) for m, g in zip(margs, G, strict=True)],
         dtype=np.float64,
@@ -258,11 +239,11 @@ def free_energy_bundle(
     """
     _require_pymdp()
     spec.validate()
-    q = coupled_policy_posterior(spec, observations, lam)
+    mf, G_per_stream, policy_priors = _run_pymdp_per_stream(spec, observations)
+    q = coupled_policy_posterior(spec, observations, lam, precomputed_mf=mf)
     margs = joint_marginals(q)
-    G_per_stream = per_stream_efe(spec, observations)
 
-    vfe = _variational_free_energy_from_parts(spec, margs, G_per_stream)
+    vfe = _variational_free_energy_from_parts(spec, margs, G_per_stream, policy_priors)
     efe_post = np.array(
         [float((m * g).sum()) for m, g in zip(margs, G_per_stream, strict=True)],
         dtype=np.float64,
@@ -367,7 +348,7 @@ def coupled_policy_posterior(
 
     Layered design: pymdp owns the per-stream mean-field policy
     posterior (which already absorbs the EFE via its internal
-    ``γ·G`` softmax); the analytical coupling layer
+    ``-γ·G`` softmax in the adapter's cost convention); the analytical coupling layer
     (:func:`coupling.entangled_posterior`) adds the cross-stream
     `λ·J` / `γ·λ·K_c` factors on top.  At ``lam=0`` the joint is
     therefore *exactly* the outer product of the pymdp posteriors
@@ -375,7 +356,7 @@ def coupled_policy_posterior(
 
     **Implementation note:**  The per-stream EFE vectors ``G`` are
     *zeroed* when passed to the analytical coupling layer because
-    pymdp has already applied ``γ·G`` inside its own softmax.  The
+    pymdp has already applied ``-γ·G`` inside its own softmax.  The
     coupling layer only adds the ``γ·λ·K_c`` cross-stream term that
     pymdp does not know about.
 

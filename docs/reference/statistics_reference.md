@@ -23,7 +23,7 @@ under fixed seeds.  The contract:
 | Surface | Mechanism | Source-of-truth |
 | --- | --- | --- |
 | `numpy` global RNG | `deterministic_setup(seed=...)` at script top | `src/visualizations/setup.py` |
-| pymdp 1.0.1 (JAX backend) | Deterministic FPI inference algorithm; no random sampling inside `infer_states` / `infer_policies` | `simulation.agents.build_pymdp_agent(inference_algo='fpi')` |
+| pymdp (JAX backend) | Deterministic FPI inference algorithm; no random sampling inside `infer_states` / `infer_policies` | `simulation.agents.build_pymdp_agent(inference_algo='fpi')` |
 | Coupled rollout sampling | `np.random.default_rng(seed)` instantiated once per rollout | `simulation.rollout.simulate_coupled_rollout` |
 | Figure global seed | `42` | `simulation.hyperparameters.FIGURE_GLOBAL_SEED` |
 | Rollout seed (manuscript figure) | `0` | `simulation.hyperparameters.PYMDP_ROLLOUT_SEED` |
@@ -177,11 +177,11 @@ caption → code → test in one step.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│  pymdp 1.0.1 mean-field layer (per-stream, JAX-backed)           │
-│    Agent(A,B,C,D, gamma, inference_algo='fpi')                   │
+│  pymdp mean-field layer (per-stream, JAX-backed)                 │
+│    Agent(A,B,C,D,E, gamma, inference_algo='fpi')                 │
 │    .infer_states(obs, prior)  ──▶  qs    (state posterior)       │
-│    .infer_policies(qs)        ──▶  q_pi^k, G_k                   │
-│  Output: per-stream policy PMFs `q_pi^k` and EFE vectors `G_k`.  │
+│    .infer_policies(qs)        ──▶  q_pi^k, neg_efe               │
+│  Retain q_pi^k; report cost G=-neg_efe and actual policy prior E.│
 └──────────────────────────────────────────────────────────────────┘
                               │
                               ▼  fed to analytical coupling layer
@@ -198,6 +198,17 @@ caption → code → test in one step.
 │  Free-energy bundle / total correlation / Schmidt / archetypes   │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+`E` is the policy prior, not the initial-state prior `D`. The adapter retains
+the real `q_pi` instead of reconstructing it from costs. At zero coupling the
+joint is a product of those posteriors, not necessarily a uniform distribution.
+For binary streams, `2/(2^K)` is the *uniform reference* all-aligned mass, not
+the actual zero-coupling mass unless the per-stream posteriors are uniform.
+
+Positive-only, reversed, and nonmonotone grids retain their requested row order.
+Zero-reference facts use an independent evaluation with the same ensemble
+parameters; monotonic checks use lambda order, not row position. CSV values and
+snapshot names preserve tiny positive lambdas instead of rounding them to zero.
 
 The two layers are **statistically independent**: pymdp introduces no
 hidden randomness (deterministic FPI), and the analytical layer is a
@@ -257,5 +268,5 @@ on top of the per-module Python suite.)
 
 * [`guides/styleguide.md`](../guides/styleguide.md) — manuscript ↔ code contract.
 * [`reference/architecture.md`](architecture.md) — two-layer / executable-track design.
-* [`simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.md) — pymdp 1.0.1 harness internals.
+* [`simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.md) — pymdp harness internals.
 * [`reference/lean_reference.md`](lean_reference.md) — per-theorem Lean status.

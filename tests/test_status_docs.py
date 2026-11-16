@@ -186,32 +186,6 @@ def _audit_matrix_issues() -> list[str]:
     return issues
 
 
-def _pymdp_package_api_wording_issues() -> list[str]:
-    current_files = [
-        PROJECT / "README.md",
-        PROJECT / "AGENTS.md",
-        PROJECT / "pyproject.toml",
-        PROJECT / "docs" / "simulation" / "pomdp_simulation.md",
-        PROJECT / "docs" / "reference" / "methods_audit.md",
-        PROJECT / "src" / "simulation" / "README.md",
-        PROJECT / "src" / "simulation" / "AGENTS.md",
-        PROJECT / "manuscript" / "4B_empirical_suite.md",
-        PROJECT / "manuscript" / "4C_pymdp_harness.md",
-        PROJECT / "manuscript" / "6C_discussion_and_outlook.md",
-    ]
-    combined = "\n".join(path.read_text(encoding="utf-8") for path in current_files if path.exists())
-    issues: list[str] = []
-    if "inferactively-pymdp==1.0.1" not in combined:
-        issues.append("current docs no longer name the installed inferactively-pymdp==1.0.1 distribution")
-    if "pymdp.agent.Agent" not in combined:
-        issues.append("current docs no longer name the runtime pymdp.agent.Agent API")
-    if "inferactively-pymdp 1.0.1" in combined:
-        issues.append("use inferactively-pymdp==1.0.1 for package metadata")
-    if re.search(r"(?<!inferactively-)\bpymdp==1\.0\.1\b", combined):
-        issues.append("do not cite a nonexistent pymdp==1.0.1 distribution")
-    return issues
-
-
 def _retired_discussion_label_issues() -> list[str]:
     """Find current-facing references to the retired discussion label."""
 
@@ -334,9 +308,6 @@ def test_status_docs_do_not_contain_stale_live_counts() -> None:
 
     mathlib_issues = mathlibproofs_claim_issues(PROJECT)
     assert not mathlib_issues, "\n".join(mathlib_issues)
-
-    pymdp_wording_issues = _pymdp_package_api_wording_issues()
-    assert not pymdp_wording_issues, "\n".join(pymdp_wording_issues)
 
     retired_label_issues = _retired_discussion_label_issues()
     assert not retired_label_issues, "\n".join(retired_label_issues)

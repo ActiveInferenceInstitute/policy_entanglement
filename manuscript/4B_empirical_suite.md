@@ -214,11 +214,11 @@ multi-stream Ising ensembles (`scripts/simulate_multi_k.py`,
 one `output/simulations/pymdp_K*_sweep.csv` file per configured $K$). At
 $\lambda = [[VAR:multi_k_sentinel_lambda:g]]$ the
 total correlation is
-$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K3_lambda_2:.4f]]$
+$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K3_sentinel:.4f]]$
 nats for the first configured multi-K ensemble and
-$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K4_lambda_2:.4f]]$
+$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K4_sentinel:.4f]]$
 nats for the second; the largest configured ensemble reaches
-$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K5_lambda_2:.4f]]$
+$I(q_{[[VAR:multi_k_sentinel_lambda:g]]}) \approx [[VAR:multi_information_K5_sentinel:.4f]]$
 nats.  Together these rows are the empirical witness that the entanglement
 decomposition theorem ([[THMREF:thm_4_1]]) carries over from the K=2
 slice to higher stream counts.  Aligned-corner mass and the tensor-

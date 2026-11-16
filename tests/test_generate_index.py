@@ -93,11 +93,20 @@ def test_index_generator_library_write_index(tmp_path: Path) -> None:
     refs = ms / "refs"
     refs.mkdir(parents=True)
     (refs / "labels.yaml").write_text(
-        "figures: {}\nequations: {}\nsections:\n  intro:\n    file: 01_intro.md\n    title: Intro\n",
+        "figures: {}\nequations: {}\nsections:\n  intro:\n    file: 01_intro.md\n    title: Intro\n"
+        "  pymdp_harness:\n    number: '14'\n    title: Fixture harness title\n    file: 4C_pymdp_harness.md\n",
         encoding="utf-8",
     )
     (refs / "citations.yaml").write_text("entries: []\n", encoding="utf-8")
     (ms / "01_intro.md").write_text("# Intro\n", encoding="utf-8")
+    (ms / "4C_pymdp_harness.md").write_text("# Fixture harness title\n", encoding="utf-8")
+    expected = build_index_text(manuscript_dir=ms)
     path = write_index(manuscript_dir=ms)
     assert path == ms / "INDEX.md"
-    assert "Intro" in path.read_text(encoding="utf-8")
+    text = path.read_text(encoding="utf-8")
+    assert text == expected
+    assert "Intro" in text
+    row = next(line for line in text.splitlines() if "4C_pymdp_harness.md" in line)
+    assert "Fixture harness title" in row
+    assert "(4C_pymdp_harness.md)" in row
+    assert build_index_text(manuscript_dir=ms) == text

@@ -7,10 +7,14 @@ FreeEnergyBundle objects are constructed synthetically from numpy arrays.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 import numpy as np
 import pytest
 
+from lean.coupling import entangled_posterior
+from lean.free_energy import shannon_entropy, total_correlation
+from lean.joint_dist import joint_marginals
 from simulation.inference import FreeEnergyBundle
 from simulation.statistics import (
     BundleSummary,
@@ -20,6 +24,7 @@ from simulation.statistics import (
     _kl,
     _shannon,
     is_monotone_nondecreasing,
+    kl_to_lambda_zero_curve,
     pymdp_summary_statistics,
     quantile_envelope_over_sweeps,
     summary_to_var_dict,
@@ -53,6 +58,30 @@ def _make_bundle(
         total_correlation=tc,
         coupling_term=coup,
         action_distribution=action_dist,
+    )
+
+
+def _gibbs_bundle(lam: float, interaction: np.ndarray) -> FreeEnergyBundle:
+    """Coherent records computed from real Gibbs PMFs and their marginals."""
+    k = interaction.ndim
+    zero_costs = [np.zeros(2) for _ in range(k)]
+    q = entangled_posterior(
+        [np.full(2, 0.5) for _ in range(k)], zero_costs, interaction,
+        np.zeros_like(interaction), lam=lam, gamma=1.0,
+    )
+    marginals = joint_marginals(q)
+    vfe = np.array([np.sum(m * np.log(m / 0.5)) for m in marginals])
+    return FreeEnergyBundle(
+        lam=lam,
+        vfe_per_stream=vfe,
+        vfe_total=float(vfe.sum()),
+        efe_per_stream=tuple(zero_costs),
+        efe_under_posterior=np.zeros(k),
+        joint_entropy=shannon_entropy(q),
+        marginal_entropies=np.array([shannon_entropy(m) for m in marginals]),
+        total_correlation=total_correlation(q),
+        coupling_term=float(lam * np.sum(q * interaction)),
+        action_distribution=q.reshape(-1),
     )
 
 
@@ -176,7 +205,7 @@ def test_summary_statistics_minimal_two_bundles() -> None:
         _make_bundle(lam=0.0, tc=0.0, vfe=0.5),
         _make_bundle(lam=1.0, tc=0.2, vfe=0.3),
     ]
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     assert isinstance(s, BundleSummary)
     assert s.n_lambda_points == 2
     assert s.lambda_min == pytest.approx(0.0)
@@ -189,16 +218,29 @@ def test_summary_statistics_minimal_two_bundles() -> None:
 
 def test_summary_statistics_requires_two_bundles() -> None:
     with pytest.raises(ValueError, match="at least 2"):
-        pymdp_summary_statistics([_make_bundle(0.0)])
+        pymdp_summary_statistics([_make_bundle(0.0)], zero_reference=_make_bundle(0.0))
 
 
-def test_summary_statistics_rejects_unsorted_lambda_sweep() -> None:
-    """Field semantics (min/max, *_at_lambda_max) require an ascending sweep;
-    an unsorted or reversed caller sweep must fail loudly rather than
-    mislabel manuscript variables (RedTeam C7, 2026-08-01)."""
-    descending = [_make_bundle(lam=1.0, tc=0.2), _make_bundle(lam=0.0, tc=0.0)]
-    with pytest.raises(ValueError, match="sorted ascending by lam"):
-        pymdp_summary_statistics(descending)
+@pytest.mark.parametrize("grid", [[2.0, 0.0], [2.0, 0.0, 1.0], [1.0, 3.0, 0.0, 2.0], [3.0, 1.0]])
+def test_summary_statistics_preserves_requested_order_and_uses_lambda_extrema(grid: list[float]) -> None:
+    interaction = np.array([[2.0, 0.0], [0.0, 1.0]])
+    reference = _gibbs_bundle(0.0, interaction)
+    bundles = [_gibbs_bundle(lam, interaction) for lam in grid]
+    summary = pymdp_summary_statistics(bundles, zero_reference=reference)
+    endpoint = bundles[grid.index(max(grid))]
+    assert summary.lambda_min == min(grid)
+    assert summary.lambda_max == max(grid)
+    assert summary.aligned_mass_at_lambda_max == pytest.approx(
+        endpoint.action_distribution[0] + endpoint.action_distribution[-1]
+    )
+    assert summary.action_mode_prob_at_lambda_max == pytest.approx(endpoint.action_distribution.max())
+    assert [bundle.lam for bundle in bundles] == grid
+    q0 = reference.action_distribution
+    expected_kl = [float(np.sum(b.action_distribution * np.log(b.action_distribution / q0))) for b in bundles]
+    np.testing.assert_allclose(kl_to_lambda_zero_curve(bundles, zero_reference=reference), expected_kl, atol=1e-12)
+    assert summary.kl_to_lambda_zero_min == pytest.approx(min(expected_kl), abs=1e-12)
+    if grid == [1.0, 3.0, 0.0, 2.0]:
+        assert max(bundles, key=lambda bundle: bundle.total_correlation).lam != max(grid)
 
 
 def test_summary_statistics_aligned_mass_at_lambda_max() -> None:
@@ -208,7 +250,7 @@ def test_summary_statistics_aligned_mass_at_lambda_max() -> None:
         _make_bundle(lam=0.0, action_dist=dist_uniform),
         _make_bundle(lam=2.0, action_dist=dist_aligned),
     ]
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     assert s.aligned_mass_at_lambda_max == pytest.approx(1.0, abs=1e-12)
     assert s.aligned_mass_min == pytest.approx(0.5, abs=1e-12)
 
@@ -220,7 +262,7 @@ def test_summary_statistics_aligned_mass_at_lambda_max() -> None:
 
 def test_summary_to_var_dict_keys_have_prefix() -> None:
     bundles = [_make_bundle(0.0), _make_bundle(1.0)]
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     d = summary_to_var_dict(s, prefix="test")
     assert all(k.startswith("test_summary_") for k in d)
     assert len(d) == len(s.__dataclass_fields__)
@@ -228,7 +270,7 @@ def test_summary_to_var_dict_keys_have_prefix() -> None:
 
 def test_summary_to_var_dict_all_floats() -> None:
     bundles = [_make_bundle(0.0), _make_bundle(1.0)]
-    s = pymdp_summary_statistics(bundles)
+    s = pymdp_summary_statistics(bundles, zero_reference=bundles[0])
     d = summary_to_var_dict(s)
     for k, v in d.items():
         assert isinstance(v, float), f"{k} is {type(v)}"
@@ -364,3 +406,41 @@ def test_saturation_index_invalid_fraction_raises() -> None:
         total_correlation_saturation_index(bundles, saturation_fraction=0.0)
     with pytest.raises(ValueError, match="saturation_fraction"):
         total_correlation_saturation_index(bundles, saturation_fraction=1.5)
+
+
+@pytest.mark.parametrize("k", [2, 3, 4, 6])
+def test_positive_only_kl_uses_actual_zero_reference(k: int) -> None:
+    interaction = np.zeros((2,) * k)
+    interaction[(0,) * k] = interaction[(1,) * k] = 1.0
+    reference = _gibbs_bundle(0.0, interaction)
+    grid = [math.log(9.0), math.log(3.0)]
+    bundles = [_gibbs_bundle(lam, interaction) for lam in grid]
+    expected = []
+    for lam in grid:
+        partition = 2.0 * math.exp(lam) + 2**k - 2
+        aligned = 2.0 * math.exp(lam) / partition
+        expected.append(lam * aligned - math.log(partition / 2**k))
+    curve = kl_to_lambda_zero_curve(bundles, zero_reference=reference)
+    np.testing.assert_allclose(curve, expected, atol=1e-12)
+    assert np.all(curve > 0.0)
+    summary = pymdp_summary_statistics(bundles, zero_reference=reference)
+    assert summary.n_lambda_points == 2
+    assert summary.lambda_min == min(grid)
+    assert summary.kl_to_lambda_zero_min == pytest.approx(min(expected))
+    assert [bundle.lam for bundle in bundles] == grid
+
+
+def test_zero_reference_requires_exact_zero_and_matching_policy_dimensions() -> None:
+    reference = _gibbs_bundle(0.0, np.zeros((2, 2)))
+    with pytest.raises(ValueError, match="lam == 0"):
+        kl_to_lambda_zero_curve([reference], zero_reference=replace(reference, lam=1e-12))
+    wrong_k = _gibbs_bundle(1.0, np.zeros((2, 2, 2)))
+    with pytest.raises(ValueError, match="policy dimensions"):
+        kl_to_lambda_zero_curve([wrong_k], zero_reference=reference)
+
+
+def test_saturation_selects_smallest_qualifying_lambda_not_first_row() -> None:
+    interaction = np.eye(2)
+    bundles = [_gibbs_bundle(lam, interaction) for lam in [4.0, 0.0, 3.0]]
+    assert bundles[2].total_correlation >= 0.8 * bundles[0].total_correlation
+    assert total_correlation_saturation_index(bundles, saturation_fraction=0.8) == 3.0

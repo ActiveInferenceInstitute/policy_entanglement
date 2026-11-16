@@ -1,4 +1,4 @@
-# pymdp 1.0.1 POMDP simulation harness
+# pymdp POMDP simulation harness
 
 The `simulation` subpackage under `src/simulation/` exercises the
 manuscript's λ-deformation framework inside a fully grounded POMDP —
@@ -13,7 +13,7 @@ The harness is intentionally layered:
 2. **`simulation/builders.py`** — deterministic constructors for the
    K-stream Ising toy and helpers for the `A`/`B` matrices that mirror
    the Bernoulli example in the manuscript (`§6`).
-3. **`simulation/agents.py`** — pymdp 1.0.1 `Agent` adapter; the
+3. **`simulation/agents.py`** — pymdp `Agent` adapter; the
    *only* module that imports `pymdp`/`jax`.  Gracefully degrades
    when the `sim` group is not installed.
 4. **`simulation/inference.py`** — per-stream EFE / policy-posterior
@@ -25,7 +25,7 @@ The harness is intentionally layered:
 
 ## Install
 
-`inferactively-pymdp==1.0.1` is the optional package dependency surfaced
+`inferactively-pymdp==1.0.5` is the configured optional package dependency surfaced
 via the `sim` group; it provides the `pymdp` import/API used below:
 
 ```bash
@@ -40,7 +40,7 @@ configured multi-K sweep is exercised by
 emitting the figures `multi_k_total_correlation`,
 `multi_k_aligned_mass`, `multi_k_tt_rank_profile`.
 
-**JAX float32 precision boundary.** `inferactively-pymdp==1.0.1`
+**JAX float32 precision boundary.** The configured `inferactively-pymdp` dependency
 pulls in JAX, which uses **float32 by default**.  The closed-form
 analytical track in `lean/*.py` runs in **float64** (numpy default).
 This precision mismatch is why the pymdp-vs-closed-form agreement
@@ -87,7 +87,7 @@ This is the contract to preserve when modifying `src/simulation/`:
 | All manuscript-facing grids and seeds flow from one file. | [`src/simulation/hyperparameters.py`](../../src/simulation/hyperparameters.py) owns sweep grids, rollout horizons, seeds, sentinel λ values, and tolerances. | `tests/test_hyperparameters.py`, `scripts/manuscript_variables.py`, and hardcoded-literal validation. |
 | The production ensemble is specified in GNN and cannot drift from it. | [`gnn/production_ensemble.gnn.md`](../../gnn/production_ensemble.gnn.md) declares the per-stream factors, cardinalities, coupling, γ, and multi-K counts; [`src/gnn/harness.py`](../../src/gnn/harness.py) rebuilds the reference arrays from those declarations alone, and `scripts/simulate_gnn.py` fails when the build disagrees (zero tolerance). | `tests/test_gnn_harness_conformance.py` (elementwise equality, drift, negative control), `tests/test_simulation_pymdp.py::test_gnn_declared_ensemble_builds_the_same_pymdp_agents`, and the `output/data/gnn_production_conformance.json` sidecar. |
 
-The adapter is checked against this installed package surface:
+Historical installed API observation for `inferactively-pymdp` 1.0.1, retained verbatim; not a 1.0.5 execution receipt:
 
 ```text
 inferactively-pymdp==1.0.1
@@ -97,7 +97,15 @@ Agent.infer_states(observations, empirical_prior, ...)
 Agent.infer_policies(qs) -> (q_pi, G)
 ```
 
-That matches the adapter calls in `agents.py` and `inference.py`.
+The current adapter retains the actual `q_pi`, converts `neg_efe` to cost
+`G=-neg_efe`, and reads policy prior `E` independently of initial-state prior
+`D`. No historical output is recertified by this API description.
+
+Positive-only and reversed grids are valid. Zero-reference summaries and KL
+curves use an independently evaluated zero bundle with the same ensemble
+parameters, not the first requested row. Monotonic checks use lambda order;
+CSV and snapshot names preserve tiny positive values rather than labeling
+them zero. Actual zero-coupling aligned mass need not equal the uniform reference.
 
 ## Quick example
 

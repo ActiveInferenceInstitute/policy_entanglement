@@ -58,7 +58,7 @@ SCRIPTS: list[tuple[str, str]] = [
     ("generate_figures.py", "render every manuscript figure"),
     ("dump_archetypes.py", "dump K=2 Schmidt archetypes"),
     ("parameter_sweep.py", "fine-grained parameter sweep"),
-    ("simulate_pymdp.py", "pymdp 1.0.1 POMDP simulation harness"),
+    ("simulate_pymdp.py", "inferactively-pymdp POMDP simulation harness"),
     ("simulate_multi_k.py", "configured multi-K ensemble experiments"),
     ("simulate_long_horizon.py", "configured long-horizon habit-accumulation rollout"),
     ("simulate_revertibility.py", "m-projection back-to-mean-field witness"),
@@ -169,6 +169,7 @@ def _spawn(
             cwd=project_root,
             env=env,
             timeout=_RUN_ALL_SCRIPT_TIMEOUT_SECONDS,
+            capture_dir=project_root / "output" / "logs" / "run_all" / Path(script).stem,
         )
         return StageResult(
             script=script,
@@ -366,6 +367,14 @@ def main(
 
     skip = set(args.skip)
     only = set(args.only)
+    known_stages = {
+        name.removesuffix(".py")
+        for name, _ in (*SCRIPTS, *PDF_BUILD_SCRIPTS, *PDF_READINESS_SCRIPTS, *MATHLIB_PROOF_SCRIPTS)
+    }
+    for flag, requested in (("--only", only), ("--skip", skip)):
+        unknown = requested - known_stages
+        if unknown:
+            parser.error(f"unknown {flag} stage(s): {', '.join(sorted(unknown))}")
     parallel = not args.serial
     max_workers = max(1, int(args.max_workers))
 
@@ -481,6 +490,7 @@ def main(
         i += 1
 
     total_wall = time.perf_counter() - started_total
+    final_summary: dict[str, object] = {"stages": stage_summaries, "total_wall_s": total_wall}
 
     # Round-5 P2-2: write the manifest unless the user opted out (or the
     # build is clearly busted — at least one successful run-step is
@@ -489,7 +499,7 @@ def main(
         try:
             manifest_path = _write_manifest(
                 project_root=project_root,
-                run_summary={"stages": stage_summaries, "total_wall_s": total_wall},
+                run_summary=final_summary,
             )
             print(
                 f"\n>>> wrote {manifest_path.relative_to(project_root)} "
@@ -501,13 +511,18 @@ def main(
     if not failures and stage_summaries:
         readiness_ran = any(row.get("script") == "readiness_report.py" for row in stage_summaries)
         if readiness_ran:
-            from manuscript.readiness import refresh_release_readiness_runtime_budget  # noqa: WPS433
+            from manuscript.readiness import write_release_readiness  # noqa: WPS433
 
             try:
-                refresh_release_readiness_runtime_budget(project_root)
+                write_release_readiness(project_root)
+                if not args.no_manifest:
+                    # All readiness representations consume the completed timings.
+                    # Re-inventory afterward to bind every emitted artifact.
+                    _write_manifest(project_root=project_root, run_summary=final_summary)
             except OSError as exc:
+                failures.append("readiness_report.py")
                 print(
-                    f"!!! could not refresh release_readiness.json runtime budget: {exc}",
+                    f"!!! could not finalize readiness runtime budget and manifest: {exc}",
                     file=sys.stderr,
                 )
 

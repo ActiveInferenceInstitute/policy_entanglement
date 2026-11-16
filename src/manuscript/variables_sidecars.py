@@ -93,6 +93,7 @@ def pymdp_facts() -> dict[str, float] | dict[str, str]:
     from simulation.inference import (
         coupled_policy_posterior,
         decomposition_witness_curve,
+        free_energy_bundle,
         free_energy_curve,
     )
     from simulation.statistics import pymdp_summary_statistics, summary_to_var_dict
@@ -116,7 +117,8 @@ def pymdp_facts() -> dict[str, float] | dict[str, str]:
         observations=list(H.PYMDP_SWEEP_OBSERVATIONS),
         lams=H.PYMDP_SWEEP_LAMBDAS.values(),
     )
-    summary = pymdp_summary_statistics(bundles)
+    zero_reference = free_energy_bundle(spec, list(H.PYMDP_SWEEP_OBSERVATIONS), lam=0.0)
+    summary = pymdp_summary_statistics(bundles, zero_reference=zero_reference)
     facts.update(summary_to_var_dict(summary))
     witnesses = decomposition_witness_curve(
         spec,
@@ -125,10 +127,9 @@ def pymdp_facts() -> dict[str, float] | dict[str, str]:
     )
     facts["pymdp_decomposition_residual_max"] = float(max(w.residual for w in witnesses))
     facts["pymdp_decomposition_residual_mean"] = float(np.mean([w.residual for w in witnesses]))
-    zero_bundle = min(bundles, key=lambda b: abs(float(b.lam)))
-    facts["pymdp_coupling_term_at_lambda_zero"] = float(zero_bundle.coupling_term)
-    facts["pymdp_joint_entropy_at_lambda_zero"] = float(zero_bundle.joint_entropy)
-    facts["pymdp_marginal_entropy_sum_at_lambda_zero"] = float(zero_bundle.marginal_entropies.sum())
+    facts["pymdp_coupling_term_at_lambda_zero"] = float(zero_reference.coupling_term)
+    facts["pymdp_joint_entropy_at_lambda_zero"] = float(zero_reference.joint_entropy)
+    facts["pymdp_marginal_entropy_sum_at_lambda_zero"] = float(zero_reference.marginal_entropies.sum())
     return facts
 
 

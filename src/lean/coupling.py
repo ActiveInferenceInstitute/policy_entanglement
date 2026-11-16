@@ -33,8 +33,7 @@ from collections.abc import Sequence
 
 import numpy as np
 from numpy.typing import NDArray
-
-from .joint_dist import mean_field_to_joint, normalize
+from scipy.special import logsumexp
 
 ArrayF = NDArray[np.float64]
 
@@ -44,6 +43,29 @@ def trivial_coupling(shape: Sequence[int]) -> ArrayF:
     return np.zeros(tuple(shape), dtype=np.float64)
 
 
+def _entangled_prior_log_weights(
+    mf_prior: Sequence[ArrayF], coupling_j: ArrayF, lam: float
+) -> ArrayF:
+    """Combine the mean-field log mass and habit potential before exponentiation."""
+    if not mf_prior:
+        raise ValueError("mean_field_to_joint requires at least one stream")
+    with np.errstate(divide="ignore"):
+        log_base = np.log(np.asarray(mf_prior[0], dtype=np.float64))
+        for marginal in mf_prior[1:]:
+            log_base = np.add.outer(log_base, np.log(np.asarray(marginal, dtype=np.float64)))
+    Ja = np.asarray(coupling_j, dtype=np.float64)
+    if log_base.shape != Ja.shape:
+        raise ValueError(f"coupling shape {Ja.shape} != mean-field shape {log_base.shape}")
+    return log_base + lam * Ja
+
+
+def _normalize_log_weights(log_weights: ArrayF) -> ArrayF:
+    log_z = float(logsumexp(log_weights))
+    if log_z == -np.inf:
+        raise ValueError("cannot normalize a non-positive mass: total=0.0")
+    return np.asarray(np.exp(log_weights - log_z), dtype=np.float64)
+
+
 def entangled_prior_unnormalised(
     mf_prior: Sequence[ArrayF],
     coupling_j: ArrayF,
@@ -51,15 +73,10 @@ def entangled_prior_unnormalised(
 ) -> ArrayF:
     """`E_lam(pi) ∝ (∏_k E_k(pi^k)) · exp(lam · J(pi))` (unnormalized).
 
-    Mirrors ``ActinfPolicyEntanglement.entangledPriorLogWeight`` (in
-    log-space), exponentiated and multiplied through the mean-field
-    base.  Returns the un-normalized mass tensor.
+    The unnormalized mass can overflow when its true value is outside
+    float64 range. Normalized prior/posterior callers stay in log space.
     """
-    base = mean_field_to_joint(mf_prior)
-    Ja = np.asarray(coupling_j, dtype=np.float64)
-    if base.shape != Ja.shape:
-        raise ValueError(f"coupling shape {Ja.shape} != mean-field shape {base.shape}")
-    return base * np.exp(lam * Ja)
+    return np.exp(_entangled_prior_log_weights(mf_prior, coupling_j, lam))
 
 
 def entangled_prior(
@@ -68,7 +85,7 @@ def entangled_prior(
     lam: float,
 ) -> ArrayF:
     """Normalized lambda-entangled prior, as a proper joint PMF tensor."""
-    return normalize(entangled_prior_unnormalised(mf_prior, coupling_j, lam))
+    return _normalize_log_weights(_entangled_prior_log_weights(mf_prior, coupling_j, lam))
 
 
 def entangled_posterior(
@@ -112,12 +129,20 @@ def entangled_posterior(
                     f"for every per-stream marginal entry; degenerate "
                     f"boundaries fall outside the discharged ℝ theorem."
                 )
-    prior_unn = entangled_prior_unnormalised(mf_prior, coupling_j, lam)
-    G_total = mean_field_to_joint([np.exp(-gamma * np.asarray(g, dtype=np.float64)) for g in per_stream_G])
+    Ja = np.asarray(coupling_j, dtype=np.float64)
     Kc = np.asarray(coupling_kc, dtype=np.float64)
-    if Kc.shape != prior_unn.shape:
-        raise ValueError(f"coupling K_c shape {Kc.shape} != joint shape {prior_unn.shape}")
-    return normalize(prior_unn * G_total * np.exp(-gamma * lam * Kc))
+    if Kc.shape != Ja.shape:
+        raise ValueError(f"coupling K_c shape {Kc.shape} != joint shape {Ja.shape}")
+    log_weights = _entangled_prior_log_weights(mf_prior, Ja - gamma * Kc, lam)
+    if len(per_stream_G) != log_weights.ndim:
+        raise ValueError("per_stream_G must contain one vector per stream")
+    for k, G_k in enumerate(per_stream_G):
+        Ga = np.asarray(G_k, dtype=np.float64)
+        if Ga.shape != (log_weights.shape[k],):
+            raise ValueError(f"stream {k}: EFE shape {Ga.shape} != {(log_weights.shape[k],)}")
+        shape = tuple(log_weights.shape[k] if axis == k else 1 for axis in range(log_weights.ndim))
+        log_weights -= gamma * Ga.reshape(shape)
+    return _normalize_log_weights(log_weights)
 
 
 def expected_value(q: ArrayF, f: ArrayF) -> float:
@@ -162,4 +187,4 @@ def coupling_log_weight(coupling_j: ArrayF, coupling_kc: ArrayF, gamma: float, l
     Kc = np.asarray(coupling_kc, dtype=np.float64)
     if Ja.shape != Kc.shape:
         raise ValueError("J and K_c must have identical shapes")
-    return lam * Ja - gamma * lam * Kc
+    return lam * (Ja - gamma * Kc)

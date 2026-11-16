@@ -40,7 +40,7 @@ Bare imports (`from coupling import …`) are no longer supported.
 | [`lean/decomposition.py`](lean/decomposition.py) | `Decomposition` | `DecompositionTerms`, `sum_marginal_free_energies`, `coupling_cost_term`, `coupling_prior_term`, `multi_information_term`, `total_correlation_gain`, `entanglement_decomposition_rhs`, `free_energy_against_entangled_prior`, `decomposition_at_zero`, `coupling_pays_for_itself` |
 | [`lean/invariants.py`](lean/invariants.py) | (no Lean mirror — numerical-witness layer) | `SweepGrid`, `ising_invariants`, `free_energy_invariants`, `optimal_lambda_invariants`, `phase_invariants`, `marginal_invariants`, `decomposition_invariants`, `coupling_pays_invariants`, `affine_log_weight_invariants`, `all_invariants` (depends on project-local `reporting.interactive_dashboard.Invariant`) |
 
-### [`simulation/`](simulation/) — pymdp 1.0.1 POMDP harness
+### [`simulation/`](simulation/) — pymdp POMDP harness
 
 | Module | Contents |
 |---|---|

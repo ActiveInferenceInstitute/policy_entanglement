@@ -339,19 +339,17 @@ def pymdp_grounded_efe_fn(
             per-stream POMDP primitives the BTAI baseline is run
             against. The same spec object is used by
             :func:`simulation.inference.per_stream_efe` to drive real
-            pymdp 1.0.1 inference once per stream.
+            pymdp inference once per stream.
         observations: Per-stream observations passed into pymdp's
             policy-posterior step (length ``num_streams``).
 
     Returns:
         A callable ``efe(joint_action) -> float`` that BTAI's MCTS
-        expansion can consume. The joint EFE is the sum of per-stream
-        EFEs at the indicated control indices — the standard EFE
-        composition under the project's per-stream factorized generative
-        model. No pymdp re-implementation; the per-stream EFEs come
-        straight from
-        :func:`simulation.inference.per_stream_efe`, which calls real
-        ``pymdp.agent.Agent``.
+        expansion can consume. The joint cost EFE is the sum of per-stream
+        costs at the indicated control indices — the standard composition
+        under the project's per-stream factorized generative model.
+        :func:`simulation.inference.per_stream_efe` converts pymdp's
+        ``neg_efe`` to costs once; MCTS minimizes these costs.
     """
     # Late import: keeps the static `simulation.btai_baseline` module
     # graph free of the pymdp-requiring `inference` module — the
