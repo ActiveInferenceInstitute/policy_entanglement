@@ -161,9 +161,7 @@ def test_log_space_posterior_preserves_moderate_gibbs_weights() -> None:
     J = _ising_J()
     Kc = np.array([[0.1, 0.4], [-0.2, 0.3]])
     gamma, lam = 1.3, 0.7
-    expected = np.outer(mf[0], mf[1]) * np.exp(
-        lam * J - gamma * (G[0][:, None] + G[1][None, :] + lam * Kc)
-    )
+    expected = np.outer(mf[0], mf[1]) * np.exp(lam * J - gamma * (G[0][:, None] + G[1][None, :] + lam * Kc))
     expected /= expected.sum()
     q = entangled_posterior(mf, G, J, Kc, gamma, lam)
     np.testing.assert_allclose(q, expected, atol=1e-12, rtol=0.0)

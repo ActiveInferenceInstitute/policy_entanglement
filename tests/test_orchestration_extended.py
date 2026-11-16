@@ -312,11 +312,14 @@ def test_known_optional_skip_does_not_activate_or_reject_the_stage(
 ) -> None:
     scripts = _summary_stage(tmp_path)
     monkeypatch.setattr(ra, "SCRIPTS", [("fixture.py", "sum actual input")])
-    assert run_all_main(
-        ["--serial", "--only", "fixture", "--skip", "build_pdf", "--skip", "readiness_report"],
-        project_root=tmp_path,
-        scripts_dir=scripts,
-    ) == 0
+    assert (
+        run_all_main(
+            ["--serial", "--only", "fixture", "--skip", "build_pdf", "--skip", "readiness_report"],
+            project_root=tmp_path,
+            scripts_dir=scripts,
+        )
+        == 0
+    )
     assert json.loads((tmp_path / "output/total.json").read_text()) == {"total": 11}
     manifest = (tmp_path / "output/MANIFEST.md").read_text()
     assert "`fixture.py`" in manifest
@@ -329,8 +332,6 @@ def test_known_selection_fully_filtered_by_skip_executes_nothing(
 ) -> None:
     scripts = _summary_stage(tmp_path)
     monkeypatch.setattr(ra, "SCRIPTS", [("fixture.py", "sum actual input")])
-    assert run_all_main(
-        ["--only", "fixture", "--skip", "fixture"], project_root=tmp_path, scripts_dir=scripts
-    ) == 0
+    assert run_all_main(["--only", "fixture", "--skip", "fixture"], project_root=tmp_path, scripts_dir=scripts) == 0
     assert not (tmp_path / "output").exists()
     assert (tmp_path / "input.json").read_text() == "[4, 7]"

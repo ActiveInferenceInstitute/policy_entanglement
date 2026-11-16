@@ -6,7 +6,9 @@ from typing import Any
 
 from .specs import CoupledEnsembleSpec, StreamSpec
 
-PYMDP_INSTALL_HINT = "inferactively-pymdp is required for the POMDP simulation harness. Install with: `uv sync --group sim`"
+PYMDP_INSTALL_HINT = (
+    "inferactively-pymdp is required for the POMDP simulation harness. Install with: `uv sync --group sim`"
+)
 jnp: Any
 
 try:

@@ -251,14 +251,29 @@ def test_reader_executes_selected_bytes_and_preserves_live_checkout(
 
     assert GATE._run_pinned_reader(Path(sys.executable), root, pin) == 23
     output = capfd.readouterr().out
-    trace = json.loads(next(line.removeprefix("PINNED_REJECTION ") for line in output.splitlines()
-                            if line.startswith("PINNED_REJECTION ")))
+    trace = json.loads(
+        next(
+            line.removeprefix("PINNED_REJECTION ")
+            for line in output.splitlines()
+            if line.startswith("PINNED_REJECTION ")
+        )
+    )
     assert "LIVE_SOURCE_IMPORTED" not in output
     assert trace["member"] == {"member": "consumer"}
     assert Path(trace["cwd"]) == member
     assert trace["argv"] == [
-        "check", "--repo", ".", "--require-pointer", "--workflow", ".github/workflows/ci.yml",
-        "--job", "gnn-conformance", "--expected-commit", commit, "--expected-tag", PINNED_TAG,
+        "check",
+        "--repo",
+        ".",
+        "--require-pointer",
+        "--workflow",
+        ".github/workflows/ci.yml",
+        "--job",
+        "gnn-conformance",
+        "--expected-commit",
+        commit,
+        "--expected-tag",
+        PINNED_TAG,
     ]
     module_path = Path(trace["file"])
     assert module_path.is_relative_to(scratch)
@@ -336,8 +351,13 @@ def test_explicit_root_normalization_reaches_selected_reader_without_mutation(
     assert GATE._arm_gnn() == 23
     output = capfd.readouterr().out
     assert f"validated operator checkout {repo.resolve()}" in output
-    trace = json.loads(next(line.removeprefix("PINNED_REJECTION ") for line in output.splitlines()
-                            if line.startswith("PINNED_REJECTION ")))
+    trace = json.loads(
+        next(
+            line.removeprefix("PINNED_REJECTION ")
+            for line in output.splitlines()
+            if line.startswith("PINNED_REJECTION ")
+        )
+    )
     assert Path(trace["cwd"]) == member
     assert Path(trace["file"]).is_relative_to(scratch)
     assert _snapshot(repo) == before
@@ -360,11 +380,22 @@ def test_direct_conformance_invocation_distinguishes_unset_from_explicit(
         env[GATE.ENV_UPSTREAM_ROOT] = "" if root_selection == "" else str(tmp_path / "absent")
     if handoff:
         env[GATE.ENV_PINNED_RELEASE] = json.dumps(asdict(GATE._read_pin()))
-    node = "test_upstream_parser_ran_from_the_pinned_commit" if handoff else "test_selected_release_is_the_canonical_pin"
+    node = (
+        "test_upstream_parser_ran_from_the_pinned_commit" if handoff else "test_selected_release_is_the_canonical_pin"
+    )
     result = subprocess.run(
         [
-            sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--no-cov", "-o", "addopts=",
-            "--basetemp", str(tmp_path / "nested"),
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "--no-cov",
+            "-o",
+            "addopts=",
+            "--basetemp",
+            str(tmp_path / "nested"),
             f"{PROJECT / 'tests/test_gnn_upstream_conformance.py'}::{node}",
         ],
         cwd=PROJECT,

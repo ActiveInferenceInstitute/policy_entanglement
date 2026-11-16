@@ -172,21 +172,27 @@ def test_coupled_trajectories_reduce_actual_nonexchangeable_joints(k: int) -> No
         target = np.multiply.outer(target, prior)
     interaction = np.log(target / mean_field_to_joint(priors))
     joint = entangled_posterior(
-        priors, [np.zeros(2) for _ in range(k)], interaction, np.zeros_like(interaction),
-        lam=1.0, gamma=1.0,
+        priors,
+        [np.zeros(2) for _ in range(k)],
+        interaction,
+        np.zeros_like(interaction),
+        lam=1.0,
+        gamma=1.0,
     )
     np.testing.assert_allclose(joint, target, atol=1e-12)
     transitions = np.array([[[1.0, 0.0], [1.0, 0.0]], [[0.0, 1.0], [0.0, 1.0]]])
-    streams = tuple(
-        StreamSpec(A=np.eye(2), B=transitions, C=np.log(prior), D=np.full(2, 0.5)) for prior in priors
-    )
+    streams = tuple(StreamSpec(A=np.eye(2), B=transitions, C=np.log(prior), D=np.full(2, 0.5)) for prior in priors)
     spec = CoupledEnsembleSpec(
         streams=streams, coupling_j=interaction, coupling_kc=np.zeros_like(interaction), gamma=1.0
     )
     steps = tuple(
         RolloutStep(
-            t=t, observations=(0,) * k, mean_field_marginals=tuple(priors), coupled_joint=joint,
-            sampled_actions=(0,) * k, total_correlation=total_correlation(joint),
+            t=t,
+            observations=(0,) * k,
+            mean_field_marginals=tuple(priors),
+            coupled_joint=joint,
+            sampled_actions=(0,) * k,
+            total_correlation=total_correlation(joint),
         )
         for t in range(3)
     )

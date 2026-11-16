@@ -150,9 +150,7 @@ def multi_k_joint_snapshot(
     return coupled_policy_posterior(spec, list(observations), lam=float(lam))
 
 
-def multi_k_summary(
-    results: Sequence[MultiKResult], *, zero_reference: MultiKResult
-) -> dict[str, float]:
+def multi_k_summary(results: Sequence[MultiKResult], *, zero_reference: MultiKResult) -> dict[str, float]:
     """Per-experiment summary used to populate manuscript variables.
 
     Returns a flat dict of `<prefix>_<stat>` keys.  Stable shape; the

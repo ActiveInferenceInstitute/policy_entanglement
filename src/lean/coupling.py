@@ -43,9 +43,7 @@ def trivial_coupling(shape: Sequence[int]) -> ArrayF:
     return np.zeros(tuple(shape), dtype=np.float64)
 
 
-def _entangled_prior_log_weights(
-    mf_prior: Sequence[ArrayF], coupling_j: ArrayF, lam: float
-) -> ArrayF:
+def _entangled_prior_log_weights(mf_prior: Sequence[ArrayF], coupling_j: ArrayF, lam: float) -> ArrayF:
     """Combine the mean-field log mass and habit potential before exponentiation."""
     if not mf_prior:
         raise ValueError("mean_field_to_joint requires at least one stream")

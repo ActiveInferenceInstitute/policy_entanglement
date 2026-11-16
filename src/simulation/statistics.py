@@ -94,9 +94,7 @@ def _half_saturation(
     return half_saturation_interpolated(lams, tcs)
 
 
-def kl_to_lambda_zero_curve(
-    bundles: Sequence[FreeEnergyBundle], *, zero_reference: FreeEnergyBundle
-) -> ArrayF:
+def kl_to_lambda_zero_curve(bundles: Sequence[FreeEnergyBundle], *, zero_reference: FreeEnergyBundle) -> ArrayF:
     """KL to an explicitly evaluated λ=0 bundle, in requested sample order."""
     if zero_reference.lam != 0.0:
         raise ValueError("zero_reference must have lam == 0")

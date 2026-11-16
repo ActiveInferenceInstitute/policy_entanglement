@@ -264,12 +264,19 @@ def plot_pymdp_summary_panel(
     ax_e.legend()
 
     ax_f.plot(
-        lams, aligned_arr, "-o", color=palette_color(3), markersize=3,
+        lams,
+        aligned_arr,
+        "-o",
+        color=palette_color(3),
+        markersize=3,
         label=r"$q(0,\ldots,0)+q(1,\ldots,1)$",
     )
     ax_f.axhline(
         2.0 / bundles[0].action_distribution.size,
-        color="gray", linestyle=":", linewidth=0.7, label="uniform baseline",
+        color="gray",
+        linestyle=":",
+        linewidth=0.7,
+        label="uniform baseline",
     )
     ax_f.set_title("F. Aligned-corner mass")
     apply_lambda_axis(ax_f, label=r"$\lambda$")

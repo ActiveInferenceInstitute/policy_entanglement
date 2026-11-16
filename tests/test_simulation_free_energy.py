@@ -67,9 +67,7 @@ def test_variational_free_energy_uses_policy_prior_not_biased_state_prior(num_co
     policy_prior = np.asarray(build_pymdp_agent(stream).E, dtype=np.float64).reshape(-1)
     bundle = free_energy_bundle(spec, [0], lam=0.7)
     marginal = bundle.action_distribution
-    expected = np.sum(
-        marginal * (np.log(marginal) - np.log(policy_prior) + spec.gamma * bundle.efe_per_stream[0])
-    )
+    expected = np.sum(marginal * (np.log(marginal) - np.log(policy_prior) + spec.gamma * bundle.efe_per_stream[0]))
     np.testing.assert_allclose(marginal, np.full(num_controls, 1 / num_controls), atol=1e-12, rtol=0.0)
     assert bundle.vfe_per_stream[0] == pytest.approx(expected, abs=1e-12)
     if num_controls == 2:
@@ -131,16 +129,12 @@ def test_bundle_reuses_one_real_policy_inference_per_stream() -> None:
     spec = _spec(K=2)
     with cProfile.Profile() as profile:
         bundle = free_energy_bundle(spec, [0, 1], lam=0.0)
-    calls = sum(
-        entry.callcount for entry in profile.getstats() if entry.code is Agent.infer_policies.__code__
-    )
+    calls = sum(entry.callcount for entry in profile.getstats() if entry.code is Agent.infer_policies.__code__)
     assert calls == spec.num_streams()
     q = bundle.action_distribution.reshape(spec.policy_shape())
     np.testing.assert_allclose(q, np.outer(q.sum(axis=1), q.sum(axis=0)), atol=1e-12, rtol=0.0)
     for k, marginal in enumerate((q.sum(axis=1), q.sum(axis=0))):
-        assert bundle.efe_under_posterior[k] == pytest.approx(
-            float(marginal @ bundle.efe_per_stream[k]), abs=1e-12
-        )
+        assert bundle.efe_under_posterior[k] == pytest.approx(float(marginal @ bundle.efe_per_stream[k]), abs=1e-12)
 
 
 def test_total_correlation_non_negative_across_grid() -> None:
@@ -398,10 +392,7 @@ def test_aligned_mass_generic_k3_path() -> None:
     bundles = free_energy_curve(spec, [0, 0, 0], [0.0, 1.0, 2.0])
     reference = free_energy_bundle(spec, [0, 0, 0], lam=0.0)
     summary = pymdp_summary_statistics(bundles, zero_reference=reference)
-    corner_masses = [
-        bundle.action_distribution[0] + bundle.action_distribution[-1]
-        for bundle in bundles
-    ]
+    corner_masses = [bundle.action_distribution[0] + bundle.action_distribution[-1] for bundle in bundles]
     assert summary.aligned_mass_min == pytest.approx(min(corner_masses), abs=1e-10)
     assert summary.aligned_mass_at_lambda_max > corner_masses[0]
     assert summary.aligned_mass_at_lambda_max == pytest.approx(

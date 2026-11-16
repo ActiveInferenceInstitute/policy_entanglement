@@ -253,9 +253,12 @@ def test_run_captured_bounded_includes_independent_streams(
     capture_dir = tmp_path / "capture"
     proc, combined = run_captured_bounded(
         [
-            sys.executable, "-I", "-c",
+            sys.executable,
+            "-I",
+            "-c",
             "import sys; sys.stdout.write(sys.argv[1]); sys.stderr.write(sys.argv[2]); sys.exit(7)",
-            stdout, stderr,
+            stdout,
+            stderr,
         ],
         cwd=tmp_path,
         max_chars=64,
@@ -289,9 +292,12 @@ def test_run_captured_bounded_preserves_complete_large_disk_logs(
     capture_dir = tmp_path / "capture"
     proc, combined = run_captured_bounded(
         [
-            sys.executable, "-I", "-c",
+            sys.executable,
+            "-I",
+            "-c",
             "import sys; sys.stdout.write(sys.argv[1]); sys.stderr.write(sys.argv[2]); sys.exit(9)",
-            stdout, stderr,
+            stdout,
+            stderr,
         ],
         cwd=tmp_path,
         max_chars=64,
@@ -319,15 +325,11 @@ def test_run_captured_bounded_caps_characters_not_utf8_bytes(tmp_path: Path, max
     assert combined == "\U00010400" * max_chars
 
 
-def test_capture_stderr_failure_reaches_parallel_dispatch(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_capture_stderr_failure_reaches_parallel_dispatch(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     from orchestration.run_all import _run_parallel_batch
 
     (tmp_path / "failure.py").write_text("raise RuntimeError('STAGE_STDERR_FAILURE')\n", encoding="utf-8")
-    results = _run_parallel_batch(
-        ["failure.py"], max_workers=1, scripts_dir=tmp_path, project_root=tmp_path
-    )
+    results = _run_parallel_batch(["failure.py"], max_workers=1, scripts_dir=tmp_path, project_root=tmp_path)
     assert results[0].returncode != 0
     assert "STAGE_STDERR_FAILURE" in capsys.readouterr().out
     raw_log = tmp_path / "output" / "logs" / "run_all" / "failure" / "stderr.txt"

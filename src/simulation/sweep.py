@@ -84,6 +84,4 @@ def marginal_trajectory(rollout: Rollout, k: int) -> ArrayF:
 def coupled_marginal_trajectories(rollout: Rollout) -> tuple[ArrayF, ...]:
     """Per-stream trajectories reduced from the stored coupled joints."""
     marginals = [joint_marginals(step.coupled_joint) for step in rollout.steps]
-    return tuple(
-        np.stack([step[k] for step in marginals], axis=0) for k in range(rollout.spec.num_streams())
-    )
+    return tuple(np.stack([step[k] for step in marginals], axis=0) for k in range(rollout.spec.num_streams()))

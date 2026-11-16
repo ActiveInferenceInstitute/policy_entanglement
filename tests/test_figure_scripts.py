@@ -157,8 +157,12 @@ def test_pymdp_free_energies_writes_csv_json_and_pngs(sim_module, _redirect_pymd
 @pytest.mark.parametrize("k", [2, 3, 4, 6])
 @pytest.mark.parametrize("endpoints", [(3.0, 1.0), (2e-8, 1e-8)])
 def test_pymdp_pipeline_custom_grids_keep_zero_reference_and_k_dimensional_information(
-    sim_module, _redirect_pymdp_outputs, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-    k: int, endpoints: tuple[float, float],
+    sim_module,
+    _redirect_pymdp_outputs,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    k: int,
+    endpoints: tuple[float, float],
 ) -> None:
     from PIL import Image
 

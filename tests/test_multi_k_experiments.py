@@ -129,7 +129,9 @@ def test_multi_k_summary_keys_present() -> None:
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
     )
     reference = run_multi_k_sweep(
-        K, [0.0], coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
+        K,
+        [0.0],
+        coupling_lambda_gen=float(H.PYMDP_ENSEMBLE_COUPLING_LAMBDA),
         gamma=float(H.PYMDP_ENSEMBLE_GAMMA),
     )[0]
     summary = multi_k_summary(results, zero_reference=reference)

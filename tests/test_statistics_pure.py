@@ -66,8 +66,12 @@ def _gibbs_bundle(lam: float, interaction: np.ndarray) -> FreeEnergyBundle:
     k = interaction.ndim
     zero_costs = [np.zeros(2) for _ in range(k)]
     q = entangled_posterior(
-        [np.full(2, 0.5) for _ in range(k)], zero_costs, interaction,
-        np.zeros_like(interaction), lam=lam, gamma=1.0,
+        [np.full(2, 0.5) for _ in range(k)],
+        zero_costs,
+        interaction,
+        np.zeros_like(interaction),
+        lam=lam,
+        gamma=1.0,
     )
     marginals = joint_marginals(q)
     vfe = np.array([np.sum(m * np.log(m / 0.5)) for m in marginals])

@@ -58,9 +58,17 @@ def _readiness_fixture(root: Path) -> Path:
     reports = root / "output" / "reports"
     reports.mkdir(parents=True)
     (reports / "test_results.json").write_text(
-        json.dumps({"project": {
-            "total": 3, "passed": 2, "skipped": 1, "failed": 0, "coverage_percent": 97.5,
-        }}),
+        json.dumps(
+            {
+                "project": {
+                    "total": 3,
+                    "passed": 2,
+                    "skipped": 1,
+                    "failed": 0,
+                    "coverage_percent": 97.5,
+                }
+            }
+        ),
         encoding="utf-8",
     )
     pdf = root / "output" / "pdf" / "actinf_policy_entanglement_lean_combined.pdf"
@@ -70,7 +78,8 @@ def _readiness_fixture(root: Path) -> Path:
     # The real status reader supports this page-count evidence when optional
     # pdfinfo is absent. The fixture PDF above contains exactly one image page.
     pdf.with_suffix(".log").write_text(
-        f"Output written on {pdf.name} (1 page)\n", encoding="utf-8",
+        f"Output written on {pdf.name} (1 page)\n",
+        encoding="utf-8",
     )
     scripts = root / "scripts"
     scripts.mkdir()
@@ -127,11 +136,14 @@ def test_no_manifest_keeps_manifest_bytes_untouched(tmp_path: Path, preexisting:
     if preexisting:
         manifest.parent.mkdir(exist_ok=True)
         manifest.write_bytes(original)
-    assert run_all.main(
-        ["--serial", "--only", "readiness_report", "--no-manifest"],
-        project_root=tmp_path,
-        scripts_dir=scripts,
-    ) == 0
+    assert (
+        run_all.main(
+            ["--serial", "--only", "readiness_report", "--no-manifest"],
+            project_root=tmp_path,
+            scripts_dir=scripts,
+        )
+        == 0
+    )
     if preexisting:
         assert manifest.read_bytes() == original
     else:
@@ -144,9 +156,14 @@ def test_final_readiness_missing_input_fails_pipeline(tmp_path: Path) -> None:
     scripts = _readiness_fixture(tmp_path)
     with (scripts / "readiness_report.py").open("a", encoding="utf-8") as stream:
         stream.write("(Path.cwd() / 'output/reports/test_results.json').unlink()\n")
-    assert run_all.main(
-        ["--serial", "--only", "readiness_report"], project_root=tmp_path, scripts_dir=scripts,
-    ) == 1
+    assert (
+        run_all.main(
+            ["--serial", "--only", "readiness_report"],
+            project_root=tmp_path,
+            scripts_dir=scripts,
+        )
+        == 1
+    )
     # Prove the initial producer completed and the intended missing-input
     # boundary was reached, rather than accepting an unrelated setup failure.
     assert (tmp_path / "output/reports/release_readiness.json").is_file()

@@ -80,9 +80,7 @@ def test_efe_costs_negate_installed_negative_efe_without_changing_posterior() ->
     observations = [0, 1]
     costs = per_stream_efe(spec, observations)
     posteriors = per_stream_policy_posterior(spec, observations)
-    for agent, obs, cost, posterior in zip(
-        build_pymdp_agents(spec), observations, costs, posteriors, strict=True
-    ):
+    for agent, obs, cost, posterior in zip(build_pymdp_agents(spec), observations, costs, posteriors, strict=True):
         qs = agent.infer_states([jnp.asarray([obs])], agent.D)
         raw_q, neg_efe = agent.infer_policies(qs)
         expected_q = np.asarray(raw_q, dtype=np.float64).reshape(-1)

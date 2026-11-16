@@ -92,8 +92,11 @@ def test_robustness_pipeline_full(tmp_path: Path) -> None:
 @pytest.mark.parametrize("endpoints", [(3.0, 1.0), (2.0, 0.0)])
 @pytest.mark.parametrize("sentinel_lambda", [2.0, 2.5])
 def test_multi_k_pipeline_binds_zero_sentinel_and_max_lambda(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, k: int,
-    endpoints: tuple[float, float], sentinel_lambda: float,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    k: int,
+    endpoints: tuple[float, float],
+    sentinel_lambda: float,
 ) -> None:
     from PIL import Image
 
@@ -109,7 +112,10 @@ def test_multi_k_pipeline_binds_zero_sentinel_and_max_lambda(
     assert run_multi_k_pipeline(tmp_path) == 0
     summary = json.loads((tmp_path / "output/data/multi_k_summary.json").read_text(encoding="utf-8"))
     expected = run_multi_k_sweep(
-        k, [0.0, sentinel_lambda, max(endpoints)], coupling_lambda_gen=1.0, gamma=1.0,
+        k,
+        [0.0, sentinel_lambda, max(endpoints)],
+        coupling_lambda_gen=1.0,
+        gamma=1.0,
     )
     zero, sentinel, endpoint = expected
     prefix = f"multi_k_K{k}_"

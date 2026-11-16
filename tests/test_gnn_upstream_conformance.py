@@ -86,8 +86,7 @@ def selected_release() -> PinnedRelease:
     if ENV_PINNED_RELEASE not in os.environ:
         if ENV_UPSTREAM_ROOT in os.environ:
             pytest.fail(
-                f"explicit {ENV_UPSTREAM_ROOT} requires {ENV_PINNED_RELEASE}; "
-                "run through `python scripts/gate.py gnn`"
+                f"explicit {ENV_UPSTREAM_ROOT} requires {ENV_PINNED_RELEASE}; run through `python scripts/gate.py gnn`"
             )
         pytest.skip(
             f"{ENV_PINNED_RELEASE} is unset: this test runs inside the `gnn` arm "

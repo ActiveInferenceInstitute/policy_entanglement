@@ -64,8 +64,12 @@ def _free_energy_row(bundle: FreeEnergyBundle, interaction: np.ndarray) -> dict[
     kc = np.zeros_like(interaction)
     lhs = free_energy_against_entangled_prior(q, priors, costs, interaction, kc, gamma=1.0, lam=bundle.lam)
     terms = entanglement_decomposition_rhs(q, priors, costs, interaction, kc, gamma=1.0, lam=bundle.lam)
-    rhs = (terms.sum_marginal_free_energies + terms.coupling_cost_term
-           + terms.coupling_prior_term + terms.total_correlation_gain)
+    rhs = (
+        terms.sum_marginal_free_energies
+        + terms.coupling_cost_term
+        + terms.coupling_prior_term
+        + terms.total_correlation_gain
+    )
     return {
         "lambda": repr(float(bundle.lam)),
         "vfe_total": repr(float(bundle.vfe_total)),
@@ -82,9 +86,12 @@ def _free_energy_row(bundle: FreeEnergyBundle, interaction: np.ndarray) -> dict[
 def _multi_k_row(bundle: FreeEnergyBundle, k: int) -> MultiKResult:
     q = bundle.action_distribution.reshape((2,) * k)
     return MultiKResult(
-        K=k, lam=bundle.lam, total_correlation=bundle.total_correlation,
+        K=k,
+        lam=bundle.lam,
+        total_correlation=bundle.total_correlation,
         marginal_entropies=tuple(float(h) for h in bundle.marginal_entropies),
-        joint_entropy=bundle.joint_entropy, coupling_term=bundle.coupling_term,
+        joint_entropy=bundle.joint_entropy,
+        coupling_term=bundle.coupling_term,
         tt_ranks=tuple(int(rank) for rank in tensor_train_ranks(q, atol=float(H.SPECTRAL_RANK_ATOL))),
         aligned_mass=float(q[(0,) * k] + q[(1,) * k]),
     )
@@ -133,9 +140,7 @@ def test_csv_gates_accept_requested_order_and_only_check_exact_zero(
 
 
 @pytest.mark.parametrize("column", ["total_correlation", "coupling_term", "marginal_entropy_sum"])
-def test_actual_zero_row_corruption_still_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, column: str
-) -> None:
+def test_actual_zero_row_corruption_still_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, column: str) -> None:
     grid = FigureGrid(1.0, 0.0, 2)
     monkeypatch.setattr(H, "PYMDP_SWEEP_LAMBDAS", grid)
     monkeypatch.setattr(H, "MULTI_K_SWEEP_LAMBDAS", grid)
@@ -204,9 +209,7 @@ def test_higher_order_dependence_is_not_replaced_by_pair_information(tmp_path: P
     pair = joint.sum(axis=tuple(range(2, k)))
     np.testing.assert_allclose(pair, 0.25, atol=1e-12)
     assert bundle.total_correlation > 0.0
-    path = plot_pymdp_summary_panel(
-        [reference, bundle], zero_reference=reference, out_path=tmp_path / "parity.png"
-    )
+    path = plot_pymdp_summary_panel([reference, bundle], zero_reference=reference, out_path=tmp_path / "parity.png")
     tc = _png_statistics(path)["axes"][0]["lines"][0]["y"]
     assert tc["max"] == pytest.approx(bundle.total_correlation)
 
