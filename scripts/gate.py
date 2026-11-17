@@ -18,6 +18,7 @@ Arms (all commands run with this interpreter, so ``uv run --no-sync``
 selects the environment for CI and for local runs alike):
 
 =================  =====================================================
+``lock``           ``uv lock --check`` (``uv.lock`` matches ``pyproject.toml``)
 ``lint``           ``ruff check src/ scripts/ tests/``
 ``format``         ``ruff format --check src/ scripts/ tests/``
 ``types``          ``mypy src/ scripts/``
@@ -36,7 +37,7 @@ selects the environment for CI and for local runs alike):
 ``pipeline-release`` ``scripts/run_all.py --with-pdf --with-mathlib``
 ``pdf``            ``scripts/build_pdf.py``
 ``pdf-validate``   ``scripts/validate_pdf.py``
-``ci``             ``lint`` + ``format`` + ``types`` + ``pipeline``
+``ci``             ``lock`` + ``lint`` + ``format`` + ``types`` + ``pipeline``
 ``readiness``      ``pipeline-release`` + ``pdf-validate`` + lint/format/types + report
 =================  =====================================================
 
@@ -372,6 +373,17 @@ def _arm_gnn() -> int:
 # --- arms ----------------------------------------------------------------
 
 
+def _arm_lock() -> int:
+    # `uv sync --frozen` installs whatever uv.lock records without checking it
+    # against pyproject.toml, so a manifest edit that skips the lock would still
+    # install. This arm fails when the two disagree.
+    uv = shutil.which("uv")
+    if uv is None:
+        print("gate: `uv` is required for the lock arm", file=sys.stderr)
+        return 2
+    return _run([uv, "lock", "--check"])
+
+
 def _arm_lint() -> int:
     return _run(_python("-m", "ruff", "check", "src/", "scripts/", "tests/"))
 
@@ -466,6 +478,7 @@ class Arm:
 
 
 ARMS: dict[str, Arm] = {
+    "lock": Arm("uv lock --check", _arm_lock),
     "lint": Arm("ruff check", _arm_lint),
     "format": Arm("ruff format --check", _arm_format),
     "types": Arm("mypy src/ scripts/", _arm_types),
@@ -484,7 +497,10 @@ ARMS: dict[str, Arm] = {
     "pipeline-release": Arm("scripts/run_all.py --with-pdf --with-mathlib", _arm_pipeline_release),
     "pdf": Arm("scripts/build_pdf.py", _arm_pdf),
     "pdf-validate": Arm("scripts/validate_pdf.py", _arm_validate_pdf),
-    "ci": Arm("lint + format + types + pipeline (the CI job)", lambda: _chain("lint", "format", "types", "pipeline")),
+    "ci": Arm(
+        "lock + lint + format + types + pipeline (the CI job)",
+        lambda: _chain("lock", "lint", "format", "types", "pipeline"),
+    ),
     "readiness": Arm(
         "pipeline-release + pdf-validate + lint + format + types + readiness report",
         lambda: _chain("pipeline-release", "pdf-validate", "lint", "format", "types") or _arm_readiness_report(),

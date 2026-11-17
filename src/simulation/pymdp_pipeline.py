@@ -38,7 +38,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
         prog="simulate_pymdp",
         description=(
-            "Run the pymdp 1.0.1 POMDP simulation harness end-to-end. "
+            "Run the pymdp 1.0.5 POMDP simulation harness end-to-end. "
             "Defaults reproduce the manuscript figures bit-exactly; overrides "
             "patch simulation.hyperparameters for the lifetime of the process."
         ),

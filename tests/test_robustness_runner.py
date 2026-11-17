@@ -28,7 +28,7 @@ def test_snapshot_and_metadata_helpers() -> None:
     assert "project.hyperparameters" in meta
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_write_robustness_csv_round_trip(tmp_path: Path) -> None:
     rows = run_robustness_suite([0.0, 1.0])
     path = write_robustness_csv(rows, tmp_path)
@@ -39,7 +39,7 @@ def test_write_robustness_csv_round_trip(tmp_path: Path) -> None:
     assert got[0]["scenario_id"] == rows[0].scenario_id
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_write_ablation_and_null_control_csv(tmp_path: Path) -> None:
     from simulation.robustness import run_coupling_ablation, run_marginal_null_control
 

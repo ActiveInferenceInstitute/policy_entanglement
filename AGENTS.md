@@ -19,7 +19,7 @@ alongside the code:
 ## Identity & scope
 
 A Lean 4 formalization of **Policy Entanglement in Active Inference**,
-paired with a Python analytical companion, an `inferactively-pymdp==1.0.1`
+paired with a Python analytical companion, an `inferactively-pymdp==1.0.5`
 POMDP simulation harness using the `pymdp` import/API, a visualization
 stack, and a modular manuscript.
 
@@ -94,7 +94,7 @@ regenerate with [`scripts/generate_audit_matrix.py`](scripts/generate_audit_matr
 │   ├── guides/ · reference/ · modules/ · simulation/
 ├── src/
 │   ├── lean/            ← Analytical mirrors of the Lean modules
-│   ├── simulation/      ← pymdp 1.0.1 POMDP harness (specs, builders, agents, …)
+│   ├── simulation/      ← pymdp 1.0.5 POMDP harness (specs, builders, agents, …)
 │   ├── gnn/             ← Fifth-track GNN round-trip (parse → bridge → sidecar)
 │   ├── visualizations/  ← Reusable plotting helpers
 │   ├── manuscript/      ← Registry, validators, renderer, lean-snippet extractor

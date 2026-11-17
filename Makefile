@@ -10,13 +10,14 @@
 
 GATE := uv run --no-sync python scripts/gate.py
 
-.PHONY: help ci lint format types test-fast test-lean test-sim test-full test-all \
+.PHONY: help ci lock lint format types test-fast test-lean test-sim test-full test-all \
         slow build-lean build-mathlib-proofs mathlib regression docs gnn pipeline \
         pipeline-pdf pipeline-release pipeline-serial pdf validate-pdf readiness clean
 
 help:
 	@echo "Gate arms (all delegate to scripts/gate.py):"
-	@echo "  make ci                 # lint + format + types + pipeline (the CI job)"
+	@echo "  make ci                 # lock + lint + format + types + pipeline (the CI job)"
+	@echo "  make lock               # uv lock --check (uv.lock matches pyproject.toml)"
 	@echo "  make lint               # ruff check"
 	@echo "  make format             # ruff format --check"
 	@echo "  make types              # mypy src/ scripts/"
@@ -43,6 +44,9 @@ help:
 
 ci:
 	$(GATE) ci
+
+lock:
+	$(GATE) lock
 
 lint:
 	$(GATE) lint

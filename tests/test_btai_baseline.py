@@ -219,7 +219,7 @@ def test_run_btai_scenario_rejects_shape_mismatch_reference() -> None:
 def test_pymdp_grounded_efe_fn_uses_real_pymdp_agent() -> None:
     """End-to-end: BTAI baseline driven by real `pymdp.agent.Agent` EFE.
 
-    Requires real pymdp 1.0.1 to be installed (the project's standard
+    Requires real pymdp 1.0.5 to be installed (the project's standard
     dev environment); if absent, skips honestly via the
     `requires_pymdp` marker pattern used elsewhere in the suite.
 

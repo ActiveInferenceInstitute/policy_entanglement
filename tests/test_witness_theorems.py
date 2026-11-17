@@ -40,7 +40,7 @@ from lean.spectral import tensor_train_ranks
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp 1.0.5 not installed (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 

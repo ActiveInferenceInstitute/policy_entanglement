@@ -143,7 +143,7 @@ bradbury-2018:
   title: "JAX: composable transformations of Python+NumPy programs"
   venue: "Open-source software"
   url: "http://github.com/jax-ml/jax"
-  note: "Canonical citation per the JAX CITATION.bib file. No replacement journal/paper has emerged as of 2026-05. JAX backend underlies pymdp 1.0.1 and the simulation harness."
+  note: "Canonical citation per the JAX CITATION.bib file. No replacement journal/paper has emerged as of 2026-05. JAX backend underlies pymdp 1.0.5 and the simulation harness."
   topic: software
 
 buckley-2017:
@@ -647,7 +647,7 @@ heins-2022:
   pages: "4098"
   doi: "10.21105/joss.04098"
   url: "https://joss.theoj.org/papers/10.21105/joss.04098"
-  note: "v1.0.1 JAX-based release is the simulation backend used by the empirical suite and src/simulation/; arXiv:2201.03904."
+  note: "v1.0.5 JAX-based release is the simulation backend used by the empirical suite and src/simulation/; arXiv:2201.03904."
   topic: active_inference
 
 pymdp-developers-2026:

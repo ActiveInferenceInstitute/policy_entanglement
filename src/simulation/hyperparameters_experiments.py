@@ -23,7 +23,7 @@ REVERTIBILITY_TOLERANCE: float = 1e-12
 REVERTIBILITY_KL_IDENTITY_TOLERANCE: float = 1e-9
 
 # ---------------------------------------------------------------------------
-# pymdp 1.0.1 Agent construction knobs
+# pymdp 1.0.5 Agent construction knobs
 # ---------------------------------------------------------------------------
 
 #: Default policy lookahead horizon passed to ``pymdp.agent.Agent``. A

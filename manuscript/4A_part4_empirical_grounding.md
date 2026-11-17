@@ -13,7 +13,7 @@ joint policy posterior.
 
 The empirical bridge is specified as a reproducibility checklist, not
 as an informal simulation description.  The package provenance is the
-pinned `inferactively-pymdp==1.0.1` distribution that provides the
+pinned `inferactively-pymdp==1.0.5` distribution that provides the
 `pymdp` import/API, with the JOSS paper, official repository, and
 official documentation serving as the external source trail
 [@heins-2022; @pymdp-developers-2026; @pymdp-docs-2026].  The local

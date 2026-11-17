@@ -1,4 +1,4 @@
-# pymdp 1.0.1 POMDP Harness: Architecture, Lambda Sweep, and Deterministic Rollout
+# pymdp 1.0.5 POMDP Harness: Architecture, Lambda Sweep, and Deterministic Rollout
 
 This sub-section documents the **architecture** of the pymdp grounding
 layer — how the manuscript's analytical λ-coupling sits *on top of* a
@@ -55,7 +55,7 @@ and the repository's coupling layer preserves the $\lambda = 0$
 mean-field baseline before adding cross-stream dependence.
 
 **Reproducibility checklist.**  The software package is
-`inferactively-pymdp==1.0.1`, installed through the project's `sim`
+`inferactively-pymdp==1.0.5`, installed through the project's `sim`
 dependency group and cited through both the JOSS software paper and
 the official repository / documentation
 [@heins-2022; @pymdp-developers-2026; @pymdp-docs-2026].  The POMDP
@@ -110,7 +110,7 @@ Three contracts are load-bearing:
    inside those calls, so the entire chain is reproducible under fixed
    `(spec, obs, lam, seed)`.
 
-**Note on precision.**  `inferactively-pymdp==1.0.1` provides the pymdp
+**Note on precision.**  `inferactively-pymdp==1.0.5` provides the pymdp
 import/API, whose JAX path uses `float32` for per-stream inference
 (`infer_states`, `infer_policies`).  The harness recasts the
 resulting policy posteriors $q^k_\pi$ and EFE values $G_k(\pi)$ to

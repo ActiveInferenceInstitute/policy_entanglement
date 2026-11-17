@@ -109,7 +109,7 @@ release environment is refreshed with:
 uv sync --group sim --group viz --group lint
 ```
 
-The `sim` group supplies `inferactively-pymdp==1.0.1`; the lockfile
+The `sim` group supplies `inferactively-pymdp==1.0.5`; the lockfile
 records the exact wheel / source archive, and the methods prose cites
 the JOSS paper plus the official source and documentation
 [@heins-2022; @pymdp-developers-2026; @pymdp-docs-2026].  The only

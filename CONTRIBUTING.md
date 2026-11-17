@@ -50,7 +50,7 @@ arm-by-arm run guide with measured wall times.
 | `lean/ActinfPolicyEntanglement/` | Mathlib-free boundary fragment (`sorry`-free, `axiom`-free) | adding a Lean theorem |
 | `lean/FepSketches/` | Re-export shim for the wider FEP world | adding a re-exported lemma |
 | `src/lean/` | Numerical companion to the Lean modules | adding analytical helpers |
-| `src/simulation/` | pymdp 1.0.1 POMDP harness + hyperparameters single-source | adding sim helpers |
+| `src/simulation/` | pymdp 1.0.5 POMDP harness + hyperparameters single-source | adding sim helpers |
 | `src/visualizations/` | matplotlib / seaborn / plotly helpers | adding plot helpers |
 | `src/manuscript/` | Token rendering, equation auto-numbering, validation | adding registry / renderer logic |
 | `tests/` | pytest suite (no mocks; real `numpy` only) | every change above needs a test |

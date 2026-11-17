@@ -23,7 +23,7 @@ under fixed seeds.  The contract:
 | Surface | Mechanism | Source-of-truth |
 | --- | --- | --- |
 | `numpy` global RNG | `deterministic_setup(seed=...)` at script top | `src/visualizations/setup.py` |
-| pymdp 1.0.1 (JAX backend) | Deterministic FPI inference algorithm; no random sampling inside `infer_states` / `infer_policies` | `simulation.agents.build_pymdp_agent(inference_algo='fpi')` |
+| pymdp 1.0.5 (JAX backend) | Deterministic FPI inference algorithm; no random sampling inside `infer_states` / `infer_policies` | `simulation.agents.build_pymdp_agent(inference_algo='fpi')` |
 | Coupled rollout sampling | `np.random.default_rng(seed)` instantiated once per rollout | `simulation.rollout.simulate_coupled_rollout` |
 | Figure global seed | `42` | `simulation.hyperparameters.FIGURE_GLOBAL_SEED` |
 | Rollout seed (manuscript figure) | `0` | `simulation.hyperparameters.PYMDP_ROLLOUT_SEED` |
@@ -177,7 +177,7 @@ caption → code → test in one step.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│  pymdp 1.0.1 mean-field layer (per-stream, JAX-backed)           │
+│  pymdp 1.0.5 mean-field layer (per-stream, JAX-backed)           │
 │    Agent(A,B,C,D, gamma, inference_algo='fpi')                   │
 │    .infer_states(obs, prior)  ──▶  qs    (state posterior)       │
 │    .infer_policies(qs)        ──▶  q_pi^k, G_k                   │
@@ -257,5 +257,5 @@ on top of the per-module Python suite.)
 
 * [`guides/styleguide.md`](../guides/styleguide.md) — manuscript ↔ code contract.
 * [`reference/architecture.md`](architecture.md) — two-layer / executable-track design.
-* [`simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.md) — pymdp 1.0.1 harness internals.
+* [`simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.md) — pymdp 1.0.5 harness internals.
 * [`reference/lean_reference.md`](lean_reference.md) — per-theorem Lean status.

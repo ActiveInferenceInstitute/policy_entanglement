@@ -1,6 +1,6 @@
 """Tests for the pymdp-grounded free-energy methods.
 
-Every test runs *real* pymdp 1.0.1 inference (no mocks) and asserts
+Every test runs *real* pymdp 1.0.5 inference (no mocks) and asserts
 numerical contracts on the resulting :class:`FreeEnergyBundle`:
 
 * shapes are correct,
@@ -24,7 +24,7 @@ from simulation.agents import pymdp_available
 
 if not pymdp_available():
     pytestmark = pytest.mark.skip(
-        reason="pymdp 1.0.1 not installed (uv sync --group sim)",
+        reason="pymdp 1.0.5 not installed (uv sync --group sim)",
     )
 else:
     pytestmark = pytest.mark.requires_pymdp

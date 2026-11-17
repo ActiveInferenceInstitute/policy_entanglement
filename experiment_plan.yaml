@@ -4,7 +4,7 @@ conditions:
     description: "K=2 Ising closed-form λ sweep validated against empirical total correlation."
   - name: pymdp_lambda_sweep
     role: proposed
-    description: "inferactively-pymdp==1.0.1 coupled rollout with free-energy bundle observables."
+    description: "inferactively-pymdp==1.0.5 coupled rollout with free-energy bundle observables."
   - name: multi_k_ensemble
     role: variant
     description: "Multi-stream (K>2) ensemble sweep with per-K sidecars."

@@ -12,7 +12,7 @@ have their own `AGENTS.md`, while `reporting/`, `gates/`,
 | Subpackage | Path | Purpose |
 |---|---|---|
 | `lean` | [`src/lean/`](lean/) | Analytical mirrors of the Lean 4 boundary fragment (joint distributions, coupling, free energies, geometry, spectral, heterogeneous, Bernoulli toy, decomposition theorem) plus a numerical-witness layer (`invariants.py`) feeding the dashboard |
-| `simulation` | [`src/simulation/`](simulation/) | pymdp 1.0.1 POMDP harness for coupled-policy ensembles (specs, builders, agents, inference, rollout, sweep, statistics) — also owns the `hyperparameters.py` source-of-truth, the `FreeEnergyBundle` (VFE / EFE / entropy / coupling-term / TC / action-distribution), and the JSONL `RunLogger` |
+| `simulation` | [`src/simulation/`](simulation/) | pymdp 1.0.5 POMDP harness for coupled-policy ensembles (specs, builders, agents, inference, rollout, sweep, statistics) — also owns the `hyperparameters.py` source-of-truth, the `FreeEnergyBundle` (VFE / EFE / entropy / coupling-term / TC / action-distribution), and the JSONL `RunLogger` |
 | `gnn` | [`src/gnn/`](gnn/) | Fifth-track GNN round-trip (parse → bridge → closed-form comparison → sidecar) |
 | `visualizations` | [`src/visualizations/`](visualizations/) | Reusable plotting helpers (heatmaps, joint plots, spectral, trajectory, graph, log-weight, free-energy dashboards, pymdp-extra dashboards) plus the PNG `tEXt` reproducibility-metadata helpers |
 | `manuscript` | [`src/manuscript/`](manuscript/) | Manuscript registry, token renderer, equation auto-numbering pipeline, citation / bibliography helpers, Lean-source extraction, validators, release output gates (`output_gates/`, `registry_facts.py`, `stale_patterns.py`, `status_patterns.py`) |
