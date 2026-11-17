@@ -32,7 +32,6 @@ import io
 import json
 import os
 import subprocess
-import sys
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -123,10 +122,7 @@ def upstream_run(tmp_path_factory: pytest.TempPathFactory, selected_release: Pin
         capture_output=True,
     )
     with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as stream:
-        if sys.version_info >= (3, 12):
-            stream.extractall(extract_dir, filter="data")
-        else:  # pragma: no cover - the documented gate runs a modern interpreter
-            stream.extractall(extract_dir)
+        stream.extractall(extract_dir, filter="data")
 
     # Non-vacuity control: the two parsers classify one dtype differently —
     # the project parser reads `bool`, the pinned upstream parser reads its
