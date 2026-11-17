@@ -1,6 +1,6 @@
 # AGENTS.md — `docs/simulation/`
 
-Documentation for the `inferactively-pymdp==1.0.1`-backed `pymdp`
+Documentation for the `inferactively-pymdp==1.0.5`-backed `pymdp`
 POMDP simulation harness under [`../../src/simulation/`](../../src/simulation/)
 and the rendering helpers under
 [`../../src/visualizations/`](../../src/visualizations/).
@@ -25,7 +25,7 @@ and the rendering helpers under
    silently breaks the manuscript variable injection.
 3. **No mocks; pymdp is real.** When showing an example invocation, the
    command must run end-to-end against the real `pymdp` import/API supplied
-   by `inferactively-pymdp==1.0.1` (`uv sync --group sim`). If a tutorial
+   by `inferactively-pymdp==1.0.5` (`uv sync --group sim`). If a tutorial
    requires `inferactively-pymdp` that is not installed by default, gate the
    section with an explicit `requires_pymdp` flag.
 4. **Reproducibility tEXt metadata.** When showing how to call a figure
@@ -34,7 +34,7 @@ and the rendering helpers under
 
 ## Current ground truth
 
-- `inferactively-pymdp==1.0.1` is pinned in the `sim` group of
+- `inferactively-pymdp==1.0.5` is pinned in the `sim` group of
   `pyproject.toml` and provides the `pymdp` import/API.
 - K = 2 streams default (override via `make_ising_ensemble(num_streams=…)`);
   configured multi-K sweep via `scripts/simulate_multi_k.py`.

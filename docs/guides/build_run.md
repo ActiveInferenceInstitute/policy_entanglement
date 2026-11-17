@@ -70,7 +70,7 @@ dependency groups.  Core dependencies declared in
 [`../../pyproject.toml`](../../pyproject.toml) are `numpy`, `scipy`,
 `matplotlib`, `pyyaml`; the `dev` group adds `pytest`, `pytest-cov`;
 the `viz` group adds `seaborn`, `networkx`, `plotly`; the `sim` group
-adds `inferactively-pymdp==1.0.1` (which pulls in JAX).
+adds `inferactively-pymdp==1.0.5` (which pulls in JAX).
 
 ### Installation
 
@@ -78,7 +78,7 @@ From the project root:
 
 ```bash
 uv sync                                        # core + dev + viz
-uv sync --group sim --group viz                # full env, with inferactively-pymdp==1.0.1 + viz
+uv sync --group sim --group viz                # full env, with inferactively-pymdp==1.0.5 + viz
 ```
 
 ### Tests + coverage
@@ -120,7 +120,7 @@ uv run python scripts/generate_figures.py            # 15 headline analytical PN
 uv run python scripts/manuscript_variables.py        # JSON facts → output/data/manuscript_variables.json
 uv run python scripts/dump_archetypes.py             # K=2 Schmidt archetype CSV → output/data/ising_archetypes.csv
 uv run python scripts/parameter_sweep.py             # configured λ sweep CSV → output/data/parameter_sweep.csv
-uv run python scripts/simulate_pymdp.py              # inferactively-pymdp==1.0.1 / pymdp harness (14 PNGs + free-energy bundle CSV) → output/figures/, output/simulations/
+uv run python scripts/simulate_pymdp.py              # inferactively-pymdp==1.0.5 / pymdp harness (14 PNGs + free-energy bundle CSV) → output/figures/, output/simulations/
 uv run python scripts/simulate_multi_k.py            # configured multi-K Ising sweep (3 PNGs + summary JSON) → output/figures/, output/data/multi_k_summary.json
 uv run python scripts/simulate_long_horizon.py       # configured long-horizon rollout (2 PNGs + summary JSON) → output/figures/, output/data/long_horizon_summary.json
 uv run python scripts/simulate_revertibility.py      # round-3 m-projection KL identity sweep (1 PNG + summary JSON) → output/figures/, output/data/revertibility_summary.json

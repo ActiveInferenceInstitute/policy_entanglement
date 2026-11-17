@@ -7,7 +7,7 @@ surface is still source-driven: grids and seeds live in
 `hyperparameters.py`, numerical helpers live in `simulation/`, and
 scripts only orchestrate I/O.
 
-`inferactively-pymdp==1.0.1`-backed `pymdp` POMDP simulation harness:
+`inferactively-pymdp==1.0.5`-backed `pymdp` POMDP simulation harness:
 hyperparameters, agent factory, coupled-policy posterior, free-energy
 bundle, λ-sweep, deterministic rollout, structured JSONL logging,
 bundle-aggregation statistics.
@@ -21,7 +21,7 @@ Companion: [`../simulation/pomdp_simulation.md`](../simulation/pomdp_simulation.
 
 ## Subpackage `simulation/`
 
-`inferactively-pymdp==1.0.1` is an optional dependency
+`inferactively-pymdp==1.0.5` is an optional dependency
 (`uv sync --group sim`) that provides the `pymdp` import/API; the
 agent / inference / rollout modules raise
 `ModuleNotFoundError(PYMDP_INSTALL_HINT)` when it is missing.

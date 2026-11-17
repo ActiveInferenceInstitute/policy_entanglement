@@ -1,15 +1,15 @@
 # `docs/simulation/` — pymdp + visualization technical reference
 
 Documents the *grounded* layer of the project: a deterministic
-end-to-end simulation harness on top of pymdp 1.0.1, plus the
+end-to-end simulation harness on top of pymdp 1.0.5, plus the
 matplotlib helpers that render every manuscript figure.
 
 | File | Purpose |
 |---|---|
-| [`pomdp_simulation.md`](pomdp_simulation.md) | pymdp 1.0.1 POMDP harness architecture, layered design, and full API |
+| [`pomdp_simulation.md`](pomdp_simulation.md) | pymdp 1.0.5 POMDP harness architecture, layered design, and full API |
 | [`visualizations.md`](visualizations.md) | Reusable plotting helpers (heatmaps, joint plots, spectral, trajectory, graph, log-weight) |
 
-Current simulation baseline: **pymdp 1.0.1**, default stream count from
+Current simulation baseline: **pymdp 1.0.5**, default stream count from
 `PYMDP_ENSEMBLE_K` and the configured multi-K sweep from
 `MULTI_K_VALUES`. PNG figure count is reported by
 `output/reports/release_readiness.json` / `output/figures/` across

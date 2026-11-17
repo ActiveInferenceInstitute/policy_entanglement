@@ -2,8 +2,8 @@
 
 **Status:** Active — review passes complete; all Minor/Medium findings implemented and all
 previously-scoped Major findings (M1, M2) implemented. The 2026-11-12 dependency pass verifies
-both cutovers as landed and leaves one open item: the `inferactively-pymdp` 1.0.1 → 1.0.5 bump
-did not reach the documentation, or the test that pins the old string.
+both cutovers as landed and left the `inferactively-pymdp` 1.0.1 → 1.0.5 bump out of the documentation; the
+2026-11-17 follow-up brings the docs to 1.0.5 and adds a `uv lock --check` gate arm.
 
 **Owner:** Daniel Ari Friedman (daniel@activeinference.institute)
 
@@ -36,21 +36,14 @@ cutovers are in; the second one left the documentation behind.
 
 ### Open
 
-- **[ ] The 1.0.5 bump did not reach the documentation.** 56 tracked files still spell the
-  dependency `inferactively-pymdp==1.0.1` (108 occurrences), among them `README.md`,
-  `AGENTS.md`, `docs/glossary.md`, `docs/simulation/pomdp_simulation.md`,
-  `docs/reference/veridical_status.md` (a verifiability row that reads "pymdp version |
-  **1.0.1**"), `src/simulation/agents.py` (module docstring, `PYMDP_INSTALL_HINT`, and six
-  inline notes), the `requires_pymdp` marker description in `pyproject.toml`, and
-  `manuscript/4C_pymdp_harness.md`. Two things keep it in place: no gate covers a pinned
-  dependency's version string — the `docs` arm runs the hyperlink audit,
-  `tests/test_docs_no_stale_registry_numbers.py` (counts only) and `tests/test_generate_index.py`
-  — and `tests/test_status_docs.py::_pymdp_package_api_wording_issues` **requires**
-  `inferactively-pymdp==1.0.1` in ten current-facing files, so the docs cannot be corrected
-  without editing that test in the same change (derive the expectation from
-  `importlib.metadata.version("inferactively-pymdp")` instead of a literal). `docs/CHANGELOG.md`
-  has no entry for the bump; its newest item is the GNN cutover. Owner: maintainer;
-  unblocked. Verify with `make docs test-fast` after the sweep.
+- **[x] The 1.0.5 bump reaches the documentation (2026-11-17).** The 2026-11-12 pass found
+  `inferactively-pymdp==1.0.1` in 56 tracked files (108 occurrences) and a test,
+  `tests/test_status_docs.py::_pymdp_package_api_wording_issues`, that required the old
+  literal. Current-facing files now name `1.0.5`; that test derives the expectation from the
+  `sim` group and extra in `pyproject.toml` and flags any other pymdp version in its file set;
+  `docs/CHANGELOG.md` records the change. Historical records (`docs/CHANGELOG.md` round 1,
+  `REVIEW_LOG_2026-08-02.md`) keep `1.0.1`. The same change adds the `lock` arm
+  (`uv lock --check`) to `make ci` and the `ci` workflow job (issue #7).
 - **[ ] The `Current status` block above measures a tree that no longer exists.** Its counts
   (1480 passed / 7 skipped / 1 xfailed, 94.79% `src/` coverage, `ruff` + `mypy` clean) are the
   2026-08-01 run. 52 commits have landed since, 15 of them touching `tests/` or `src/`,

@@ -1,4 +1,4 @@
-"""End-to-end tests for the pymdp 1.0.1 simulation harness.
+"""End-to-end tests for the pymdp 1.0.5 simulation harness.
 
 Marked ``requires_pymdp`` — the suite skips entirely when the ``sim``
 group is not installed, keeping the lean infra runner green.
@@ -12,7 +12,7 @@ import pytest
 from simulation.agents import pymdp_available
 
 if not pymdp_available():
-    pytestmark = pytest.mark.skip(reason="pymdp 1.0.1 not installed (uv sync --group sim)")
+    pytestmark = pytest.mark.skip(reason="pymdp 1.0.5 not installed (uv sync --group sim)")
 else:
     pytestmark = pytest.mark.requires_pymdp
 

@@ -339,7 +339,7 @@ def pymdp_grounded_efe_fn(
             per-stream POMDP primitives the BTAI baseline is run
             against. The same spec object is used by
             :func:`simulation.inference.per_stream_efe` to drive real
-            pymdp 1.0.1 inference once per stream.
+            pymdp 1.0.5 inference once per stream.
         observations: Per-stream observations passed into pymdp's
             policy-posterior step (length ``num_streams``).
 

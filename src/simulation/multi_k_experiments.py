@@ -10,7 +10,7 @@ Each experiment:
 
   1. Builds a real K-stream Ising ensemble via
      :func:`simulation.builders.make_ising_ensemble`.
-  2. Runs the pymdp 1.0.1 agents and the λ-coupling layer at every
+  2. Runs the pymdp 1.0.5 agents and the λ-coupling layer at every
      λ in :data:`simulation.hyperparameters.MULTI_K_SWEEP_LAMBDAS`.
   3. Records, for each λ: the joint policy posterior, its per-stream
      marginals, the total correlation $I(q_\\lambda)$ (multi-

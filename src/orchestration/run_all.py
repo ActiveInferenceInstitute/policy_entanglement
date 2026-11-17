@@ -58,7 +58,7 @@ SCRIPTS: list[tuple[str, str]] = [
     ("generate_figures.py", "render every manuscript figure"),
     ("dump_archetypes.py", "dump K=2 Schmidt archetypes"),
     ("parameter_sweep.py", "fine-grained parameter sweep"),
-    ("simulate_pymdp.py", "pymdp 1.0.1 POMDP simulation harness"),
+    ("simulate_pymdp.py", "pymdp 1.0.5 POMDP simulation harness"),
     ("simulate_multi_k.py", "configured multi-K ensemble experiments"),
     ("simulate_long_horizon.py", "configured long-horizon habit-accumulation rollout"),
     ("simulate_revertibility.py", "m-projection back-to-mean-field witness"),

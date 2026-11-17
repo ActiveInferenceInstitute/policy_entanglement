@@ -25,7 +25,7 @@ The suite is split across **two computational layers**:
    experiment in *this* section: closed-form Bernoulli validation,
    heterogeneous coupling-tax envelope, phase diagram, Schmidt
    spectrum, e-geodesic flow, and the multi-stream coupling graph.
-2. **POMDP simulation harness** — the `pymdp` 1.0.1 layer under
+2. **POMDP simulation harness** — the `pymdp` 1.0.5 layer under
    [`src/simulation/`](../src/simulation/) that *grounds* the coupled
    policy ensemble inside an actual partially-observed Markov
    decision process [@heins-2022], instantiated for the baseline
@@ -421,7 +421,7 @@ post-hoc cutoff.
 
 ## Software and numerical stack
 
-The reproducibility chain rests on `inferactively-pymdp==1.0.1`, which
+The reproducibility chain rests on `inferactively-pymdp==1.0.5`, which
 provides the pymdp import/API [@heins-2022] with its JAX backend
 [@bradbury-2018] for per-stream POMDP inference, NumPy
 [@harris-2020] and SciPy [@virtanen-2020] for the dense joint-policy

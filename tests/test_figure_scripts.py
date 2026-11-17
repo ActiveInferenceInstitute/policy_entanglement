@@ -104,7 +104,7 @@ def test_figure_coupling_graph_when_networkx_present(gen_module) -> None:
 @pytest.fixture(scope="module")
 def sim_module():
     if not pymdp_available():
-        pytest.skip("pymdp 1.0.1 not installed")
+        pytest.skip("pymdp 1.0.5 not installed")
     return importlib.import_module("simulate_pymdp")
 
 

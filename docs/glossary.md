@@ -135,9 +135,9 @@ objects, sign conventions), see
   (no `sorry`, no witness `structure` hypothesis).  Five theorems carry
   the `proved` status.
 
-- **pymdp 1.0.1.**  The Python active-inference import/API this project
+- **pymdp 1.0.5.**  The Python active-inference import/API this project
   uses as its empirical grounding layer.  The installed distribution is
-  `inferactively-pymdp==1.0.1`, pinned in the `sim` group of
+  `inferactively-pymdp==1.0.5`, pinned in the `sim` group of
   `pyproject.toml`.  K = 2 streams by default; configured multi-K sweeps
   use `MULTI_K_VALUES`.
 

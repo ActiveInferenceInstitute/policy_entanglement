@@ -68,7 +68,7 @@ pymdp, Lean 4) are maintained as a single working repository artifact
 (`10.5281/zenodo.20418904`) and source repository are recorded in
 [`manuscript/config.yaml`](config.yaml) and [`CITATION.cff`](../CITATION.cff).
 The entire build — rendered PDF, pymdp
-1.0.1 numerical sidecars, dashboard invariants, and the `MathlibProofs`
+1.0.5 numerical sidecars, dashboard invariants, and the `MathlibProofs`
 $\mathbb{R}$-level discharge — regenerates from a single command
 (`./run.sh --pipeline` or `python scripts/run_all.py`), and the
 repository's machine-readable `CITATION.cff` provides the preferred

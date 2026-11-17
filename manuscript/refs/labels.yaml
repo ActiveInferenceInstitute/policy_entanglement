@@ -429,7 +429,7 @@ figures:
       total correlation
       $\approx [[VAR:btai_total_correlation_at_max_budget:.4f]]$ nats is
       near zero (mass concentrated on one joint action).  A reproducible
-      worked run driven by real pymdp 1.0.1 per-stream expected free
+      worked run driven by real pymdp 1.0.5 per-stream expected free
       energy; the full compute-matched hypothesis test of
       [[SECREF:discussion]] is author-led future analysis, not asserted
       here.  Source: `scripts/simulate_btai.py`; data:
@@ -1078,7 +1078,7 @@ sections:
   connections.cerebrum:      {number: "19.4",  title: "CEREBRUM and case grammar",                       parent: connections_multi_agent_geometry}
   lean_plan:            {number: "12", title: "Lean 4 Formalization: Current Boundary, Witness Contracts, and Mathlib Scope", file: "3B_lean_formalization.md"}
   empirical:            {number: "13", title: "Empirical Simulation Suite: Closed-Form Validation, Heterogeneous Coupling Tax, Phase Diagram, and Spectral Structure", file: "4B_empirical_suite.md"}
-  pymdp_harness:        {number: "14", title: "pymdp 1.0.1 Grounded POMDP Harness: Layered Architecture, $\\lambda$-Sweep, and Deterministic Coupled Rollout", file: "4C_pymdp_harness.md"}
+  pymdp_harness:        {number: "14", title: "pymdp 1.0.5 Grounded POMDP Harness: Layered Architecture, $\\lambda$-Sweep, and Deterministic Coupled Rollout", file: "4C_pymdp_harness.md"}
   pymdp_free_energy:    {number: "15", title: "pymdp Free-Energy Bundle: VFE / EFE / Entropy / Coupling-Term Observables and Auto-Injected Summary Statistics", file: "4D_pymdp_free_energy.md"}
   pymdp_validation:     {number: "16", title: "pymdp Validation, Structured JSONL Logging, and the Reproducibility Contract", file: "4E_pymdp_validation.md"}
   open_questions:       {number: "20", title: "Open Questions: Analytical, Identifiability, Empirical, Conceptual, and Practical", file: "6B_open_questions.md"}

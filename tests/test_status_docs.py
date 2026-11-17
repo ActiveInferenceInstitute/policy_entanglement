@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import os
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -200,16 +201,41 @@ def _pymdp_package_api_wording_issues() -> list[str]:
         PROJECT / "manuscript" / "6C_discussion_and_outlook.md",
     ]
     combined = "\n".join(path.read_text(encoding="utf-8") for path in current_files if path.exists())
+    pinned = _pinned_pymdp_version()
     issues: list[str] = []
-    if "inferactively-pymdp==1.0.1" not in combined:
-        issues.append("current docs no longer name the installed inferactively-pymdp==1.0.1 distribution")
+    if f"inferactively-pymdp=={pinned}" not in combined:
+        issues.append(f"current docs no longer name the pinned inferactively-pymdp=={pinned} distribution")
     if "pymdp.agent.Agent" not in combined:
         issues.append("current docs no longer name the runtime pymdp.agent.Agent API")
-    if "inferactively-pymdp 1.0.1" in combined:
-        issues.append("use inferactively-pymdp==1.0.1 for package metadata")
-    if re.search(r"(?<!inferactively-)\bpymdp==1\.0\.1\b", combined):
-        issues.append("do not cite a nonexistent pymdp==1.0.1 distribution")
+    if re.search(r"inferactively-pymdp \d+\.\d+\.\d+", combined):
+        issues.append(f"use inferactively-pymdp=={pinned} for package metadata")
+    if re.search(r"(?<!inferactively-)\bpymdp==\d+\.\d+\.\d+", combined):
+        issues.append("do not cite a nonexistent pymdp==<version> distribution")
+    stale = sorted(
+        {version for version in re.findall(r"\bpymdp`?(?:==| )v?(\d+\.\d+\.\d+)\b", combined) if version != pinned}
+    )
+    if stale:
+        issues.append(f"current docs name pymdp {', '.join(stale)}; the sim group pins {pinned}")
     return issues
+
+
+def _pinned_pymdp_version() -> str:
+    """Return the ``inferactively-pymdp`` version pinned by the ``sim`` group.
+
+    The documentation expectation follows ``pyproject.toml`` instead of a
+    literal, so a dependency bump that skips the docs fails this check rather
+    than leaving them on the previous release.
+    """
+
+    data = tomllib.loads((PROJECT / "pyproject.toml").read_text(encoding="utf-8"))
+    pins = {
+        requirement.split("==", 1)[1].strip()
+        for group in (data["dependency-groups"]["sim"], data["project"]["optional-dependencies"]["sim"])
+        for requirement in group
+        if isinstance(requirement, str) and requirement.startswith("inferactively-pymdp==")
+    }
+    assert len(pins) == 1, f"sim group and sim extra must pin one inferactively-pymdp version, found {sorted(pins)}"
+    return pins.pop()
 
 
 def _retired_discussion_label_issues() -> list[str]:

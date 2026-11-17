@@ -471,7 +471,7 @@ Live, from `output/logs/pymdp_runs.jsonl` after the most recent
 
 | Metric | Live value | Source |
 |---|---|---|
-| pymdp version | **1.0.1** (`inferactively-pymdp`) | `import importlib.metadata; im.version('inferactively-pymdp')` |
+| pymdp version | **1.0.5** (`inferactively-pymdp`) | `import importlib.metadata; im.version('inferactively-pymdp')` |
 | JAX backend version | live (e.g. `0.9.x`) | `im.version('jax')` |
 | Inference algorithm | `fpi` (deterministic fixed-point iteration) | `simulation.agents.build_pymdp_agent(inference_algo='fpi')` |
 | Static λ-sweep | **21 grid points** on `[0, 4]` | `simulation.hyperparameters.PYMDP_SWEEP_LAMBDAS` |

@@ -11,6 +11,25 @@ those counts moved between rounds.
 
 ---
 
+## Pending — pymdp 1.0.5 documentation and lock gate (2026-11-17)
+
+- **Docs follow the pin**: PR #25 (`102369c`) moved `inferactively-pymdp` to
+  `1.0.5` in `pyproject.toml` and `uv.lock`; current-facing documentation,
+  manuscript prose, docstrings, test skip reasons and the `requires_pymdp`
+  marker still named `1.0.1`. They now name `1.0.5`. Historical entries in this
+  file and in `REVIEW_LOG_2026-08-02.md` keep the version they recorded.
+  `output/` is not tracked; every pipeline run regenerates it with the installed
+  release, which `pymdp_distribution_version` reports.
+- **The docs check reads the pin**: `tests/test_status_docs.py` derives the
+  expected version from the `sim` group and `sim` extra in `pyproject.toml`
+  (they must agree) and flags any other pymdp version in the current-facing
+  files, so the next bump that skips the docs fails `test-fast`.
+- **`lock` arm**: `scripts/gate.py lock` runs `uv lock --check`. The `ci` arm
+  and the `ci` workflow job run it before lint, because `uv sync --frozen`
+  installs `uv.lock` as recorded without comparing it with `pyproject.toml`.
+  Closes issue #7 together with #25 and the pipeline arm's pymdp-backed
+  simulation steps.
+
 ## Pending — GNN-FEP member migration, adopted (2026-11-12)
 
 - **Pin advanced**: `gnn/upstream.json` moves from `v5.0.3` at

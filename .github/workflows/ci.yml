@@ -3,7 +3,7 @@ name: CI
 # The repository's canonical contributor gates, run on GitHub Actions. Each
 # step is a `scripts/gate.py` arm, so the workflow and the local `make`
 # targets run one definition of every command:
-#   `ci`              — lint, format, types, pipeline (`scripts/run_all.py`:
+#   `ci`              — lock check, lint, format, types, pipeline (`scripts/run_all.py`:
 #                       Lean boundary build + hygiene budget, artifact
 #                       generation, manuscript validation, regression gate
 #                       against scripts/regression_baseline.json). One job, so
@@ -71,7 +71,7 @@ jobs:
       # safe either way.)
       #
       # Every step delegates to `scripts/gate.py`, the single definition of each
-      # gate arm; the local equivalents are `make lint format types pipeline`.
+      # gate arm; the local equivalents are `make lock lint format types pipeline`.
       # Cheap arms run first so a lint or type failure does not wait behind the
       # artifact tree.
       #
@@ -82,6 +82,12 @@ jobs:
       # for the declared >=95% floor). The `slow`-marked release probes (the
       # MathlibProofs axiom audit, the Lean toolchain build) are opt-in through
       # `python scripts/gate.py slow`, not part of the push/PR selection.
+      # `uv sync --frozen` installs uv.lock as recorded without comparing it
+      # with pyproject.toml; this arm (`uv lock --check`) fails when a manifest
+      # change did not reach the lock, so a dependency bump cannot land unlocked.
+      - name: Lock check (uv lock --check)
+        run: uv run --no-sync python scripts/gate.py lock
+
       - name: Lint (Ruff)
         run: uv run --no-sync python scripts/gate.py lint
 

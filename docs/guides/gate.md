@@ -7,7 +7,7 @@ arms directly and the `make` targets are thin aliases, so a local run and CI
 execute the same command — there is no second copy of a gate command to drift.
 
 ```bash
-make ci                     # the `ci` job: lint + format + types + pipeline
+make ci                     # the `ci` job: lock + lint + format + types + pipeline
 make test-fast              # fast local loop
 make gnn                    # the `gnn-conformance` job
 python scripts/gate.py --list   # the arm catalog
@@ -23,6 +23,7 @@ arm stops the run and returns its exit code.
 
 | Arm | Command | Notes |
 |---|---|---|
+| `lock` | `uv lock --check` | fails when `uv.lock` no longer matches `pyproject.toml` (`uv sync --frozen` does not check) |
 | `lint` | `ruff check src/ scripts/ tests/` | |
 | `format` | `ruff format --check src/ scripts/ tests/` | |
 | `types` | `mypy src/ scripts/` | |
@@ -41,7 +42,7 @@ arm stops the run and returns its exit code.
 | `pipeline-release` | `scripts/run_all.py --with-pdf --with-mathlib` | |
 | `pdf` | `scripts/build_pdf.py` | Pandoc → `pandoc-crossref` → XeLaTeX/BibTeX; the preamble loads `DejaVuSans`/`DejaVuSansMono`, so a host without those fonts fails the render at the `fontspec` step |
 | `pdf-validate` | `scripts/validate_pdf.py` | text, TeX, LaTeX log, margins |
-| `ci` | `lint` + `format` + `types` + `pipeline` | the `ci` workflow job |
+| `ci` | `lock` + `lint` + `format` + `types` + `pipeline` | the `ci` workflow job |
 | `readiness` | `pipeline-pdf` + `pdf-validate` + `ci` + `scripts/readiness_report.py` | `make readiness` |
 
 Selection is marker-based, using the markers declared in
@@ -61,7 +62,7 @@ without running the toolchain probe a second time.
 
 | Workflow job key | Display name | Arms |
 |---|---|---|
-| `ci` | "Pipeline gates, lint, and Lean budget" | `lint`, `format`, `types`, `pipeline` |
+| `ci` | "Pipeline gates, lint, and Lean budget" | `lock`, `lint`, `format`, `types`, `pipeline` |
 | `gnn-conformance` | "gnn conformance (pinned)" | `gnn` |
 
 Both jobs install `uv` with `astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2`

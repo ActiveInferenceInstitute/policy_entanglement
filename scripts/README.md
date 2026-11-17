@@ -24,7 +24,7 @@ Scripts must not implement algorithms.  See
 | [`dump_archetypes.py`](dump_archetypes.py) | Dumps K=2 Schmidt archetypes at a λ-sweep | `../output/data/ising_archetypes.csv` |
 | [`parameter_sweep.py`](parameter_sweep.py) | Closed-form sweep (MI, FE, rank, entropy, phase) on the configured hyperparameter grid | `../output/data/parameter_sweep.csv` |
 | [`check_concordance.py`](check_concordance.py) | Report-only four-track concordance check: every registry `status` row's `lean_name` exists in Lean source, and S06 Python identifiers resolve | report to stdout (exit 0 by design — non-blocking) |
-| [`simulate_pymdp.py`](simulate_pymdp.py) | pymdp 1.0.1 POMDP run: λ-sweep + rollout + free-energy bundle | pymdp PNGs (`pymdp_*`) + `pymdp_lambda_sweep.csv` + `pymdp_free_energy_bundle.csv` |
+| [`simulate_pymdp.py`](simulate_pymdp.py) | pymdp 1.0.5 POMDP run: λ-sweep + rollout + free-energy bundle | pymdp PNGs (`pymdp_*`) + `pymdp_lambda_sweep.csv` + `pymdp_free_energy_bundle.csv` |
 | [`simulate_multi_k.py`](simulate_multi_k.py) | Configured multi-stream ensemble experiments — per-K λ-sweep, TT-rank profile, aligned-mass | one `pymdp_K*_sweep.csv` per configured K + `multi_k_*` PNGs + `multi_k_summary.json` |
 | [`simulate_long_horizon.py`](simulate_long_horizon.py) | Configured long-horizon coupled rollout (habit-accumulation witness) | `pymdp_long_horizon.csv` + `long_horizon_*` PNGs + `long_horizon_summary.json` |
 | [`simulate_revertibility.py`](simulate_revertibility.py) | m-projection back-to-mean-field witness (Prop 7.3 / Theorem 5.1 identity) | `pymdp_revertibility.csv` + `revertibility_witness.png` + `revertibility_summary.json` |

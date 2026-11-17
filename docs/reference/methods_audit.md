@@ -68,7 +68,7 @@ Interpretation:
 Confirmed locally by importing the installed package:
 
 ```text
-inferactively-pymdp==1.0.1
+inferactively-pymdp==1.0.5
 jax 0.9.2
 Agent(..., policy_len=1, gamma=1.0, inference_algo='fpi', batch_size=1, ...)
 Agent.infer_states(observations, empirical_prior, ...)

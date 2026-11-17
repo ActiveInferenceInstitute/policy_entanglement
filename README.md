@@ -27,7 +27,7 @@ below:
 |---|---|---|
 | **Lean 4** boundary fragment | [`lean/`](lean/) | Machine-checked **typed API skeleton**: every manuscript theorem row has a Lean companion (witness-form, proved, boundary, forwarder, or roadmap); ~15 genuine algebraic proofs over the in-house `CommScalar` typeclass (decomposition four-term re-grouping, coupling-log-weight affineness, bipartite Schmidt-rank-1 ↔ mean-field, …), plus 11 typed-API contracts re-publishing caller-supplied analytic witnesses. Mathlib4 is documented as the separate analytic-discharge layer, not as a hidden dependency of the current build. **Mathlib-free, strict-`sorry`-free, axiom-free**; builds on stock Lean 4 v4.35.0 (17 submodules, 22/22 lake jobs). See "Lean content honesty" section below. |
 | **Python analytical companion** | [`src/lean/`](src/lean/) | Numerical realization of every Lean module, dense PMF arithmetic on finite policy spaces |
-| **pymdp POMDP harness** | [`src/simulation/`](src/simulation/) | Real `pymdp.agent.Agent` runs from `inferactively-pymdp==1.0.1` (JAX-backed, deterministic FPI), λ-coupling layer on top, plus `FreeEnergyBundle` (VFE / EFE / entropy / coupling-term / TC / action-distribution), multi-K + long-horizon + revertibility + robustness / ablation experiments, and `hyperparameters.py` source-of-truth |
+| **pymdp POMDP harness** | [`src/simulation/`](src/simulation/) | Real `pymdp.agent.Agent` runs from `inferactively-pymdp==1.0.5` (JAX-backed, deterministic FPI), λ-coupling layer on top, plus `FreeEnergyBundle` (VFE / EFE / entropy / coupling-term / TC / action-distribution), multi-K + long-horizon + revertibility + robustness / ablation experiments, and `hyperparameters.py` source-of-truth |
 | **Visualizations** | [`src/visualizations/`](src/visualizations/) | Reusable plotting helpers (heatmaps, joint plots, spectral, trajectory, graph, log-weight flow, free-energy dashboards, multi-K plots) |
 | **Manuscript registry** | [`src/manuscript/`](src/manuscript/) | Token renderer + auto-numbering pipeline + Lean source extractor + bibliography helper |
 | Manuscript prose | [`manuscript/`](manuscript/) | Modular markdown sections rendered to PDF by the template pipeline; every numeric value flows from JSON via `[[VAR:...]]` |
@@ -204,7 +204,7 @@ poles between which the framework's theorems live.
 ## Quick start
 
 `uv` manages the environment. The `sim` and `viz` groups bring in
-`inferactively-pymdp==1.0.1` (which provides the `pymdp` import/API)
+`inferactively-pymdp==1.0.5` (which provides the `pymdp` import/API)
 and the visualization stack respectively. The root template
 `pyproject.toml` does **not** include pymdp — run `uv sync --group sim`
 inside this project (or use the project `.venv`) for the full empirical
@@ -258,7 +258,7 @@ The canonical pipeline executed by
 2. `generate_figures.py` — analytical PNG figures
 3. `dump_archetypes.py` — frozen-archetype CSV
 4. `parameter_sweep.py` — configured `PARAMETER_SWEEP_LAMBDAS` sweep
-5. `simulate_pymdp.py` — `inferactively-pymdp==1.0.1` / `pymdp` POMDP harness + free-energy bundle
+5. `simulate_pymdp.py` — `inferactively-pymdp==1.0.5` / `pymdp` POMDP harness + free-energy bundle
 6. `simulate_multi_k.py` — configured `MULTI_K_VALUES` ensemble experiments
 7. `simulate_long_horizon.py` — configured `LONG_HORIZON_STEPS` habit-accumulation rollout
 8. `simulate_revertibility.py` — m-projection back-to-mean-field witness

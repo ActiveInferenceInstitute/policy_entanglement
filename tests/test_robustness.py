@@ -59,7 +59,7 @@ def test_interaction_robustness_scenarios_are_targeted_two_axis_families() -> No
     assert len({s.scenario_id for s in scenarios}) == expected
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_run_robustness_suite_small_grid_contract() -> None:
     lams = [0.0, 1.0]
     rows = run_robustness_suite(lams)
@@ -75,7 +75,7 @@ def test_run_robustness_suite_small_grid_contract() -> None:
         assert group[1].total_correlation + 1e-9 >= group[0].total_correlation
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_run_interaction_robustness_suite_small_grid_contract() -> None:
     lams = [0.0, 1.0]
     rows = run_interaction_robustness_suite(lams)
@@ -93,7 +93,7 @@ def test_run_interaction_robustness_suite_small_grid_contract() -> None:
         assert group[1].total_correlation + 1e-9 >= group[0].total_correlation
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_run_robustness_suite_progress_callback_receives_all_scenarios() -> None:
     seen: list[tuple[int, int, str]] = []
 
@@ -107,7 +107,7 @@ def test_run_robustness_suite_progress_callback_receives_all_scenarios() -> None
     assert seen[-1][1] == len(robustness_scenarios())
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_run_interaction_robustness_progress_callback_receives_all_scenarios() -> None:
     seen: list[tuple[int, int, str]] = []
 
@@ -128,7 +128,7 @@ def test_robustness_summaries_reject_empty_input() -> None:
         summarize_interaction_robustness_rows([])
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_coupling_ablation_small_grid_contract() -> None:
     rows = run_coupling_ablation([0.0, 1.0])
     summary = summarize_coupling_ablation_rows(rows)
@@ -150,7 +150,7 @@ def test_coupling_ablation_rejects_unknown_variant_and_empty_summary() -> None:
         summarize_coupling_ablation_rows([])
 
 
-@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.1 not installed")
+@pytest.mark.skipif(not pymdp_available(), reason="pymdp 1.0.5 not installed")
 def test_marginal_null_control_removes_total_correlation_on_small_grid() -> None:
     rows = run_marginal_null_control([0.0, 1.0])
     summary = summarize_marginal_null_control_rows(rows)
