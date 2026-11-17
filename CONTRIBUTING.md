@@ -137,7 +137,8 @@ These are non-negotiable. CI enforces every one of them.
 
 ## Development environment
 
-* **Python:** 3.10–3.12 (CI matrix tests all three).
+* **Python:** 3.12 or newer. CI runs the full pipeline on 3.12 and the
+  `test-fast` arm on 3.13 and 3.14.
 * **Lean:** 4.35.0, pinned via `lean/lean-toolchain`.
 * **Package manager:** `uv` (`uv sync --group sim --group viz`).
 * **IDE:** point your interpreter at `.venv/bin/python` after `uv sync`.

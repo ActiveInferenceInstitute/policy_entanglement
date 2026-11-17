@@ -23,7 +23,7 @@ license = { text = "MIT" }
 authors = [
     {name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"},
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.24.0",
     "scipy>=1.10.0",
@@ -140,7 +140,7 @@ exclude_lines = [
 ]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]
@@ -160,7 +160,7 @@ ignore = ["E501"]  # line length handled by formatter
 "tests/**/*.py" = ["N802", "N803", "N806", "N812", "E402", "E741"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_ignores = true
 ignore_missing_imports = true   # pymdp / seaborn / plotly are optional

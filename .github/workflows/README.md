@@ -11,6 +11,7 @@ run guide.
 | Job | Steps (gate arms) |
 |---|---|
 | `ci` — "Pipeline gates, lint, and Lean budget" | `uv sync --frozen --group sim`, then `python scripts/gate.py lint`, `format`, `types`, `pipeline`. `pipeline` is `scripts/run_all.py` (Lean boundary build + hygiene budget, artifact generation, manuscript validation, regression gate). Timeout 180 minutes. |
+| `tests` — "tests (3.13)", "tests (3.14)" | `uv sync --frozen` (default groups), then `python scripts/gate.py test-fast` on each interpreter above the 3.12 floor. The `ci` job's regression gate is the 3.12 leg. Timeout 45 minutes. |
 | `gnn-conformance` — "gnn conformance (pinned)" | `uv sync --frozen` (default groups only), then `python scripts/gate.py gnn`, which fetches the commit pinned in [`../../gnn/upstream.json`](../../gnn/upstream.json), refuses a moved tag, and runs `tests/test_gnn_upstream_conformance.py`. Timeout 30 minutes. |
 
 The pipeline arm's regression gate runs pytest with `-m "not slow"`; the

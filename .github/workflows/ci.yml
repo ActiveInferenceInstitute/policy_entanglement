@@ -9,6 +9,8 @@ name: CI
 #                       against scripts/regression_baseline.json). One job, so
 #                       every gate shares the generated-artifact tree and a
 #                       failure in any of them fails the same run.
+#   `tests`           — `test-fast` on Python 3.13 and 3.14; the `ci` job's
+#                       regression gate covers 3.12, the declared floor.
 #   `gnn-conformance` — the pinned upstream GNN parser arm.
 
 on:
@@ -27,7 +29,7 @@ concurrency:
 jobs:
   ci:
     name: "Pipeline gates, lint, and Lean budget"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - name: Check out the repository
@@ -92,6 +94,35 @@ jobs:
       - name: Pipeline (Lean budget, artifacts, validation, regression gate)
         run: uv run --no-sync python scripts/gate.py pipeline
 
+  # Interpreter coverage above the 3.12 floor. The `ci` job runs the full
+  # pipeline (and its regression gate) on 3.12 only, so the Lean build and the
+  # artifact tree are not repeated per interpreter; these legs run the
+  # `test-fast` arm (`not requires_pymdp and not slow`) against the default
+  # dependency groups.
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.1"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: Fast tests
+        run: uv run --no-sync python scripts/gate.py test-fast
+
   # The project-owned parser is cited-not-vendored; this job exercises it
   # against the real upstream parser of the revision pinned in gnn/upstream.json.
   # The ordinary `ci` job runs the same test without an explicit checkout, so it
@@ -105,7 +136,7 @@ jobs:
   # repository (per-pin cache directory, or $POLICY_ENTANGLEMENT_GNN_ROOT).
   gnn-conformance:
     name: gnn conformance (pinned)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Check out the repository
