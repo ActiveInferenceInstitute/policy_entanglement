@@ -106,7 +106,7 @@ def build_joint_coupling(model: GnnModel) -> ArrayF:
         idx[b] = slice(None)
         # Construct an array that varies only along axes a and b.
         full = np.zeros(shape, dtype=np.float64)
-        it = np.nditer(full, flags=["multi_index"], op_flags=[["writeonly"]])  # type: ignore[list-item]
+        it = np.nditer(full, flags=["multi_index"], op_flags=("writeonly",))
         for x in it:
             mi = it.multi_index
             cast(Any, x)[...] = pair[mi[a], mi[b]]
