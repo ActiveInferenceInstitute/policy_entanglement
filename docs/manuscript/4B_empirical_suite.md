@@ -4,7 +4,7 @@ This section pairs every theoretical claim of [[SECREF:decomposition]]–[[SECRE
 computational experiment.  All experiments are reproduced by the
 companion code under
 [`src/`](../../src/) and [`scripts/`](../../scripts/); the deterministic
-artifacts they emit live under [`output/`](../../output/).
+artifacts they emit live under `output/`.
 
 The evidence boundary is deliberately narrow.  The simulations validate
 finite, discrete, binary / Ising-style policy families implemented by
