@@ -92,7 +92,7 @@ def _discover_manuscript_files(injected_manuscript: Path) -> list[Path]:
 
 def _normalise_render_paths(text: str) -> str:
     """Make rendered links/image paths resolve from ``output/pdf``."""
-    return text.replace("](../output/figures/", "](../figures/")
+    return re.sub(r"\]\((?:\.\./){1,2}output/figures/", "](../figures/", text)
 
 
 def _write_combined_markdown(source_files: Sequence[Path], *, combined_md: Path) -> None:

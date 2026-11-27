@@ -96,7 +96,7 @@ the same exponential family, which by Brascamp–Lieb / Bakry–Émery
 holds whenever the natural-statistic distribution under the
 entangled prior is log-concave [@brascamp-lieb-1976; @bakry-emery-1985]; under that hypothesis
 $\lambda^\star$ is unique. Empirically testable via
-[`output/data/parameter_sweep.csv`](../output/data/parameter_sweep.csv)
+[`output/data/parameter_sweep.csv`](../../output/data/parameter_sweep.csv)
 across the registered $J$ families: a measured negative left-hand
 side at any sweep point falsifies global convexity for that family.
 

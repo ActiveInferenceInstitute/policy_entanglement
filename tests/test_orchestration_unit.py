@@ -26,8 +26,9 @@ def test_section_sort_key_puts_bibliography_last() -> None:
 
 
 def test_normalise_render_paths_rewrites_figure_prefix() -> None:
-    text = "![x](../output/figures/plot.png)"
-    assert "../figures/plot.png" in _normalise_render_paths(text)
+    for prefix in ("../", "../../"):
+        text = f"![x]({prefix}output/figures/plot.png) [data](../../output/data/table.csv)"
+        assert _normalise_render_paths(text) == "![x](../figures/plot.png) [data](../../output/data/table.csv)"
 
 
 def test_discover_and_combine_markdown(tmp_path: Path) -> None:

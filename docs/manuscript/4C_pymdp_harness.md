@@ -149,7 +149,7 @@ observations $o = (0, 0)$.  Hyperparameters are sourced from
 (`PYMDP_SWEEP_LAMBDAS`, `PYMDP_SWEEP_OBSERVATIONS`).
 
 The artifact is a $[[VAR:pymdp_sweep_grid_points]]$-row CSV at
-[`output/simulations/pymdp_lambda_sweep.csv`](../output/simulations/pymdp_lambda_sweep.csv);
+[`output/simulations/pymdp_lambda_sweep.csv`](../../output/simulations/pymdp_lambda_sweep.csv);
 the visual rendering is the total-correlation curve plus three
 sentinel-λ heatmap snapshots.
 

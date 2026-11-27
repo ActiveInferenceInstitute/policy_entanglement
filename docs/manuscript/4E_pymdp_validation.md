@@ -67,7 +67,7 @@ sweep gate bounds drift across the entire grid.
 
 Every pymdp script emits one structured-record line per (script,
 λ-sweep, observation, rollout) call to
-[`output/logs/pymdp_runs.jsonl`](../output/logs/pymdp_runs.jsonl)
+[`output/logs/pymdp_runs.jsonl`](../../output/logs/pymdp_runs.jsonl)
 via `simulation.logging_utils.RunLogger`.  Each record is a single
 JSON object on its own line (JSONL), with the schema:
 

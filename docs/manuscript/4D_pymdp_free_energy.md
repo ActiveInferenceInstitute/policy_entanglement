@@ -69,7 +69,7 @@ The bundle satisfies six numerical invariants verified by
 The bundle is reduced to a flat summary record by
 [`simulation.statistics.pymdp_summary_statistics`](../../src/simulation/statistics.py),
 mirrored to
-[`output/simulations/pymdp_summary.json`](../output/simulations/pymdp_summary.json),
+[`output/simulations/pymdp_summary.json`](../../output/simulations/pymdp_summary.json),
 and merged into `manuscript_variables.json` so every auto-injected value flows
 from a real pipeline run.  The full 12-statistic reference table
 (sweep grid, total-correlation range and half-saturation point,

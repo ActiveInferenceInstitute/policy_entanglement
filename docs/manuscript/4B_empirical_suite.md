@@ -4,7 +4,7 @@ This section pairs every theoretical claim of [[SECREF:decomposition]]–[[SECRE
 computational experiment.  All experiments are reproduced by the
 companion code under
 [`src/`](../../src/) and [`scripts/`](../../scripts/); the deterministic
-artifacts they emit live under [`output/`](../output/).
+artifacts they emit live under [`output/`](../../output/).
 
 The evidence boundary is deliberately narrow.  The simulations validate
 finite, discrete, binary / Ising-style policy families implemented by
@@ -63,17 +63,17 @@ test gate:
 
 | Claim checked | Primary artifact | Gate that catches drift |
 |---|---|---|
-| Closed-form Ising mutual information equals empirical total correlation | [`output/data/parameter_sweep.csv`](../output/data/parameter_sweep.csv) | `tests/test_bernoulli_toy.py`, `tests/test_invariants_and_dashboard.py` |
-| The coupling-tax curve follows the $O(\lambda^2)$ envelope | [`output/figures/coupling_tax_quadratic.png`](../output/figures/coupling_tax_quadratic.png) + `coupling_tax_curvature_C` | `tests/test_heterogeneous_ensemble.py`, `tests/test_witness_theorems.py` |
-| Schmidt rank / entropy record the departure from mean-field | [`output/data/ising_archetypes.csv`](../output/data/ising_archetypes.csv) | `tests/test_spectral.py`, `tests/test_multi_k_experiments.py` |
-| pymdp-grounded coupling starts as an outer product and then gains total correlation | [`output/simulations/pymdp_lambda_sweep.csv`](../output/simulations/pymdp_lambda_sweep.csv) | `tests/test_simulation_pymdp.py`, `tests/test_simulation_free_energy.py` |
-| Long-horizon rollout reaches a steady tail and accumulates habit mass | [`output/simulations/pymdp_long_horizon.csv`](../output/simulations/pymdp_long_horizon.csv) | `tests/test_long_horizon.py`, `tests/test_tail_window_kl.py` |
-| m-projection revertibility realizes $I(q)=D_{\mathrm{KL}}(q\|\hat m(q))$ | [`output/simulations/pymdp_revertibility.csv`](../output/simulations/pymdp_revertibility.csv) | `tests/test_revertibility.py`, `tests/test_witness_theorems.py` |
-| One-axis robustness preserves the λ = 0 anchor while exposing context / precision / preference / coupling sensitivity | [`output/simulations/pymdp_robustness.csv`](../output/simulations/pymdp_robustness.csv) + [`output/data/robustness_summary.json`](../output/data/robustness_summary.json) | `tests/test_robustness.py`, `tests/test_robustness_plots.py` |
-| Coupling ablations and fixed-marginal null controls separate cross-stream dependence from marginal drift | [`output/simulations/pymdp_coupling_ablation.csv`](../output/simulations/pymdp_coupling_ablation.csv) + [`output/simulations/pymdp_marginal_null_control.csv`](../output/simulations/pymdp_marginal_null_control.csv) | `tests/test_robustness.py`, `tests/test_robustness_plots.py` |
-| Long-horizon replicate seeds and threshold probes expose stationarity sensitivity rather than tuning one headline cutoff | [`output/simulations/pymdp_long_horizon_replicates.csv`](../output/simulations/pymdp_long_horizon_replicates.csv) + [`output/simulations/pymdp_long_horizon_threshold_sensitivity.csv`](../output/simulations/pymdp_long_horizon_threshold_sensitivity.csv) | `tests/test_robustness.py`, `tests/test_metadata_pure.py` |
-| BTAI baseline runs end-to-end on the K=2 task and emits the three tracked observables across the MCTS budget grid | [`output/data/btai_baseline.json`](../output/data/btai_baseline.json) | `tests/test_btai_baseline.py`, `tests/test_simulate_btai_adversarial.py` |
-| Adversarial (ε,λ)-grid measures KL drift against the first-order Lipschitz bound across three adversary classes | [`output/data/adversarial_sweep.json`](../output/data/adversarial_sweep.json) | `tests/test_adversarial.py`, `tests/test_simulate_btai_adversarial.py` |
+| Closed-form Ising mutual information equals empirical total correlation | [`output/data/parameter_sweep.csv`](../../output/data/parameter_sweep.csv) | `tests/test_bernoulli_toy.py`, `tests/test_invariants_and_dashboard.py` |
+| The coupling-tax curve follows the $O(\lambda^2)$ envelope | [`output/figures/coupling_tax_quadratic.png`](../../output/figures/coupling_tax_quadratic.png) + `coupling_tax_curvature_C` | `tests/test_heterogeneous_ensemble.py`, `tests/test_witness_theorems.py` |
+| Schmidt rank / entropy record the departure from mean-field | [`output/data/ising_archetypes.csv`](../../output/data/ising_archetypes.csv) | `tests/test_spectral.py`, `tests/test_multi_k_experiments.py` |
+| pymdp-grounded coupling starts as an outer product and then gains total correlation | [`output/simulations/pymdp_lambda_sweep.csv`](../../output/simulations/pymdp_lambda_sweep.csv) | `tests/test_simulation_pymdp.py`, `tests/test_simulation_free_energy.py` |
+| Long-horizon rollout reaches a steady tail and accumulates habit mass | [`output/simulations/pymdp_long_horizon.csv`](../../output/simulations/pymdp_long_horizon.csv) | `tests/test_long_horizon.py`, `tests/test_tail_window_kl.py` |
+| m-projection revertibility realizes $I(q)=D_{\mathrm{KL}}(q\|\hat m(q))$ | [`output/simulations/pymdp_revertibility.csv`](../../output/simulations/pymdp_revertibility.csv) | `tests/test_revertibility.py`, `tests/test_witness_theorems.py` |
+| One-axis robustness preserves the λ = 0 anchor while exposing context / precision / preference / coupling sensitivity | [`output/simulations/pymdp_robustness.csv`](../../output/simulations/pymdp_robustness.csv) + [`output/data/robustness_summary.json`](../../output/data/robustness_summary.json) | `tests/test_robustness.py`, `tests/test_robustness_plots.py` |
+| Coupling ablations and fixed-marginal null controls separate cross-stream dependence from marginal drift | [`output/simulations/pymdp_coupling_ablation.csv`](../../output/simulations/pymdp_coupling_ablation.csv) + [`output/simulations/pymdp_marginal_null_control.csv`](../../output/simulations/pymdp_marginal_null_control.csv) | `tests/test_robustness.py`, `tests/test_robustness_plots.py` |
+| Long-horizon replicate seeds and threshold probes expose stationarity sensitivity rather than tuning one headline cutoff | [`output/simulations/pymdp_long_horizon_replicates.csv`](../../output/simulations/pymdp_long_horizon_replicates.csv) + [`output/simulations/pymdp_long_horizon_threshold_sensitivity.csv`](../../output/simulations/pymdp_long_horizon_threshold_sensitivity.csv) | `tests/test_robustness.py`, `tests/test_metadata_pure.py` |
+| BTAI baseline runs end-to-end on the K=2 task and emits the three tracked observables across the MCTS budget grid | [`output/data/btai_baseline.json`](../../output/data/btai_baseline.json) | `tests/test_btai_baseline.py`, `tests/test_simulate_btai_adversarial.py` |
+| Adversarial (ε,λ)-grid measures KL drift against the first-order Lipschitz bound across three adversary classes | [`output/data/adversarial_sweep.json`](../../output/data/adversarial_sweep.json) | `tests/test_adversarial.py`, `tests/test_simulate_btai_adversarial.py` |
 
 ## Two-stream Bernoulli (K=2) closed-form validation
 
@@ -109,7 +109,7 @@ The grid count, λ range, and agreement tolerance are sourced from
 (`PARAMETER_SWEEP_LAMBDAS`,
 `PARAMETER_SWEEP_AGREEMENT_TOLERANCE`); the
 $[[VAR:param_sweep_grid_points]]$-row CSV at
-[`output/data/parameter_sweep.csv`](../output/data/parameter_sweep.csv)
+[`output/data/parameter_sweep.csv`](../../output/data/parameter_sweep.csv)
 is the artifact.
 
 [[FIG:ising_mi_curve]]
@@ -223,7 +223,7 @@ nats.  Together these rows are the empirical witness that the entanglement
 decomposition theorem ([[THMREF:thm_4_1]]) carries over from the K=2
 slice to higher stream counts.  Aligned-corner mass and the tensor-
 train rank profile at the sweep maximum are recorded in
-[`output/data/multi_k_summary.json`](../output/data/multi_k_summary.json):
+[`output/data/multi_k_summary.json`](../../output/data/multi_k_summary.json):
 the first configured multi-K ensemble reaches aligned mass
 $[[VAR:multi_k_K3_aligned_mass_at_lambda_max:.4f]]$ at
 $\lambda = [[VAR:multi_k_K3_lambda_max:g]]$ with maximum bond

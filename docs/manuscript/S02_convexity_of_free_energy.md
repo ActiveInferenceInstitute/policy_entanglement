@@ -5,7 +5,7 @@ exponential-family structure that delivers convexity in $\lambda$ on
 the natural side.  We sketch the proof here; the closed-form K = 2
 case is verified numerically by
 [`scripts/generate_figures.py`](../../scripts/generate_figures.py)
-(see [`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png)).
+(see [`output/figures/free_energy_curve.png`](../../output/figures/free_energy_curve.png)).
 
 ## The closed exponential-family form
 
@@ -100,12 +100,12 @@ $\log Z(\lambda)$ but leaves $\log Z_E$ invariant; the resulting
 $F[q_\lambda] = \log\cosh(\lambda J_0) - \log Z(\lambda)$ is convex
 in $\lambda$ on $[0, \infty)$ for any utility level (verified
 numerically across $u \in \{0, 0.5, 1, 2\}$ in
-[`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png)).
+[`output/figures/free_energy_curve.png`](../../output/figures/free_energy_curve.png)).
 
 ## Numerical verification
 
 The K = 2 Ising free-energy curve at four utility values is plotted
-in [`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png).
+in [`output/figures/free_energy_curve.png`](../../output/figures/free_energy_curve.png).
 The curve is monotonically decreasing in $|\lambda|$ for any
 $u \geq 0$, consistent with convexity (and with the closed-form
 expression in [[SECREF:app.bernoulli]]).

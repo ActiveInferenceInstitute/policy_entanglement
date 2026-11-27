@@ -81,7 +81,7 @@ tolerance ($\leq [[VAR:param_sweep_agreement_tolerance:.0e]]$ over
 $[[VAR:param_sweep_grid_points]]$ grid points spanning
 $\lambda \in [[[VAR:param_sweep_lambda_min:g]],
 [[VAR:param_sweep_lambda_max:g]]]$, see
-[`output/data/parameter_sweep.csv`](../output/data/parameter_sweep.csv)).
+[`output/data/parameter_sweep.csv`](../../output/data/parameter_sweep.csv)).
 Sentinel values:
 $I(\lambda=1) = [[VAR:ising_mi_at_lam_1:.4f]]$ nats,
 $I(\lambda=2) = [[VAR:ising_mi_at_lam_2:.4f]]$ nats.

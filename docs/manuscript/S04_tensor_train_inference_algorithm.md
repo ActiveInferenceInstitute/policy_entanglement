@@ -99,7 +99,7 @@ $\varepsilon$ is standard for log-concave coupling potentials
 [@verstraete-2008; @orus-2014; @han-2018].  The numerical companion records the
 empirical $r_k$ profile across stream counts $K \in \{2,3,4,5\}$ —
 see the `tt_ranks_K2`–`tt_ranks_K5` variables in
-[`output/data/manuscript_variables.json`](../output/data/manuscript_variables.json),
+[`output/data/manuscript_variables.json`](../../output/data/manuscript_variables.json),
 exposed in prose at [[SECREF:spectral.multistream_tt]].
 
 ## Approximate compression

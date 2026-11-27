@@ -144,9 +144,10 @@ def test_validate_hyperlinks_skips_generated_output_paths() -> None:
     from manuscript.validation import _is_generated_output_path
 
     assert _is_generated_output_path("../output/figures/whatever.png")
+    assert _is_generated_output_path("../../output/figures/whatever.png")
     assert _is_generated_output_path("output/data/foo.csv")
     assert not _is_generated_output_path("../src/lean/joint_dist.py")
-    text = "[gen](../output/data/never_existed.csv) and [src](../src/lean/joint_dist.py)"
+    text = "[gen](../../output/data/never_existed.csv) and [src](../../src/lean/joint_dist.py)"
     assert validate_hyperlinks(text, base=MANUSCRIPT) == []
 
 

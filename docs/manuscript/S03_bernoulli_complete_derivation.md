@@ -215,7 +215,7 @@ F(\lambda) \;=\; -\,u\,(2\sigma(\lambda)-1) \;-\; I(\lambda),
 $$
 
 monotonically decreasing in $|\lambda|$ for $u \geq 0$.  See
-[`output/figures/free_energy_curve.png`](../output/figures/free_energy_curve.png).
+[`output/figures/free_energy_curve.png`](../../output/figures/free_energy_curve.png).
 This is a Lagrangian-style scalarisation rather than the framework's
 $F[q_\lambda] = \log Z_E(\lambda) - \log Z(\lambda)$ identity from
 [[SECREF:app.proof_decomp]]; the genuine VFE minimization in the same
