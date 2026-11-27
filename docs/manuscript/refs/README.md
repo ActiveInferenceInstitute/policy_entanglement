@@ -4,7 +4,7 @@ Single source of truth for every figure, equation, and citation
 referenced from the manuscript body.  The auto-injection pipeline at
 [`scripts/inject_manuscript_variables.py`](../../../scripts/inject_manuscript_variables.py)
 reads these YAMLs together with
-[`output/data/manuscript_variables.json`](../../output/data/manuscript_variables.json)
+[`output/data/manuscript_variables.json`](../../../output/data/manuscript_variables.json)
 and resolves every `[[FIG:...]]`, `[[FIGREF:...]]`, `[[EQ:...]]`,
 `[[EQREF:...]]`, `[[VAR:...]]`, `[[CITELIST:topic]]`, and `[@key]`
 token in the source.  Output is written under

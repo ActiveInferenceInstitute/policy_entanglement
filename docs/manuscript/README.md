@@ -73,7 +73,7 @@ The full per-file table is in [`INDEX.md`](INDEX.md).
 * **Cross-reference figures.**  Manuscript figures are produced by
   [`../../scripts/generate_figures.py`](../../scripts/generate_figures.py)
   and [`../../scripts/simulate_pymdp.py`](../../scripts/simulate_pymdp.py)
-  and end up at `../output/figures/*.png`.  Embed them with the
+  and end up at `../../output/figures/*.png`.  Embed them with the
   registry token `[[FIG:label]]` (where `label` is a key under
   `figures:` in [`refs/labels.yaml`](refs/labels.yaml)) — the
   injection pipeline substitutes the full Markdown image directive
@@ -81,7 +81,7 @@ The full per-file table is in [`INDEX.md`](INDEX.md).
   `[[FIGREF:label]]`.
 * **Manuscript variables.**  In-text variable substitutions use
   the `[[VAR:key]]` or `[[VAR:key:fmt]]` token, where `key` is a
-  field in [`../../output/data/manuscript_variables.json`](../output/data/manuscript_variables.json)
+  field in [`../../output/data/manuscript_variables.json`](../../output/data/manuscript_variables.json)
   emitted by [`../../scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py).
 * **Section / theorem references.**  Use `[[SECREF:label]]` for inline
   section references and `[[THMREF:label]]` for theorems — both resolve
