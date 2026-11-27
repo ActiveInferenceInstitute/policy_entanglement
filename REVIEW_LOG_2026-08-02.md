@@ -29,7 +29,7 @@ disposable and were not edited.
 - `.aii/config.yaml`: citation DOI value contained leaked Markdown-link syntax;
   corrected to a plain scalar (`62cf243`).
 - `CITATION.cff`: no `version`/`date-released`; added `version: "1.0"` and
-  `date-released: "2026-05-27"` matching `manuscript/config.yaml` and the Zenodo
+  `date-released: "2026-05-27"` matching `docs/manuscript/config.yaml` and the Zenodo
   v1.0.0 deposit (`62cf243`).
 - `README.md`: Citation block used a non-canonical title; aligned to the
   CITATION.cff / config.yaml title (`5b50f5c`).
@@ -39,7 +39,7 @@ disposable and were not edited.
   gate; missing `zenodo-doi-strategy.md` index row added (`793e49b`).
 - `docs/guides/styleguide/manuscript-variables.md`: broken `#validationpy`
   anchor repointed to the validation facade in `python_api_manuscript.md` (`793e49b`).
-- `manuscript/refs/README.md`: dangling generated-output path clarified to
+- `docs/manuscript/refs/README.md`: dangling generated-output path clarified to
   post-pipeline existence (`cc4e5fd`).
 
 ### Medium (8)
@@ -74,7 +74,7 @@ guides, module pages, reference pages, API references, and manuscript index
 form a coherent system. The only owner-level item noted (not closed): a
 separate CC-BY-4.0 license text file for the manuscript prose would require an
 ownership decision outside a docs pass; the split is declared consistently in
-README, CITATION.cff, and `manuscript/config.yaml`.
+README, CITATION.cff, and `docs/manuscript/config.yaml`.
 
 ## Review coverage note
 

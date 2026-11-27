@@ -5,7 +5,7 @@ The output directory is the canonical source for the local PDF renderer.
 Tokens like ``[[FIG:label]]`` /
 ``[[SECREF:label]]`` / ``[[THMREF:label]]`` / ``[@citekey]`` /
 ``[[VAR:key]]`` are resolved against the registry under
-``manuscript/refs/`` and the variables JSON under
+``docs/manuscript/refs/`` and the variables JSON under
 ``output/data/``.
 
 Resolves the full token set documented in
@@ -15,8 +15,8 @@ Resolves the full token set documented in
 ``[[CITELIST:topic]]``.
 
 Sources:
-* `manuscript/refs/labels.yaml`        — figure + equation registry
-* `manuscript/refs/citations.yaml`     — citation registry
+* `docs/manuscript/refs/labels.yaml`        — figure + equation registry
+* `docs/manuscript/refs/citations.yaml`     — citation registry
 * `output/data/manuscript_variables.json` — numeric values
 
 Failures are reported on stderr and propagate as a non-zero exit code,
@@ -42,7 +42,7 @@ from manuscript.renderer import render_all  # noqa: E402
 
 
 def main() -> int:
-    manuscript_dir = PROJECT_ROOT / "manuscript"
+    manuscript_dir = PROJECT_ROOT / "docs" / "manuscript"
     refs_dir = manuscript_dir / "refs"
     output_dir = PROJECT_ROOT / "output" / "manuscript"
     variables_path = PROJECT_ROOT / "output" / "data" / "manuscript_variables.json"

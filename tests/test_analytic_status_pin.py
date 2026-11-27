@@ -1,6 +1,6 @@
 """Analytic-status string pin on `thm_4_1` per IterativeDepth Lens 3.
 
-The registry row at `manuscript/refs/labels.yaml::theorems.thm_4_1`
+The registry row at `docs/manuscript/refs/labels.yaml::theorems.thm_4_1`
 encodes the ℝ-machine-checked discharge of Theorem 4.1 (the
 manuscript's central result, the full S01 boxed free-energy identity)
 in a free-text `analytic_status:` field.  No derived `[[VAR:...]]`
@@ -27,7 +27,7 @@ from pathlib import Path
 import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
-LABELS_YAML = PROJECT / "manuscript" / "refs" / "labels.yaml"
+LABELS_YAML = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
 
 
 def _load_thm_4_1() -> dict:

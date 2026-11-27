@@ -2,7 +2,7 @@
 
 How the framework lives on a *dually-flat statistical manifold* in the
 sense of Amari [2000, 2016].  Manuscript section:
-[`../manuscript/2F_geometry.md`](../../manuscript/2F_geometry.md).
+[`../manuscript/2F_geometry.md`](../manuscript/2F_geometry.md).
 
 ## Setup
 

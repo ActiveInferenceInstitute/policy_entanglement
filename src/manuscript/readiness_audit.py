@@ -89,7 +89,7 @@ def git_status_lines(project_root: Path) -> list[str]:
 
 
 def theorem_status_counts(project_root: Path) -> dict[str, int]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
+    labels_path = project_root / "docs" / "manuscript" / "refs" / "labels.yaml"
     labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
     theorems = labels.get("theorems") or {}
     counts = {"proved": 0, "witness": 0, "boundary": 0, "forwarder": 0, "sketch": 0, "deferred": 0}
@@ -195,7 +195,7 @@ def mathlib_proofs_status(
 
 
 def registered_figure_paths(project_root: Path) -> set[str]:
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
+    labels_path = project_root / "docs" / "manuscript" / "refs" / "labels.yaml"
     labels = yaml.safe_load(labels_path.read_text(encoding="utf-8")) or {}
     figures = labels.get("figures") or {}
     out: set[str] = set()
@@ -268,7 +268,7 @@ def pdf_artifact_audit(project_root: Path, status) -> dict[str, object]:
         "_combined_manuscript.log": (pdf_dir / "_combined_manuscript.log").exists(),
         "_xelatex_stdout.log": (pdf_dir / "_xelatex_stdout.log").exists(),
     }
-    preamble = project_root / "manuscript" / "preamble.md"
+    preamble = project_root / "docs" / "manuscript" / "preamble.md"
     margins: dict[str, float] = {}
     margin_contract_ok = False
     if preamble.exists():

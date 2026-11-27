@@ -31,8 +31,8 @@ PROJECT = Path(__file__).resolve().parent.parent
 MANUSCRIPT_VARIABLES_JSON = PROJECT / "output" / "data" / "manuscript_variables.json"
 MANUSCRIPT_VARIABLES_SCRIPT = PROJECT / "scripts" / "manuscript_variables.py"
 RUN_ALL_SCRIPT = PROJECT / "scripts" / "run_all.py"
-LABELS_YAML = PROJECT / "manuscript" / "refs" / "labels.yaml"
-CITATIONS_YAML = PROJECT / "manuscript" / "refs" / "citations.yaml"
+LABELS_YAML = PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
+CITATIONS_YAML = PROJECT / "docs" / "manuscript" / "refs" / "citations.yaml"
 DOCS_DIR = PROJECT / "docs"
 CHANGELOG_RELATIVE = Path("docs/CHANGELOG.md")
 AUDIT_RELATIVE = Path("docs/_audit")
@@ -227,7 +227,7 @@ def _scan_doc_assertions(project: Path) -> list[tuple[str, int, int, str, int]]:
         project / "README.md",
         project / "AGENTS.md",
         *sorted((project / "docs").rglob("*.md")),
-        *sorted((project / "manuscript").rglob("*.md")),
+        *sorted((project / "docs" / "manuscript").rglob("*.md")),
     ]
     for path in candidates:
         if not path.exists():

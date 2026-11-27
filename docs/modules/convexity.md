@@ -3,12 +3,12 @@
 Boundary witness-form definitions and theorems for the convexity-related
 results on the variational free energy `F[q_λ]` in the entanglement
 parameter `λ`.  Manuscript anchors:
-[`../manuscript/2D_decomposition.md`](../../manuscript/2D_decomposition.md)
+[`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
 §5.4 (`decomposition.optimal` — Theorem 5.6, convexity of `F` in `λ`) and
-[`../manuscript/2J_comparative_statics.md`](../../manuscript/2J_comparative_statics.md)
+[`../manuscript/2J_comparative_statics.md`](../manuscript/2J_comparative_statics.md)
 §11.3 (`comparative.sensitivity` — Proposition 11.1, local concavity at
 `λ = 0`).  Supplementary derivation:
-[`../manuscript/S02_convexity_of_free_energy.md`](../../manuscript/S02_convexity_of_free_energy.md).
+[`../manuscript/S02_convexity_of_free_energy.md`](../manuscript/S02_convexity_of_free_energy.md).
 
 ## Overview
 
@@ -106,10 +106,10 @@ window, Taylor-bound inequality) with the boundary-fragment anchor at
 
 | Track | Resolves to |
 |---|---|
-| Manuscript section (Thm 5.6) | [`§5.4 Optimal coupling`](../../manuscript/2D_decomposition.md) (`decomposition.optimal`), with the worked supplementary derivation in [`S02 Convexity of free energy`](../../manuscript/S02_convexity_of_free_energy.md). |
-| Manuscript section (Prop 11.1) | [`§11.3 Sensitivity to potential structure`](../../manuscript/2J_comparative_statics.md) (`comparative.sensitivity`). |
+| Manuscript section (Thm 5.6) | [`§5.4 Optimal coupling`](../manuscript/2D_decomposition.md) (`decomposition.optimal`), with the worked supplementary derivation in [`S02 Convexity of free energy`](../manuscript/S02_convexity_of_free_energy.md). |
+| Manuscript section (Prop 11.1) | [`§11.3 Sensitivity to potential structure`](../manuscript/2J_comparative_statics.md) (`comparative.sensitivity`). |
 | Lean module | [`Convexity.lean`](../../lean/ActinfPolicyEntanglement/Convexity.lean) (2 structures, 2 theorems, zero `sorry`, zero `axiom`). |
-| Registry labels | `thm_4_3` (Thm 5.6) and `prop_10_1` (Prop 11.1) in [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
+| Registry labels | `thm_4_3` (Thm 5.6) and `prop_10_1` (Prop 11.1) in [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml); both are current `status: witness` rows. |
 | Python sanity rails | [`src/lean/free_energy`](../../src/lean/free_energy.py) (free-energy curve evaluation) and [`src/lean/coupling`](../../src/lean/coupling.py) (`couplingLogWeight`-equivalents); exercised by the parameter sweep in [`scripts/parameter_sweep.py`](../../scripts/parameter_sweep.py). |
 | Tests | [`tests/test_free_energy.py`](../../tests/test_free_energy.py) and the parameter-sweep invariants in [`tests/test_invariants_and_dashboard.py`](../../tests/test_invariants_and_dashboard.py). |
 

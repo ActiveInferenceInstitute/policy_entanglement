@@ -9,13 +9,13 @@ PROSE_GLOBS = (
     "README.md",
     "AGENTS.md",
     "docs/**/*.md",
-    "manuscript/**/*.md",
-    "manuscript/refs/labels.yaml",
+    "docs/manuscript/**/*.md",
+    "docs/manuscript/refs/labels.yaml",
     "lean/**/*.md",
 )
 
 EXCLUDED = {
-    ROOT / "manuscript" / "refs" / "citations.yaml",
+    ROOT / "docs" / "manuscript" / "refs" / "citations.yaml",
 }
 
 EXCLUDED_PARTS = {

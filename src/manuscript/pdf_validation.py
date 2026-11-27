@@ -279,5 +279,5 @@ def validate_pdf_artifacts(
             scan_latex_log(stdout_log_path.read_text(encoding="utf-8", errors="ignore"), source=str(stdout_log_path))
         )
 
-    issues.extend(validate_preamble_margins(root / "manuscript" / "preamble.md"))
+    issues.extend(validate_preamble_margins(root / "docs" / "manuscript" / "preamble.md"))
     return issues

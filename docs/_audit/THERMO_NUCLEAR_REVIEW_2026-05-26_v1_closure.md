@@ -26,7 +26,7 @@ v1 code is ship-ready. Interval witness is honestly Tier-N (not Flocq); sham lon
 | F5 | Optional | `publication_metadata.py:14-22` | `LEGACY_*` / `UNRESOLVED_*` alias layer is backward-compat sprawl; consolidate post-v1. |
 | F6 | Low (mitigated) | `audit_matrix.py:38-44` | Silent fallback to `test_veridical_status_doc.py`; drift test `test_audit_matrix_no_silent_veridical_fallback` mitigates. |
 | F7 | Clean | `invariants.py:304-368` | Shared `decomposition_sweep_points` is the right structural move; file under 1k lines. |
-| F8 | Doc nit | `manuscript/AGENTS.md` | Duplicate `0A` phrasing in section-count bullet (fixed in closure commit). |
+| F8 | Doc nit | `docs/manuscript/AGENTS.md` | Duplicate `0A` phrasing in section-count bullet (fixed in closure commit). |
 
 ---
 

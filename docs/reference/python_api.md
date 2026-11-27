@@ -138,7 +138,7 @@ def write_dashboard(args: argparse.Namespace) -> dict[str, Path]
 ```
 
 > Release-readiness orchestration lives in
-> [`manuscript/readiness.py`](python_api_manuscript.md#readinesspy)
+> [`docs/manuscript/readiness.py`](python_api_manuscript.md#readinesspy)
 > (consumed by `scripts/readiness_report.py`); the `reporting/`
 > subpackage covers only the standalone dashboard helpers above.
 

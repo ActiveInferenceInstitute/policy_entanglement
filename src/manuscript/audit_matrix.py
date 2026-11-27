@@ -48,7 +48,7 @@ def _theorem_row(label: str, entry: TheoremEntry) -> dict[str, str]:
     lean_path = (
         f"lean/ActinfPolicyEntanglement/{entry.lean_module}.lean"
         if entry.lean_module
-        else "manuscript/refs/labels.yaml"
+        else "docs/manuscript/refs/labels.yaml"
     )
     artifacts: list[str] = [lean_path]
     if entry.artifact:
@@ -70,9 +70,9 @@ def _theorem_row(label: str, entry: TheoremEntry) -> dict[str, str]:
 
     return {
         "claim_area": f"{label} ({entry.kind} {entry.number}: {entry.name})",
-        "public_surface": f"[[THMREF:{label}]]; manuscript/refs/labels.yaml",
+        "public_surface": f"[[THMREF:{label}]]; docs/manuscript/refs/labels.yaml",
         "generating_source": lean_path,
-        "config_or_var_key": f"manuscript/refs/labels.yaml::theorems::{label}",
+        "config_or_var_key": f"docs/manuscript/refs/labels.yaml::theorems::{label}",
         "artifact_or_sidecar": "; ".join(artifacts),
         "verification_gate": test_gate,
         "verdict": verdict,
@@ -81,7 +81,7 @@ def _theorem_row(label: str, entry: TheoremEntry) -> dict[str, str]:
 
 
 def _load_audit_track_rows(project_root: Path) -> list[dict[str, str]]:
-    tracks_path = project_root / "manuscript" / "refs" / "audit_tracks.yaml"
+    tracks_path = project_root / "docs" / "manuscript" / "refs" / "audit_tracks.yaml"
     payload = yaml.safe_load(tracks_path.read_text(encoding="utf-8")) or {}
     tracks = payload.get("tracks") or []
     rows: list[dict[str, str]] = []
@@ -97,7 +97,7 @@ def _load_audit_track_rows(project_root: Path) -> list[dict[str, str]]:
 
 def build_audit_matrix_rows(project_root: Path) -> list[dict[str, str]]:
     """Return ordered audit-matrix rows for the project."""
-    labels_path = project_root / "manuscript" / "refs" / "labels.yaml"
+    labels_path = project_root / "docs" / "manuscript" / "refs" / "labels.yaml"
     labels = load_labels(labels_path)
     rows: list[dict[str, str]] = []
     for label, entry in labels.theorems.items():

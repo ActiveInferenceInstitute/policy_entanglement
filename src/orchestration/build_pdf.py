@@ -461,7 +461,7 @@ def render_combined_pdf(*, project_root: Path) -> Path:
     preamble_tex = pdf_dir / "_preamble.tex"
     xelatex_stdout = pdf_dir / "_xelatex_stdout.log"
     injected_manuscript = project_root / "output" / "manuscript"
-    source_manuscript = project_root / "manuscript"
+    source_manuscript = project_root / "docs" / "manuscript"
 
     _mirror_render_auxiliary_files(
         source_manuscript=source_manuscript,

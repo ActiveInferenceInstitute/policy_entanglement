@@ -194,5 +194,5 @@ the hygiene gate is enforced by
    render order (e.g. `04a_new_topic.md`).
 2. Top heading is a single `#` (Pandoc → `\section{}`); subsections
    use `##`.  No hardcoded section numbers in headings.
-3. List the new file in [`../manuscript/README.md`](../../manuscript/README.md).
+3. List the new file in [`../manuscript/README.md`](../manuscript/README.md).
 4. Re-render with `scripts/build_pdf.py` and validate with `scripts/validate_pdf.py`.

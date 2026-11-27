@@ -1,10 +1,10 @@
 # FloatRealResidualWitness — Float↔ℝ residual scaffold
 
 Manuscript section:
-[`../manuscript/3B_lean_formalization.md`](../../manuscript/3B_lean_formalization.md)
+[`../manuscript/3B_lean_formalization.md`](../manuscript/3B_lean_formalization.md)
 (§3B formal-verification treatment) and the roadmap row
 `roadmap_float_real_residual` in
-[`../manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml).
+[`../manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml).
 
 Lean source:
 [`FloatRealResidualWitness.lean`](../../lean/ActinfPolicyEntanglement/FloatRealResidualWitness.lean).

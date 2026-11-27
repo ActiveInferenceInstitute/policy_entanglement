@@ -3,7 +3,7 @@
 Back to the styleguide hub: [`../styleguide.md`](../styleguide.md).
 
 As of the latest generated audit, the figure count is derived from
-`manuscript/refs/labels.yaml::figures` and mirrored into
+`docs/manuscript/refs/labels.yaml::figures` and mirrored into
 `output/reports/release_readiness.json`.
 See the build-and-run guide's
 [figure-count scoping section](../build_run.md#figure-count-scoping)
@@ -20,7 +20,7 @@ manuscript figure.
 
 ## Caption contract
 
-Every figure caption in `manuscript/refs/labels.yaml` must:
+Every figure caption in `docs/manuscript/refs/labels.yaml` must:
 
 * state the figure's **uncertainty semantics** through the registry's
   `uncertainty:` field, using one of `deterministic_grid`,
@@ -70,7 +70,7 @@ header on disk.
 1. Add a `figure_*` function to `scripts/generate_figures.py` (pure
    I/O + plotting; computation comes from `lean.*` or `simulation.*`).
 2. Read every grid / scalar from `H = simulation.hyperparameters`.
-3. Register the figure in `manuscript/refs/labels.yaml`:
+3. Register the figure in `docs/manuscript/refs/labels.yaml`:
 
    ```yaml
    figures:

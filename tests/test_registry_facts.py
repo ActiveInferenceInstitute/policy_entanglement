@@ -45,7 +45,7 @@ def test_valid_faithfulness_is_frozen_set() -> None:
 
 
 def test_registry_facts_rejects_bad_faithfulness(tmp_path: Path) -> None:
-    manuscript = tmp_path / "manuscript"
+    manuscript = tmp_path / "docs" / "manuscript"
     refs = manuscript / "refs"
     refs.mkdir(parents=True)
     (refs / "labels.yaml").write_text(

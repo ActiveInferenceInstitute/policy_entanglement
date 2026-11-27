@@ -5,7 +5,7 @@ are witness-consuming boundary contracts.
   Lean proof routes through Brascamp–Lieb / Mathlib log-concavity
   machinery and remains a witness payload.  Here we verify the
   convexity claim numerically on the K = 2 Ising specialization described in
-  ``manuscript/S02_convexity_of_free_energy.md``.
+  ``docs/manuscript/S02_convexity_of_free_energy.md``.
 * `thm_7_3` — *Sparsity-rank tradeoff* (Theorem 8.3).  A coupling
   potential with low tensor-train rank produces a posterior with
   tensor-train rank bounded above by the coupling's bond dimensions.

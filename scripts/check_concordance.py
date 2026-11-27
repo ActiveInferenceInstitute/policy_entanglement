@@ -6,7 +6,7 @@ Mechanical guardrail recommended by the 2026-05-18 deep review
 detectable signal). Scope is deliberately *mechanical and non-blocking*:
 
   1. Every ``status: proved|witness|boundary|forwarder`` row in
-     ``manuscript/refs/labels.yaml`` has its ``lean_name`` present in the
+     ``docs/manuscript/refs/labels.yaml`` has its ``lean_name`` present in the
      project Lean source (``lean/`` excluding vendored ``.lake/``).
   2. Every Python identifier asserted in S06's Python column that looks
      like a bare ``snake_case``/``CamelCase`` callable (and is *not*
@@ -28,8 +28,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-S06 = ROOT / "manuscript" / "S06_notation_and_concordance.md"
-LABELS = ROOT / "manuscript" / "refs" / "labels.yaml"
+S06 = ROOT / "docs" / "manuscript" / "S06_notation_and_concordance.md"
+LABELS = ROOT / "docs" / "manuscript" / "refs" / "labels.yaml"
 SRC = ROOT / "src"
 LEAN = ROOT / "lean"
 

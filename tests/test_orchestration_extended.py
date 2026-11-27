@@ -92,7 +92,7 @@ def test_run_bibtex_writes_log(tmp_path: Path) -> None:
 
 
 def _seed_minimal_injected_manuscript(project_root: Path) -> None:
-    ms = project_root / "manuscript"
+    ms = project_root / "docs" / "manuscript"
     injected = project_root / "output" / "manuscript"
     for d in (ms, injected):
         d.mkdir(parents=True, exist_ok=True)

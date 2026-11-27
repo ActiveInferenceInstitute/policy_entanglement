@@ -26,7 +26,7 @@ that are normally produced by ``Project Analysis`` (stage 4).
 
 The fixture:
 
-* Detects missing artifacts by inspecting ``manuscript/refs/labels.yaml``
+* Detects missing artifacts by inspecting ``docs/manuscript/refs/labels.yaml``
   (figure paths excluding ``pymdp_*``) and the prose ``[[VAR:...]]``
   keys vs. ``output/data/manuscript_variables.json``.
 * Runs only the scripts whose outputs are missing (idempotent;
@@ -82,7 +82,7 @@ _OUTPUT = _PROJECT / "output"
 _FIG_DIR = _OUTPUT / "figures"
 _DATA_DIR = _OUTPUT / "data"
 _VAR_JSON = _DATA_DIR / "manuscript_variables.json"
-_LABELS_YAML = _PROJECT / "manuscript" / "refs" / "labels.yaml"
+_LABELS_YAML = _PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml"
 _SCRIPTS = _PROJECT / "scripts"
 _PROJECT_VENV_PY = _PROJECT / ".venv" / "bin" / "python"
 
@@ -113,9 +113,9 @@ def _missing_figure_labels() -> list[str]:
 
 
 def _prose_var_keys() -> set[str]:
-    """Keys appearing in ``manuscript/*.md`` body files via ``[[VAR:key]]``."""
+    """Keys appearing in ``docs/manuscript/*.md`` body files via ``[[VAR:key]]``."""
     keys: set[str] = set()
-    manuscript_dir = _PROJECT / "manuscript"
+    manuscript_dir = _PROJECT / "docs" / "manuscript"
     if not manuscript_dir.is_dir():
         return keys
     for src in sorted(manuscript_dir.glob("*.md")):

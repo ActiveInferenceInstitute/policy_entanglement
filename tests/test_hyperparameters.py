@@ -79,7 +79,7 @@ def test_phase_thresholds_are_ordered() -> None:
 
 
 def test_summary_dict_has_every_key_used_by_manuscript() -> None:
-    """The keys consumed by `manuscript/*.md` via [[VAR:...]] must
+    """The keys consumed by `docs/manuscript/*.md` via [[VAR:...]] must
     appear in the figure_hyperparameter_summary export.
     """
     summary = H.figure_hyperparameter_summary()

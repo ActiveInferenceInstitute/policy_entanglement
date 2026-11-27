@@ -5,7 +5,7 @@ Back to the styleguide hub: [`../styleguide.md`](../styleguide.md).
 ## The registry
 
 Every citation lives in
-[`manuscript/refs/citations.yaml`](../../../manuscript/refs/citations.yaml)
+[`docs/manuscript/refs/citations.yaml`](../../manuscript/refs/citations.yaml)
 keyed by a slug.  Do not hard-code current citation counts in docs:
 the live registry totals and topic roll-ups are generated from
 `citations.yaml` by
@@ -51,7 +51,7 @@ heins-2022:
 `[[CITELIST:topic]]` emits a Markdown bullet list of every citation
 whose `topic:` matches `topic`.  The active topics are declared in
 the same YAML under `topic_order:` and `topic_titles:` so the
-bibliography section ([`99_bibliography.md`](../../../manuscript/99_bibliography.md))
+bibliography section ([`99_bibliography.md`](../../manuscript/99_bibliography.md))
 can render them in a stable order.  See
 [`src/manuscript/bibliography.py`](../../../src/manuscript/bibliography.py).
 

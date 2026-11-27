@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Thin CLI wrapper for auto-generating ``manuscript/INDEX.md``.
+"""Thin CLI wrapper for auto-generating ``docs/manuscript/INDEX.md``.
 
 Business logic lives in :mod:`manuscript.index_generator` (under ``src/``).
 This script bootstraps the project's ``src/`` subpackages onto
@@ -32,7 +32,7 @@ from manuscript.index_generator import write_index  # noqa: E402
 
 
 def main() -> int:
-    out_path = write_index(manuscript_dir=PROJECT_ROOT / "manuscript")
+    out_path = write_index(manuscript_dir=PROJECT_ROOT / "docs" / "manuscript")
     print(out_path)
     return 0
 

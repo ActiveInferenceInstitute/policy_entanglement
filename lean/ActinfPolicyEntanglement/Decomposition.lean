@@ -229,9 +229,9 @@ F[q_λ] = log Z_E(λ) - log Z(λ),
 
 where `log Z_E(λ)` is the entangled-prior log-partition and
 `log Z(λ)` is the entangled-posterior log-partition.  See
-[`manuscript/04_entanglement_decomposition.md`](../../manuscript/04_entanglement_decomposition.md)
+[`docs/manuscript/04_entanglement_decomposition.md`](../../manuscript/04_entanglement_decomposition.md)
 ([Theorem 5.5](../../manuscript/refs/labels.yaml#thm_4_2)) and the proof appendix
-[`manuscript/S01_proof_of_decomposition_theorem.md`](../../manuscript/S01_proof_of_decomposition_theorem.md).
+[`docs/manuscript/S01_proof_of_decomposition_theorem.md`](../../manuscript/S01_proof_of_decomposition_theorem.md).
 
 The boundary fragment exposes the identity as a *witness-consuming*
 statement: the caller (the separate additive `MathlibProofs` layer or the

@@ -69,8 +69,8 @@ Each row below lists:
 
 Builder: `ising_invariants(grid)` in
 [`src/lean/invariants.py`](../../src/lean/invariants.py).
-Manuscript: §6 ([`2E_examples.md`](../../manuscript/2E_examples.md))
-and §10 ([`2I_phase_structure.md`](../../manuscript/2I_phase_structure.md));
+Manuscript: §6 ([`2E_examples.md`](../manuscript/2E_examples.md))
+and §10 ([`2I_phase_structure.md`](../manuscript/2I_phase_structure.md));
 Lean: [`BernoulliToy`](../../lean/ActinfPolicyEntanglement/BernoulliToy.lean).
 
 ### Free energy monotonicity (3 invariants)
@@ -82,7 +82,7 @@ Lean: [`BernoulliToy`](../../lean/ActinfPolicyEntanglement/BernoulliToy.lean).
 | `free_energy_monotone_decreasing_u=2` | `F(λ; u=2)` is monotone-decreasing on λ ≥ 0 | `1e-9` |
 
 Builder: `free_energy_invariants(grid, utilities=(0, 1, 2))`.
-Manuscript: §11 ([`2J_comparative_statics.md`](../../manuscript/2J_comparative_statics.md));
+Manuscript: §11 ([`2J_comparative_statics.md`](../manuscript/2J_comparative_statics.md));
 Lean: `Convexity.freeEnergy_convex_in_lam_witness` (Thm 5.6,
 [`Convexity.lean`](../../lean/ActinfPolicyEntanglement/Convexity.lean)).
 
@@ -106,7 +106,7 @@ Builder: `optimal_lambda_invariants(deltas=(0.0, 0.5, 1.0, 2.0))`.
 | `phase_classifier_frozen` | `phase(λ=2.6 | …) == 'frozen'` | `0` |
 
 Builder: `phase_invariants(probes=…)`.  Manuscript: §10
-([`2I_phase_structure.md`](../../manuscript/2I_phase_structure.md));
+([`2I_phase_structure.md`](../manuscript/2I_phase_structure.md));
 Lean: `BernoulliToy.couplingPhaseAt`.
 
 ### Marginal / TC entropy bounds (2 invariants)
@@ -129,7 +129,7 @@ Builder: `marginal_invariants(grid)`.  Lean:
 | `decomposition_lhs_finite` | LHS `F[q_λ]` is finite at every grid point | finite |
 
 Builder: `decomposition_invariants(grid)`.  Manuscript: §5
-([`2D_decomposition.md`](../../manuscript/2D_decomposition.md));
+([`2D_decomposition.md`](../manuscript/2D_decomposition.md));
 Lean: [`Decomposition.entanglement_decomposition`](../../lean/ActinfPolicyEntanglement/Decomposition.lean);
 docs: [`decomposition_theorem.md`](../modules/decomposition_theorem.md).
 
@@ -158,7 +158,7 @@ A 3 × 4 × 2 = 24-entry block witnessing Theorem 7.4 (affine λ ↦
 
 Builder: `affine_log_weight_invariants(gammas=(0, 0.5, 1.0))`.
 Manuscript: §7
-([`2F_geometry.md`](../../manuscript/2F_geometry.md));
+([`2F_geometry.md`](../manuscript/2F_geometry.md));
 Lean: `Coupling.couplingLogWeight_affine_in_lam` and
 `Geometry.entangledFamily_eGeodesic`.
 
@@ -173,7 +173,7 @@ Builder: inline in
 consuming
 [`scripts/simulate_revertibility.py`](../../scripts/simulate_revertibility.py)'s
 summary JSON.  Manuscript: §17
-([`5B_connections_aif.md`](../../manuscript/5B_connections_aif.md))
+([`5B_connections_aif.md`](../manuscript/5B_connections_aif.md))
 and the round-3 mention in
 [`CHANGELOG.md`](../CHANGELOG.md);
 Lean: ties in to `ConnectionsWitnesses.hierarchicalAIF_lambda_limit_witness`

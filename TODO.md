@@ -233,7 +233,7 @@ section remains open.
   satisfy. Fix: reworded to "content audit of generated artifacts".
 - **[x] `src/orchestration/build_pdf.py` — dead no-op `if subs == 0: pass`.**
   Removed the empty branch (the `re.subn` already handles both outcomes) and documented intent.
-- **[x] `manuscript/INDEX.md` — stale row for the `00_abstract.md` symlink.**
+- **[x] `docs/manuscript/INDEX.md` — stale row for the `00_abstract.md` symlink.**
   `generate_index.py` excludes `MANUSCRIPT_NON_BODY_MD`; now that `00_abstract.md` is in that
   set, the regenerated index correctly drops its row. Verified against source
   (`index_generator.py:105`).
@@ -303,7 +303,7 @@ failure or cross-cutting contradiction.
 - **[x] `.aii/config.yaml` — malformed citation DOI scalar.** Corrected the leaked
   Markdown-link suffix so the sidecar stores the plain DOI (`62cf243`).
 - **[x] `CITATION.cff` — missing version/date-released; title drift.** Added
-  `version: "1.0"` + `date-released: "2026-05-27"` (matches `manuscript/config.yaml`
+  `version: "1.0"` + `date-released: "2026-05-27"` (matches `docs/manuscript/config.yaml`
   and the Zenodo v1.0.0 deposit) (`62cf243`); README Citation block now uses the
   canonical CFF/config title (`5b50f5c`).
 - **[x] `docs/README.md` — incomplete citation-metadata sentence + orphaned
@@ -315,7 +315,7 @@ failure or cross-cutting contradiction.
 - **[x] `docs/guides/styleguide/manuscript-variables.md` — broken anchor.**
   Repointed `#validationpy` (nonexistent in `python_api.md`) to the validation
   facade section in `python_api_manuscript.md` (`793e49b`).
-- **[x] `manuscript/refs/README.md` — dangling generated-output path.** Clarified
+- **[x] `docs/manuscript/refs/README.md` — dangling generated-output path.** Clarified
   that `output/manuscript/` exists only after the render pipeline (`cc4e5fd`).
 
 ### Medium
@@ -352,7 +352,7 @@ failure or cross-cutting contradiction.
   restructure was justified. (Closed by review, no implementation required.)
   One owner-level item is noted rather than closed: the dual-license split
   (MIT code + CC-BY-4.0 manuscript prose) is declared consistently across
-  README, CITATION.cff, and `manuscript/config.yaml`, but a separate
+  README, CITATION.cff, and `docs/manuscript/config.yaml`, but a separate
   CC-BY-4.0 license text file would need an ownership decision outside a
   docs pass.
 

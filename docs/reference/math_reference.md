@@ -9,7 +9,7 @@ boundary fragment.
 
 A glossary of the formal objects used in the framework, with the Lean
 type, the Python representation, and the manuscript section that
-introduces each.  See [`../manuscript/2B_setup.md`](../../manuscript/2B_setup.md)
+introduces each.  See [`../manuscript/2B_setup.md`](../manuscript/2B_setup.md)
 for the canonical definitions in prose.
 
 > **Sign conventions.** The free energy `F`, the expected free energy
@@ -19,8 +19,8 @@ for the canonical definitions in prose.
 > alternatives flip a sign or two. The single source of truth for
 > which convention this project uses (in prose, equations, Python,
 > and Lean) is **§S6.1** in
-> [`manuscript/S06_notation_and_concordance.md`](../../manuscript/S06_notation_and_concordance.md)
-> (anchor: [`notation.sign_conventions`](../../manuscript/S06_notation_and_concordance.md#sign-conventions-secnotationsignconventions)).
+> [`docs/manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md)
+> (anchor: [`notation.sign_conventions`](../manuscript/S06_notation_and_concordance.md#sign-conventions-secnotationsignconventions)).
 > Manuscript prose cross-references that subsection via
 > `[[SECREF:notation.sign_conventions]]` (used in §3, §5, and §7).
 

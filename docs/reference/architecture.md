@@ -76,7 +76,7 @@ Everything under
 * **Lean track** — [`../lean/`](../../lean/), Mathlib-free.
 * **Python track** — [`../src/`](../../src/) + [`../tests/`](../../tests/) +
   [`../scripts/`](../../scripts/).
-* **Manuscript / registry track** — [`../manuscript/`](../../manuscript/).
+* **Manuscript / registry track** — [`../manuscript/`](../manuscript/).
 * **GNN bridge** — [`../../gnn/`](../../gnn/) +
   [`../../src/gnn/`](../../src/gnn/), a structural-and-numerical fifth
   representation rather than a theorem-proving track.

@@ -182,7 +182,7 @@ Key invariants:
    re-discharged against `ℝ` in the MathlibProofs layer without re-stating the
    theorem.
 4. **Mirror to the manuscript.**  Each witness-form theorem has a row
-   in `manuscript/refs/labels.yaml` with `status: witness` and a
+   in `docs/manuscript/refs/labels.yaml` with `status: witness` and a
    `lean_module` / `lean_name` pair pointing to the live declaration.
    See the round-3 graduations (`SpectralWitnesses`,
    `ConnectionsWitnesses`) for canonical examples.
@@ -265,7 +265,7 @@ Mathlib, they do **not** edit the boundary fragment.  Instead they:
 3. Construct a canonical instance of the witness `structure` from
    Mathlib content, then re-export the boundary theorem specialized
    against `ℝ` with the payload supplied internally.
-4. Update `manuscript/refs/labels.yaml` — flip `status: witness` to
+4. Update `docs/manuscript/refs/labels.yaml` — flip `status: witness` to
    `status: proved` (or keep `witness` if only the payload is
    discharged but downstream still needs work).
 

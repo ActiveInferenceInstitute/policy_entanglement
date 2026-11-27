@@ -352,7 +352,7 @@ def render_all(
     variables_path: Path,
     lean_dir: Path | None = None,
 ) -> dict[str, RenderResult]:
-    """Render every ``manuscript/*.md`` section into `output_dir`.
+    """Render every ``docs/manuscript/*.md`` section into `output_dir`.
 
     Subdirectories under `manuscript/` are *not* recursed — the
     rendering pipeline only consumes flat numbered files.  YAML files

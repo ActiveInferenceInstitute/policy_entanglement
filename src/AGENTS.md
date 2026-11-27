@@ -18,7 +18,7 @@ have their own `AGENTS.md`, while `reporting/`, `gates/`,
 | `manuscript` | [`src/manuscript/`](manuscript/) | Manuscript registry, token renderer, equation auto-numbering pipeline, citation / bibliography helpers, Lean-source extraction, validators, release output gates (`output_gates/`, `registry_facts.py`, `stale_patterns.py`, `status_patterns.py`) |
 | `reporting` | [`src/reporting/`](reporting/) | Dashboard HTML/JSON/plaintext emission; prefers `infrastructure.reporting.interactive_dashboard` when the repo root is on `PYTHONPATH`, otherwise falls back to `_interactive_dashboard_local.py` |
 | `dashboard_types` | [`src/dashboard_types/`](dashboard_types/) | Shared `Panel`, `Control`, and `Invariant` dataclasses consumed by `lean/invariants.py` and `reporting/` |
-| `gates` | [`src/gates/`](gates/) | Parameterised pipeline gate logic (`regression_gate.py` — pytest-count parsing, coverage-floor inspection, dashboard-invariant + Lean-budget snapshots) re-exported by the thin script wrapper. Name avoids the `manuscript/validation.py` collision on the bare-import sys.path |
+| `gates` | [`src/gates/`](gates/) | Parameterised pipeline gate logic (`regression_gate.py` — pytest-count parsing, coverage-floor inspection, dashboard-invariant + Lean-budget snapshots) re-exported by the thin script wrapper. Name avoids the `docs/manuscript/validation.py` collision on the bare-import sys.path |
 | `orchestration` | [`src/orchestration/`](orchestration/) | End-to-end pipeline runner (`run_all.py` — canonical `SCRIPTS` order, `PDF_SCRIPTS` / `MATHLIB_PROOF_SCRIPTS` extensions, parallel producer batch, `MANIFEST.md` writer) re-exported by the thin script wrapper |
 
 ## Constitution
@@ -81,7 +81,7 @@ have their own `AGENTS.md`, while `reporting/`, `gates/`,
 * `manuscript/` is purely textual — no `pymdp`, no `numpy`-heavy
   computation, no plotting.  It loads YAML registries, reads the
   pre-computed `output/data/manuscript_variables.json`, and rewrites
-  Markdown.  Release gates live in `manuscript/output_gates/` (split validators:
+  Markdown.  Release gates live in `docs/manuscript/output_gates/` (split validators:
   `artifact_validators.py`, `pymdp_validators.py`, `png_validation.py`,
   `csv_helpers.py`, `constants.py`) and `registry_facts.py`; shared stale
   regexes in `stale_patterns.py`; status-doc helpers in `status_patterns.py`.

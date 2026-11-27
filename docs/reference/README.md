@@ -4,7 +4,7 @@ Authoritative tables for the project as a whole — every reader will
 visit at least one of these.
 
 *Latest generated audit.* Live theorem/status counts come from the
-generated theorem map and `manuscript/refs/labels.yaml`; live pytest,
+generated theorem map and `docs/manuscript/refs/labels.yaml`; live pytest,
 PDF, figure, artifact, and optional MathlibProofs gate facts come from
 `output/reports/release_readiness.json`,
 `output/reports/test_results.json`, and `output/MANIFEST.md`.
