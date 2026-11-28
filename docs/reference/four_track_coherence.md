@@ -14,7 +14,7 @@ the 5 `proved` rows, only 2 are `substantive` (`cor_4_2`, `cor_4_3`)
 and 3 are `statement-restricted` (`prop_6_1` proves membership not
 e-flatness; `prop_6_2` a conditional KL equality not minimality;
 `prop_7_1` an `Iff.rfl` unfolding not the Schmidt-rank equivalence) —
-see the `faithfulness:` field in `manuscript/refs/labels.yaml` and the
+see the `faithfulness:` field in `docs/manuscript/refs/labels.yaml` and the
 per-row audit in
 [`veridical_status.md`](veridical_status.md). All other counts and
 validation-gate counts are sourced from the latest generated readiness
@@ -38,7 +38,7 @@ enforce it — exist to make that drift impossible.
 **Four-track proof contract vs GNN fifth track.** The four CI-gated tracks
 above bind the **theorem registry** (prose, equations, Python numerical
 companions, Lean boundary fragment). Supplement
-[`S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md)
+[`S08_gnn_generalized_notation_extension.md`](../manuscript/S08_gnn_generalized_notation_extension.md)
 adds a **fifth empirical track** — GNN parse, round-trip, and sidecar
 evidence under `src/gnn/` — that does **not** promote registry rows or
 extend the four-track proof contract. S08 is concordance-checked and
@@ -50,8 +50,8 @@ VAR-bound, but GNN remains explicitly non-proof-promoting; see
 
 | Track | Source of truth | Render path |
 |---|---|---|
-| 1. **Prose** (sectioned manuscript) | `manuscript/*.md` | rendered to `output/manuscript/*.md` and ultimately the PDF |
-| 2. **Equations / labels** | `manuscript/refs/labels.yaml` and `manuscript/refs/citations.yaml` | injected into prose via `[[EQ:...]]`, `[[EQREF:...]]`, `[[FIG:...]]`, `[[THMREF:...]]`, `[[VAR:...]]`, `[[SECREF:...]]`, `[[LEAN:...]]`, Pandoc citation keys, and `[[CITELIST:...]]` |
+| 1. **Prose** (sectioned manuscript) | `docs/manuscript/*.md` | rendered to `output/manuscript/*.md` and ultimately the PDF |
+| 2. **Equations / labels** | `docs/manuscript/refs/labels.yaml` and `docs/manuscript/refs/citations.yaml` | injected into prose via `[[EQ:...]]`, `[[EQREF:...]]`, `[[FIG:...]]`, `[[THMREF:...]]`, `[[VAR:...]]`, `[[SECREF:...]]`, `[[LEAN:...]]`, Pandoc citation keys, and `[[CITELIST:...]]` |
 | 3. **Python numerical companion** | `src/lean/*.py`, `src/simulation/*.py`, `src/visualizations/*.py` | tested under `tests/test_*.py`; numerical witnesses serialized to `output/data/manuscript_variables.json` |
 | 4. **Lean boundary fragment** | `lean/ActinfPolicyEntanglement/*.lean` | live source extracted by `src/manuscript/lean_extract.py`, embedded into prose at render time via `[[LEAN:label]]` |
 
@@ -64,12 +64,12 @@ is resolved through one of these registry-backed references:
 | Token | Resolves to | Source |
 |---|---|---|
 | `[[VAR:key]]` | Numerical scalar / list | `output/data/manuscript_variables.json` (produced by `scripts/manuscript_variables.py`) |
-| `[[EQ:label]]` / `[[EQREF:label]]` | LaTeX display equation with auto-numbered tag | `manuscript/refs/labels.yaml::equations` |
-| `[[FIG:label]]` / `[[FIGREF:label]]` | Image reference with caption | `manuscript/refs/labels.yaml::figures` (PNG produced by `scripts/generate_figures.py` or `scripts/simulate_pymdp.py`) |
-| `[[THMREF:label]]` / `[[THM:label]]` | Theorem cross-reference with kind + number | `manuscript/refs/labels.yaml::theorems` |
+| `[[EQ:label]]` / `[[EQREF:label]]` | LaTeX display equation with auto-numbered tag | `docs/manuscript/refs/labels.yaml::equations` |
+| `[[FIG:label]]` / `[[FIGREF:label]]` | Image reference with caption | `docs/manuscript/refs/labels.yaml::figures` (PNG produced by `scripts/generate_figures.py` or `scripts/simulate_pymdp.py`) |
+| `[[THMREF:label]]` / `[[THM:label]]` | Theorem cross-reference with kind + number | `docs/manuscript/refs/labels.yaml::theorems` |
 | `[[LEAN:label]]` | Live Lean source snippet | `lean/ActinfPolicyEntanglement/<lean_module>.lean` resolved via `lean_module` / `lean_name` fields of the theorem registry |
-| `[[SECREF:label]]` | Section number / link | `manuscript/refs/labels.yaml::sections` |
-| `[@key]` / `[@k1; @k2]` / `[[CITELIST:topic]]` | Bibliography entry or topic list | `manuscript/refs/citations.yaml` |
+| `[[SECREF:label]]` | Section number / link | `docs/manuscript/refs/labels.yaml::sections` |
+| `[@key]` / `[@k1; @k2]` / `[[CITELIST:topic]]` | Bibliography entry or topic list | `docs/manuscript/refs/citations.yaml` |
 
 A manuscript file containing a single hardcoded number or theorem
 reference outside one of these tokens fails the CI gate immediately;
@@ -96,7 +96,7 @@ stage produces inputs for the next.
 12. manuscript_variables.py   → output/data/manuscript_variables.json (every [[VAR:...]] value)
 13. build_dashboard.py        → output/web/dashboard.html + output/data/dashboard_payload.json
                                   + output/reports/dashboard_invariants.txt
-14. generate_index.py         → manuscript/INDEX.md (auto-generated from registry)
+14. generate_index.py         → docs/manuscript/INDEX.md (auto-generated from registry)
 15. generate_theorem_map.py   → docs/reference/_theorem_map.md (per-theorem four-track wiring)
 16. inject_manuscript_variables.py
                               → output/manuscript/*.md   (every token resolved into rendered prose)
@@ -137,14 +137,14 @@ A reader following the entanglement-decomposition theorem (the
 canonical example) traverses all four tracks:
 
 1. **Prose** in
-   [`manuscript/2D_decomposition.md`](../../manuscript/2D_decomposition.md)
+   [`docs/manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
    states the theorem in natural language with the registry token
    `[[THMREF:thm_4_1]]`.
 
 2. **Equation** `[[EQ:tc_decomp]]` resolves to a registered LaTeX
    display block with auto-numbered tag (e.g. `(4.1)`) — a single
    source of truth in
-   [`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml).
+   [`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml).
 
 3. **Python companion**
    [`lean.decomposition.entanglement_decomposition_rhs`](../../src/lean/decomposition.py)
@@ -251,7 +251,7 @@ over-stated.
    in *witness form* if it depends on Mathlib content
    (KL chain rule, Bregman Taylor, real-analytic continuity, matrix
    outer-product rank). The boundary fragment must remain `sorry`-free.
-3. Register the theorem in `manuscript/refs/labels.yaml::theorems`
+3. Register the theorem in `docs/manuscript/refs/labels.yaml::theorems`
    with `lean_module`, `lean_name`, and `status` fields.
 4. Reference it in prose with `[[THMREF:label]]` and embed the live
    Lean source with `[[LEAN:label]]`. If the theorem has a numerical
@@ -266,7 +266,7 @@ fails before a render reaches a reader. That is the contract.
 
 ## S08 and the GNN Bridge
 
-[`S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md)
+[`S08_gnn_generalized_notation_extension.md`](../manuscript/S08_gnn_generalized_notation_extension.md)
 now ships Generalized Notation Notation (GNN) [Smékal & Friedman 2023]
 as a **fifth structural-and-numerical representation**, not as a fifth
 proof track. The shipped pieces are concrete and CI-covered:

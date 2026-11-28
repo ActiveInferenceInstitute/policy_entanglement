@@ -1,7 +1,7 @@
 # Heterogeneous ensembles and Theorem 9.1
 
 Manuscript section:
-[`../manuscript/2H_heterogeneous.md`](../../manuscript/2H_heterogeneous.md).
+[`../manuscript/2H_heterogeneous.md`](../manuscript/2H_heterogeneous.md).
 
 ## The setting
 

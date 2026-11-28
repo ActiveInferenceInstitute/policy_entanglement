@@ -46,7 +46,7 @@ moved to the `type=bool` / `binary` dtype difference).
 - Stage entry: [`../../scripts/simulate_gnn.py`](../../scripts/simulate_gnn.py)
 - Sidecars: `output/data/gnn_bernoulli_roundtrip.json`, `output/data/gnn_production_conformance.json`
 - Generator: [`../../scripts/gnn_to_pymdp.py`](../../scripts/gnn_to_pymdp.py) (policy-level config); `--harness` emits the production-harness config
-- Manuscript: [`../../manuscript/S08_gnn_generalized_notation_extension.md`](../../manuscript/S08_gnn_generalized_notation_extension.md)
+- Manuscript: [`../../docs/manuscript/S08_gnn_generalized_notation_extension.md`](../../docs/manuscript/S08_gnn_generalized_notation_extension.md)
 - Gates: `tests/test_gnn_parser.py`, `tests/test_gnn_round_trip.py`, `tests/test_gnn_concordance.py`, `tests/test_gnn_harness_conformance.py`, `tests/test_gnn_upstream_conformance.py`, `tests/test_simulate_gnn.py`
 
 ## Rules

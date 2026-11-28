@@ -26,7 +26,7 @@ The status column is one of:
   analytic-discharge layer.
 The retired `sketch` and `deferred` buckets appear only in revision
 history. They are no longer legal current statuses in
-`manuscript/refs/labels.yaml`; the status-table tests reject them.
+`docs/manuscript/refs/labels.yaml`; the status-table tests reject them.
 
 The boundary fragment is **`sorry`-free, `axiom`-free, and
 `unsafe`/`partial`/`noncomputable`-free**. Refresh hygiene with:

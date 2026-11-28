@@ -1,7 +1,7 @@
 # Basic — primitive types and stream-mode classification
 
 Manuscript section:
-[`../manuscript/2B_setup.md`](../../manuscript/2B_setup.md).
+[`../manuscript/2B_setup.md`](../manuscript/2B_setup.md).
 
 Lean source:
 [`Basic.lean`](../../lean/ActinfPolicyEntanglement/Basic.lean).

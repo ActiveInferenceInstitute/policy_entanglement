@@ -1,9 +1,9 @@
 # K = 2 Bernoulli / Ising worked example
 
 Manuscript section:
-[`../manuscript/2E_examples.md`](../../manuscript/2E_examples.md) and
+[`../manuscript/2E_examples.md`](../manuscript/2E_examples.md) and
 Appendix C
-[`../manuscript/S03_bernoulli_complete_derivation.md`](../../manuscript/S03_bernoulli_complete_derivation.md).
+[`../manuscript/S03_bernoulli_complete_derivation.md`](../manuscript/S03_bernoulli_complete_derivation.md).
 
 ## Convention note
 
@@ -24,7 +24,7 @@ the two are related by $\lambda_{\text{body}} \cdot J_0 =
 \lambda_{\text{app}} / 2$, so $\lambda_{\text{app}} = 2\,J_0\,\lambda_{\text{body}}$.
 The closed-form mutual information identity has equivalent forms in
 both conventions (see manuscript
-[`S03`](../../manuscript/S03_bernoulli_complete_derivation.md) for the
+[`S03`](../manuscript/S03_bernoulli_complete_derivation.md) for the
 full reconciliation).  Below we work in the appendix swing-½
 convention throughout.
 

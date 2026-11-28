@@ -49,7 +49,7 @@ with the generated artifact, the artifact wins:
   and `output/reports/release_readiness.json`; historical deferred-row
   deltas belong in `docs/CHANGELOG.md`.
 - Figure counts are live in `output/reports/release_readiness.json`
-  and `manuscript/refs/labels.yaml`; **47** dashboard invariants are
+  and `docs/manuscript/refs/labels.yaml`; **47** dashboard invariants are
   reported by `build_dashboard.py`.
 
 ## Cross-links

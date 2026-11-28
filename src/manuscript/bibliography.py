@@ -163,7 +163,7 @@ def write_references_bib(reg: CitationRegistry, path: Path) -> None:
     without hand-maintaining a second ``.bib`` file.
     """
     lines = [
-        "% Auto-generated from manuscript/refs/citations.yaml.",
+        "% Auto-generated from docs/manuscript/refs/citations.yaml.",
         "% Do not edit; change the YAML and re-run inject_manuscript_variables.py.",
         "",
     ]

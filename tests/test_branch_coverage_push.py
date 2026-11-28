@@ -29,8 +29,8 @@ def test_pandoc_to_tex_assembles_command(tmp_path: Path, monkeypatch: pytest.Mon
     combined_tex = pdf_dir / f"{bp.COMBINED_STEM}.tex"
     preamble_tex = pdf_dir / "_preamble.tex"
     preamble_tex.write_text("\\usepackage{x}\n\\begin{document}\n", encoding="utf-8")
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "config.yaml").write_text("paper:\n  title: Demo\n", encoding="utf-8")
 
     def _fake_run(cmd, *, cwd, stdout_path=None):

@@ -79,9 +79,9 @@ PROJECT = Path(__file__).resolve().parent.parent.parent
 
 
 def _seed_labels_yaml(project_root: Path) -> None:
-    refs = project_root / "manuscript" / "refs"
+    refs = project_root / "docs" / "manuscript" / "refs"
     refs.mkdir(parents=True, exist_ok=True)
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
 
 
 def _install_fake_lake(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -254,7 +254,7 @@ def test_regression_gate_unparseable_lake_jobs(tmp_path: Path, monkeypatch: pyte
 
 
 def test_theorem_map_helpers_and_write() -> None:
-    refs = PROJECT / "manuscript" / "refs"
+    refs = PROJECT / "docs" / "manuscript" / "refs"
     registry = load_registry(refs)
     thm = registry.labels.theorems["thm_4_1"]
     assert "THMREF" in tm._theorem_token(thm)
@@ -355,11 +355,11 @@ def test_readiness_figure_pdf_git_helpers(tmp_path: Path, monkeypatch: pytest.Mo
     counts = readiness_mod._status_counts([" R file", "?? x"])
     assert counts["other"] == 1
 
-    _seed = tmp_path / "manuscript" / "refs"
+    _seed = tmp_path / "docs" / "manuscript" / "refs"
     _seed.mkdir(parents=True)
     import shutil
 
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", _seed / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", _seed / "labels.yaml")
 
     fig = tmp_path / "output" / "figures" / "tiny.png"
     fig.parent.mkdir(parents=True)
@@ -487,7 +487,7 @@ def test_theorem_map_no_lean_companion_branch() -> None:
 
 
 def test_build_pdf_mirror_copies_bib_and_config(tmp_path: Path) -> None:
-    src_ms = tmp_path / "manuscript"
+    src_ms = tmp_path / "docs" / "manuscript"
     inj_ms = tmp_path / "output" / "manuscript"
     src_ms.mkdir(parents=True)
     inj_ms.mkdir(parents=True)
@@ -526,11 +526,11 @@ def test_registry_facts_skips_non_dict_theorem_rows(tmp_path: Path) -> None:
 
     from manuscript.registry_facts import registry_structural_facts
 
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     refs = ms / "refs"
     refs.mkdir(parents=True)
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
-    shutil.copy(PROJECT / "manuscript" / "refs" / "citations.yaml", refs / "citations.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "citations.yaml", refs / "citations.yaml")
     labels = yaml.safe_load((refs / "labels.yaml").read_text(encoding="utf-8"))
     labels["theorems"]["bad_row"] = "not-a-dict"
     (refs / "labels.yaml").write_text(yaml.dump(labels), encoding="utf-8")
@@ -665,7 +665,7 @@ def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: py
 
     monkeypatch.setattr("manuscript.readiness.load_project_status", lambda _root: _Status())
     (tmp_path / "output" / "reports").mkdir(parents=True)
-    (tmp_path / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
     (tmp_path / "output" / "reports" / "test_results.json").write_text(
         json.dumps(
             {
@@ -680,7 +680,7 @@ def test_readiness_write_release_readiness_smoke(tmp_path: Path, monkeypatch: py
         ),
         encoding="utf-8",
     )
-    (tmp_path / "manuscript" / "config.yaml").write_text("paper:\n  title: t\n", encoding="utf-8")
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("paper:\n  title: t\n", encoding="utf-8")
     _seed_labels_yaml(tmp_path)
     path = readiness_mod.write_release_readiness(tmp_path)
     assert path.exists()
@@ -693,7 +693,7 @@ def test_build_pdf_main_success_path(tmp_path: Path, monkeypatch: pytest.MonkeyP
     for name in ("manuscript_variables.py", "inject_manuscript_variables.py"):
         (scripts / name).write_text("print('ok')\n", encoding="utf-8")
 
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     injected = tmp_path / "output" / "manuscript"
     for d in (ms, injected):
         d.mkdir(parents=True, exist_ok=True)
@@ -787,8 +787,8 @@ def test_validation_cli_rendered_leaks_clean_and_skipped(tmp_path: Path, capsys)
 
 
 def test_build_pdf_config_and_preamble_helpers(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "config.yaml").write_text(
         "paper:\n  title: Title\n  subtitle: Sub\n  date: 2026-01-01\nauthors:\n  - name: Author\n",
         encoding="utf-8",

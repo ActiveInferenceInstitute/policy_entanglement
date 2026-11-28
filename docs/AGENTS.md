@@ -1,14 +1,13 @@
 # AGENTS.md — `docs/`
 
-**Publication:** DOI https://doi.org/10.5281/zenodo.20418904 · source https://github.com/ActiveInferenceInstitute/policy_entanglement · claim matrix [`_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv) · cross-track source [`../manuscript/refs/audit_tracks.yaml`](../manuscript/refs/audit_tracks.yaml) · generator [`../scripts/generate_audit_matrix.py`](../scripts/generate_audit_matrix.py) (`--write` / `--check`)
+**Publication:** DOI https://doi.org/10.5281/zenodo.20418904 · source https://github.com/ActiveInferenceInstitute/policy_entanglement · claim matrix [`_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv`](_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv) · cross-track source [`docs/manuscript/refs/audit_tracks.yaml`](manuscript/refs/audit_tracks.yaml) · generator [`../scripts/generate_audit_matrix.py`](../scripts/generate_audit_matrix.py) (`--write` / `--check`)
 
 ## Purpose
 
-`docs/` holds the project's technical reference.  It is *not* the
-manuscript (that lives in [`../manuscript/`](../manuscript/)) and *not*
-per-directory READMEs (those live at the directory roots).  Rather,
-`docs/` is the place for cross-cutting explanation: how the project
-fits together, what theorems mean, how to refine Lean proofs.
+`docs/` holds the project's technical reference and the canonical
+[manuscript source](manuscript/). The reference pages explain how the
+project fits together, what theorems mean, and how to refine Lean proofs.
+Component READMEs remain alongside their components.
 
 ## Current ground truth
 
@@ -72,7 +71,7 @@ existence checks, and the 47 dashboard invariants.
 6. **Honor the styleguide contract.**  Before authoring or reviewing
    manuscript prose, figure captions, equations, or citations, read
    [`guides/styleguide.md`](guides/styleguide.md).  Hardcoded numbers
-   in `manuscript/*.md`, raw `\tag{...}` in display math, missing
+   in `docs/manuscript/*.md`, raw `\tag{...}` in display math, missing
    `[[FIG:label]]` registrations, or unresolved `[@citekey]` are CI
    failures by design.
 7. **Use American English.**  Documentation prose follows
@@ -111,7 +110,7 @@ When closing a Mathlib-refinement witness payload (i.e. moving a
 `witness` row to `proved`):
 
 1. Update the row in [`reference/lean_reference.md`](reference/lean_reference.md).
-2. Flip the `status:` in `manuscript/refs/labels.yaml::theorems`
+2. Flip the `status:` in `docs/manuscript/refs/labels.yaml::theorems`
    (this is what auto-injects into the §12 status table).
 3. If the proof relies on a new Mathlib lemma, mention it in
    [`guides/build_run.md`](guides/build_run.md) under "Mathlib dependencies".

@@ -3,7 +3,7 @@
 *Read this before the manuscript abstract if you're new to the
 framework.  This page bridges the conceptual gap between
 [`FAQ.md`](FAQ.md) and the technical
-[`../manuscript/0A_abstract.md`](../manuscript/0A_abstract.md).*
+[`docs/manuscript/0A_abstract.md`](manuscript/0A_abstract.md).*
 
 ---
 
@@ -74,7 +74,7 @@ The first three theorem families live between these two poles:
 | If you are… | …read next |
 |---|---|
 | New and want the elevator pitch | [`../README.md`](../README.md) → §"What it looks like in 20 lines" |
-| Curious about the headline theorem | [`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md) |
+| Curious about the headline theorem | [`docs/manuscript/2D_decomposition.md`](manuscript/2D_decomposition.md) |
 | A mathematician or AIF researcher | [`READING_ORDER.md`](READING_ORDER.md), persona 1 |
 | A Lean / formalization reader | [`READING_ORDER.md`](READING_ORDER.md), persona 2 |
 | A software engineer | [`READING_ORDER.md`](READING_ORDER.md), persona 3 |
@@ -133,7 +133,7 @@ GNN parser checked against the pinned upstream parser
 It does **not** prove theorems or promote any registry row: the
 four-track proof contract (prose / equations / Python / Lean) remains
 the analytic contract.  See
-[`../manuscript/S08_gnn_generalized_notation_extension.md`](../manuscript/S08_gnn_generalized_notation_extension.md).
+[`docs/manuscript/S08_gnn_generalized_notation_extension.md`](manuscript/S08_gnn_generalized_notation_extension.md).
 Note also that §20.Q8 uses the same acronym "GNN" to refer to *graph
 neural networks*; the two meanings are orthogonal and explicitly
 disambiguated at §S8.3.

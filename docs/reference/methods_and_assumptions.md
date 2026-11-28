@@ -118,7 +118,7 @@ Float.)
 `status: proved` means "machine-checked in stock Lean with no analytic
 witness assumption" — it does **not** assert the Lean statement *is*
 the named manuscript proposition. The `faithfulness:` field
-(`manuscript/refs/labels.yaml`, machine-enforced, pinned in
+(`docs/manuscript/refs/labels.yaml`, machine-enforced, pinned in
 `tests/test_h1_headline_invariant.py`) records which:
 
 | Row | Manuscript | Lean | Faithfulness | What is actually established |

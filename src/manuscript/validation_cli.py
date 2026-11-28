@@ -7,8 +7,8 @@ Business logic for :doc:`scripts/validate_manuscript.py
 
 * Every section starts with a level-1 heading.
 * Every ``[[FIG:label]]``, ``[[FIGREF:label]]``, ``[[EQ:label]]``,
-  ``[[EQREF:label]]`` resolves to an entry in ``manuscript/refs/labels.yaml``.
-* Every ``[@citekey]`` resolves to ``manuscript/refs/citations.yaml``.
+  ``[[EQREF:label]]`` resolves to an entry in ``docs/manuscript/refs/labels.yaml``.
+* Every ``[@citekey]`` resolves to ``docs/manuscript/refs/citations.yaml``.
 * Every ``[[VAR:key]]`` resolves to ``output/data/manuscript_variables.json``.
 * Every ``![alt](path)`` image references a file that exists on disk.
 * Every relative Markdown ``[text](href)`` link resolves on disk.
@@ -53,7 +53,7 @@ def build_parser(*, project_root: Path) -> argparse.ArgumentParser:
     parser.add_argument(
         "--manuscript-dir",
         type=Path,
-        default=project_root / "manuscript",
+        default=project_root / "docs" / "manuscript",
     )
     parser.add_argument(
         "--variables",

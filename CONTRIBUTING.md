@@ -72,8 +72,8 @@ arm-by-arm run guide with measured wall times.
 | Change a grid / seed / rollout horizon | the constant in [`src/simulation/hyperparameters.py`](src/simulation/hyperparameters.py) | full pipeline (JSON mirror + manuscript update automatically) |
 | Add a manuscript variable | extend a `_*_facts` helper in [`scripts/manuscript_variables.py`](scripts/manuscript_variables.py) and reference it via `[[VAR:key]]` | `uv run python scripts/manuscript_variables.py && uv run python scripts/inject_manuscript_variables.py` |
 | Change manuscript prose | a file under `manuscript/` (no hardcoded numbers — use `[[VAR:...]]`) | `uv run python scripts/inject_manuscript_variables.py && uv run python scripts/validate_manuscript.py` |
-| Add a registered equation | extend `manuscript/refs/labels.yaml` under `equations:` and place via `[[EQ:label]]` | full pipeline (auto-numbering picks it up at render time) |
-| Add a citation | extend `manuscript/refs/citations.yaml` and reference it via `[[CITATION:key]]` | `uv run python scripts/validate_manuscript.py` |
+| Add a registered equation | extend `docs/manuscript/refs/labels.yaml` under `equations:` and place via `[[EQ:label]]` | full pipeline (auto-numbering picks it up at render time) |
+| Add a citation | extend `docs/manuscript/refs/citations.yaml` and reference it via `[[CITATION:key]]` | `uv run python scripts/validate_manuscript.py` |
 
 ## The eleven hard constraints
 
@@ -112,10 +112,10 @@ These are non-negotiable. CI enforces every one of them.
 
 ### Adding a manuscript section, paragraph, or claim
 
-1. Edit the relevant `manuscript/*.md` file. **No hardcoded numbers** — every grid count, seed, λ value, T-step must come from a `[[VAR:key]]` token. See [`docs/guides/styleguide/manuscript-variables.md`](docs/guides/styleguide/manuscript-variables.md).
-2. If you mention a new equation, register it in `manuscript/refs/labels.yaml` and place it with `[[EQ:label]]`. The renderer auto-numbers it `S.K`.
+1. Edit the relevant `docs/manuscript/*.md` file. **No hardcoded numbers** — every grid count, seed, λ value, T-step must come from a `[[VAR:key]]` token. See [`docs/guides/styleguide/manuscript-variables.md`](docs/guides/styleguide/manuscript-variables.md).
+2. If you mention a new equation, register it in `docs/manuscript/refs/labels.yaml` and place it with `[[EQ:label]]`. The renderer auto-numbers it `S.K`.
 3. If you mention a new theorem, register it in `labels.yaml` under `theorems:` and reference it with `[[THMREF:key]]`.
-4. If you cite a paper, register it in `manuscript/refs/citations.yaml` and reference it with `[[CITATION:key]]`.
+4. If you cite a paper, register it in `docs/manuscript/refs/citations.yaml` and reference it with `[[CITATION:key]]`.
 5. `uv run python scripts/inject_manuscript_variables.py` — substitutes `[[VAR:...]]` tokens.
 6. `uv run python scripts/validate_manuscript.py` — fails if any token unresolved, any citation missing, any hardcoded numeric literal slipped in.
 
@@ -124,7 +124,7 @@ These are non-negotiable. CI enforces every one of them.
 1. Implement the figure-generating function in `scripts/generate_figures.py` or `scripts/simulate_pymdp.py`. The function must accept no required args and **return the output path**.
 2. Use a helper from `src/visualizations/` for the actual plotting — never re-implement plotting logic in scripts.
 3. Tag every PNG with `figure_metadata(...)` (script, function, hyperparameter snapshot, git revision, ISO timestamp) so the audit page (`docs/reference/veridical_status.md`) can verify provenance.
-4. Add the figure to `manuscript/refs/labels.yaml` under `figures:` so it gets numbered, and reference it with `[[FIG:label]]` in the prose.
+4. Add the figure to `docs/manuscript/refs/labels.yaml` under `figures:` so it gets numbered, and reference it with `[[FIG:label]]` in the prose.
 5. Print the path to stdout (one line, one path).
 
 ### Adding a test
@@ -168,7 +168,7 @@ your PR is ready.
 | How does the manuscript token system work? | [`docs/guides/styleguide.md`](docs/guides/styleguide.md) |
 | What hyperparameters are pinned? | [`src/simulation/hyperparameters.py`](src/simulation/hyperparameters.py) |
 | What's the current state of the build? | [`docs/reference/veridical_status.md`](docs/reference/veridical_status.md) |
-| What's the section-by-section roadmap for §1–§21? | [`manuscript/3B_lean_formalization.md`](manuscript/3B_lean_formalization.md) |
+| What's the section-by-section roadmap for §1–§21? | [`docs/manuscript/3B_lean_formalization.md`](docs/manuscript/3B_lean_formalization.md) |
 | What's the canonical contributor rulebook? | [`AGENTS.md`](AGENTS.md) |
 
 ## Code review expectations

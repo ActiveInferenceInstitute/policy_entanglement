@@ -16,7 +16,7 @@ PROJECT = Path(__file__).resolve().parent.parent
 def test_build_parser_defaults_point_at_project_tree() -> None:
     parser = build_parser(project_root=PROJECT)
     args = parser.parse_args([])
-    assert args.manuscript_dir == PROJECT / "manuscript"
+    assert args.manuscript_dir == PROJECT / "docs" / "manuscript"
     assert args.variables == PROJECT / "output" / "data" / "manuscript_variables.json"
 
 

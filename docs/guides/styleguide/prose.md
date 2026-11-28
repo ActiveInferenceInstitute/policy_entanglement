@@ -35,7 +35,7 @@ one of the following:
 
 Interpretive prose is welcome, but it should follow the artifact rather
 than substitute for it.  The evidence ledgers in
-[`manuscript/4B_empirical_suite.md`](../../../manuscript/4B_empirical_suite.md)
+[`docs/manuscript/4B_empirical_suite.md`](../../manuscript/4B_empirical_suite.md)
 and
-[`manuscript/6C_discussion_and_outlook.md`](../../../manuscript/6C_discussion_and_outlook.md)
+[`docs/manuscript/6C_discussion_and_outlook.md`](../../manuscript/6C_discussion_and_outlook.md)
 are the current templates.

@@ -12,9 +12,9 @@ PROJECT = Path(__file__).resolve().parent.parent
 
 
 def _seed_labels_yaml(project_root: Path) -> None:
-    refs = project_root / "manuscript" / "refs"
+    refs = project_root / "docs" / "manuscript" / "refs"
     refs.mkdir(parents=True, exist_ok=True)
-    shutil.copy(PROJECT / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
+    shutil.copy(PROJECT / "docs" / "manuscript" / "refs" / "labels.yaml", refs / "labels.yaml")
 
 
 def test_status_counts_groups_git_short_codes() -> None:

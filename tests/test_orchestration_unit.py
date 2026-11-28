@@ -26,13 +26,14 @@ def test_section_sort_key_puts_bibliography_last() -> None:
 
 
 def test_normalise_render_paths_rewrites_figure_prefix() -> None:
-    text = "![x](../output/figures/plot.png)"
-    assert "../figures/plot.png" in _normalise_render_paths(text)
+    for prefix in ("../", "../../"):
+        text = f"![x]({prefix}output/figures/plot.png) [data](../../output/data/table.csv)"
+        assert _normalise_render_paths(text) == "![x](../figures/plot.png) [data](../../output/data/table.csv)"
 
 
 def test_discover_and_combine_markdown(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "01_a.md").write_text("# A\n", encoding="utf-8")
     (ms / "00_abstract.md").write_text("# Abstract\n", encoding="utf-8")
     (ms / "99_bibliography.md").write_text("# Bib\n", encoding="utf-8")
@@ -82,8 +83,8 @@ def test_author_block_from_config_includes_metadata() -> None:
 
 
 def test_postprocess_combined_tex_injects_author_and_titlepage(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
-    ms.mkdir()
+    ms = tmp_path / "docs" / "manuscript"
+    ms.mkdir(parents=True)
     (ms / "config.yaml").write_text(
         "paper:\n  title: Title\n  subtitle: Sub\n  version: '1.0'\n"
         "authors:\n  - name: Author\n    email: a@example.com\n    orcid: '0000-0001-0000-0000'\n"

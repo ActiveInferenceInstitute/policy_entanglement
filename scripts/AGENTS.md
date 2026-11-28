@@ -90,7 +90,7 @@
 | `simulate_gnn.py` | GNN | fifth-track round-trip + production-harness conformance sidecar + Lean typed-contract emitter |
 | `gnn_to_pymdp.py` | GNN | `.gnn` → pymdp structural config on stdout; `--harness` emits the production-harness config |
 | `build_dashboard.py` | sim + web | interactive multi-view Plotly dashboard at `output/web/dashboard.html` (six panels, three live controls), companion plaintext `output/reports/dashboard_invariants.txt` + `output/reports/dashboard_summary.txt` + `output/data/dashboard_payload.json`. Every grid / utility / threshold is a CLI flag; exits non-zero on any invariant failure. |
-| `generate_index.py` | manuscript | regenerate `manuscript/INDEX.md` from registry |
+| `generate_index.py` | manuscript | regenerate `docs/manuscript/INDEX.md` from registry |
 | `generate_theorem_map.py` | manuscript | regenerate `docs/reference/_theorem_map.md` four-track wiring table |
 | `generate_audit_matrix.py` | manuscript | regenerate `docs/_audit/pymdp_lean_manuscript_matrix_2026-05-21.csv` claim ledger |
 | `inject_manuscript_variables.py` | manuscript | resolve every `[[…]]` token, auto-number every `$$..$$` |
@@ -103,7 +103,7 @@
 
 When this project is symlinked under `template/projects/`:
 
-* **Analysis allowlist:** `manuscript/config.yaml` → `analysis.scripts: [run_all.py]` so stage 4 does not run every script lexicographically.
+* **Analysis allowlist:** `docs/manuscript/config.yaml` → `analysis.scripts: [run_all.py]` so stage 4 does not run every script lexicographically.
 * **Tests-before-analysis:** template stage 3 runs before stage 4; `conftest.py` bootstraps missing `output/` artifacts idempotently.
 * **PDF:** use `run_all.py --with-pdf` (or `make pipeline-pdf`) — not `scripts/03_render_pdf.py`, which bypasses the registry injector.
 * **Copy outputs:** after `--with-pdf`, template stage 9 copies `projects/.../output/` → root `output/pdf/` (combined PDF at `output/pdf/actinf_policy_entanglement_lean_combined.pdf`).

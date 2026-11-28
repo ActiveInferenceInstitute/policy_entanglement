@@ -1,0 +1,66 @@
+# Manuscript configuration for the Policy Entanglement in Active Inference
+# project. Consumed by `infrastructure/core/config_loader.py` and the
+# pipeline rendering / publication tooling.
+
+paper:
+  title: "Policy Entanglement in Active Inference"
+  subtitle: "A Coupling-Parameter Deformation Framework for Multi-Stream Policy Posterior Distributions, Machine-Checked and Simulated with a Typed Float Boundary"
+  version: "1.0"
+  date: ""
+
+authors:
+  - name: "Daniel Ari Friedman"
+    orcid: "0000-0001-6232-9096"
+    email: "daniel@activeinference.institute"
+    affiliation: "Active Inference Institute"
+    corresponding: true
+
+publication:
+  # Citation DOI (Zenodo concept — stable; cite this in papers and on the PDF cover)
+  doi: "10.5281/zenodo.20418904"
+  # Latest published deposit (update via publish_project_release.py --new-version)
+  version_doi: "10.5281/zenodo.20419637"
+  version_record: "https://zenodo.org/records/20419637"
+  journal: "Active Inference Journal"
+  year: "2026"
+  repository_url: "https://github.com/ActiveInferenceInstitute/policy_entanglement"
+  repository_label: "Policy Entanglement source repository"
+
+keywords:
+  - "active inference"
+  - "free energy principle"
+  - "policy inference"
+  - "mean-field"
+  - "total correlation"
+  - "information geometry"
+  - "Schmidt rank"
+  - "tensor networks"
+  - "sophisticated inference"
+  - "Lean theorem proving"
+  - "machine-checked free-energy identity"
+
+metadata:
+  license: "CC-BY-4.0"
+  language: "en"
+
+analysis:
+  scripts:
+    - run_all.py
+
+llm:
+  reviews:
+    enabled: false
+    types: []
+  translations:
+    enabled: false
+    languages: []
+
+manuscript_dir: "docs/manuscript"
+
+render:
+  formats:
+    pdf: true
+    html: false
+    slides: false
+    docx: false
+    epub: false

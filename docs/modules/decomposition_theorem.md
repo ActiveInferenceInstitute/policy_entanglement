@@ -1,9 +1,9 @@
 # Theorem 5.1 — Entanglement decomposition
 
 The load-bearing identity of the framework.  Manuscript:
-[`../manuscript/2D_decomposition.md`](../../manuscript/2D_decomposition.md)
+[`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
 and Appendix A
-[`../manuscript/S01_proof_of_decomposition_theorem.md`](../../manuscript/S01_proof_of_decomposition_theorem.md).
+[`../manuscript/S01_proof_of_decomposition_theorem.md`](../manuscript/S01_proof_of_decomposition_theorem.md).
 
 ## Statement
 
@@ -22,9 +22,9 @@ $$
 where $Z_E(\lambda) = \sum_\pi \big(\prod_k E_k(\pi^k)\big)\,e^{\lambda\,J(\pi)}$.
 
 (This is the canonical form registered as `equations::tc_decomp` in
-[`manuscript/refs/labels.yaml`](../../manuscript/refs/labels.yaml) and
+[`docs/manuscript/refs/labels.yaml`](../manuscript/refs/labels.yaml) and
 proved as a boxed identity in
-[`manuscript/S01_proof_of_decomposition_theorem.md`](../../manuscript/S01_proof_of_decomposition_theorem.md);
+[`docs/manuscript/S01_proof_of_decomposition_theorem.md`](../manuscript/S01_proof_of_decomposition_theorem.md);
 the [[EQ:tc_decomp]] token resolves to exactly this equation in every
 manuscript render.)
 

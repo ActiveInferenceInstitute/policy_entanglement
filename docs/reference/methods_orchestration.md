@@ -109,7 +109,7 @@ PDF text, `_combined_manuscript.md`, TeX, and LaTeX log. It fails on
 unresolved missing-token markers, raw `$`
 delimiters in extracted PDF text, undefined references/citations, LaTeX
 warnings/errors, missing glyphs, stale draft/Mathlib wording, and drift
-from the compact margin contract in `manuscript/preamble.md`.
+from the compact margin contract in `docs/manuscript/preamble.md`.
 
 The full release pipeline is:
 
@@ -133,7 +133,7 @@ src/simulation/hyperparameters.py
         + empirical sidecars under output/data and output/simulations
         -> scripts/manuscript_variables.py
         -> output/data/manuscript_variables.json
-        -> [[VAR:key]] tokens in manuscript/*.md
+        -> [[VAR:key]] tokens in docs/manuscript/*.md
         -> output/manuscript/*.md
         -> validate_manuscript.py
 ```
@@ -160,7 +160,7 @@ lemmas.
 | Boundary build | `lean/ActinfPolicyEntanglement/` | Stable witness record names and theorem signatures | `uv run python scripts/build_lean.py` |
 | Headline Mathlib discharge | finite real-valued PMFs, finite sums, log/exp, entropy, KL | `free_energy_decomposition_full` plus the general-K finite-KL kernel | `uv run python scripts/build_mathlib_proofs.py`; foundational-only `#print axioms`; negative-control checks |
 | Witness construction | Mathlib lemmas plus project-local adapters | inhabitants of the current witness structures | Lean type-checker; no witness-row status change before row-specific green source |
-| Registry promotion | `manuscript/refs/labels.yaml` rows | status changes from `witness` to `proved` where appropriate | `generate_theorem_map.py` exhaustiveness check + `validate_manuscript.py` |
+| Registry promotion | `docs/manuscript/refs/labels.yaml` rows | status changes from `witness` to `proved` where appropriate | `generate_theorem_map.py` exhaustiveness check + `validate_manuscript.py` |
 | Manuscript discussion | `[[LEAN:...]]`, `[[THMREF:...]]`, and generated theorem map rows | rendered source snippets and accurate proof-status prose | PDF render + token scan + link audit |
 
 The recommended proof-engineering order is encoded in the generated
@@ -188,5 +188,5 @@ source for them.
 | A rendered number is stale | Confirm `run_all.py` ran the empirical producer before `manuscript_variables.py`, then inspect `output/data/manuscript_variables.json`. |
 | A figure exists but a caption disagrees | Inspect `project.hyperparameters`, `project.uncertainty_semantics`, and `project.figure_statistics` with `visualizations.metadata.read_figure_metadata`. |
 | The PDF shows a raw `$`, `??`, or missing-token marker | Run `scripts/validate_pdf.py`, then inspect `output/pdf/_combined_manuscript.log`. |
-| A theorem row looks stale | Re-run `generate_theorem_map.py`; then inspect `manuscript/refs/labels.yaml`. |
+| A theorem row looks stale | Re-run `generate_theorem_map.py`; then inspect `docs/manuscript/refs/labels.yaml`. |
 | A run passes locally but claims regressed | Run `regression_gate.py`; update `regression_baseline.json` only for an intentional release baseline. |

@@ -1,5 +1,5 @@
 """Tests that ``docs/reference/veridical_status.md`` Theorem-status table
-mirrors the truth in ``manuscript/refs/labels.yaml``.
+mirrors the truth in ``docs/manuscript/refs/labels.yaml``.
 
 These tests are the structural sanity rail that prevents the per-theorem
 status table from silently drifting away from the registry. The doc is
@@ -16,7 +16,7 @@ import pytest
 import yaml
 
 PROJ = Path(__file__).resolve().parent.parent
-LABELS_PATH = PROJ / "manuscript" / "refs" / "labels.yaml"
+LABELS_PATH = PROJ / "docs" / "manuscript" / "refs" / "labels.yaml"
 DOC_PATH = PROJ / "docs" / "reference" / "veridical_status.md"
 CURRENT_STATUSES = frozenset({"proved", "forwarder", "witness", "boundary", "roadmap"})
 STATUS_RE = "|".join(sorted(CURRENT_STATUSES))
@@ -54,7 +54,7 @@ def test_doc_table_covers_every_registered_theorem(registry_thms: dict[str, dict
     missing = sorted(set(registry_thms) - set(doc_rows))
     assert not missing, (
         "veridical_status.md is missing rows for theorems that exist in "
-        f"manuscript/refs/labels.yaml: {missing}. Add the missing rows "
+        f"docs/manuscript/refs/labels.yaml: {missing}. Add the missing rows "
         "or update the doc table."
     )
 
@@ -63,7 +63,7 @@ def test_doc_table_does_not_invent_theorems(registry_thms: dict[str, dict], doc_
     extra = sorted(set(doc_rows) - set(registry_thms))
     assert not extra, (
         "veridical_status.md lists theorem labels that are not in "
-        f"manuscript/refs/labels.yaml: {extra}. Either add them to the "
+        f"docs/manuscript/refs/labels.yaml: {extra}. Either add them to the "
         "registry or remove the rows."
     )
 

@@ -27,7 +27,7 @@ from manuscript.meta_files import MANUSCRIPT_NON_BODY_MD
 from manuscript.registry import load_registry
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-MANUSCRIPT_DIR = PROJECT_ROOT / "manuscript"
+MANUSCRIPT_DIR = PROJECT_ROOT / "docs" / "manuscript"
 RENDERED_DIR = PROJECT_ROOT / "output" / "manuscript"
 
 

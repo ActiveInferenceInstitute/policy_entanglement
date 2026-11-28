@@ -1,7 +1,7 @@
 """Tests for `scripts/generate_index.py` — the auto-generated TOC.
 
-The output `manuscript/INDEX.md` must contain every section registered
-in `manuscript/refs/labels.yaml::sections` and must be byte-stable
+The output `docs/manuscript/INDEX.md` must contain every section registered
+in `docs/manuscript/refs/labels.yaml::sections` and must be byte-stable
 under repeated runs.
 """
 
@@ -16,7 +16,7 @@ import pytest
 from manuscript.index_generator import build_index_text, write_index
 
 PROJECT = Path(__file__).resolve().parent.parent
-INDEX = PROJECT / "manuscript" / "INDEX.md"
+INDEX = PROJECT / "docs" / "manuscript" / "INDEX.md"
 
 
 @pytest.fixture(scope="module")
@@ -37,7 +37,7 @@ def test_index_lists_every_top_level_section(fresh_index: str) -> None:
     appear in the auto-generated index."""
     expected = sorted(
         p.name
-        for p in (PROJECT / "manuscript").glob("*.md")
+        for p in (PROJECT / "docs" / "manuscript").glob("*.md")
         if p.name.split("_", 1)[0].rstrip("a").isalnum()
         and (p.name[0].isdigit() or p.name.startswith("S0"))
         and p.name not in {"99_bibliography.md"}  # has its own row
@@ -83,13 +83,13 @@ def test_index_links_to_registry(fresh_index: str) -> None:
 
 
 def test_index_generator_library_build_index_text() -> None:
-    text = build_index_text(manuscript_dir=PROJECT / "manuscript")
+    text = build_index_text(manuscript_dir=PROJECT / "docs" / "manuscript")
     assert "auto-generated" in text.lower()
     assert "refs/labels.yaml" in text
 
 
 def test_index_generator_library_write_index(tmp_path: Path) -> None:
-    ms = tmp_path / "manuscript"
+    ms = tmp_path / "docs" / "manuscript"
     refs = ms / "refs"
     refs.mkdir(parents=True)
     (refs / "labels.yaml").write_text(

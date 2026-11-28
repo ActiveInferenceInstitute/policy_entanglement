@@ -1,9 +1,9 @@
 # Constructive — `λ = 0` and trivial-coupling boundary lemmas
 
 Manuscript section:
-[`../manuscript/2C_lambda_deformation.md`](../../manuscript/2C_lambda_deformation.md)
+[`../manuscript/2C_lambda_deformation.md`](../manuscript/2C_lambda_deformation.md)
 (§4 mean-field reduction at `λ = 0`) and
-[`../manuscript/2D_decomposition.md`](../../manuscript/2D_decomposition.md)
+[`../manuscript/2D_decomposition.md`](../manuscript/2D_decomposition.md)
 (§5 `λ = 0` baseline of the decomposition).
 
 Lean source:

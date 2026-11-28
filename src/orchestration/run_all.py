@@ -68,7 +68,7 @@ SCRIPTS: list[tuple[str, str]] = [
     ("simulate_gnn.py", "GNN round-trip + production-harness conformance (gnn/*.gnn.md)"),
     ("manuscript_variables.py", "compute in-text variable substitutions"),
     ("build_dashboard.py", "interactive multi-view dashboard + plaintext invariants"),
-    ("generate_index.py", "auto-generate manuscript/INDEX.md from registry"),
+    ("generate_index.py", "auto-generate docs/manuscript/INDEX.md from registry"),
     ("generate_theorem_map.py", "auto-generate per-theorem four-track wiring table"),
     ("inject_manuscript_variables.py", "render manuscript with auto-injected tokens"),
     ("validate_outputs.py", "validate every artifact"),

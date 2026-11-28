@@ -7,7 +7,7 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | File / package | Role |
 | --- | --- |
 | `tokens.py` | Regex definitions for every `[[FIG:...]]` / `[[EQ:...]]` / `[[VAR:...]]` / `[[SEC:...]]` / `[[THM:...]]` / `[[LEAN:...]]` / `[@cite]` token plus `iter_tokens()` for the validator. |
-| `registry.py` | Typed loaders for `manuscript/refs/{labels,citations}.yaml` (figures, equations, sections, theorems, citations); the `Registry` dataclass is the in-memory single source of truth. |
+| `registry.py` | Typed loaders for `docs/manuscript/refs/{labels,citations}.yaml` (figures, equations, sections, theorems, citations); the `Registry` dataclass is the in-memory single source of truth. |
 | `registry_facts.py` | Structural registry counts for `manuscript_variables.py` and output gates. |
 | `lean_extract.py` | Live extraction of Lean source snippets from `lean/ActinfPolicyEntanglement/<Module>.lean` so `[[LEAN:label]]` embeds the actual proof / declaration text at render time. |
 | `equation_numbering.py` | Single-pass auto-numbering: walks every section in source order, assigns each display equation `S.K`; `retag_display_math` injects / rewrites `\tag{S.K}` post-substitution. |
@@ -26,7 +26,7 @@ Supporting library for assembling and validating manuscript-facing artifacts fro
 | `readiness.py` | Release-readiness orchestration; emitters in `readiness_emit.py`. |
 | `readiness_emit.py` | Markdown/JSON/index writers for reviewer release artifacts. |
 | `theorem_map.py` | Four-track theorem wiring table generator for [`scripts/generate_theorem_map.py`](../../scripts/generate_theorem_map.py). |
-| `audit_matrix.py` | Claim audit matrix rows for [`scripts/generate_audit_matrix.py`](../../scripts/generate_audit_matrix.py); cross-track rows from [`manuscript/refs/audit_tracks.yaml`](../../manuscript/refs/audit_tracks.yaml). |
+| `audit_matrix.py` | Claim audit matrix rows for [`scripts/generate_audit_matrix.py`](../../scripts/generate_audit_matrix.py); cross-track rows from [`docs/manuscript/refs/audit_tracks.yaml`](../../docs/manuscript/refs/audit_tracks.yaml). |
 | `float_real_interval.py` | Tier-N interval bracket witness for Float decomposition residuals (not a Lean proof). |
 | `publication_metadata.py` | DOI / repository URL drift gates for current-facing docs. |
 | `variables.py` | `build_manuscript_variables` / `write_manuscript_variables` / `build_float_real_residual` / `decomposition_certificate_grid` for [`scripts/manuscript_variables.py`](../../scripts/manuscript_variables.py). |

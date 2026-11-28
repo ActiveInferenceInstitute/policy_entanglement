@@ -272,7 +272,7 @@ def test_real_manuscript_has_no_hardcoded_numeric_literals() -> None:
 
     project_root = Path(__file__).resolve().parent.parent
     offenses: dict[str, list[str]] = {}
-    for src in sorted((project_root / "manuscript").glob("*.md")):
+    for src in sorted((project_root / "docs" / "manuscript").glob("*.md")):
         if src.name in {"README.md", "AGENTS.md", "INDEX.md"}:
             continue
         out = find_hardcoded_numeric_literals(src.read_text())

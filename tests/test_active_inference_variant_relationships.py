@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent
-MANUSCRIPT = PROJECT / "manuscript"
+MANUSCRIPT = PROJECT / "docs" / "manuscript"
 DOCS = PROJECT / "docs"
 
 RECOVERY_CLASSES = {"exact", "parametric", "analogical", "out-of-scope"}

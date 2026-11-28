@@ -5,7 +5,7 @@ organized into four topic subdirectories so a reader can find any
 concept in two clicks.
 
 > **Citation metadata:** DOI [`10.5281/zenodo.20418904`](https://doi.org/10.5281/zenodo.20418904); source repository URL
-> is set in [`manuscript/config.yaml`](../manuscript/config.yaml); the abstract is in the
+> is set in [`docs/manuscript/config.yaml`](manuscript/config.yaml); the abstract is in the
 > manuscript, and citation metadata lives in [`CITATION.cff`](../CITATION.cff).
 
 > **Latest generated audit:** live counts come from generated reports,
@@ -34,7 +34,7 @@ concept in two clicks.
 * [`RELEASE_v1.0.0.md`](RELEASE_v1.0.0.md) — v1.0.0 release receipt: canonical identifiers (GitHub, Zenodo concept/version DOIs, deposit PDF hash) and completed release steps.
 * [`FAQ.md`](FAQ.md) — answers to the 15 most likely newcomer questions.
 * [`READING_ORDER.md`](READING_ORDER.md) — curated reading paths by reader persona (active-inference researcher, Lean formalizer, Python engineer, reviewer, newcomer).
-* [`glossary.md`](glossary.md) — project-jargon glossary (boundary fragment, witness-form, four-track contract, …); complements the mathematical glossary under [`reference/math_reference.md`](reference/math_reference.md) and the canonical symbol-and-sign glossary [`manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md).
+* [`glossary.md`](glossary.md) — project-jargon glossary (boundary fragment, witness-form, four-track contract, …); complements the mathematical glossary under [`reference/math_reference.md`](reference/math_reference.md) and the canonical symbol-and-sign glossary [`docs/manuscript/S06_notation_and_concordance.md`](manuscript/S06_notation_and_concordance.md).
 * [`reference/methods_and_assumptions.md`](reference/methods_and_assumptions.md) — **normative** methods & assumptions ledger: the three verification tiers (ℝ machine-checked / Float-boundary / typed-contract / numerically-witnessed), the per-row strength table, Theorem 5.1's ℝ proof status, the Float↔ℝ residual, and empirical estimator definitions. Read this for claim-strength language.
 * [`AGENTS.md`](AGENTS.md) — live-report pointers + authoring rules for agents.
 
@@ -116,7 +116,7 @@ Then deep dives:
 
 ### Theorem-registry roll-up
 
-Reading off `manuscript/refs/labels.yaml::theorems` via generated reports:
+Reading off `docs/manuscript/refs/labels.yaml::theorems` via generated reports:
 
 | Status | Count | Theorems |
 |---|---|---|
@@ -134,11 +134,15 @@ boundary / forwarder), and the additional roadmap row resolves to the
 ## Conventions
 
 * **Cross-references** use relative links (`../lean/...`, `../src/...`,
-  `../manuscript/...`).  Inside `docs/<subdir>/foo.md` the project
+  `manuscript/...`).  Inside `docs/<subdir>/foo.md` the project
   root is two levels up: `../../lean/`, `../../src/`, etc.
 * **Math notation** matches the manuscript (`λ`, `q^k`, `D_KL`).  Sign
   conventions for $F$, $G$, and $\log q$ are pinned in
-  [`../manuscript/S06_notation_and_concordance.md`](../manuscript/S06_notation_and_concordance.md)
+  [`docs/manuscript/S06_notation_and_concordance.md`](manuscript/S06_notation_and_concordance.md)
   under the registry label `notation.sign_conventions`.
 * **Theorem labels** match the manuscript section number, not internal
   Lean naming, where the two diverge.
+
+## Manuscript
+
+- [Manuscript sources and rendering](manuscript/README.md)

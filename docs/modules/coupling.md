@@ -1,7 +1,7 @@
 # Coupling — λ-entangled prior / posterior log-weights
 
 Manuscript section:
-[`../manuscript/2C_lambda_deformation.md`](../../manuscript/2C_lambda_deformation.md)
+[`../manuscript/2C_lambda_deformation.md`](../manuscript/2C_lambda_deformation.md)
 (§4.1 coupling potentials, §4.2 entangled posterior).
 
 Lean source:
